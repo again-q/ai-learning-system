@@ -1,0 +1,92 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #ffffff;
+}
+.header {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  padding-top: calc(88rpx + env(safe-area-inset-top));
+  border-bottom: 1rpx solid #f0f0f0;
+}
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 10rpx 0;
+}
+.back-arrow {
+  font-size: 44rpx;
+  color: #007aff;
+  font-weight: 300;
+  line-height: 1;
+}
+.back-text {
+  font-size: 28rpx;
+  color: #007aff;
+}
+.header-center {
+  flex: 1;
+  text-align: center;
+}
+.header-subject {
+  font-size: 26rpx;
+  color: #8e8e93;
+  display: block;
+}
+.header-dim {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1d1d1f;
+  display: block;
+}
+.header-right {
+  width: 80rpx;
+}
+.placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  padding: 40rpx;
+}
+.icon-circle {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  border: 3rpx solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16rpx;
+}
+.icon-text {
+  font-size: 56rpx;
+}
+.placeholder-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+.placeholder-desc {
+  font-size: 28rpx;
+  color: #8e8e93;
+}
+.dev-badge {
+  font-size: 24rpx;
+  color: #ff9500;
+  background: #fff3e0;
+  padding: 6rpx 24rpx;
+  border-radius: 20rpx;
+  font-weight: 500;
+  margin-top: 8rpx;
+}
+.placeholder-hint {
+  font-size: 24rpx;
+  color: #c7c7cc;
+  margin-top: 8rpx;
+}

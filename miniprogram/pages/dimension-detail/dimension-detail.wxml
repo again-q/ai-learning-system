@@ -1,0 +1,25 @@
+<view class="page">
+  <!-- 顶部 -->
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="back-arrow">‹</text>
+      <text class="back-text">图谱</text>
+    </view>
+    <view class="header-center">
+      <text class="header-subject">{{subject}}</text>
+      <text class="header-dim">{{dim}} · {{name}}</text>
+    </view>
+    <view class="header-right"></view>
+  </view>
+
+  <!-- 开发中占位 -->
+  <view class="placeholder">
+    <view class="icon-circle" style="background:{{color}}22; border-color:{{color}}">
+      <text class="icon-text">{{icon}}</text>
+    </view>
+    <text class="placeholder-title">{{name}}详情</text>
+    <text class="placeholder-desc">当前水平 {{value}}%</text>
+    <view class="dev-badge">待开发</view>
+    <text class="placeholder-hint">该页面正在建设中，敬请期待</text>
+  </view>
+</view>

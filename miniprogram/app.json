@@ -4,7 +4,8 @@
     "pages/index/index",
     "pages/study/study",
     "pages/graph/graph",
-    "pages/mine/mine"
+    "pages/mine/mine",
+    "pages/dimension-detail/dimension-detail"
   ],
   "window": {
     "navigationStyle": "custom",
