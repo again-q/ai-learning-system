@@ -426,9 +426,11 @@ Page({
     const target = this._cachedLayout.positions[dimIdx];
     const dim = this.data.dimensions[dimIdx];
 
-    const targetScale = 1.5;
-    const targetOffX = (cx - target.x) * targetScale;
-    const targetOffY = (cy - target.y) * targetScale - size * 0.12;
+    // scale 保持 1.0，避免 canvas 像素拉伸虚化；只用 offX/offY 移镜头到节点
+    // 节点放大由 zoomT=0（放大态）处理，尺寸已插值放大
+    const targetScale = 1.0;
+    const targetOffX = (cx - target.x);
+    const targetOffY = (cy - target.y) - size * 0.12;
 
     this.setData({
       isZoomed: true,
@@ -463,7 +465,7 @@ Page({
       }
     });
 
-    this.animateZoom(1, 0, 0, 1.5, 0, 0, () => {
+    this.animateZoom(1, 0, 0, 1.0, 0, 0, () => {
       this.setData({ showInfo: true });
     });
   },
