@@ -1,0 +1,25 @@
+<view class="container">
+  <!-- 顶部标志 -->
+  <view class="header">
+    <view class="logo">🧠</view>
+    <text class="title">AI 学习助手</text>
+    <text class="subtitle">个性化学习 · 智能教学</text>
+  </view>
+
+  <!-- 头像 + 昵称 -->
+  <view class="profile">
+    <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+      <image class="avatar" src="{{avatarUrl}}"></image>
+    </button>
+    <input class="nickname" type="nickname" placeholder="你的微信昵称" 
+           bindinput="onNicknameInput" />
+  </view>
+
+  <!-- 按钮 -->
+  <view class="footer">
+    <button class="login-btn" bindtap="onLogin" disabled="{{!canLogin}}">
+      <text class="btn-text">进入学习</text>
+    </button>
+    <text class="hint">点击「进入学习」自动创建账号</text>
+  </view>
+</view>

@@ -1,29 +1,60 @@
-<!--index.wxml-->
 <view class="container">
-  <view class="title">快速了解云开发</view>
-  <view class="top_tip">免鉴权接口调用 免部署后台 高并发</view>
-  <view class="power" wx:key="title" wx:for="{{powerList}}" wx:for-item="power">
-    <view class="power_info" data-index="{{index}}" data-type="{{ power.type }}" bindtap="onClickPowerInfo">
-      <view class="power_info_text">
-        <view class="power_info_text_title">
-          {{power.title}}
-          <view class="power_info_text_tag" wx:if="{{power.tag}}">{{power.tag}}</view>
-        </view>
-        <view class="power_info_text_tip">{{power.tip}}</view>
-      </view>
-      <image wx:if="{{!power.showItem && power.item.length}}" class="power_info_more" src="../../images/arrow.svg"></image>
-      <image wx:if="{{power.showItem && power.item.length}}" class="power_info_less" src="../../images/arrow.svg"></image>
-      <image wx:if="{{!power.item.length}}" class="power_item_icon" src="../../images/arrow.svg"></image>
+  <!-- 顶部问候 -->
+  <view class="top-section">
+    <view class="greeting-row">
+      <text class="greeting">👋 早上好，{{userName}}</text>
     </view>
-    <view wx:if="{{power.showItem}}">
-      <view wx:key="title" wx:for="{{power.item}}">
-        <view class="line"></view>
-        <view class="power_item" bindtap="jumpPage" data-type="{{ item.type }}" data-page="{{item.page}}">
-          <view class="power_item_title">{{item.title}}</view>
-          <image class="power_item_icon" src="../../images/arrow.svg"></image>
-        </view>
+  </view>
+
+  <!-- 学科切换 -->
+  <view class="subject-section">
+    <view class="subject-row">
+      <text class="arrow-btn" bindtap="prevSubject">◀</text>
+      <view class="subject-center">
+        <text class="subject-name">{{currentSubject}}</text>
+      </view>
+      <text class="arrow-btn" bindtap="nextSubject">▶</text>
+    </view>
+  </view>
+
+  <!-- 学习统计卡片 -->
+  <view class="stats-card">
+    <view class="stat-item">
+      <text class="stat-value">45</text>
+      <text class="stat-unit">分钟</text>
+      <text class="stat-label">今日学习</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-value">7</text>
+      <text class="stat-unit">天</text>
+      <text class="stat-label">连续学习</text>
+    </view>
+  </view>
+
+  <!-- 掌握度环形图 -->
+  <view class="mastery-section">
+    <view class="ring-container">
+      <canvas class="ring-canvas" canvas-id="masteryRing" type="2d"></canvas>
+      <view class="ring-center">
+        <text class="ring-pct">{{mastery}}%</text>
+        <text class="ring-label">{{currentSubject}}掌握度</text>
       </view>
     </view>
   </view>
-  <cloud-tip-modal showTipProps="{{showTip}}" title="{{title}}" content="{{content}}"></cloud-tip-modal>
+
+  <!-- 今日建议 -->
+  <view class="suggestion-section">
+    <text class="suggestion-title">📋 今日建议</text>
+    <view class="suggestion-card">
+      <text class="suggestion-text">{{suggestion}}</text>
+    </view>
+  </view>
+
+  <!-- 开始学习 -->
+  <view class="action-section">
+    <view class="start-btn" bindtap="goStudy">
+      <text class="start-text">开始学习</text>
+    </view>
+  </view>
 </view>

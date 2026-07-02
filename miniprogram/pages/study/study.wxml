@@ -1,0 +1,56 @@
+<view class="container">
+  <!-- 顶部导航 -->
+  <view class="header">
+    <picker bindchange="changeSubject" value="{{subjectIndex}}" range="{{subjects}}">
+      <view class="subject-picker">
+        <text class="subject-text">{{currentSubject}}</text>
+        <text class="arrow">▾</text>
+      </view>
+    </picker>
+    <view class="streak">
+      <text>🔥 {{streak}}天</text>
+    </view>
+  </view>
+
+  <!-- 聊天区域 -->
+  <scroll-view class="chat-area" scroll-y="true" scroll-into-view="{{scrollToId}}" scroll-with-animation="true">
+    <view class="messages">
+      <block wx:for="{{messages}}" wx:key="id">
+        <!-- AI 消息 -->
+        <view class="msg-row ai-msg" id="msg-{{item.id}}">
+          <view class="msg-content {{item.animation ? 'slide-up' : ''}}">
+            <text class="msg-text">{{item.content}}</text>
+          </view>
+        </view>
+        <!-- 用户消息 -->
+        <view class="msg-row user-msg" id="msg-{{item.id}}">
+          <view class="msg-content user-content {{item.animation ? 'slide-up' : ''}}">
+            <text class="msg-text">{{item.content}}</text>
+          </view>
+        </view>
+      </block>
+      <!-- 加载 -->
+      <view class="msg-row ai-msg" wx:if="{{isLoading}}">
+        <view class="msg-content">
+          <view class="typing">
+            <view class="dot"></view>
+            <view class="dot"></view>
+            <view class="dot"></view>
+          </view>
+        </view>
+      </view>
+      <view id="bottom"></view>
+    </view>
+  </scroll-view>
+
+  <!-- 输入区 -->
+  <view class="input-area {{isLoading ? 'disabled' : ''}}">
+    <view class="input-wrapper">
+      <input class="text-input" placeholder="输入你想学的问题..." bindinput="onInput" value="{{inputValue}}" 
+             bindconfirm="sendMessage" disabled="{{isLoading}}"/>
+      <view class="send-btn {{canSend ? 'active' : ''}}" bindtap="sendMessage">
+        <text>发送</text>
+      </view>
+    </view>
+  </view>
+</view>

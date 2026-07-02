@@ -1,185 +1,104 @@
-// index.js
+const app = getApp();
+
 Page({
   data: {
-    showTip: false,
-    powerList: [
-      {
-        title: "云托管",
-        tip: "不限语言的全托管容器服务",
-        showItem: false,
-        item: [
-          {
-            type: "cloudbaserun",
-            title: "云托管调用",
-          },
-        ],
-      },
-      {
-        title: "云函数",
-        tip: "安全、免鉴权运行业务代码",
-        showItem: false,
-        item: [
-          {
-            type: "getOpenId",
-            title: "获取OpenId",
-          },
-          {
-            type: "getMiniProgramCode",
-            title: "生成小程序码",
-          },
-        ],
-      },
-      {
-        title: "数据库",
-        tip: "安全稳定的文档型数据库",
-        showItem: false,
-        item: [
-          {
-            type: "createCollection",
-            title: "创建集合",
-          },
-          {
-            type: "selectRecord",
-            title: "增删改查记录",
-          },
-          // {
-          //   title: '聚合操作',
-          //   page: 'sumRecord',
-          // },
-        ],
-      },
-      {
-        title: "云存储",
-        tip: "自带CDN加速文件存储",
-        showItem: false,
-        item: [
-          {
-            type: "uploadFile",
-            title: "上传文件",
-          },
-        ],
-      },
-      {
-        title: "AI 接入能力",
-        tip: "云开发 AI 接入能力",
-        showItem: false,
-        item: [
-          {
-            type: "model-guide",
-            title: "大模型对话指引",
-          },
-        ],
-      },
-      {
-        title: "AI 智能开发小程序",
-        tip: "连接 AI 开发工具与 MCP 开发小程序",
-        type: "ai-assistant",
-        skipEnvCheck: true,
-        showItem: false,
-        item: [],
-      },
-    ],
-    haveCreateCollection: false,
-    title: "",
-    content: "",
+    subjects: ['数学', '英语', '物理', '语文', '化学'],
+    subjectIndex: 0,
+    currentSubject: '数学',
+    userName: '同学',
+    mastery: 78,
+    streak: 7,
+    suggestion: '今天建议先复习二次函数的顶点公式和判别式，这两个知识点目前的掌握度偏低，但它们是后续学习的基础。完成后可以尝试做3道练习题巩固。'
   },
-  onClickPowerInfo(e) {
-    const app = getApp();
-    const index = e.currentTarget.dataset.index;
-    const powerList = this.data.powerList;
-    const selectedItem = powerList[index];
-    
-    // 检查是否跳过环境配置检测
-    if (!selectedItem.skipEnvCheck && !app.globalData.env) {
-      wx.showModal({
-        title: "提示",
-        content: "请在 `miniprogram/app.js` 中正确配置 `env` 参数",
+
+  onLoad() {
+    const user = app.globalData.userInfo;
+    if (user) {
+      this.setData({ 
+        userName: user.nickName || '同学',
+        streak: user.streak || 1
       });
-      return;
     }
-    if (selectedItem.link) {
-      wx.navigateTo({
-        url: `../web/index?url=${selectedItem.link}&title=${selectedItem.title}`,
-      });
-    } else if (selectedItem.type) {
-      wx.navigateTo({
-        url: `/pages/example/index?envId=${this.data.selectedEnv?.envId}&type=${selectedItem.type}`,
-      });
-    } else if (selectedItem.page) {
-      wx.navigateTo({
-        url: `/pages/${selectedItem.page}/index`,
-      });
-    } else if (
-      selectedItem.title === "数据库" &&
-      !this.data.haveCreateCollection
-    ) {
-      this.onClickDatabase(powerList, selectedItem);
-    } else {
-      selectedItem.showItem = !selectedItem.showItem;
-      this.setData({
-        powerList,
-      });
+    this.drawRing(78);
+  },
+
+  onShow() {
+    const user = app.globalData.userInfo;
+    if (user && user.nickName) {
+      this.setData({ userName: user.nickName });
     }
   },
 
-  jumpPage(e) {
-    const { type, page } = e.currentTarget.dataset;
-    console.log("jump page", type, page);
-    if (type) {
-      wx.navigateTo({
-        url: `/pages/example/index?envId=${this.data.selectedEnv?.envId}&type=${type}`,
-      });
-    } else {
-      wx.navigateTo({
-        url: `/pages/${page}/index?envId=${this.data.selectedEnv?.envId}`,
-      });
-    }
+  drawRing(pct) {
+    const query = wx.createSelectorQuery();
+    query.select('.ring-canvas').node((res) => {
+      const canvas = res.node;
+      const ctx = canvas.getContext('2d');
+      const dpr = wx.getSystemInfoSync().pixelRatio;
+      canvas.width = 320 * dpr;
+      canvas.height = 320 * dpr;
+      ctx.scale(dpr, dpr);
+
+      const cx = 160, cy = 160, r = 120, lineW = 24;
+
+      // 背景圆
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.strokeStyle = '#f0f0f5';
+      ctx.lineWidth = lineW;
+      ctx.stroke();
+
+      // 进度圆
+      const endAngle = (pct / 100) * Math.PI * 2 - Math.PI / 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, -Math.PI / 2, endAngle);
+      ctx.strokeStyle = '#007aff';
+      ctx.lineWidth = lineW;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }).exec();
   },
 
-  onClickDatabase(powerList, selectedItem) {
-    wx.showLoading({
-      title: "",
+  onSubjectChange() {
+    // 切换学科时更新数据和环形图
+    const subject = this.data.subjects[this.data.subjectIndex];
+    const mockMastery = {
+      '数学': 78,
+      '英语': 65,
+      '物理': 45,
+      '语文': 82,
+      '化学': 33
+    };
+    const mockSuggest = {
+      '数学': '今天建议先复习二次函数的顶点公式和判别式，这两个知识点目前的掌握度偏低。',
+      '英语': '建议重点复习现在完成时和过去完成时的区别，这是你最近练习中容易混淆的。',
+      '物理': '牛顿第二定律的应用题错误率较高，建议先回顾 F=ma 的基本概念再做题。',
+      '语文': '文言文实词掌握度不错，今天可以开始练习句子翻译，建议从《论语》选段开始。',
+      '化学': '化学方程式配平是目前的薄弱环节，建议先掌握最小公倍数法再练习。'
+    };
+    this.setData({
+      currentSubject: subject,
+      mastery: mockMastery[subject],
+      suggestion: mockSuggest[subject]
     });
-    wx.cloud
-      .callFunction({
-        name: "quickstartFunctions",
-        data: {
-          type: "createCollection",
-        },
-      })
-      .then((resp) => {
-        if (resp.result.success) {
-          this.setData({
-            haveCreateCollection: true,
-          });
-        }
-        selectedItem.showItem = !selectedItem.showItem;
-        this.setData({
-          powerList,
-        });
-        wx.hideLoading();
-      })
-      .catch((e) => {
-        wx.hideLoading();
-        const { errCode, errMsg } = e;
-        if (errMsg.includes("Environment not found")) {
-          this.setData({
-            showTip: true,
-            title: "云开发环境未找到",
-            content:
-              "如果已经开通云开发，请检查环境ID与 `miniprogram/app.js` 中的 `env` 参数是否一致。",
-          });
-          return;
-        }
-        if (errMsg.includes("FunctionName parameter could not be found")) {
-          this.setData({
-            showTip: true,
-            title: "请上传云函数",
-            content:
-              "在'cloudfunctions/quickstartFunctions'目录右键，选择【上传并部署-云端安装依赖】，等待云函数上传完成后重试。",
-          });
-          return;
-        }
-      });
+    this.drawRing(mockMastery[subject]);
   },
+
+  prevSubject() {
+    let idx = this.data.subjectIndex;
+    idx = (idx - 1 + this.data.subjects.length) % this.data.subjects.length;
+    this.setData({ subjectIndex: idx });
+    this.onSubjectChange();
+  },
+
+  nextSubject() {
+    let idx = this.data.subjectIndex;
+    idx = (idx + 1) % this.data.subjects.length;
+    this.setData({ subjectIndex: idx });
+    this.onSubjectChange();
+  },
+
+  goStudy() {
+    wx.switchTab({ url: '/pages/study/study' });
+  }
 });

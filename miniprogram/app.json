@@ -1,14 +1,47 @@
 {
   "pages": [
+    "pages/login/login",
     "pages/index/index",
-    "pages/example/index"
+    "pages/study/study",
+    "pages/graph/graph",
+    "pages/mine/mine"
   ],
   "window": {
-    "backgroundColor": "#F6F6F6",
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#F6F6F6",
-    "navigationBarTitleText": "云开发 QuickStart",
-    "navigationBarTextStyle": "black"
+    "navigationStyle": "custom",
+    "backgroundColor": "#f5f5f7",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#8e8e93",
+    "selectedColor": "#007aff",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "images/home_icon.png",
+        "selectedIconPath": "images/home_icon_a.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/study/study",
+        "iconPath": "images/study_icon.png",
+        "selectedIconPath": "images/study_icon_a.png",
+        "text": "学习"
+      },
+      {
+        "pagePath": "pages/graph/graph",
+        "iconPath": "images/graph_icon.png",
+        "selectedIconPath": "images/graph_icon_a.png",
+        "text": "图谱"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "iconPath": "images/mine_icon.png",
+        "selectedIconPath": "images/mine_icon_a.png",
+        "text": "我的"
+      }
+    ]
   },
   "sitemapLocation": "sitemap.json",
   "style": "v2",
