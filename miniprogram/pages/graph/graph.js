@@ -81,8 +81,11 @@ Page({
   },
 
   cancelAnim() {
-    if (this._animTimer && this._canvas) {
-      try { this._canvas.cancelAnimationFrame(this._animTimer); } catch (e) {}
+    if (this._animTimer) {
+      if (this._canvas && this._canvas.cancelAnimationFrame) {
+        try { this._canvas.cancelAnimationFrame(this._animTimer); } catch (e) {}
+      }
+      clearTimeout(this._animTimer);
       this._animTimer = null;
     }
   },
@@ -196,10 +199,19 @@ Page({
 
     const dimAlpha = (idx) => {
       if (!isZoomed) return 1;
+      // 退出过程中：其他节点 alpha 随 exitProgress 恢复
+      if (this._exitProgress >= 0) {
+        const t = this._exitProgress;
+        if (zoomedTarget === 'center') return idx === -1 ? 1 : 0.15 + 0.85 * t;
+        if (zoomedTarget === idx) return 1;
+        return 0.15 + 0.85 * t;
+      }
       if (zoomedTarget === 'center') return idx === -1 ? 1 : 0.15;
       if (zoomedTarget === idx) return 1;
       return 0.15;
     };
+    // 初始化 _exitProgress（-1 表示非退出状态）
+    if (this._exitProgress === undefined) this._exitProgress = -1;
 
     // 1. 连线
     for (let i = 0; i < n; i++) {
@@ -405,7 +417,7 @@ Page({
     const target = this._cachedLayout.positions[dimIdx];
     const dim = this.data.dimensions[dimIdx];
 
-    const targetScale = 2.0;
+    const targetScale = 1.5;
     const targetOffX = (cx - target.x) * targetScale;
     const targetOffY = (cy - target.y) * targetScale - size * 0.12;
 
@@ -448,17 +460,42 @@ Page({
   },
 
   zoomOut() {
-    // 立即重置 zoomedTarget，让所有节点 alpha 同步恢复（避免退出时其他节点突变出现）
-    this.setData({
-      showInfo: false,
-      showDetailBtn: false,
-      isZoomed: false,
-      zoomedTarget: null,
-      zoomedData: null
-    });
-    // 节点逐渐缩小回默认状态（此时所有节点 alpha=1，过渡连贯）
-    const cs = this._scale, cox = this._offX, coy = this._offY;
-    this.animateZoom(cs, cox, coy, 1, 0, 0, null, 400);
+    this.cancelAnim();
+    // 立即隐藏信息卡和按钮（CSS 过渡渐出）
+    this.setData({ showInfo: false, showDetailBtn: false });
+
+    // 用 setTimeout 驱动退出动画（不依赖 canvas RAF，实机更可靠）
+    const fromS = this._scale, fromX = this._offX, fromY = this._offY;
+    const start = Date.now();
+    const duration = 350;
+
+    const step = () => {
+      const elapsed = Date.now() - start;
+      const p = Math.min(elapsed / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+
+      this._scale = fromS + (1 - fromS) * ease;
+      this._offX = fromX + (0 - fromX) * ease;
+      this._offY = fromY + (0 - fromY) * ease;
+
+      // 退出过程中所有节点 alpha 随 p 恢复
+      this._exitProgress = p;
+      this.drawGraph();
+
+      if (p < 1) {
+        this._animTimer = setTimeout(step, 16);
+      } else {
+        this._animTimer = null;
+        this._exitProgress = -1;
+        this.setData({
+          isZoomed: false,
+          zoomedTarget: null,
+          zoomedData: null
+        });
+        this.drawGraph();
+      }
+    };
+    step();
   },
 
   animateZoom(fromS, fromX, fromY, toS, toX, toY, callback, duration) {
