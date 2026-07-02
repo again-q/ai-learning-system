@@ -41,9 +41,9 @@
 /* 查看详情按钮 */
 .detail-btn {
   position: absolute;
-  bottom: 100rpx;
-  left: 60rpx;
-  right: 60rpx;
+  bottom: 120rpx;
+  left: 80rpx;
+  right: 80rpx;
   height: 88rpx;
   background: #007aff;
   border-radius: 44rpx;
@@ -51,11 +51,12 @@
   align-items: center;
   justify-content: center;
   gap: 8rpx;
-  box-shadow: 0 8rpx 24rpx rgba(0, 122, 255, 0.3);
+  box-shadow: 0 8rpx 24rpx rgba(0, 122, 255, 0.35);
   transform: translateY(120rpx);
   opacity: 0;
   transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
+  z-index: 20;
 }
 .detail-btn.show {
   transform: translateY(0);
@@ -73,24 +74,18 @@
   opacity: 0.7;
 }
 
-/* 返回提示 */
-.zoom-hint {
+/* 聚焦模式遮罩 */
+.zoom-overlay {
   position: absolute;
-  top: 20rpx;
+  top: 0;
   left: 0;
   right: 0;
-  text-align: center;
+  bottom: 0;
   opacity: 0;
-  transition: opacity 0.3s;
   pointer-events: none;
+  z-index: 10;
 }
-.zoom-hint.show {
+.zoom-overlay.show {
   opacity: 1;
-}
-.hint-text {
-  font-size: 22rpx;
-  color: #8e8e93;
-  background: rgba(0,0,0,0.04);
-  padding: 8rpx 20rpx;
-  border-radius: 20rpx;
+  pointer-events: auto;
 }

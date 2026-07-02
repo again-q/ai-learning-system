@@ -20,9 +20,7 @@
       <text class="btn-arrow">▸</text>
     </view>
 
-    <!-- 聚焦模式指示 -->
-    <view class="zoom-hint {{isZoomed ? 'show' : ''}}">
-      <text class="hint-text">点击空白处返回</text>
-    </view>
+    <!-- 聚焦模式下半透明遮罩（缩放后点击退出） -->
+    <view class="zoom-overlay {{isZoomed ? 'show' : ''}}" bindtap="zoomOut"></view>
   </view>
 </view>

@@ -1,4 +1,6 @@
 const app = getApp();
+const systemInfo = wx.getSystemInfoSync();
+const pxRatio = systemInfo.windowWidth / 750; // rpx 转 px
 
 Page({
   data: {
@@ -14,24 +16,45 @@ Page({
       { id: 'T', name: '迁移能力', icon: '🔄', color: '#ff9500', value: 45, desc: '陌生场景调用知识的能力' },
       { id: 'S', name: '执行稳定', icon: '🎯', color: '#ff3b30', value: 68, desc: '发挥一致性与计算准确率' },
       { id: 'Q', name: '思维品质', icon: '🧠', color: '#af52de', value: 55, desc: '反思习惯与策略意识' }
-    ],
-    // 动画状态
-    animationScale: 1,
-    animationOffsetX: 0,
-    animationOffsetY: 0,
-    canvasSize: 0,
-    // 节点位置（在全景模式下计算）
-    nodesPos: [],
-    centerPos: {}
+    ]
   },
 
+  // 内部状态（不用 setData，避免性能浪费）
+  _canvas: null,
+  _ctx: null,
+  _dpr: 1,
+  _size: 0,
+  _scale: 1,
+  _offX: 0,
+  _offY: 0,
+  _animTimer: null,
+  _nodePositions: [],
+  _centerPos: null,
+
   onLoad() {
-    const size = Math.min(600, wx.getSystemInfoSync().windowWidth);
-    this.setData({ canvasSize: size });
+    this._size = Math.min(600, systemInfo.windowWidth);
+    this._dpr = systemInfo.pixelRatio;
   },
 
   onShow() {
-    this.drawGraph();
+    this.initCanvas();
+  },
+
+  onUnload() {
+    if (this._animTimer) {
+      clearTimeout(this._animTimer);
+      this._animTimer = null;
+    }
+  },
+
+  initCanvas() {
+    const query = wx.createSelectorQuery();
+    query.select('#graphCanvas').node((res) => {
+      if (!res || !res.node) return;
+      this._canvas = res.node;
+      this._ctx = this._canvas.getContext('2d');
+      this.drawGraph();
+    }).exec();
   },
 
   changeSubject(e) {
@@ -41,19 +64,20 @@ Page({
       currentSubject: this.data.subjects[idx],
       isZoomed: false,
       zoomedDim: null,
-      showDetailBtn: false,
-      animationScale: 1,
-      animationOffsetX: 0,
-      animationOffsetY: 0
+      showDetailBtn: false
     });
+    this._scale = 1;
+    this._offX = 0;
+    this._offY = 0;
     this.drawGraph();
   },
 
-  getNodePositions(size) {
-    const cx = size / 2, cy = size / 2;
-    const orbitR = Math.min(size * 0.3, 140);
-    const dims = this.data.dimensions;
-    const n = dims.length;
+  // 计算五个维度的位置（相对于canvas逻辑坐标系）
+  getNodePositions() {
+    const s = this._size;
+    const cx = s / 2, cy = s / 2;
+    const orbitR = Math.min(s * 0.3, 140);
+    const n = this.data.dimensions.length;
     const positions = [];
     for (let i = 0; i < n; i++) {
       const angle = (i * 2 * Math.PI / n) - Math.PI / 2;
@@ -65,263 +89,211 @@ Page({
     return { cx, cy, positions, orbitR };
   },
 
-  drawGraph(scale = 1, offsetX = 0, offsetY = 0) {
-    const query = wx.createSelectorQuery();
-    query.select('#graphCanvas').node((res) => {
-      if (!res || !res.node) return;
-      const canvas = res.node;
-      const ctx = canvas.getContext('2d');
-      const dpr = wx.getSystemInfoSync().pixelRatio;
-      const size = this.data.canvasSize || Math.min(600, wx.getSystemInfoSync().windowWidth);
-      canvas.width = size * dpr;
-      canvas.height = size * dpr;
-      ctx.scale(dpr, dpr);
+  drawGraph() {
+    const canvas = this._canvas;
+    const ctx = this._ctx;
+    if (!canvas || !ctx) return;
 
-      // 清空
-      ctx.clearRect(0, 0, size, size);
+    const dpr = this._dpr;
+    const size = this._size;
+    const scale = this._scale;
+    const offX = this._offX;
+    const offY = this._offY;
 
-      // 应用变换
-      ctx.save();
-      const cx = size / 2, cy = size / 2;
-      ctx.translate(cx + offsetX, cy + offsetY);
-      ctx.scale(scale, scale);
-      ctx.translate(-cx, -cy);
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, size, size);
 
-      const { positions, orbitR } = this.getNodePositions(size);
-      const dims = this.data.dimensions;
-      const n = dims.length;
+    // 应用镜头变换
+    ctx.save();
+    const cx = size / 2, cy = size / 2;
+    ctx.translate(cx + offX, cy + offY);
+    ctx.scale(scale, scale);
+    ctx.translate(-cx, -cy);
 
-      // 画连接线（节点之间互相连接）
-      ctx.lineWidth = 2 / scale;
-      for (let i = 0; i < n; i++) {
-        for (let j = i + 1; j < n; j++) {
-          ctx.beginPath();
-          ctx.moveTo(positions[i].x, positions[i].y);
-          ctx.lineTo(positions[j].x, positions[j].y);
-          ctx.strokeStyle = dims[i].color + '30';
-          ctx.lineWidth = 1.5 / scale;
-          ctx.stroke();
-        }
-      }
+    const { positions, orbitR } = this.getNodePositions();
+    const dims = this.data.dimensions;
+    const n = dims.length;
 
-      // 画中心到各节点的线
-      for (let i = 0; i < n; i++) {
+    // 画节点间连接线（五边形）
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
         ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(positions[i].x, positions[i].y);
-        ctx.strokeStyle = dims[i].color + '50';
-        ctx.lineWidth = 2 / scale;
-        ctx.setLineDash([6 / scale, 4 / scale]);
+        ctx.moveTo(positions[i].x, positions[i].y);
+        ctx.lineTo(positions[j].x, positions[j].y);
+        ctx.strokeStyle = '#e8e8ed';
+        ctx.lineWidth = 1.5 / scale;
         ctx.stroke();
-        ctx.setLineDash([]);
       }
+    }
 
-      // 画中心节点（学科）
-      const centerR = 56 / scale;
-      const grad = ctx.createRadialGradient(cx - 8 / scale, cy - 8 / scale, 0, cx, cy, centerR);
-      grad.addColorStop(0, '#4d9fff');
-      grad.addColorStop(1, '#007aff');
+    // 画中心到各节点的虚线
+    for (let i = 0; i < n; i++) {
       ctx.beginPath();
-      ctx.arc(cx, cy, centerR, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-      ctx.shadowColor = 'rgba(0, 122, 255, 0.25)';
-      ctx.shadowBlur = 16 / scale;
-      ctx.fill();
-      ctx.shadowBlur = 0;
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(positions[i].x, positions[i].y);
+      ctx.strokeStyle = dims[i].color + '40';
+      ctx.lineWidth = 2 / scale;
+      ctx.setLineDash([4 / scale, 3 / scale]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
 
-      ctx.fillStyle = '#fff';
-      const subjFontSize = Math.max(24, 28 / scale);
-      ctx.font = `bold ${subjFontSize}rpx sans-serif`;
+    // 画中心节点（学科）
+    const centerR = 56 / scale;
+    ctx.shadowColor = 'rgba(0, 122, 255, 0.2)';
+    ctx.shadowBlur = 20 / scale;
+    ctx.beginPath();
+    ctx.arc(cx, cy, centerR, 0, Math.PI * 2);
+    const grad = ctx.createRadialGradient(cx - 10 / scale, cy - 10 / scale, 0, cx, cy, centerR);
+    grad.addColorStop(0, '#4d9fff');
+    grad.addColorStop(1, '#007aff');
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const subjSize = Math.max(12, Math.round(28 / scale));
+    ctx.font = `bold ${subjSize}px -apple-system, sans-serif`;
+    ctx.fillText(this.data.currentSubject, cx, cy);
+
+    this._centerPos = { x: cx, y: cy, r: centerR };
+
+    // 画五个维度节点
+    const nodeR = 46 / scale;
+    const nodePositions = [];
+    for (let i = 0; i < n; i++) {
+      const dim = dims[i];
+      const pos = positions[i];
+
+      ctx.shadowColor = 'rgba(0,0,0,0.05)';
+      ctx.shadowBlur = 8 / scale;
+
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, nodeR, 0, Math.PI * 2);
+      ctx.fillStyle = dim.color + '15';
+      ctx.fill();
+
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = dim.color;
+      ctx.lineWidth = 2.5 / scale;
+      ctx.stroke();
+
+      // 图标
+      const iconSize = Math.max(14, Math.round(32 / scale));
+      ctx.font = `${iconSize}px -apple-system, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(this.data.currentSubject, cx, cy);
+      ctx.fillText(dim.icon, pos.x, pos.y - 12 / scale);
 
-      // 保存中心节点位置
-      this.data.centerPos = { x: cx, y: cy, r: centerR };
+      // 数值
+      const valSize = Math.max(10, Math.round(20 / scale));
+      ctx.font = `bold ${valSize}px -apple-system, sans-serif`;
+      ctx.fillStyle = dim.color;
+      ctx.fillText(dim.value + '%', pos.x, pos.y + 14 / scale);
 
-      // 画五个维度节点
-      const nodeR = 46 / scale;
-      const positions2 = [];
-      for (let i = 0; i < n; i++) {
-        const dim = dims[i];
-        const pos = positions[i];
+      // 标签
+      const labelSize = Math.max(8, Math.round(16 / scale));
+      ctx.font = `${labelSize}px -apple-system, sans-serif`;
+      ctx.fillStyle = '#8e8e93';
+      ctx.fillText(dim.id, pos.x, pos.y + nodeR + 14 / scale);
 
-        // 节点阴影
-        ctx.shadowColor = 'rgba(0,0,0,0.06)';
-        ctx.shadowBlur = 10 / scale;
+      nodePositions.push({ x: pos.x, y: pos.y, r: nodeR, dimIdx: i });
+    }
 
-        // 节点背景
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, nodeR, 0, Math.PI * 2);
-        ctx.fillStyle = dim.color + '18';
-        ctx.fill();
-
-        // 节点描边
-        ctx.shadowBlur = 0;
-        ctx.strokeStyle = dim.color;
-        ctx.lineWidth = 2.5 / scale;
-        ctx.stroke();
-
-        // 节点内信息
-        const iconSize = Math.max(28, 36 / scale);
-        ctx.font = `${iconSize}rpx sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(dim.icon, pos.x, pos.y - 18 / scale);
-
-        const valSize = Math.max(18, 22 / scale);
-        ctx.font = `bold ${valSize}rpx sans-serif`;
-        ctx.fillStyle = dim.color;
-        ctx.fillText(dim.value + '%', pos.x, pos.y + 14 / scale);
-
-        const nameSize = Math.max(16, 18 / scale);
-        ctx.font = `${nameSize}rpx sans-serif`;
-        ctx.fillStyle = '#666';
-        ctx.fillText(dim.id, pos.x, pos.y + nodeR + 16 / scale);
-
-        positions2.push({ x: pos.x, y: pos.y, r: nodeR, dim: dim });
-      }
-
-      this.data.nodesPos = positions2;
-
-      ctx.restore();
-    }).exec();
+    this._nodePositions = nodePositions;
+    ctx.restore();
   },
 
   onCanvasTap(e) {
-    const touch = e.detail;
-    if (!touch || !touch.x) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+    // 放大状态下，遮罩层会截获点击，不会走到这里
+    if (this.data.isZoomed) return;
 
     const query = wx.createSelectorQuery();
     query.select('#graphCanvas').boundingClientRect((rect) => {
       if (!rect) return;
-      const dpr = wx.getSystemInfoSync().pixelRatio;
-      const size = this.data.canvasSize;
-      const cx = size / 2, cy = size / 2;
-
-      // 转换触点到canvas坐标系
       const tx = touch.x - rect.left;
       const ty = touch.y - rect.top;
+      const size = this._size;
 
-      const scale = this.data.animationScale;
-      const offX = this.data.animationOffsetX;
-      const offY = this.data.animationOffsetY;
-
-      // 如果已缩放，检查是否点击了空白区域来退出
-      if (this.data.isZoomed) {
-        // 检查是否点击了"查看详情"按钮区域（在画布底部）
-        const btnY = size - 120;
-        if (ty > btnY && ty < btnY + 80 && tx > size * 0.2 && tx < size * 0.8) {
-          // 点击了查看详情按钮
-          this.goDetail();
-          return;
-        }
-        // 检查是否点击到被聚焦的节点
-        const zDim = this.data.zoomedDim;
-        const idx = this.data.dimensions.findIndex(d => d.id === zDim.id);
-        const { positions } = this.getNodePositions(size);
-        // 在缩放状态下，节点的实际位置
-        // 需要逆转换
-        const canvasX = (tx - cx - offX) / scale + cx;
-        const canvasY = (ty - cy - offY) / scale + cy;
-        const nodeR = 46 / scale;
-        const dist = Math.sqrt((canvasX - positions[idx].x) ** 2 + (canvasY - positions[idx].y) ** 2);
-        if (dist <= nodeR + 10 / scale) {
-          // 点击了已放大的节点，不做操作
-          return;
-        }
-        // 点击其他区域 → 退出缩放
-        this.zoomOut();
-        return;
-      }
-
-      // 全景模式下，检查是否点击了某个节点
-      const nodes = this.data.nodesPos;
+      // 检查节点点击
+      const nodes = this._nodePositions;
       for (let i = 0; i < nodes.length; i++) {
         const dist = Math.sqrt((tx - nodes[i].x) ** 2 + (ty - nodes[i].y) ** 2);
-        if (dist <= nodes[i].r + 5) {
-          this.zoomToNode(nodes[i].dim, i);
+        if (dist <= nodes[i].r + 8) {
+          this.zoomToNode(nodes[i].dimIdx);
           return;
         }
       }
 
-      // 检查是否点击了中心节点
-      const center = this.data.centerPos;
-      if (center) {
-        const dist = Math.sqrt((tx - center.x) ** 2 + (ty - center.y) ** 2);
-        if (dist <= center.r) {
+      // 中心节点
+      if (this._centerPos) {
+        const dist = Math.sqrt((tx - this._centerPos.x) ** 2 + (ty - this._centerPos.y) ** 2);
+        if (dist <= this._centerPos.r) {
           wx.showToast({ title: this.data.currentSubject, icon: 'none' });
         }
       }
     }).exec();
   },
 
-  zoomToNode(dim, index) {
-    const size = this.data.canvasSize;
+  zoomToNode(dimIdx) {
+    const size = this._size;
     const cx = size / 2, cy = size / 2;
-    const { positions } = this.getNodePositions(size);
-    const targetX = positions[index].x;
-    const targetY = positions[index].y;
+    const { positions } = this.getNodePositions();
+    const target = positions[dimIdx];
+    const dim = this.data.dimensions[dimIdx];
 
-    // 计算偏移量：让目标节点移到屏幕中心
     const targetScale = 2.5;
-    const targetOffX = (cx - targetX) * targetScale;
-    const targetOffY = (cy - targetY) * targetScale;
-    // 加上中心偏移修正
-    const finalOffX = targetOffX;
-    const finalOffY = targetOffY;
+    const targetOffX = (cx - target.x) * targetScale;
+    const targetOffY = (cy - target.y) * targetScale;
 
     this.setData({
       isZoomed: true,
-      zoomedDim: dim
+      zoomedDim: dim,
+      showDetailBtn: false
     });
 
-    // 动画插值
-    this.animateZoom(1, 0, 0, targetScale, finalOffX, finalOffY, () => {
+    this.animateZoom(1, 0, 0, targetScale, targetOffX, targetOffY, () => {
       this.setData({ showDetailBtn: true });
     });
   },
 
   zoomOut() {
     this.setData({ showDetailBtn: false });
-    const currentScale = this.data.animationScale;
-    const currentOffX = this.data.animationOffsetX;
-    const currentOffY = this.data.animationOffsetY;
-
-    this.animateZoom(currentScale, currentOffX, currentOffY, 1, 0, 0, () => {
-      this.setData({
-        isZoomed: false,
-        zoomedDim: null
-      });
+    const cs = this._scale, cox = this._offX, coy = this._offY;
+    this.animateZoom(cs, cox, coy, 1, 0, 0, () => {
+      this.setData({ isZoomed: false, zoomedDim: null });
     });
   },
 
-  animateZoom(fromScale, fromOffX, fromOffY, toScale, toOffX, toOffY, callback) {
+  animateZoom(fromS, fromX, fromY, toS, toX, toY, callback) {
     const duration = 300;
-    const startTime = Date.now();
+    const start = Date.now();
 
     const step = () => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      // ease-out 缓动
-      const ease = 1 - Math.pow(1 - progress, 3);
+      const elapsed = Date.now() - start;
+      const p = Math.min(elapsed / duration, 1);
+      // ease-out cubic
+      const ease = 1 - Math.pow(1 - p, 3);
 
-      const s = fromScale + (toScale - fromScale) * ease;
-      const ox = fromOffX + (toOffX - fromOffX) * ease;
-      const oy = fromOffY + (toOffY - fromOffY) * ease;
+      this._scale = fromS + (toS - fromS) * ease;
+      this._offX = fromX + (toX - fromX) * ease;
+      this._offY = fromY + (toY - fromY) * ease;
 
-      this.setData({
-        animationScale: s,
-        animationOffsetX: ox,
-        animationOffsetY: oy
-      });
+      this.drawGraph();
 
-      this.drawGraph(s, ox, oy);
-
-      if (progress < 1) {
-        requestAnimationFrame(step);
+      if (p < 1) {
+        this._animTimer = setTimeout(step, 16);
       } else {
+        this._scale = toS;
+        this._offX = toX;
+        this._offY = toY;
+        this.drawGraph();
         if (callback) callback();
       }
     };
@@ -332,7 +304,7 @@ Page({
     const dim = this.data.zoomedDim;
     if (!dim) return;
     wx.navigateTo({
-      url: `/pages/dimension-detail/dimension-detail?dim=${dim.id}&name=${dim.name}&icon=${dim.icon}&value=${dim.value}&color=${encodeURIComponent(dim.color)}&subject=${this.data.currentSubject}`
+      url: `/pages/dimension-detail/dimension-detail?dim=${dim.id}&name=${encodeURIComponent(dim.name)}&icon=${dim.icon}&value=${dim.value}&color=${encodeURIComponent(dim.color)}&subject=${encodeURIComponent(this.data.currentSubject)}`
     });
   }
 });
