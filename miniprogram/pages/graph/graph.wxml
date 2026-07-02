@@ -1,26 +1,38 @@
-<view class="page">
-  <!-- 顶部学科选择 -->
-  <view class="header">
+<view class="container {{pageReady ? 'page-enter' : 'page-leaving'}}">
+  <!-- 顶部学科选择（极简文字式，非胶囊） -->
+  <view class="header reveal reveal-1">
     <picker bindchange="changeSubject" value="{{subjectIndex}}" range="{{subjects}}">
       <view class="subject-picker">
-        <text class="subject-text">{{currentSubject}}</text>
+        <text class="subject-name">{{currentSubject}}</text>
         <text class="arrow">▾</text>
       </view>
     </picker>
   </view>
 
-  <!-- 画布区域 -->
-  <view class="canvas-wrapper">
-    <canvas class="graph-canvas" type="2d" id="graphCanvas" 
+  <!-- 节点图主区（无包裹卡片，Canvas 直接在白底） -->
+  <view class="canvas-stage reveal reveal-2">
+    <canvas class="graph-canvas" style="{{canvasStyle}}" type="2d" id="graphCanvas"
             bindtouchstart="onCanvasTap"></canvas>
-    
-    <!-- 查看详情按钮（缩放后出现） -->
-    <view class="detail-btn {{showDetailBtn ? 'show' : ''}}" bindtap="goDetail">
-      <text class="btn-text">查看详情</text>
-      <text class="btn-arrow">▸</text>
+
+    <!-- 聚焦遮罩 -->
+    <view class="zoom-overlay {{isZoomed ? 'show' : ''}}" bindtap="zoomOut"></view>
+
+    <!-- 聚焦后信息（纯排版浮现，无卡片背景） -->
+    <view class="info-floating {{showInfo ? 'show' : ''}}">
+      <view class="info-line">
+        <text class="info-label" wx:if="{{zoomedData.type === 'dim'}}">{{zoomedData.id}}</text>
+        <text class="info-name">{{zoomedData.name}}</text>
+      </view>
+      <text class="info-desc">{{zoomedData.desc}}</text>
     </view>
 
-    <!-- 聚焦模式下半透明遮罩（缩放后点击退出） -->
-    <view class="zoom-overlay {{isZoomed ? 'show' : ''}}" bindtap="zoomOut"></view>
+    <!-- 查看详情按钮 -->
+    <view class="detail-btn {{showDetailBtn ? 'show' : ''}}" bindtap="goDetail">
+      <text class="btn-text">查看详情</text>
+      <text class="btn-arrow">→</text>
+    </view>
   </view>
+
+  <!-- 底部提示 -->
+  <view class="hint reveal reveal-3 {{isZoomed ? 'hint-hidden' : ''}}">轻触节点查看维度详情</view>
 </view>

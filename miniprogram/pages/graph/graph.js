@@ -1,6 +1,29 @@
 const app = getApp();
-const systemInfo = wx.getSystemInfoSync();
-const pxRatio = systemInfo.windowWidth / 750; // rpx 转 px
+const sys = wx.getSystemInfoSync();
+
+// rpx → px 统一转换
+const rpx = (v) => sys.windowWidth / 750 * v;
+
+// 单一主色体系：iOS 蓝
+const INK = {
+  primary:    '#1d1d1f',
+  secondary:  '#6e6e73',
+  tertiary:   '#a1a1a6',
+  accent:     '#007aff',
+  accentDeep: '#004ecb',
+  accentMid:  '#4a9eff',
+  accentSoft: '#aad4ff',
+  accentBg:   'rgba(0,122,255,0.06)',
+  track:      '#e5e5ea',
+  white:      '#ffffff'
+};
+
+const valueToColor = (v) => {
+  if (v >= 75) return INK.accentDeep;
+  if (v >= 50) return INK.accent;
+  if (v >= 25) return INK.accentMid;
+  return INK.accentSoft;
+};
 
 Page({
   data: {
@@ -8,18 +31,22 @@ Page({
     subjectIndex: 0,
     currentSubject: '数学',
     isZoomed: false,
-    zoomedDim: null,
+    zoomedTarget: null,
+    showInfo: false,
     showDetailBtn: false,
+    zoomedData: null,
+    pageReady: false,
+    canvasStyle: '',
     dimensions: [
-      { id: 'K', name: '知识掌握', icon: '📖', color: '#007aff', value: 57, desc: '概念·模型·技能的掌握程度' },
-      { id: 'A', name: '能力水平', icon: '📊', color: '#34c759', value: 72, desc: '学科综合能力指数' },
-      { id: 'T', name: '迁移能力', icon: '🔄', color: '#ff9500', value: 45, desc: '陌生场景调用知识的能力' },
-      { id: 'S', name: '执行稳定', icon: '🎯', color: '#ff3b30', value: 68, desc: '发挥一致性与计算准确率' },
-      { id: 'Q', name: '思维品质', icon: '🧠', color: '#af52de', value: 55, desc: '反思习惯与策略意识' }
-    ]
+      { id: 'K', name: '知识掌握', value: 57, desc: '概念·模型·技能的掌握程度' },
+      { id: 'A', name: '能力水平', value: 72, desc: '学科综合能力指数' },
+      { id: 'T', name: '迁移能力', value: 45, desc: '陌生场景调用知识的能力' },
+      { id: 'Q', name: '思维品质', value: 55, desc: '反思习惯与策略意识' },
+      { id: 'S', name: '执行稳定', value: 68, desc: '发挥一致性与计算准确率' }
+    ],
+    centerDesc: '五维能力综合评估'
   },
 
-  // 内部状态（不用 setData，避免性能浪费）
   _canvas: null,
   _ctx: null,
   _dpr: 1,
@@ -28,33 +55,86 @@ Page({
   _offX: 0,
   _offY: 0,
   _animTimer: null,
+  _revealProgress: 0,
   _nodePositions: [],
   _centerPos: null,
+  _cachedLayout: null,
+  _inited: false,
 
   onLoad() {
-    this._size = Math.min(600, systemInfo.windowWidth);
-    this._dpr = systemInfo.pixelRatio;
+    this._dpr = sys.pixelRatio;
   },
 
   onShow() {
-    this.initCanvas();
+    this.setData({ pageReady: false });
+    setTimeout(() => this.setData({ pageReady: true }), 16);
+    // Canvas 在页面淡入完成后初始化，避免原生组件残留
+    setTimeout(() => this.initCanvas(), 320);
   },
 
   onUnload() {
-    if (this._animTimer) {
-      clearTimeout(this._animTimer);
+    this.cancelAnim();
+  },
+
+  onHide() {
+    this.cancelAnim();
+  },
+
+  cancelAnim() {
+    if (this._animTimer && this._canvas) {
+      try { this._canvas.cancelAnimationFrame(this._animTimer); } catch (e) {}
       this._animTimer = null;
     }
   },
 
   initCanvas() {
+    if (this._inited && this._canvas) {
+      // 已初始化，只重绘
+      this.playReveal();
+      return;
+    }
     const query = wx.createSelectorQuery();
-    query.select('#graphCanvas').node((res) => {
-      if (!res || !res.node) return;
-      this._canvas = res.node;
+    query.select('.canvas-stage').boundingClientRect();
+    query.select('#graphCanvas').node();
+    query.exec((res) => {
+      if (!res || !res[0] || !res[1] || !res[1].node) return;
+      const rect = res[0];
+      const size = Math.min(rect.width, rect.height);
+      if (size <= 0) return;
+      this._size = size;
+      this.setData({ canvasStyle: `width:${size}px;height:${size}px;` });
+      this._canvas = res[1].node;
       this._ctx = this._canvas.getContext('2d');
+      this._canvas.width = size * this._dpr;
+      this._canvas.height = size * this._dpr;
+      this._ctx.scale(this._dpr, this._dpr);
+      this._cachedLayout = this.getNodePositions();
+      this.updateHitTargets();
+      this._inited = true;
+      this.playReveal();
+    });
+  },
+
+  playReveal() {
+    this.cancelAnim();
+    this._revealProgress = 0;
+    this._scale = 1;
+    this._offX = 0;
+    this._offY = 0;
+    const start = Date.now();
+    const duration = 800;
+    const step = () => {
+      const elapsed = Date.now() - start;
+      const p = Math.min(elapsed / duration, 1);
+      this._revealProgress = 1 - Math.pow(1 - p, 3);
       this.drawGraph();
-    }).exec();
+      if (p < 1) {
+        this._animTimer = this._canvas.requestAnimationFrame(step);
+      } else {
+        this._animTimer = null;
+      }
+    };
+    this._animTimer = this._canvas.requestAnimationFrame(step);
   },
 
   changeSubject(e) {
@@ -63,222 +143,331 @@ Page({
       subjectIndex: idx,
       currentSubject: this.data.subjects[idx],
       isZoomed: false,
-      zoomedDim: null,
-      showDetailBtn: false
+      zoomedTarget: null,
+      showInfo: false,
+      showDetailBtn: false,
+      zoomedData: null
     });
-    this._scale = 1;
-    this._offX = 0;
-    this._offY = 0;
-    this.drawGraph();
+    this.playReveal();
   },
 
-  // 计算五个维度的位置（相对于canvas逻辑坐标系）
   getNodePositions() {
     const s = this._size;
     const cx = s / 2, cy = s / 2;
-    const orbitR = Math.min(s * 0.3, 140);
+    const orbitR = s * 0.37;
     const n = this.data.dimensions.length;
     const positions = [];
     for (let i = 0; i < n; i++) {
       const angle = (i * 2 * Math.PI / n) - Math.PI / 2;
       positions.push({
         x: cx + orbitR * Math.cos(angle),
-        y: cy + orbitR * Math.sin(angle)
+        y: cy + orbitR * Math.sin(angle),
+        angle
       });
     }
     return { cx, cy, positions, orbitR };
   },
 
   drawGraph() {
-    const canvas = this._canvas;
     const ctx = this._ctx;
-    if (!canvas || !ctx) return;
+    if (!ctx || !this._cachedLayout) return;
 
-    const dpr = this._dpr;
     const size = this._size;
     const scale = this._scale;
     const offX = this._offX;
     const offY = this._offY;
+    const zoomedTarget = this.data.zoomedTarget;
+    const isZoomed = this.data.isZoomed;
+    const reveal = this._revealProgress;
 
-    canvas.width = size * dpr;
-    canvas.height = size * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // 清空（在 dpr scale 坐标系下）
     ctx.clearRect(0, 0, size, size);
 
-    // 应用镜头变换
+    // 镜头变换
     ctx.save();
     const cx = size / 2, cy = size / 2;
     ctx.translate(cx + offX, cy + offY);
     ctx.scale(scale, scale);
     ctx.translate(-cx, -cy);
 
-    const { positions, orbitR } = this.getNodePositions();
+    const positions = this._cachedLayout.positions;
     const dims = this.data.dimensions;
     const n = dims.length;
 
-    // 画节点间连接线（五边形）
-    for (let i = 0; i < n; i++) {
-      for (let j = i + 1; j < n; j++) {
-        ctx.beginPath();
-        ctx.moveTo(positions[i].x, positions[i].y);
-        ctx.lineTo(positions[j].x, positions[j].y);
-        ctx.strokeStyle = '#e8e8ed';
-        ctx.lineWidth = 1.5 / scale;
-        ctx.stroke();
-      }
-    }
+    const dimAlpha = (idx) => {
+      if (!isZoomed) return 1;
+      if (zoomedTarget === 'center') return idx === -1 ? 1 : 0.15;
+      if (zoomedTarget === idx) return 1;
+      return 0.15;
+    };
 
-    // 画中心到各节点的虚线
+    // 1. 连线
     for (let i = 0; i < n; i++) {
+      const a = dimAlpha(i);
+      if (a < 0.02) continue;
+      const target = positions[i];
+      const lineRevealStart = i * 0.1;
+      const lineP = Math.max(0, Math.min(1, (reveal - lineRevealStart) / 0.4));
+      if (lineP < 0.01) continue;
+
+      const dx = target.x - cx;
+      const dy = target.y - cy;
+      const dist = Math.hypot(dx, dy);
+      const nodeR = rpx(84);
+      const centerR = rpx(110);
+      // 单位方向向量
+      const ux = dx / dist;
+      const uy = dy / dist;
+      // 线起点：中心节点边缘（紧贴）
+      const startX = cx + ux * centerR;
+      const startY = cy + uy * centerR;
+      // 线终点：维度节点边缘（紧贴）
+      const endXFull = cx + ux * (dist - nodeR);
+      const endYFull = cy + uy * (dist - nodeR);
+      // 入场动画：从起点向终点绘制
+      const endX = startX + (endXFull - startX) * lineP;
+      const endY = startY + (endYFull - startY) * lineP;
+
+      ctx.globalAlpha = a * lineP;
       ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(positions[i].x, positions[i].y);
-      ctx.strokeStyle = dims[i].color + '40';
-      ctx.lineWidth = 2 / scale;
-      ctx.setLineDash([4 / scale, 3 / scale]);
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(endX, endY);
+      ctx.strokeStyle = INK.accent;
+      ctx.lineWidth = (zoomedTarget === i ? 2 : 1) / scale;
       ctx.stroke();
-      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
     }
 
-    // 画中心节点（学科）
-    const centerR = 56 / scale;
-    ctx.shadowColor = 'rgba(0, 122, 255, 0.2)';
-    ctx.shadowBlur = 20 / scale;
-    ctx.beginPath();
-    ctx.arc(cx, cy, centerR, 0, Math.PI * 2);
-    const grad = ctx.createRadialGradient(cx - 10 / scale, cy - 10 / scale, 0, cx, cy, centerR);
-    grad.addColorStop(0, '#4d9fff');
-    grad.addColorStop(1, '#007aff');
-    ctx.fillStyle = grad;
-    ctx.fill();
-    ctx.shadowBlur = 0;
+    // 2. 中心节点
+    const centerReveal = Math.max(0, Math.min(1, (reveal - 0.05) / 0.3));
+    if (centerReveal > 0.01) {
+      this.drawCenterNode(ctx, cx, cy, scale, dimAlpha(-1) * centerReveal, zoomedTarget === 'center');
+    }
 
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    const subjSize = Math.max(12, Math.round(28 / scale));
-    ctx.font = `bold ${subjSize}px -apple-system, sans-serif`;
-    ctx.fillText(this.data.currentSubject, cx, cy);
-
-    this._centerPos = { x: cx, y: cy, r: centerR };
-
-    // 画五个维度节点
-    const nodeR = 46 / scale;
-    const nodePositions = [];
+    // 3. 维度节点
     for (let i = 0; i < n; i++) {
+      const nodeReveal = Math.max(0, Math.min(1, (reveal - 0.3 - i * 0.1) / 0.3));
+      if (nodeReveal < 0.01) continue;
       const dim = dims[i];
       const pos = positions[i];
-
-      ctx.shadowColor = 'rgba(0,0,0,0.05)';
-      ctx.shadowBlur = 8 / scale;
-
-      ctx.beginPath();
-      ctx.arc(pos.x, pos.y, nodeR, 0, Math.PI * 2);
-      ctx.fillStyle = dim.color + '15';
-      ctx.fill();
-
-      ctx.shadowBlur = 0;
-      ctx.strokeStyle = dim.color;
-      ctx.lineWidth = 2.5 / scale;
-      ctx.stroke();
-
-      // 图标
-      const iconSize = Math.max(14, Math.round(32 / scale));
-      ctx.font = `${iconSize}px -apple-system, sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(dim.icon, pos.x, pos.y - 12 / scale);
-
-      // 数值
-      const valSize = Math.max(10, Math.round(20 / scale));
-      ctx.font = `bold ${valSize}px -apple-system, sans-serif`;
-      ctx.fillStyle = dim.color;
-      ctx.fillText(dim.value + '%', pos.x, pos.y + 14 / scale);
-
-      // 标签
-      const labelSize = Math.max(8, Math.round(16 / scale));
-      ctx.font = `${labelSize}px -apple-system, sans-serif`;
-      ctx.fillStyle = '#8e8e93';
-      ctx.fillText(dim.id, pos.x, pos.y + nodeR + 14 / scale);
-
-      nodePositions.push({ x: pos.x, y: pos.y, r: nodeR, dimIdx: i });
+      this.drawDimNode(ctx, pos.x, pos.y, scale, dimAlpha(i) * nodeReveal, dim, zoomedTarget === i, nodeReveal);
     }
 
-    this._nodePositions = nodePositions;
     ctx.restore();
   },
 
+  drawCenterNode(ctx, cx, cy, scale, alpha, isZoomed) {
+    const R = (isZoomed ? rpx(124) : rpx(110)) / scale;
+    ctx.globalAlpha = alpha;
+
+    // 外圈细环
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.strokeStyle = INK.accentBg;
+    ctx.lineWidth = rpx(2) / scale;
+    ctx.stroke();
+
+    // 实心圆 + 渐变
+    ctx.beginPath();
+    ctx.arc(cx, cy, R - rpx(8) / scale, 0, Math.PI * 2);
+    const grad = ctx.createLinearGradient(cx, cy - R, cx, cy + R);
+    grad.addColorStop(0, INK.accentMid);
+    grad.addColorStop(1, INK.accentDeep);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // 学科名（白字，垂直居中）
+    ctx.fillStyle = INK.white;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const subjSize = (isZoomed ? rpx(44) : rpx(36)) / scale;
+    ctx.font = `600 ${subjSize}px -apple-system, "PingFang SC", sans-serif`;
+    ctx.fillText(this.data.currentSubject, cx, cy);
+
+    ctx.globalAlpha = 1;
+  },
+
+  drawDimNode(ctx, x, y, scale, alpha, dim, isZoomed, reveal) {
+    const R = (isZoomed ? rpx(128) : rpx(84)) / scale;
+    const ringW = (isZoomed ? rpx(8) : rpx(6)) / scale;
+    const color = valueToColor(dim.value);
+
+    ctx.globalAlpha = alpha;
+
+    // 入场缩放
+    const entryScale = 0.6 + 0.4 * reveal;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(entryScale, entryScale);
+
+    // 进度环底
+    ctx.beginPath();
+    ctx.arc(0, 0, R, 0, Math.PI * 2);
+    ctx.strokeStyle = INK.track;
+    ctx.lineWidth = ringW;
+    ctx.stroke();
+
+    // 进度环
+    const startAngle = -Math.PI / 2;
+    const endAngle = startAngle + (dim.value / 100) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.arc(0, 0, R, startAngle, endAngle);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = ringW;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // 中心白圆
+    ctx.beginPath();
+    ctx.arc(0, 0, R - ringW - rpx(2) / scale, 0, Math.PI * 2);
+    ctx.fillStyle = INK.white;
+    ctx.fill();
+
+    // 文字（在 entryScale 坐标系，原点为节点中心）
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // 数字（上半部分）
+    const numSize = (isZoomed ? rpx(64) : rpx(40)) / scale;
+    ctx.font = `700 ${numSize}px -apple-system, "PingFang SC", sans-serif`;
+    ctx.fillStyle = color;
+    // 数字中心略上移，给字母留位
+    const numOffsetY = isZoomed ? -rpx(18) / scale : -rpx(10) / scale;
+    ctx.fillText(dim.value, 0, numOffsetY);
+
+    // 字母（下半部分）
+    const letterSize = (isZoomed ? rpx(28) : rpx(22)) / scale;
+    ctx.font = `600 ${letterSize}px -apple-system, sans-serif`;
+    ctx.fillStyle = INK.secondary;
+    const letterOffsetY = isZoomed ? rpx(32) / scale : rpx(20) / scale;
+    ctx.fillText(dim.id, 0, letterOffsetY);
+
+    ctx.restore();
+
+    // 中文名（圆圈下方，默认状态）
+    if (!isZoomed) {
+      ctx.fillStyle = INK.secondary;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const labelSize = rpx(24) / scale;
+      ctx.font = `400 ${labelSize}px -apple-system, "PingFang SC", sans-serif`;
+      ctx.fillText(dim.name, x, y + R + rpx(28) / scale);
+    }
+
+    ctx.globalAlpha = 1;
+  },
+
   onCanvasTap(e) {
-    const touch = e.touches[0];
-    if (!touch) return;
-    // 放大状态下，遮罩层会截获点击，不会走到这里
     if (this.data.isZoomed) return;
+    const touch = e.touches[0] || e.changedTouches[0];
+    if (!touch) return;
 
-    const query = wx.createSelectorQuery();
-    query.select('#graphCanvas').boundingClientRect((rect) => {
-      if (!rect) return;
-      const tx = touch.x - rect.left;
-      const ty = touch.y - rect.top;
-      const size = this._size;
+    const tx = touch.x !== undefined ? touch.x : touch.clientX;
+    const ty = touch.y !== undefined ? touch.y : touch.clientY;
 
-      // 检查节点点击
-      const nodes = this._nodePositions;
-      for (let i = 0; i < nodes.length; i++) {
-        const dist = Math.sqrt((tx - nodes[i].x) ** 2 + (ty - nodes[i].y) ** 2);
-        if (dist <= nodes[i].r + 8) {
-          this.zoomToNode(nodes[i].dimIdx);
-          return;
-        }
+    let nodes = this._nodePositions;
+    if (!nodes || nodes.length === 0) {
+      this.updateHitTargets();
+      nodes = this._nodePositions;
+    }
+
+    for (let i = 0; i < nodes.length; i++) {
+      const dist = Math.hypot(tx - nodes[i].x, ty - nodes[i].y);
+      if (dist <= nodes[i].r + rpx(16)) {
+        this.zoomToNode(i);
+        return;
       }
+    }
 
-      // 中心节点
-      if (this._centerPos) {
-        const dist = Math.sqrt((tx - this._centerPos.x) ** 2 + (ty - this._centerPos.y) ** 2);
-        if (dist <= this._centerPos.r) {
-          wx.showToast({ title: this.data.currentSubject, icon: 'none' });
-        }
+    if (this._centerPos) {
+      const dist = Math.hypot(tx - this._centerPos.x, ty - this._centerPos.y);
+      if (dist <= this._centerPos.r) {
+        this.zoomToCenter();
       }
-    }).exec();
+    }
+  },
+
+  updateHitTargets() {
+    const layout = this._cachedLayout || this.getNodePositions();
+    this._cachedLayout = layout;
+    this._nodePositions = layout.positions.map((pos, i) => ({
+      x: pos.x,
+      y: pos.y,
+      r: rpx(84),
+      dimIdx: i
+    }));
+    this._centerPos = { x: layout.cx, y: layout.cy, r: rpx(110) };
   },
 
   zoomToNode(dimIdx) {
     const size = this._size;
     const cx = size / 2, cy = size / 2;
-    const { positions } = this.getNodePositions();
-    const target = positions[dimIdx];
+    const target = this._cachedLayout.positions[dimIdx];
     const dim = this.data.dimensions[dimIdx];
 
-    const targetScale = 2.5;
+    const targetScale = 2.0;
     const targetOffX = (cx - target.x) * targetScale;
-    const targetOffY = (cy - target.y) * targetScale;
+    const targetOffY = (cy - target.y) * targetScale - size * 0.12;
 
     this.setData({
       isZoomed: true,
-      zoomedDim: dim,
-      showDetailBtn: false
+      zoomedTarget: dimIdx,
+      showInfo: false,
+      showDetailBtn: false,
+      zoomedData: {
+        type: 'dim',
+        id: dim.id,
+        name: dim.name,
+        value: dim.value,
+        desc: dim.desc
+      }
     });
 
     this.animateZoom(1, 0, 0, targetScale, targetOffX, targetOffY, () => {
-      this.setData({ showDetailBtn: true });
+      this.setData({ showInfo: true });
+      setTimeout(() => this.setData({ showDetailBtn: true }), 120);
+    });
+  },
+
+  zoomToCenter() {
+    this.setData({
+      isZoomed: true,
+      zoomedTarget: 'center',
+      showInfo: false,
+      showDetailBtn: false,
+      zoomedData: {
+        type: 'center',
+        name: this.data.currentSubject,
+        desc: this.data.centerDesc
+      }
+    });
+
+    this.animateZoom(1, 0, 0, 1.8, 0, 0, () => {
+      this.setData({ showInfo: true });
     });
   },
 
   zoomOut() {
-    this.setData({ showDetailBtn: false });
-    const cs = this._scale, cox = this._offX, coy = this._offY;
-    this.animateZoom(cs, cox, coy, 1, 0, 0, () => {
-      this.setData({ isZoomed: false, zoomedDim: null });
+    // 立即重置 zoomedTarget，让所有节点 alpha 同步恢复（避免退出时其他节点突变出现）
+    this.setData({
+      showInfo: false,
+      showDetailBtn: false,
+      isZoomed: false,
+      zoomedTarget: null,
+      zoomedData: null
     });
+    // 节点逐渐缩小回默认状态（此时所有节点 alpha=1，过渡连贯）
+    const cs = this._scale, cox = this._offX, coy = this._offY;
+    this.animateZoom(cs, cox, coy, 1, 0, 0, null, 400);
   },
 
-  animateZoom(fromS, fromX, fromY, toS, toX, toY, callback) {
-    const duration = 300;
+  animateZoom(fromS, fromX, fromY, toS, toX, toY, callback, duration) {
+    this.cancelAnim();
+    duration = duration || 400;
     const start = Date.now();
-
     const step = () => {
       const elapsed = Date.now() - start;
       const p = Math.min(elapsed / duration, 1);
-      // ease-out cubic
       const ease = 1 - Math.pow(1 - p, 3);
 
       this._scale = fromS + (toS - fromS) * ease;
@@ -288,23 +477,22 @@ Page({
       this.drawGraph();
 
       if (p < 1) {
-        this._animTimer = setTimeout(step, 16);
+        this._animTimer = this._canvas.requestAnimationFrame(step);
       } else {
-        this._scale = toS;
-        this._offX = toX;
-        this._offY = toY;
-        this.drawGraph();
+        this._animTimer = null;
         if (callback) callback();
       }
     };
+    // 立即执行第一帧，避免 requestAnimationFrame 首帧延迟造成的"停留感"
     step();
   },
 
   goDetail() {
-    const dim = this.data.zoomedDim;
-    if (!dim) return;
+    const z = this.data.zoomedTarget;
+    if (z === null || z === 'center') return;
+    const dim = this.data.dimensions[z];
     wx.navigateTo({
-      url: `/pages/dimension-detail/dimension-detail?dim=${dim.id}&name=${encodeURIComponent(dim.name)}&icon=${dim.icon}&value=${dim.value}&color=${encodeURIComponent(dim.color)}&subject=${encodeURIComponent(this.data.currentSubject)}`
+      url: `/pages/dimension-detail/dimension-detail?dim=${dim.id}&name=${encodeURIComponent(dim.name)}&value=${dim.value}&subject=${encodeURIComponent(this.data.currentSubject)}`
     });
   }
 });
