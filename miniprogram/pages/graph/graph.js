@@ -213,6 +213,10 @@ Page({
     // 初始化 _exitProgress（-1 表示非退出状态）
     if (this._exitProgress === undefined) this._exitProgress = -1;
 
+    // zoomT: 选中节点的尺寸插值因子（0=放大态, 1=默认态）
+    // 退出时从 0→1 平滑过渡，避免尺寸突变
+    const selZoomT = this._exitProgress >= 0 ? this._exitProgress : 0;
+
     // 1. 连线
     for (let i = 0; i < n; i++) {
       const a = dimAlpha(i);
@@ -253,7 +257,8 @@ Page({
     // 2. 中心节点
     const centerReveal = Math.max(0, Math.min(1, (reveal - 0.05) / 0.3));
     if (centerReveal > 0.01) {
-      this.drawCenterNode(ctx, cx, cy, scale, dimAlpha(-1) * centerReveal, zoomedTarget === 'center');
+      const centerZoomT = zoomedTarget === 'center' ? selZoomT : 1;
+      this.drawCenterNode(ctx, cx, cy, scale, dimAlpha(-1) * centerReveal, centerZoomT);
     }
 
     // 3. 维度节点
@@ -262,14 +267,16 @@ Page({
       if (nodeReveal < 0.01) continue;
       const dim = dims[i];
       const pos = positions[i];
-      this.drawDimNode(ctx, pos.x, pos.y, scale, dimAlpha(i) * nodeReveal, dim, zoomedTarget === i, nodeReveal);
+      const dimZoomT = zoomedTarget === i ? selZoomT : 1;
+      this.drawDimNode(ctx, pos.x, pos.y, scale, dimAlpha(i) * nodeReveal, dim, dimZoomT, nodeReveal);
     }
 
     ctx.restore();
   },
 
-  drawCenterNode(ctx, cx, cy, scale, alpha, isZoomed) {
-    const R = (isZoomed ? rpx(124) : rpx(110)) / scale;
+  drawCenterNode(ctx, cx, cy, scale, alpha, zoomT) {
+    // zoomT: 0=放大态(124rpx), 1=默认态(110rpx)
+    const R = (rpx(110) + (rpx(124) - rpx(110)) * (1 - zoomT)) / scale;
     ctx.globalAlpha = alpha;
 
     // 外圈细环
@@ -292,16 +299,18 @@ Page({
     ctx.fillStyle = INK.white;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const subjSize = (isZoomed ? rpx(44) : rpx(36)) / scale;
+    const subjSize = (rpx(36) + (rpx(44) - rpx(36)) * (1 - zoomT)) / scale;
     ctx.font = `600 ${subjSize}px -apple-system, "PingFang SC", sans-serif`;
     ctx.fillText(this.data.currentSubject, cx, cy);
 
     ctx.globalAlpha = 1;
   },
 
-  drawDimNode(ctx, x, y, scale, alpha, dim, isZoomed, reveal) {
-    const R = (isZoomed ? rpx(128) : rpx(84)) / scale;
-    const ringW = (isZoomed ? rpx(8) : rpx(6)) / scale;
+  drawDimNode(ctx, x, y, scale, alpha, dim, zoomT, reveal) {
+    // zoomT: 0=放大态, 1=默认态。所有尺寸平滑插值
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const R = lerp(rpx(128), rpx(84), zoomT) / scale;
+    const ringW = lerp(rpx(8), rpx(6), zoomT) / scale;
     const color = valueToColor(dim.value);
 
     ctx.globalAlpha = alpha;
@@ -340,24 +349,24 @@ Page({
     ctx.textBaseline = 'middle';
 
     // 数字（上半部分）
-    const numSize = (isZoomed ? rpx(64) : rpx(40)) / scale;
+    const numSize = lerp(rpx(64), rpx(40), zoomT) / scale;
     ctx.font = `700 ${numSize}px -apple-system, "PingFang SC", sans-serif`;
     ctx.fillStyle = color;
-    // 数字中心略上移，给字母留位
-    const numOffsetY = isZoomed ? -rpx(18) / scale : -rpx(10) / scale;
+    const numOffsetY = lerp(-rpx(18), -rpx(10), zoomT) / scale;
     ctx.fillText(dim.value, 0, numOffsetY);
 
     // 字母（下半部分）
-    const letterSize = (isZoomed ? rpx(28) : rpx(22)) / scale;
+    const letterSize = lerp(rpx(28), rpx(22), zoomT) / scale;
     ctx.font = `600 ${letterSize}px -apple-system, sans-serif`;
     ctx.fillStyle = INK.secondary;
-    const letterOffsetY = isZoomed ? rpx(32) / scale : rpx(20) / scale;
+    const letterOffsetY = lerp(rpx(32), rpx(20), zoomT) / scale;
     ctx.fillText(dim.id, 0, letterOffsetY);
 
     ctx.restore();
 
-    // 中文名（圆圈下方，默认状态）
-    if (!isZoomed) {
+    // 中文名（圆圈下方，zoomT>0.5 时淡入显示）
+    if (zoomT > 0.5) {
+      ctx.globalAlpha = alpha * (zoomT - 0.5) / 0.5;
       ctx.fillStyle = INK.secondary;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -454,7 +463,7 @@ Page({
       }
     });
 
-    this.animateZoom(1, 0, 0, 1.8, 0, 0, () => {
+    this.animateZoom(1, 0, 0, 1.5, 0, 0, () => {
       this.setData({ showInfo: true });
     });
   },
