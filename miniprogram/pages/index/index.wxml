@@ -1,13 +1,14 @@
-<view class="container">
+<view class="container {{pageReady ? 'page-enter' : 'page-leaving'}}">
+
   <!-- 顶部问候 -->
-  <view class="top-section">
+  <view class="top-section reveal reveal-1">
     <view class="greeting-row">
       <text class="greeting">👋 早上好，{{userName}}</text>
     </view>
   </view>
 
   <!-- 学科切换 -->
-  <view class="subject-section">
+  <view class="subject-section reveal reveal-2">
     <view class="subject-row">
       <text class="arrow-btn" bindtap="prevSubject">◀</text>
       <view class="subject-center">
@@ -18,7 +19,7 @@
   </view>
 
   <!-- 学习统计卡片 -->
-  <view class="stats-card">
+  <view class="stats-card reveal reveal-3">
     <view class="stat-item">
       <text class="stat-value">{{todayMinutes}}</text>
       <text class="stat-unit">分钟</text>
@@ -33,7 +34,7 @@
   </view>
 
   <!-- 掌握度环形图 -->
-  <view class="mastery-section">
+  <view class="mastery-section reveal reveal-4">
     <view class="ring-container">
       <canvas class="ring-canvas" canvas-id="masteryRing" type="2d"></canvas>
       <view class="ring-center">
@@ -44,7 +45,7 @@
   </view>
 
   <!-- 今日建议 -->
-  <view class="suggestion-section">
+  <view class="suggestion-section reveal reveal-5">
     <text class="suggestion-title">📋 今日建议</text>
     <view class="suggestion-card">
       <text class="suggestion-text">{{suggestion}}</text>
@@ -52,7 +53,7 @@
   </view>
 
   <!-- 开始学习 -->
-  <view class="action-section">
+  <view class="action-section reveal reveal-5">
     <view class="start-btn" bindtap="goStudy">
       <text class="start-text">开始学习</text>
     </view>

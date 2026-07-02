@@ -1,14 +1,59 @@
-.container {
-  min-height: 100vh;
-  background: #f5f5f7;
-  padding: 160rpx 32rpx 40rpx;
-  display: flex;
-  flex-direction: column;
+/* ============================================
+ * 首页 · 排版与动画优化
+ * 沿用 login 页设计 Token 与动画语言
+ * ============================================ */
+
+page {
+  --bg:            #ffffff;
+  --bg-subtle:     #f5f5f7;
+
+  --text-primary:   #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary:  #a1a1a6;
+
+  --accent:        #007aff;
+  --accent-soft:   #4a9eff;
+  --accent-bg:     rgba(0,122,255,0.06);
+
+  --border:        #d2d2d7;
+  --border-soft:   #e5e5ea;
+
+  --shadow-sm: 0 1rpx 2rpx rgba(0,0,0,0.04);
+  --shadow-md: 0 4rpx 16rpx rgba(0,0,0,0.06);
+  --shadow-lg: 0 8rpx 32rpx rgba(0,122,255,0.18);
+
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* 顶部问候 */
+.container {
+  min-height: 100vh;
+  background: var(--bg);
+  padding: 0 48rpx;
+  padding-top: calc(88rpx + env(safe-area-inset-top));
+  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+}
+
+/* 页面切换淡入 */
+.page-leaving {
+  opacity: 0;
+  transform: translateY(12rpx);
+}
+
+.page-enter {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+ * 顶部问候
+ * ============================================ */
 .top-section {
-  margin-bottom: 36rpx;
+  margin-bottom: 48rpx;
 }
 
 .greeting-row {
@@ -18,29 +63,36 @@
 
 .greeting {
   font-size: 36rpx;
-  font-weight: 700;
-  color: #1d1d1f;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 1rpx;
 }
 
-/* 学科切换 */
+/* ============================================
+ * 学科切换
+ * ============================================ */
 .subject-section {
-  margin-bottom: 36rpx;
+  margin-bottom: 48rpx;
 }
 
 .subject-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 40rpx;
+  gap: 48rpx;
 }
 
 .arrow-btn {
-  font-size: 36rpx;
-  color: #c7c7cc;
+  font-size: 32rpx;
+  color: var(--text-tertiary);
   padding: 20rpx;
+  transition: all 0.25s var(--ease-out);
 }
 
-.arrow-btn:active { color: #007aff; }
+.arrow-btn:active {
+  color: var(--accent);
+  transform: scale(1.2);
+}
 
 .subject-center {
   display: flex;
@@ -50,19 +102,28 @@
 
 .subject-name {
   font-size: 56rpx;
-  font-weight: 700;
-  color: #1d1d1f;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 2rpx;
+  transition: opacity 0.3s var(--ease-out);
 }
 
-/* 统计卡片 */
+/* ============================================
+ * 学习统计卡片
+ * ============================================ */
 .stats-card {
   display: flex;
   align-items: center;
-  background: #fff;
+  background: var(--bg);
   border-radius: 24rpx;
-  padding: 32rpx 20rpx;
-  margin-bottom: 40rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+  padding: 32rpx 24rpx;
+  margin-bottom: 48rpx;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s var(--ease-out);
+}
+
+.stats-card:active {
+  transform: scale(0.98);
 }
 
 .stat-item {
@@ -76,31 +137,36 @@
 .stat-value {
   font-size: 48rpx;
   font-weight: 700;
-  color: #007aff;
+  color: var(--accent);
+  line-height: 1;
+  font-family: -apple-system, "PingFang SC", sans-serif;
 }
 
 .stat-unit {
-  font-size: 24rpx;
-  color: #8e8e93;
-  margin-top: -4rpx;
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  margin-top: -2rpx;
 }
 
 .stat-label {
-  font-size: 24rpx;
-  color: #8e8e93;
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  margin-top: 4rpx;
 }
 
 .stat-divider {
-  width: 2rpx;
-  height: 80rpx;
-  background: #f0f0f5;
+  width: 1rpx;
+  height: 64rpx;
+  background: var(--border-soft);
 }
 
-/* 环形图 */
+/* ============================================
+ * 环形图
+ * ============================================ */
 .mastery-section {
   display: flex;
   justify-content: center;
-  margin-bottom: 40rpx;
+  margin-bottom: 48rpx;
 }
 
 .ring-container {
@@ -127,63 +193,99 @@
 .ring-pct {
   font-size: 68rpx;
   font-weight: 700;
-  color: #007aff;
+  color: var(--accent);
+  line-height: 1;
+  font-family: -apple-system, "PingFang SC", sans-serif;
 }
 
 .ring-label {
   font-size: 24rpx;
-  color: #8e8e93;
-  margin-top: 6rpx;
+  color: var(--text-secondary);
+  margin-top: 8rpx;
 }
 
-/* 建议 */
+/* ============================================
+ * 今日建议
+ * ============================================ */
 .suggestion-section {
-  margin-bottom: 36rpx;
+  margin-bottom: 48rpx;
 }
 
 .suggestion-title {
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
   margin-bottom: 16rpx;
+  letter-spacing: 1rpx;
 }
 
 .suggestion-card {
-  background: #fff;
-  padding: 28rpx 32rpx;
-  border-radius: 20rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+  background: var(--bg);
+  padding: 32rpx;
+  border-radius: 24rpx;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s var(--ease-out);
+}
+
+.suggestion-card:active {
+  transform: scale(0.98);
 }
 
 .suggestion-text {
   font-size: 28rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
   line-height: 1.7;
 }
 
-/* 按钮 */
+/* ============================================
+ * 开始学习按钮
+ * ============================================ */
 .action-section {
   margin-top: auto;
-  padding-top: 20rpx;
+  padding-top: 24rpx;
 }
 
 .start-btn {
-  background: #007aff;
-  height: 100rpx;
-  border-radius: 50rpx;
+  background: var(--accent);
+  height: 96rpx;
+  border-radius: 48rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6rpx 20rpx rgba(0,122,255,0.3);
+  box-shadow: var(--shadow-lg);
+  transition: all 0.25s var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.start-btn::after {
+  border: none;
 }
 
 .start-btn:active {
-  opacity: 0.85;
   transform: scale(0.98);
+  opacity: 0.92;
+  box-shadow: 0 4rpx 16rpx rgba(0,122,255,0.12);
 }
 
 .start-text {
   color: #fff;
-  font-size: 34rpx;
+  font-size: 32rpx;
   font-weight: 600;
+  letter-spacing: 2rpx;
 }
+
+/* ============================================
+ * 入场动画（压缩版，避免加载感慢）
+ * ============================================ */
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(16rpx); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal { animation: reveal-up 0.4s var(--ease-out) both; }
+.reveal-1 { animation-delay: 0.04s; }
+.reveal-2 { animation-delay: 0.10s; }
+.reveal-3 { animation-delay: 0.16s; }
+.reveal-4 { animation-delay: 0.22s; }
+.reveal-5 { animation-delay: 0.28s; }

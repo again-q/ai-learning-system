@@ -2,6 +2,7 @@ const app = getApp();
 
 Page({
   data: {
+    pageReady: false,
     isLoggedIn: false,
     nickName: '',
     avatarUrl: '',
@@ -18,6 +19,9 @@ Page({
 
   onShow() {
     this.loadUserData();
+    // 触发页面淡入过渡
+    this.setData({ pageReady: false });
+    setTimeout(() => this.setData({ pageReady: true }), 16);
   },
 
   loadUserData() {

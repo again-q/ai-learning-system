@@ -1,5 +1,6 @@
 Page({
   data: {
+    pageReady: false,
     currentSubject: '数学',
     subjectIndex: 0,
     subjects: ['数学', '英语', '物理', '语文', '化学'],
@@ -14,6 +15,11 @@ Page({
     isLoading: false,
     canSend: false,
     scrollToId: 'bottom'
+  },
+
+  onShow() {
+    this.setData({ pageReady: false });
+    setTimeout(() => this.setData({ pageReady: true }), 16);
   },
 
   changeSubject(e) {

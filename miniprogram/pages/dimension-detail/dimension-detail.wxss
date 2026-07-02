@@ -1,50 +1,101 @@
+/* ============================================
+ * 维度详情页 · 排版与动画优化
+ * ============================================ */
+
+page {
+  --bg:            #ffffff;
+  --bg-subtle:     #f5f5f7;
+
+  --text-primary:   #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary:  #a1a1a6;
+
+  --accent:        #007aff;
+
+  --border-soft:   #e5e5ea;
+
+  --shadow-sm: 0 1rpx 2rpx rgba(0,0,0,0.04);
+  --shadow-md: 0 4rpx 16rpx rgba(0,0,0,0.06);
+
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 .page {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #ffffff;
+  background: var(--bg);
 }
+
+/* ============================================
+ * 顶部导航
+ * ============================================ */
 .header {
   display: flex;
   align-items: center;
   padding: 20rpx 30rpx;
   padding-top: calc(88rpx + env(safe-area-inset-top));
-  border-bottom: 1rpx solid #f0f0f0;
+  border-bottom: 1rpx solid var(--border-soft);
+  animation: reveal-down 0.35s var(--ease-out) both;
 }
+
+@keyframes reveal-down {
+  from { opacity: 0; transform: translateY(-12rpx); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .back-btn {
   display: flex;
   align-items: center;
   gap: 4rpx;
   padding: 10rpx 0;
+  transition: transform 0.25s var(--ease-out);
 }
+
+.back-btn:active {
+  transform: scale(0.94);
+}
+
 .back-arrow {
   font-size: 44rpx;
-  color: #007aff;
+  color: var(--accent);
   font-weight: 300;
   line-height: 1;
 }
+
 .back-text {
   font-size: 28rpx;
-  color: #007aff;
+  color: var(--accent);
 }
+
 .header-center {
   flex: 1;
   text-align: center;
 }
+
 .header-subject {
-  font-size: 26rpx;
-  color: #8e8e93;
+  font-size: 24rpx;
+  color: var(--text-tertiary);
   display: block;
+  letter-spacing: 1rpx;
 }
+
 .header-dim {
   font-size: 30rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
   display: block;
+  margin-top: 2rpx;
 }
+
 .header-right {
   width: 80rpx;
 }
+
+/* ============================================
+ * 占位区
+ * ============================================ */
 .placeholder {
   flex: 1;
   display: flex;
@@ -53,40 +104,61 @@
   justify-content: center;
   gap: 16rpx;
   padding: 40rpx;
+  animation: reveal-up 0.4s var(--ease-out) 0.08s both;
 }
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(20rpx); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .icon-circle {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 60rpx;
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 32rpx;
   border: 3rpx solid;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16rpx;
+  animation: icon-float 3s ease-in-out infinite;
 }
+
+@keyframes icon-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8rpx); }
+}
+
 .icon-text {
   font-size: 56rpx;
+  line-height: 1;
 }
+
 .placeholder-title {
   font-size: 36rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
+  letter-spacing: 1rpx;
 }
+
 .placeholder-desc {
   font-size: 28rpx;
-  color: #8e8e93;
+  color: var(--text-secondary);
 }
+
 .dev-badge {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #ff9500;
   background: #fff3e0;
-  padding: 6rpx 24rpx;
-  border-radius: 20rpx;
-  font-weight: 500;
+  padding: 8rpx 28rpx;
+  border-radius: 24rpx;
+  font-weight: 600;
   margin-top: 8rpx;
+  letter-spacing: 1rpx;
 }
+
 .placeholder-hint {
   font-size: 24rpx;
-  color: #c7c7cc;
+  color: var(--text-tertiary);
   margin-top: 8rpx;
 }

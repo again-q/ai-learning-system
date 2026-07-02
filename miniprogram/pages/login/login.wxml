@@ -1,25 +1,48 @@
-<view class="container">
-  <!-- 顶部标志 -->
-  <view class="header">
-    <view class="logo">🧠</view>
-    <text class="title">AI 学习助手</text>
-    <text class="subtitle">个性化学习 · 智能教学</text>
-  </view>
+<view class="page">
 
-  <!-- 头像 + 昵称 -->
-  <view class="profile">
-    <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
-      <image class="avatar" src="{{avatarUrl}}"></image>
-    </button>
-    <input class="nickname" type="nickname" placeholder="你的微信昵称" 
-           bindinput="onNicknameInput" />
-  </view>
+  <!-- 主容器 -->
+  <view class="container">
 
-  <!-- 按钮 -->
-  <view class="footer">
-    <button class="login-btn" bindtap="onLogin" disabled="{{!canLogin}}">
-      <text class="btn-text">进入学习</text>
-    </button>
-    <text class="hint">点击「进入学习」自动创建账号</text>
+    <!-- 品牌区 -->
+    <view class="brand">
+      <view class="brand-mark reveal reveal-1">
+        <text class="brand-mark__symbol">🧠</text>
+        <view class="brand-mark__ripple"></view>
+      </view>
+      <text class="brand-title reveal reveal-2">AI 学习助手</text>
+      <text class="brand-subtitle reveal reveal-3">个性化学习 · 智能教学</text>
+    </view>
+
+    <!-- 资料区 -->
+    <view class="profile">
+
+      <button class="avatar-btn reveal reveal-4" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image class="avatar {{avatarChanged ? 'avatar--pop' : ''}}" src="{{avatarUrl}}" mode="aspectFill"></image>
+        <view class="avatar-ring"></view>
+      </button>
+
+      <view class="nickname-wrap reveal reveal-5">
+        <input class="nickname-input" type="nickname" placeholder="你的微信昵称"
+               placeholder-class="nickname-placeholder"
+               bindinput="onNicknameInput" value="{{nickName}}" />
+        <view class="nickname-line"></view>
+      </view>
+    </view>
+
+    <!-- 行动区 -->
+    <view class="action reveal reveal-6">
+      <button class="login-btn {{isLoading ? 'login-btn--loading' : ''}}" bindtap="onLogin" disabled="{{!canLogin}}">
+        <view class="login-btn__shimmer"></view>
+        <view wx:if="{{!isLoading}}" class="login-btn__content">
+          <text class="login-btn__text">进入学习</text>
+          <text class="login-btn__arrow">→</text>
+        </view>
+        <view wx:else class="login-btn__content">
+          <view class="spinner"></view>
+          <text class="login-btn__text">登录中</text>
+        </view>
+      </button>
+    </view>
+
   </view>
 </view>

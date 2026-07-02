@@ -4,7 +4,9 @@ Page({
   data: {
     canLogin: true,
     avatarUrl: '/images/avatar.png',
-    nickName: ''
+    nickName: '',
+    avatarChanged: false,   // 头像是否刚被更换（触发弹跳动画）
+    isLoading: false         // 登录中状态（按钮变 spinner）
   },
 
   onLoad() {
@@ -13,7 +15,15 @@ Page({
 
   onChooseAvatar(e) {
     console.log('[login] chooseAvatar fired, url:', e.detail.avatarUrl);
-    this.setData({ avatarUrl: e.detail.avatarUrl });
+    this.setData({
+      avatarUrl: e.detail.avatarUrl,
+      avatarChanged: false
+    }, () => {
+      // 下一帧触发动画（避免 setData 合并导致动画不执行）
+      setTimeout(() => this.setData({ avatarChanged: true }), 16);
+      // 动画结束后重置标记
+      setTimeout(() => this.setData({ avatarChanged: false }), 600);
+    });
   },
 
   onNicknameInput(e) {
@@ -22,7 +32,7 @@ Page({
   },
 
   onLogin() {
-    if (!this.data.canLogin) return;
+    if (!this.data.canLogin || this.data.isLoading) return;
 
     // 验证：必须填昵称和选头像
     if (!this.data.nickName || this.data.avatarUrl === '/images/avatar.png') {
@@ -34,9 +44,8 @@ Page({
       return;
     }
 
-    this.setData({ canLogin: false });
-
-    wx.showLoading({ title: '登录中...' });
+    this.setData({ canLogin: false, isLoading: true });
+    wx.showLoading({ title: '登录中', mask: true });
 
     wx.login({
       success: (res) => {
@@ -60,6 +69,7 @@ Page({
                 app.globalData.userInfo = res.data;
                 wx.setStorageSync('userInfo', res.data);
                 wx.hideLoading();
+                this.setData({ isLoading: false });
                 wx.switchTab({ url: '/pages/index/index' });
               } else {
                 this.loginFail(res.message || '登录失败');
@@ -90,8 +100,8 @@ Page({
   },
 
   loginFail(msg) {
-    this.setData({ canLogin: true });
     wx.hideLoading();
+    this.setData({ canLogin: true, isLoading: false });
     if (msg) wx.showToast({ title: msg, icon: 'none' });
   }
 });

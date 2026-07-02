@@ -2,6 +2,7 @@ const app = getApp();
 
 Page({
   data: {
+    pageReady: false,
     subjects: ['数学', '英语', '物理', '语文', '化学', '生物', '政治', '历史', '地理'],
     subjectIndex: 0,
     currentSubject: '数学',
@@ -28,6 +29,13 @@ Page({
     if (user && user.nickName) {
       this.setData({ userName: user.nickName });
     }
+    // 触发页面淡入过渡
+    this.setData({ pageReady: false });
+    setTimeout(() => {
+      this.setData({ pageReady: true });
+      // Canvas 是原生组件不跟随 CSS 过渡，需在淡入后重绘避免残留
+      this.drawRing(this.data.mastery);
+    }, 16);
   },
 
   drawRing(pct) {

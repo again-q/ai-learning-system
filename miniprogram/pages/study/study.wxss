@@ -1,41 +1,99 @@
+/* ============================================
+ * 学习页 · 排版与动画优化
+ * ============================================ */
+
+page {
+  --bg:            #ffffff;
+  --bg-subtle:     #f5f5f7;
+
+  --text-primary:   #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary:  #a1a1a6;
+
+  --accent:        #007aff;
+  --accent-soft:   #4a9eff;
+
+  --border-soft:   #e5e5ea;
+
+  --shadow-sm: 0 1rpx 2rpx rgba(0,0,0,0.04);
+  --shadow-md: 0 4rpx 16rpx rgba(0,0,0,0.06);
+
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 .container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #f5f5f7;
+  background: var(--bg);
+  transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
 }
 
-/* 顶部 */
+/* 页面切换淡入 */
+.page-leaving {
+  opacity: 0;
+  transform: translateY(12rpx);
+}
+
+.page-enter {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+ * 顶部导航
+ * ============================================ */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 100rpx 32rpx 20rpx;
-  background: #fff;
+  background: var(--bg);
+  animation: reveal-down 0.35s var(--ease-out) both;
+}
+
+@keyframes reveal-down {
+  from { opacity: 0; transform: translateY(-12rpx); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .subject-picker {
   display: flex;
   align-items: center;
-  background: #f0f0f5;
-  padding: 8rpx 20rpx;
-  border-radius: 20rpx;
+  background: var(--bg-subtle);
+  padding: 10rpx 24rpx;
+  border-radius: 24rpx;
+  gap: 8rpx;
+  transition: transform 0.25s var(--ease-out);
+}
+
+.subject-picker:active {
+  transform: scale(0.96);
 }
 
 .subject-text {
   font-size: 30rpx;
   font-weight: 600;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
-.arrow { font-size: 20rpx; color: #86868b; margin-left: 6rpx; }
+.arrow {
+  font-size: 20rpx;
+  color: var(--text-tertiary);
+}
 
 .streak {
   font-size: 26rpx;
-  color: #86868b;
+  color: var(--text-secondary);
+  padding: 8rpx 20rpx;
+  background: var(--bg-subtle);
+  border-radius: 24rpx;
 }
 
-/* 聊天区 */
+/* ============================================
+ * 聊天区
+ * ============================================ */
 .chat-area {
   flex: 1;
   padding: 16rpx 28rpx;
@@ -53,116 +111,134 @@
   display: flex;
 }
 
-.ai-msg {
-  justify-content: flex-start;
-}
-
-.user-msg {
-  justify-content: flex-end;
-}
+.ai-msg { justify-content: flex-start; }
+.user-msg { justify-content: flex-end; }
 
 .msg-content {
   max-width: 80%;
-  padding: 16rpx 20rpx;
-  border-radius: 16rpx;
+  padding: 18rpx 24rpx;
+  border-radius: 24rpx;
   font-size: 28rpx;
   line-height: 1.7;
   word-break: break-word;
-  background: #fff;
-  color: #1d1d1f;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s var(--ease-out);
 }
 
 .user-content {
-  background: #007aff;
+  background: var(--accent);
   color: #fff;
-  border-bottom-right-radius: 4rpx;
+  border-bottom-right-radius: 6rpx;
 }
 
 .ai-msg .msg-content {
-  border-bottom-left-radius: 4rpx;
+  border-bottom-left-radius: 6rpx;
 }
 
-.msg-text { white-space: pre-wrap; }
+.msg-text {
+  white-space: pre-wrap;
+}
 
-/* 动画 */
+/* 消息入场动画 */
 .slide-up {
-  animation: slideUp 0.3s ease-out;
+  animation: slideUp 0.3s var(--ease-out);
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(12rpx); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(16rpx) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* 打字 */
+/* AI 正在输入指示器 */
 .typing {
   display: flex;
-  gap: 6rpx;
-  padding: 4rpx 0;
+  gap: 8rpx;
+  padding: 6rpx 0;
+  align-items: center;
 }
 
 .dot {
   width: 12rpx;
   height: 12rpx;
-  background: #c7c7cc;
+  background: var(--text-tertiary);
   border-radius: 50%;
-  animation: pulse 1.2s infinite;
+  animation: pulse 1.2s infinite ease-in-out;
 }
 
 .dot:nth-child(2) { animation-delay: 0.2s; }
 .dot:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes pulse {
-  0%, 60%, 100% { opacity: 0.3; }
-  30% { opacity: 1; }
+  0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
+  30%           { opacity: 1;   transform: scale(1.1); }
 }
 
-/* 输入区 */
+/* ============================================
+ * 输入区
+ * ============================================ */
 .input-area {
-  padding: 12rpx 28rpx;
-  padding-bottom: calc(12rpx + env(safe-area-inset-bottom));
-  background: #fff;
-  border-top: 1rpx solid #e5e5ea;
+  padding: 16rpx 28rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  background: var(--bg);
+  border-top: 1rpx solid var(--border-soft);
+  animation: reveal-up 0.35s var(--ease-out) 0.05s both;
 }
 
-.input-area.disabled { opacity: 0.5; }
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(12rpx); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.input-area.disabled {
+  opacity: 0.5;
+}
 
 .input-wrapper {
   display: flex;
   align-items: center;
-  background: #f0f0f5;
-  border-radius: 28rpx;
-  padding: 6rpx 6rpx 6rpx 24rpx;
+  background: var(--bg-subtle);
+  border-radius: 32rpx;
+  padding: 8rpx 8rpx 8rpx 28rpx;
+  transition: all 0.3s var(--ease-out);
+}
+
+.input-wrapper:focus-within {
+  background: #fff;
+  box-shadow: 0 0 0 2rpx rgba(0,122,255,0.2);
 }
 
 .text-input {
   flex: 1;
-  height: 56rpx;
+  height: 64rpx;
   font-size: 28rpx;
-  color: #1d1d1f;
+  color: var(--text-primary);
 }
 
-.text-input::placeholder { color: #c7c7cc; }
+.text-input::placeholder {
+  color: var(--text-tertiary);
+}
 
 .send-btn {
-  width: 100rpx;
-  height: 56rpx;
-  border-radius: 28rpx;
+  width: 112rpx;
+  height: 64rpx;
+  border-radius: 32rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e5e5ea;
+  background: var(--border-soft);
   color: #fff;
   font-size: 28rpx;
-  font-weight: 500;
-  transition: all 0.2s;
+  font-weight: 600;
+  transition: all 0.25s var(--ease-out);
 }
 
 .send-btn.active {
-  background: #007aff;
+  background: var(--accent);
+  box-shadow: 0 4rpx 12rpx rgba(0,122,255,0.3);
 }
 
 .send-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.94);
 }
