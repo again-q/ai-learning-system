@@ -20,13 +20,13 @@
   <!-- 学习统计卡片 -->
   <view class="stats-card">
     <view class="stat-item">
-      <text class="stat-value">45</text>
+      <text class="stat-value">{{todayMinutes}}</text>
       <text class="stat-unit">分钟</text>
       <text class="stat-label">今日学习</text>
     </view>
     <view class="stat-divider"></view>
     <view class="stat-item">
-      <text class="stat-value">7</text>
+      <text class="stat-value">{{streak}}</text>
       <text class="stat-unit">天</text>
       <text class="stat-label">连续学习</text>
     </view>

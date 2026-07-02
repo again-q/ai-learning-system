@@ -17,13 +17,13 @@
     <view class="messages">
       <block wx:for="{{messages}}" wx:key="id">
         <!-- AI 消息 -->
-        <view class="msg-row ai-msg" id="msg-{{item.id}}">
+        <view wx:if="{{!item.isUser}}" class="msg-row ai-msg" id="msg-{{item.id}}">
           <view class="msg-content {{item.animation ? 'slide-up' : ''}}">
             <text class="msg-text">{{item.content}}</text>
           </view>
         </view>
         <!-- 用户消息 -->
-        <view class="msg-row user-msg" id="msg-{{item.id}}">
+        <view wx:elif="{{item.isUser}}" class="msg-row user-msg" id="msg-{{item.id}}">
           <view class="msg-content user-content {{item.animation ? 'slide-up' : ''}}">
             <text class="msg-text">{{item.content}}</text>
           </view>

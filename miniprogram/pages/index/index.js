@@ -2,12 +2,13 @@ const app = getApp();
 
 Page({
   data: {
-    subjects: ['数学', '英语', '物理', '语文', '化学'],
+    subjects: ['数学', '英语', '物理', '语文', '化学', '生物', '政治', '历史', '地理'],
     subjectIndex: 0,
     currentSubject: '数学',
     userName: '同学',
     mastery: 78,
     streak: 7,
+    todayMinutes: 45,
     suggestion: '今天建议先复习二次函数的顶点公式和判别式，这两个知识点目前的掌握度偏低，但它们是后续学习的基础。完成后可以尝试做3道练习题巩固。'
   },
 

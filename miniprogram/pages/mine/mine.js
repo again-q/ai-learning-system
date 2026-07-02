@@ -57,14 +57,17 @@ Page({
   },
 
   goSetting() {
+    if (!this.data.isLoggedIn) { this.goLogin(); return; }
     wx.showToast({ title: '开发中', icon: 'none' });
   },
 
   goReport() {
+    if (!this.data.isLoggedIn) { this.goLogin(); return; }
     wx.showToast({ title: '开发中', icon: 'none' });
   },
 
   goAchievement() {
+    if (!this.data.isLoggedIn) { this.goLogin(); return; }
     wx.showToast({ title: '开发中', icon: 'none' });
   }
 });

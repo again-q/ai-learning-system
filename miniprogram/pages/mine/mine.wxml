@@ -47,17 +47,17 @@
 
   <!-- 功能菜单 -->
   <view class="menu-list">
-    <view class="menu-item {{isLoggedIn ? '' : 'dim'}}" bindtap="{{isLoggedIn ? 'goSetting' : ''}}">
+    <view class="menu-item {{isLoggedIn ? '' : 'dim'}}" bindtap="goSetting">
       <image class="menu-icon" src="/images/shezhi.png"></image>
       <text class="menu-text">学习设置</text>
       <text class="menu-arrow">▸</text>
     </view>
-    <view class="menu-item {{isLoggedIn ? '' : 'dim'}}" bindtap="{{isLoggedIn ? 'goReport' : ''}}">
+    <view class="menu-item {{isLoggedIn ? '' : 'dim'}}" bindtap="goReport">
       <image class="menu-icon" src="/images/baogao.png"></image>
       <text class="menu-text">学习报告</text>
       <text class="menu-arrow">▸</text>
     </view>
-    <view class="menu-item {{isLoggedIn ? '' : 'dim'}}" bindtap="{{isLoggedIn ? 'goAchievement' : ''}}">
+    <view class="menu-item {{isLoggedIn ? '' : 'dim'}}" bindtap="goAchievement">
       <image class="menu-icon" src="/images/chengjiu.png"></image>
       <text class="menu-text">成就墙</text>
       <text class="menu-arrow">▸</text>

@@ -1,18 +1,54 @@
 <view class="page">
-  <text class="placeholder">🗺️ 知识图谱</text>
-  <text class="sub">即将上线</text>
-</view>
+  <!-- 顶部学科选择 -->
+  <view class="header">
+    <picker bindchange="changeSubject" value="{{subjectIndex}}" range="{{subjects}}">
+      <view class="subject-picker">
+        <text class="subject-text">{{currentSubject}}</text>
+        <text class="arrow">▾</text>
+      </view>
+    </picker>
+  </view>
 
-<style>
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background: #f5f5f7;
-  gap: 16rpx;
-}
-.placeholder { font-size: 48rpx; color: #1d1d1f; }
-.sub { font-size: 28rpx; color: #8e8e93; }
-</style>
+  <!-- Canvas 图谱区域（中心辐射结构） -->
+  <view class="canvas-wrapper">
+    <canvas class="graph-canvas" type="2d" id="graphCanvas" 
+            bindtouchstart="onCanvasTap"></canvas>
+  </view>
+
+  <!-- 底部提示 -->
+  <view class="hint" wx:if="{{!showDetail}}">
+    <text class="hint-text">👆 点击维度节点查看详情</text>
+  </view>
+
+  <!-- 维度详情弹窗 -->
+  <view class="detail-overlay" wx:if="{{showDetail}}" bindtap="closeDetail">
+    <view class="detail-card" catchtap="{{true}}">
+      <view class="detail-header">
+        <text class="detail-icon">{{selectedDim.icon}}</text>
+        <view class="detail-title-area">
+          <text class="detail-title">{{selectedDim.name}}（{{selectedDim.id}}）</text>
+          <text class="detail-desc">{{selectedDim.desc}}</text>
+        </view>
+        <text class="detail-close" bindtap="closeDetail">✕</text>
+      </view>
+
+      <view class="detail-value-area">
+        <text class="detail-value-num">{{selectedDim.value}}%</text>
+        <text class="detail-value-label">当前水平</text>
+      </view>
+
+      <view class="detail-list">
+        <view class="detail-item" wx:for="{{detailNodes}}" wx:key="name" data-node="{{item.name}}" bindtap="goStudy">
+          <view class="item-status {{item.status}}"></view>
+          <text class="item-name">{{item.name}}</text>
+          <text class="item-mastery">{{item.mastery}}{{item.mastery > 1 ? '%' : '种'}}</text>
+          <text class="item-arrow">▸</text>
+        </view>
+      </view>
+
+      <view class="detail-footer">
+        <text class="footer-hint">点击知识点跳转学习 →</text>
+      </view>
+    </view>
+  </view>
+</view>

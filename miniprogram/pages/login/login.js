@@ -55,10 +55,15 @@ Page({
             },
             success: (cr) => {
               console.log('[login] cloud function result:', cr.result);
-              app.globalData.userInfo = cr.result;
-              wx.setStorageSync('userInfo', cr.result);  // 持久化
-              wx.hideLoading();
-              wx.switchTab({ url: '/pages/index/index' });
+              const res = cr.result;
+              if (res.code === 0) {
+                app.globalData.userInfo = res.data;
+                wx.setStorageSync('userInfo', res.data);
+                wx.hideLoading();
+                wx.switchTab({ url: '/pages/index/index' });
+              } else {
+                this.loginFail(res.message || '登录失败');
+              }
             },
             fail: () => this.loginFail('网络连接失败')
           });
@@ -74,8 +79,8 @@ Page({
       callback(url);
       return;
     }
-    const ext = '.png';
-    const cloudPath = `avatars/${Date.now()}.${Math.random().toString(36).slice(2)}${ext}`;
+    const ext = url.match(/\.(\w+)(\?|$)/)?.[1] || 'png';
+    const cloudPath = `avatars/${Date.now()}.${Math.random().toString(36).slice(2)}.${ext}`;
     wx.cloud.uploadFile({
       cloudPath,
       filePath: url,
