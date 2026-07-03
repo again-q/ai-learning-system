@@ -1,0 +1,50 @@
+<view class="container {{pageReady ? 'page-enter' : 'page-leaving'}}">
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="back-text">{{level === 0 ? '返回' : '返回'}}</text>
+    </view>
+    <text class="header-title">{{currentLabel}}</text>
+    <view class="header-spacer"></view>
+  </view>
+
+  <scroll-view class="main-scroll" scroll-y="true">
+    <view class="main-area">
+      <view class="parent-hint" wx:if="{{parentNode}}">
+        <text class="parent-text">{{parentNode.name}}</text>
+      </view>
+
+      <view class="center-block" wx:if="{{currentNode}}" bindtap="selectCurrentNode">
+        <view class="center-ring" style="border-color:{{currentNode.color}}">
+          <text class="center-num" style="color:{{currentNode.color}}">{{currentNode.mastery}}%</text>
+        </view>
+        <text class="center-title">{{currentNode.name}}</text>
+        <text class="center-info">{{currentNode.info}}</text>
+        <view class="study-btn" bindtap="goStudy">开始学习</view>
+      </view>
+
+      <view class="child-area">
+        <view class="child-card" wx:for="{{children}}" wx:key="id"
+              data-id="{{item.id}}" bindtap="selectChild">
+          <view class="child-ring" style="border-color:{{item.color}}">
+            <text class="child-num" style="color:{{item.color}}">{{item.mastery}}%</text>
+          </view>
+          <text class="child-title">{{item.name}}</text>
+          <text class="child-info">{{item.info}}</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="overlay {{showDetail ? 'show' : ''}}" bindtap="closeDetail" wx:if="{{selectedNode}}">
+    <view class="detail-card" catchtap="{{true}}">
+      <view class="detail-close" bindtap="closeDetail">X</view>
+      <view class="detail-ring" style="border-color:{{selectedNode.color}}">
+        <text class="detail-num" style="color:{{selectedNode.color}}">{{selectedNode.mastery}}%</text>
+      </view>
+      <text class="detail-title">{{selectedNode.name}}</text>
+      <text class="detail-info">{{selectedNode.info}}</text>
+      <text class="detail-st" wx:if="{{selectedNode.st}}">{{selectedNode.st}}</text>
+      <view class="btn" bindtap="goStudy">开始学习</view>
+    </view>
+  </view>
+</view>

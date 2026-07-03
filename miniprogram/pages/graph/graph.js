@@ -18,13 +18,6 @@ const INK = {
   white:      '#ffffff'
 };
 
-const valueToColor = (v) => {
-  if (v >= 75) return INK.accentDeep;
-  if (v >= 50) return INK.accent;
-  if (v >= 25) return INK.accentMid;
-  return INK.accentSoft;
-};
-
 Page({
   data: {
     subjects: ['数学', '英语', '物理', '语文', '化学', '生物', '政治', '历史', '地理'],
@@ -38,11 +31,11 @@ Page({
     pageReady: false,
     canvasStyle: '',
     dimensions: [
-      { id: 'K', name: '知识掌握', value: 57, desc: '概念·模型·技能的掌握程度' },
-      { id: 'A', name: '能力水平', value: 72, desc: '学科综合能力指数' },
-      { id: 'T', name: '迁移能力', value: 45, desc: '陌生场景调用知识的能力' },
-      { id: 'Q', name: '思维品质', value: 55, desc: '反思习惯与策略意识' },
-      { id: 'S', name: '执行稳定', value: 68, desc: '发挥一致性与计算准确率' }
+      { id: 'K', name: '知识掌握', value: 57, color: '#007aff', desc: '概念·模型·技能的掌握程度' },
+      { id: 'A', name: '能力水平', value: 72, color: '#34c759', desc: '学科综合能力指数' },
+      { id: 'T', name: '迁移能力', value: 45, color: '#ff9500', desc: '陌生场景调用知识的能力' },
+      { id: 'Q', name: '思维品质', value: 55, color: '#af52de', desc: '反思习惯与策略意识' },
+      { id: 'S', name: '执行稳定', value: 68, color: '#ff3b30', desc: '发挥一致性与计算准确率' }
     ],
     centerDesc: '五维能力综合评估'
   },
@@ -68,8 +61,14 @@ Page({
   onShow() {
     this.setData({ pageReady: false });
     setTimeout(() => this.setData({ pageReady: true }), 16);
-    // 从详情页返回时，重置聚焦状态
+    // 从详情页返回时，立即重置并重绘，不留停留
     if (this.data.isZoomed) {
+      this.cancelAnim();
+      this._scale = 1;
+      this._offX = 0;
+      this._offY = 0;
+      this._revealProgress = 1;  // 跳过入场动画
+      this._exitProgress = -1;
       this.setData({
         isZoomed: false,
         zoomedTarget: null,
@@ -77,8 +76,15 @@ Page({
         showDetailBtn: false,
         zoomedData: null
       });
+      // 立即重绘，不等 320ms
+      if (this._inited && this._canvas) {
+        this.drawGraph();
+      } else {
+        this.initCanvas();
+      }
+      return;
     }
-    // Canvas 在页面淡入完成后初始化，避免原生组件残留
+    // Canvas 在页面淡入完成后初始化
     setTimeout(() => this.initCanvas(), 320);
   },
 
@@ -323,7 +329,7 @@ Page({
     const lerp = (a, b, t) => a + (b - a) * t;
     const R = lerp(rpx(128), rpx(84), zoomT) / scale;
     const ringW = lerp(rpx(8), rpx(6), zoomT) / scale;
-    const color = valueToColor(dim.value);
+    const color = dim.color
 
     // 入场缩放（只用 scale 变换，不嵌套 save）
     const entryScale = 0.6 + 0.4 * reveal;

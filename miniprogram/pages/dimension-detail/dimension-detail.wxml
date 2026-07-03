@@ -1,5 +1,5 @@
 <view class="page">
-  <!-- 顶部 -->
+  <!-- 顶栏 -->
   <view class="header">
     <view class="back-btn" bindtap="goBack">
       <text class="back-arrow">‹</text>
@@ -7,19 +7,33 @@
     </view>
     <view class="header-center">
       <text class="header-subject">{{subject}}</text>
-      <text class="header-dim">{{dim}} · {{name}}</text>
+      <text class="header-dim">{{dimId}} · {{dimName}}</text>
     </view>
-    <view class="header-right"></view>
+    <view class="header-right">
+      <text class="header-value">{{kOverall}}%</text>
+    </view>
   </view>
 
-  <!-- 开发中占位 -->
-  <view class="placeholder">
-    <view class="icon-circle" style="background:{{color}}22; border-color:{{color}}">
-      <text class="icon-text">{{icon}}</text>
+  <!-- 三层入口 -->
+  <view class="layer-list">
+    <view class="layer-item" wx:for="{{layers}}" wx:key="id" data-id="{{item.id}}" bindtap="goLayer">
+      <view class="layer-icon" style="background:{{item.color}}15">
+        <text class="layer-emoji">{{item.icon}}</text>
+      </view>
+      <view class="layer-info">
+        <text class="layer-name">{{item.name}}</text>
+        <text class="layer-desc">{{item.desc}}</text>
+      </view>
+      <view class="layer-right">
+        <text class="layer-value" style="color:{{item.color}}">{{item.mastery}}%</text>
+        <text class="layer-arrow">▸</text>
+      </view>
     </view>
-    <text class="placeholder-title">{{name}}详情</text>
-    <text class="placeholder-desc">当前水平 {{value}}%</text>
-    <view class="dev-badge">待开发</view>
-    <text class="placeholder-hint">该页面正在建设中，敬请期待</text>
+  </view>
+
+  <!-- 底部说明 -->
+  <view class="footer">
+    <text class="footer-text">知识层掌握度计入K总分</text>
+    <text class="footer-text">模型层与方法层仅供参考</text>
   </view>
 </view>

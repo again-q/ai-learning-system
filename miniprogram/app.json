@@ -5,7 +5,11 @@
     "pages/study/study",
     "pages/graph/graph",
     "pages/mine/mine",
-    "pages/dimension-detail/dimension-detail"
+    "pages/dimension-detail/dimension-detail",
+    "pages/knowledge-tree/knowledge-tree",
+    "pages/model-cards/model-cards",
+    "pages/method-list/method-list",
+    "pages/admin/knowledge-admin/knowledge-admin"
   ],
   "window": {
     "navigationStyle": "custom",

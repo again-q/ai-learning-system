@@ -1,0 +1,25 @@
+<view class="page">
+  <!-- 顶栏 -->
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="back-arrow">‹</text>
+      <text class="back-text">K维度</text>
+    </view>
+    <text class="header-title">{{subject}} · 模型层</text>
+  </view>
+
+  <!-- 模型卡片网格 -->
+  <scroll-view class="card-scroll" scroll-y="true">
+    <view class="card-grid">
+      <view class="model-card" wx:for="{{models}}" wx:key="id" data-id="{{item.id}}" bindtap="goStudy">
+        <view class="card-status {{item.status}}"></view>
+        <text class="card-name">{{item.name}}</text>
+        <text class="card-desc">{{item.desc}}</text>
+        <view class="card-footer">
+          <text class="card-value" style="color:{{item.color}}">{{item.mastery}}%</text>
+          <text class="card-label">{{item.statusText}}</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

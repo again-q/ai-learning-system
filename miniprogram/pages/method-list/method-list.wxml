@@ -1,0 +1,29 @@
+<view class="page">
+  <!-- 顶栏 -->
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="back-arrow">‹</text>
+      <text class="back-text">K维度</text>
+    </view>
+    <text class="header-title">{{subject}} · 方法层</text>
+  </view>
+
+  <!-- 方法列表 -->
+  <scroll-view class="list-scroll" scroll-y="true">
+    <view class="method-list">
+      <view class="method-item" wx:for="{{methods}}" wx:key="id" data-id="{{item.id}}" bindtap="goStudy">
+        <view class="method-left">
+          <view class="method-status {{item.status}}"></view>
+        </view>
+        <view class="method-info">
+          <text class="method-name">{{item.name}}</text>
+          <text class="method-desc">{{item.desc}}</text>
+        </view>
+        <view class="method-right">
+          <text class="method-value" style="color:{{item.color}}">{{item.mastery}}%</text>
+          <text class="method-arrow">▸</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

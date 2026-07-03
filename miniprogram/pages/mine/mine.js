@@ -62,7 +62,7 @@ Page({
 
   goSetting() {
     if (!this.data.isLoggedIn) { this.goLogin(); return; }
-    wx.showToast({ title: '开发中', icon: 'none' });
+    wx.navigateTo({ url: '/pages/admin/knowledge-admin/knowledge-admin' });
   },
 
   goReport() {

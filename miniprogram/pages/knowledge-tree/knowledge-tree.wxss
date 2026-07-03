@@ -1,0 +1,94 @@
+page {
+  --bg: #ffffff; --bg2: #f5f5f7;
+  --t1: #1d1d1f; --t2: #6e6e73; --t3: #a1a1a6;
+  --accent: #007aff;
+  --border: #e5e5ea;
+  --so: cubic-bezier(0.16, 1, 0.3, 1);
+  --sp: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.container {
+  min-height: 100vh; background: var(--bg);
+  transition: opacity 0.3s var(--so), transform 0.3s var(--so);
+}
+.page-leaving { opacity: 0; transform: translateY(12rpx); }
+.page-enter { opacity: 1; transform: translateY(0); }
+.header {
+  display: flex; align-items: center; padding: 30rpx;
+  padding-top: calc(88rpx + env(safe-area-inset-top));
+  border-bottom: 1rpx solid var(--border);
+}
+.back-btn { padding: 10rpx 0; min-width: 100rpx; }
+.back-text { font-size: 28rpx; color: var(--accent); }
+.header-title { flex: 1; font-size: 30rpx; font-weight: 600; color: var(--t1); text-align: center; }
+.header-spacer { min-width: 100rpx; }
+.main-scroll { height: calc(100vh - 150rpx); }
+.main-area { display: flex; flex-direction: column; align-items: center; padding: 30rpx 24rpx 60rpx; }
+.parent-hint { margin-bottom: 12rpx; }
+.parent-text { font-size: 24rpx; color: var(--t2); }
+.center-block {
+  display: flex; flex-direction: column; align-items: center; gap: 8rpx;
+  padding: 10rpx; animation: pop 0.4s var(--sp) both;
+}
+.center-ring {
+  width: 136rpx; height: 136rpx; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 6rpx solid; box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06);
+}
+.center-num { font-size: 36rpx; font-weight: 700; }
+.center-title { font-size: 30rpx; font-weight: 600; color: var(--t1); }
+.center-info { font-size: 24rpx; color: var(--t2); text-align: center; }
+.study-btn {
+  font-size: 26rpx; color: var(--accent); font-weight: 600;
+  padding: 10rpx 32rpx; border-radius: 24rpx;
+  background: rgba(0,122,255,0.06); margin-top: 4rpx;
+}
+.child-area {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 24rpx; padding: 16rpx 0; width: 100%;
+}
+.child-card {
+  display: flex; flex-direction: column; align-items: center; gap: 6rpx;
+  width: 150rpx; padding: 12rpx;
+  animation: up 0.4s var(--so) both;
+}
+.child-card:active { opacity: 0.6; }
+.child-ring {
+  width: 100rpx; height: 100rpx; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 4rpx solid; box-shadow: 0 1rpx 2rpx rgba(0,0,0,0.04);
+}
+.child-num { font-size: 26rpx; font-weight: 700; }
+.child-title { font-size: 26rpx; font-weight: 500; color: var(--t1); text-align: center; }
+.child-info { font-size: 20rpx; color: var(--t3); text-align: center; }
+@keyframes pop { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: scale(1); } }
+@keyframes up { from { opacity: 0; transform: translateY(20rpx); } to { opacity: 1; transform: translateY(0); } }
+.overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.35); display: flex;
+  align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s var(--so); z-index: 100;
+}
+.overlay.show { opacity: 1; pointer-events: auto; }
+.detail-card {
+  width: 480rpx; background: var(--bg); border-radius: 32rpx;
+  padding: 40rpx 32rpx 36rpx; display: flex;
+  flex-direction: column; align-items: center; gap: 12rpx; position: relative;
+  transform: scale(0.9) translateY(20rpx);
+  transition: transform 0.35s var(--sp);
+}
+.overlay.show .detail-card { transform: scale(1) translateY(0); }
+.detail-close { position: absolute; top: 16rpx; right: 20rpx; font-size: 28rpx; color: var(--t3); padding: 10rpx; }
+.detail-ring { width: 112rpx; height: 112rpx; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 6rpx solid; }
+.detail-num { font-size: 36rpx; font-weight: 700; }
+.detail-title { font-size: 32rpx; font-weight: 600; color: var(--t1); }
+.detail-info { font-size: 24rpx; color: var(--t2); text-align: center; }
+.detail-st { font-size: 24rpx; font-weight: 500; }
+.btn {
+  width: 100%; height: 88rpx; background: var(--accent);
+  border-radius: 44rpx; display: flex; align-items: center;
+  justify-content: center; color: #fff; font-size: 28rpx;
+  font-weight: 600; margin-top: 8rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0,122,255,0.18);
+  transition: all 0.25s var(--so);
+}
+.btn:active { transform: scale(0.98); opacity: 0.92; }
