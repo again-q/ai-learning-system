@@ -68,6 +68,16 @@ Page({
   onShow() {
     this.setData({ pageReady: false });
     setTimeout(() => this.setData({ pageReady: true }), 16);
+    // 从详情页返回时，重置聚焦状态
+    if (this.data.isZoomed) {
+      this.setData({
+        isZoomed: false,
+        zoomedTarget: null,
+        showInfo: false,
+        showDetailBtn: false,
+        zoomedData: null
+      });
+    }
     // Canvas 在页面淡入完成后初始化，避免原生组件残留
     setTimeout(() => this.initCanvas(), 320);
   },
@@ -313,56 +323,51 @@ Page({
     const ringW = lerp(rpx(8), rpx(6), zoomT) / scale;
     const color = valueToColor(dim.value);
 
+    // 入场缩放（只用 scale 变换，不嵌套 save）
+    const entryScale = 0.6 + 0.4 * reveal;
+
     ctx.globalAlpha = alpha;
 
-    // 入场缩放
-    const entryScale = 0.6 + 0.4 * reveal;
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.scale(entryScale, entryScale);
-
-    // 进度环底
+    // 进度环底 — 直接用 x,y 坐标
     ctx.beginPath();
-    ctx.arc(0, 0, R, 0, Math.PI * 2);
+    ctx.arc(x, y, R * entryScale, 0, Math.PI * 2);
     ctx.strokeStyle = INK.track;
-    ctx.lineWidth = ringW;
+    ctx.lineWidth = ringW * entryScale;
     ctx.stroke();
 
     // 进度环
     const startAngle = -Math.PI / 2;
     const endAngle = startAngle + (dim.value / 100) * Math.PI * 2;
     ctx.beginPath();
-    ctx.arc(0, 0, R, startAngle, endAngle);
+    ctx.arc(x, y, R * entryScale, startAngle, endAngle);
     ctx.strokeStyle = color;
-    ctx.lineWidth = ringW;
+    ctx.lineWidth = ringW * entryScale;
     ctx.lineCap = 'round';
     ctx.stroke();
 
     // 中心白圆
     ctx.beginPath();
-    ctx.arc(0, 0, R - ringW - rpx(2) / scale, 0, Math.PI * 2);
+    ctx.arc(x, y, R * entryScale - ringW * entryScale - rpx(2) / scale, 0, Math.PI * 2);
     ctx.fillStyle = INK.white;
     ctx.fill();
 
-    // 文字（在 entryScale 坐标系，原点为节点中心）
+    // 文字
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
     // 数字（上半部分）
-    const numSize = lerp(rpx(64), rpx(40), zoomT) / scale;
+    const numSize = lerp(rpx(64), rpx(40), zoomT) / scale * entryScale;
     ctx.font = `700 ${numSize}px -apple-system, "PingFang SC", sans-serif`;
     ctx.fillStyle = color;
-    const numOffsetY = lerp(-rpx(18), -rpx(10), zoomT) / scale;
-    ctx.fillText(dim.value, 0, numOffsetY);
+    const numOffsetY = lerp(-rpx(18), -rpx(10), zoomT) / scale * entryScale;
+    ctx.fillText(dim.value, x, y + numOffsetY);
 
     // 字母（下半部分）
-    const letterSize = lerp(rpx(28), rpx(22), zoomT) / scale;
+    const letterSize = lerp(rpx(28), rpx(22), zoomT) / scale * entryScale;
     ctx.font = `600 ${letterSize}px -apple-system, sans-serif`;
     ctx.fillStyle = INK.secondary;
-    const letterOffsetY = lerp(rpx(32), rpx(20), zoomT) / scale;
-    ctx.fillText(dim.id, 0, letterOffsetY);
-
-    ctx.restore();
+    const letterOffsetY = lerp(rpx(32), rpx(20), zoomT) / scale * entryScale;
+    ctx.fillText(dim.id, x, y + letterOffsetY);
 
     // 中文名（圆圈下方，zoomT>0.5 时淡入显示）
     if (zoomT > 0.5) {
@@ -383,29 +388,33 @@ Page({
     const touch = e.touches[0] || e.changedTouches[0];
     if (!touch) return;
 
+    // 页面级触摸坐标
     const tx = touch.x !== undefined ? touch.x : touch.clientX;
     const ty = touch.y !== undefined ? touch.y : touch.clientY;
 
-    let nodes = this._nodePositions;
-    if (!nodes || nodes.length === 0) {
-      this.updateHitTargets();
-      nodes = this._nodePositions;
-    }
+    // 获取画布位置，转成画布局部坐标
+    const query = wx.createSelectorQuery();
+    query.select('.canvas-stage').boundingClientRect((rect) => {
+      if (!rect) return;
+      const canvasX = tx - rect.left;
+      const canvasY = ty - rect.top;
 
-    for (let i = 0; i < nodes.length; i++) {
-      const dist = Math.hypot(tx - nodes[i].x, ty - nodes[i].y);
-      if (dist <= nodes[i].r + rpx(16)) {
-        this.zoomToNode(i);
-        return;
+      let nodes = this._nodePositions;
+      for (let i = 0; i < nodes.length; i++) {
+        const dist = Math.hypot(canvasX - nodes[i].x, canvasY - nodes[i].y);
+        if (dist <= nodes[i].r + rpx(16)) {
+          this.zoomToNode(i);
+          return;
+        }
       }
-    }
 
-    if (this._centerPos) {
-      const dist = Math.hypot(tx - this._centerPos.x, ty - this._centerPos.y);
-      if (dist <= this._centerPos.r) {
-        this.zoomToCenter();
+      if (this._centerPos) {
+        const dist = Math.hypot(canvasX - this._centerPos.x, canvasY - this._centerPos.y);
+        if (dist <= this._centerPos.r) {
+          this.zoomToCenter();
+        }
       }
-    }
+    }).exec();
   },
 
   updateHitTargets() {
@@ -472,8 +481,7 @@ Page({
 
   zoomOut() {
     this.cancelAnim();
-    // 立即隐藏信息卡和按钮（CSS 过渡渐出）
-    this.setData({ showInfo: false, showDetailBtn: false });
+    // 不立即隐藏信息卡 — 等动画完成后才隐藏
 
     // 用 setTimeout 驱动退出动画（不依赖 canvas RAF，实机更可靠）
     const fromS = this._scale, fromX = this._offX, fromY = this._offY;
@@ -501,7 +509,9 @@ Page({
         this.setData({
           isZoomed: false,
           zoomedTarget: null,
-          zoomedData: null
+          zoomedData: null,
+          showInfo: false,
+          showDetailBtn: false
         });
         this.drawGraph();
       }
