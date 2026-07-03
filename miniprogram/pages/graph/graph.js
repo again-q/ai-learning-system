@@ -116,6 +116,7 @@ Page({
       if (size <= 0) return;
       this._size = size;
       this.setData({ canvasStyle: `width:${size}px;height:${size}px;` });
+      console.log('[graph] init canvas:', { stageRect: rect, size, dpr: this._dpr });
       this._canvas = res[1].node;
       this._ctx = this._canvas.getContext('2d');
       this._canvas.width = size * this._dpr;
@@ -123,6 +124,7 @@ Page({
       this._ctx.scale(this._dpr, this._dpr);
       this._cachedLayout = this.getNodePositions();
       this.updateHitTargets();
+      console.log('[graph] nodePositions:', JSON.stringify(this._nodePositions.map(p => ({x:p.x, y:p.y, r:p.r}))));
       this._inited = true;
       this.playReveal();
     });
@@ -388,16 +390,18 @@ Page({
     const touch = e.touches[0] || e.changedTouches[0];
     if (!touch) return;
 
-    // 页面级触摸坐标
-    const tx = touch.x !== undefined ? touch.x : touch.clientX;
-    const ty = touch.y !== undefined ? touch.y : touch.clientY;
+    // 页面级触摸坐标 — 使用 pageX/pageY（微信 Touch 标准属性）
+    const tx = touch.pageX;
+    const ty = touch.pageY;
 
     // 获取画布位置，转成画布局部坐标
     const query = wx.createSelectorQuery();
-    query.select('.canvas-stage').boundingClientRect((rect) => {
+    query.select('#graphCanvas').boundingClientRect((rect) => {
       if (!rect) return;
       const canvasX = tx - rect.left;
       const canvasY = ty - rect.top;
+
+      console.log('[graph] tap:', { tx, ty, rectL: rect.left, rectT: rect.top, canvasX, canvasY, nodes: this._nodePositions.length });
 
       let nodes = this._nodePositions;
       for (let i = 0; i < nodes.length; i++) {

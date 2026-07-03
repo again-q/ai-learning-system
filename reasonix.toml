@@ -1,0 +1,17 @@
+[[mcpServers]]
+name = "wechat-devtools"
+command = "npx"
+args = ["-y", "wechat-devtools-mcp", "--projectPath=/Users/apple/Desktop/ai学习系统开发"]
+transport = "stdio"
+
+[[mcpServers]]
+name = "wechat-miniapp-engineering-mcp"
+command = "npx"
+args = ["-y", "wechat-miniapp-engineering-mcp"]
+transport = "stdio"
+
+[[mcpServers]]
+name = "weapp-dev-mcp"
+command = "npx"
+args = ["-y", "@yfme/weapp-dev-mcp"]
+transport = "stdio"

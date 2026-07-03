@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "wechat-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "wechat-devtools-mcp",
+        "--projectPath=/Users/apple/Desktop/ai学习系统开发"
+      ]
+    }
+  }
+}
