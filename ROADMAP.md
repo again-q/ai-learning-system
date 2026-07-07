@@ -67,6 +67,8 @@
 - [x] ROADMAP.md — 开发路线图建立
 - [x] GitHub 仓库推送 — 项目代码推送至 again-q/ai-learning-system
 - [x] Code-Wiki 更新至 v1.1 — 同步项目最新状态
+- [x] README 重写 — 从门禁套件说明改为 AI 学习助手项目介绍
+- [x] uploadCloudFunction.sh 更新 — 补全全部 3 个云函数
 
 ---
 
