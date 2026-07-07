@@ -63,7 +63,10 @@
 - [x] 知识树 — 知识点树形展示
 - [x] 知识管理后台 — admin/knowledge-admin CRUD
 - [x] 设计语言 v1.1 — Apple/Notion 白色简约规范
-- [x] 编码门禁系统 — 五阶段管道 + PreToolUse Hook
+- [x] 编码门禁系统 — 五阶段管道 + PreToolUse Hook + 人肉评审门
+- [x] ROADMAP.md — 开发路线图建立
+- [x] GitHub 仓库推送 — 项目代码推送至 again-q/ai-learning-system
+- [x] Code-Wiki 更新至 v1.1 — 同步项目最新状态
 
 ---
 
@@ -72,3 +75,4 @@
 | 日期 | 更新内容 |
 |------|---------|
 | 2026-07-07 | 首次创建，基于项目扫描结果梳理 |
+| 2026-07-07 | 新增「编码门禁系统」「GitHub 推送」已完成项；推送至远程仓库 |
