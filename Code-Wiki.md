@@ -1,8 +1,8 @@
 # AI 学习助手 · Code Wiki
 
 > 项目名称：AI 学习助手（微信小程序）
-> 文档版本：v1.0
-> 生成日期：2026-07-02
+> 文档版本：v1.1
+> 生成日期：2026-07-07
 > AppID：`wx256aa9c197b2e59e`
 > 云环境：`cloud1-d8g0ty39wd73f430a`
 
@@ -114,14 +114,28 @@ ai学习系统开发/
 │       ├── study/                  # AI 学习对话页
 │       ├── graph/                  # 五维能力图谱页
 │       ├── mine/                   # 个人中心
-│       └── dimension-detail/       # 维度详情页
+│       ├── dimension-detail/       # 维度详情页
+│       ├── knowledge-tree/         # 知识树展示页
+│       ├── model-cards/            # 模型卡页
+│       ├── method-list/            # 方法列表页
+│       └── admin/knowledge-admin/  # 知识管理后台
 ├── cloudfunctions/                 # 云函数
 │   ├── userLogin/                  # 用户登录/注册云函数
+│   ├── manageKnowledge/            # 知识库管理云函数
 │   └── quickstartFunctions/        # 云开发示例云函数
+├── .reasonix/                      # Reasonix 配置（PreToolUse Hook、7个 Skill）
+├── scripts/                        # 门禁脚本
+│   ├── gate.sh                     # 统一门禁 CLI
+│   ├── doc-gate.sh                 # 阶段门禁管理
+│   ├── gate-hook.sh                # PreToolUse 门禁 Hook
+│   └── verify-coding.sh            # 编码验证脚本
 ├── project.config.json             # 项目配置（appid、编译设置）
 ├── project.private.config.json     # 项目私有配置（覆盖上面）
 ├── uploadCloudFunction.sh          # 云函数上传脚本
 ├── README.md                       # 项目说明
+├── CLAUDE.md                       # AI 行为规则（门禁流程）
+├── coding-rules.md                 # 编码铁律
+├── ROADMAP.md                      # 开发路线图
 ├── .gitignore
 └── 五维能力向量框架-理论文档.md      # 核心理论文档
 ```
@@ -198,6 +212,10 @@ App({
 4. `pages/graph/graph` — 图谱页
 5. `pages/mine/mine` — 我的页
 6. `pages/dimension-detail/dimension-detail` — 维度详情页
+9. `pages/knowledge-tree/knowledge-tree` — 知识树页
+10. `pages/model-cards/model-cards` — 模型卡页
+11. `pages/method-list/method-list` — 方法列表页
+12. `pages/admin/knowledge-admin/knowledge-admin` — 知识管理后台
 
 **TabBar 配置**（4 个标签）：
 
@@ -217,7 +235,7 @@ App({
 | `miniprogramRoot` | `miniprogram/` | 小程序代码根目录 |
 | `cloudfunctionRoot` | `cloudfunctions/` | 云函数根目录 |
 | `appid` | `wx256aa9c197b2e59e` | 小程序 AppID |
-| `libVersion` | `2.20.1` | 基础库版本 |
+| `libVersion` | `3.16.2` | 基础库版本 |
 
 ---
 
@@ -685,9 +703,47 @@ ${installPath} cloud functions deploy --e ${envId} --n quickstartFunctions --r -
 
 ---
 
-## 十三、设计约定与待开发项
+## 十三、编码门禁系统（Coding Enforcement Kit）
 
-### 13.1 设计约定
+项目集成了基于 Reasonix 的五阶段门禁系统，所有编码工作必须按流程推进。
+
+### 13.1 五阶段流程
+
+```
+PRD → 架构 → 详细设计 → 编码 → 代码评审
+```
+
+### 13.2 关键组件
+
+| 组件 | 位置 | 作用 |
+|------|------|------|
+| `gate.sh` | `scripts/gate.sh` | 统一门禁 CLI（status/check/pass/unpass/pre/post） |
+| `gate-hook.sh` | `scripts/gate-hook.sh` | PreToolUse Hook，编辑代码前检查上游阶段是否完成 |
+| `.reasonix/settings.json` | 项目根目录 | Hook 配置，拦截 `edit_file`/`write_file` |
+| `CLAUDE.md` | 项目根目录 | AI 行为规则（禁止跳步、自动推进） |
+| `coding-rules.md` | 项目根目录 | 各阶段详细执行流程 |
+
+### 13.3 人肉评审门
+
+每个文档阶段（PRD/架构/详细设计）归零后，必须用 `ask()` 工具向用户展示关键决策摘要，等待用户确认后再 `gate.sh pass`。避免 AI 自循环导致需求偏差。
+
+### 13.4 7 个 Skill
+
+| Skill | 职责 |
+|-------|------|
+| `conductor` | 全自动编排五阶段管道 |
+| `prd-writer` | 产 PRD 需求文档（多轮访谈 + 5W1H 框架） |
+| `system-architect` | 系统架构设计 |
+| `task-decomposer` | 模块级详细设计 |
+| `gatekeeper` | 按设计文档编码（唯一有 edit/write 权限的 Skill） |
+| `code-reviewer` | 代码质量审查 |
+| `review-expert` | 文档评审（PRD/架构/详细设计） |
+
+---
+
+## 十四、设计约定与待开发项
+
+### 14.1 设计约定
 
 1. **颜色规范**（iOS 设计语言）：
    - 主色 `#007aff`（蓝）、成功 `#34c759`（绿）、警告 `#ff9500`（橙）
@@ -697,7 +753,7 @@ ${installPath} cloud functions deploy --e ${envId} --n quickstartFunctions --r -
 3. **导航**：全局 `navigationStyle: custom`，各页自绘导航栏
 4. **登录态管理**：单一来源 `app.globalData.userInfo`，配合 `wx.setStorageSync` 持久化
 
-### 13.2 待开发项
+### 14.2 待开发项
 
 | 模块 | 当前状态 | 待办 |
 |------|---------|------|
@@ -712,7 +768,7 @@ ${installPath} cloud functions deploy --e ${envId} --n quickstartFunctions --r -
 | 执行稳定 S | 理论已有 | 接入模拟考 + 心理自评 |
 | 学科拓展 | 数学/英语等 5 科 mock | Core+Adapter 全科适配 |
 
-### 13.3 已知技术债
+### 14.3 已知技术债
 
 - `envList.js` 为空占位，未实际使用
 - `quickstartFunctions` 为模板自带，与业务无关，可考虑清理
@@ -734,8 +790,9 @@ ${installPath} cloud functions deploy --e ${envId} --n quickstartFunctions --r -
 | [mine.js](file:///Users/apple/Desktop/ai%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/miniprogram/pages/mine/mine.js) | 73 | 个人中心 |
 | [dimension-detail.js](file:///Users/apple/Desktop/ai%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/miniprogram/pages/dimension-detail/dimension-detail.js) | 27 | 维度详情占位页 |
 | [userLogin/index.js](file:///Users/apple/Desktop/ai%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/cloudfunctions/userLogin/index.js) | 74 | 用户登录/注册云函数 |
+| [manageKnowledge/index.js](file:///Users/apple/Desktop/ai%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/cloudfunctions/manageKnowledge/index.js) | 90 | 知识库 CRUD 云函数 |
 | [quickstartFunctions/index.js](file:///Users/apple/Desktop/ai%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/cloudfunctions/quickstartFunctions/index.js) | 185 | 示例云函数集合 |
 
 ---
 
-*文档结束 · 基于 2026-07-02 代码快照生成*
+*文档结束 · 基于 2026-07-07 代码快照生成*
