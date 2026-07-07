@@ -68,6 +68,7 @@
 - [x] GitHub 仓库推送 — 项目代码推送至 again-q/ai-learning-system
 - [x] Code-Wiki 更新至 v1.1 — 同步项目最新状态
 - [x] README 重写 — 从门禁套件说明改为 AI 学习助手项目介绍
+- [x] README 更新 — 明确「课后辅助工具，不代替学校」定位
 - [x] uploadCloudFunction.sh 更新 — 补全全部 3 个云函数
 
 ---
