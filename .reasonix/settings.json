@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "command": "bash scripts/gate-hook.sh",
+        "match": "^(edit_file|write_file)$",
+        "description": "阶段门禁检查：编辑代码前验证详细设计是否已完成评审",
+        "timeout": 5000
+      }
+    ],
+    "PostToolUse": [],
+    "UserPromptSubmit": [],
+    "Stop": []
+  }
+}
