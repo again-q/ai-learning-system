@@ -1,0 +1,18 @@
+{
+  "currentPhase": "complete",
+  "completed": [
+    "K-definition-with-BKT-formula",
+    "A-definition-懂到会用",
+    "T-definition-cross-knowledge",
+    "Q-definition-error-recovery-weighted-composite",
+    "S-definition-calculation-error-rate",
+    "core-pipeline-error-classification",
+    "theory-document-updated-to-v2"
+  ],
+  "deliverables": [
+    "五维能力向量框架-理论文档.md updated to v2.0 with engineering definitions",
+    "Core pipeline (photo → LLM error classification → dimension scoring) documented",
+    "All 5 dimensions given concrete formulas and data sources",
+    "External AI feedback integrated (cold start, correlation decoupling, labeling risk)"
+  ]
+}

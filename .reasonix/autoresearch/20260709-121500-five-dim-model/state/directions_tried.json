@@ -1,0 +1,26 @@
+[
+  {
+    "direction": "Q-as-error-recovery-speed",
+    "approach": "Pure attempt counting (wrong→right conversion attempts)",
+    "status": "rejected_by_user",
+    "reason": "User felt attempt counting alone was inaccurate"
+  },
+  {
+    "direction": "Q-as-error-type-shift",
+    "approach": "Track whether error type changes across consecutive attempts on same knowledge node",
+    "status": "proposed_awaiting_response",
+    "models": "Scheme 1 in last proposal"
+  },
+  {
+    "direction": "Q-as-correction-persistence",
+    "approach": "After first correct, measure sustained correctness (relapse detection)",
+    "status": "proposed_awaiting_response",
+    "models": "Scheme 2 in last proposal"
+  },
+  {
+    "direction": "Q-as-weighted-composite",
+    "approach": "Composite: error type shift + persistence + attempt count + time decay",
+    "status": "proposed_awaiting_response",
+    "models": "Scheme 3 in last proposal"
+  }
+]

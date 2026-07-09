@@ -1,0 +1,1 @@
+{"ts":"2026-07-09T12:20:00","phase":"S-first-principles","finding":"S measures the gap between knowing and performing under normal conditions","evidence":"From the error classification pipeline, calculation/transcription errors (计算失误/抄错数字) directly map to S deficiency. All other error types map to K/A/T. This gives S a clean, non-overlapping signal."}
