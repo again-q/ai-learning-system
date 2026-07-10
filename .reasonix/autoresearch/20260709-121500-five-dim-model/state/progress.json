@@ -1,18 +1,39 @@
-{
-  "currentPhase": "complete",
-  "completed": [
-    "K-definition-with-BKT-formula",
-    "A-definition-懂到会用",
-    "T-definition-cross-knowledge",
-    "Q-definition-error-recovery-weighted-composite",
-    "S-definition-calculation-error-rate",
-    "core-pipeline-error-classification",
-    "theory-document-updated-to-v2"
-  ],
-  "deliverables": [
-    "五维能力向量框架-理论文档.md updated to v2.0 with engineering definitions",
-    "Core pipeline (photo → LLM error classification → dimension scoring) documented",
-    "All 5 dimensions given concrete formulas and data sources",
-    "External AI feedback integrated (cold start, correlation decoupling, labeling risk)"
-  ]
-}
+## 理论完善度评估
+
+### K 维度 — 75%
+
+**已定稿的部分：**
+- 七要素类型归属 ✅
+- 三层结构（知识层/模型层/方法层）✅
+- BKT 公式推导 ✅
+- 非重叠原则（P(S)/P(G)来源）✅
+- 得分率插值处理 ✅
+- 批量上传策略 ✅
+- 做题时间估算规则 ✅
+
+**未讨论的缺口（25%）：**
+- 做错时加不加 P(T)？（需要决定）
+- P(L) 从接近0跳到高值的合理性（需要决定）
+- 知识点前置依赖关系（需要决定）
+- 参数冷启动默认值（需要讨论）
+
+### A 维度 — 10%
+定义清楚（懂→会用），但算法细节完全没展开
+
+### T 维度 — 5%
+定义清楚（跨知识点聚合），但依赖知识图谱，迁移框架未讨论
+
+### Q 维度 — 40%
+思维链评分机制已定稿，但弹窗交互设计、高价值题目规则未细化
+
+### S 维度 — 15%
+预期偏差模型已定方向，但算法细节、权重完全没展开
+
+### 整体理论完善度：约 30%
+
+骨架搭好了，但每个维度都需要像 K 一样逐层深入讨论。
+
+### 待办
+- [ ] 迁移框架（T维度）详细讨论
+- [ ] 各学科适配（学科认知原语）
+- [ ] K维度剩余3个缺口（P(T)时机、跳跃合理性、前置依赖）
