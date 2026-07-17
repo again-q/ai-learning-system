@@ -15,3 +15,6 @@ name = "weapp-dev-mcp"
 command = "npx"
 args = ["-y", "@yfme/weapp-dev-mcp"]
 transport = "stdio"
+
+[permissions]
+allow = ["Bash(cd /Users/apple/Desktop/ai-learning-system && git log --oneline -20)", "Bash(cd /Users/apple/Desktop/ai-learning-system && git status --short)"]
