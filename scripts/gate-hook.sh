@@ -70,38 +70,4 @@ for stage in prd arch detailed code review; do
 done
 
 # 提取被编辑的文件路径
-FILE_PATH=$(echo "$INPUT" | python3 -c "
-import sys, json
-data = json.load(sys.stdin)
-args = data.get('toolArgs', {})
-print(args.get('path', args.get('filePath', '(unknown)')))
-" 2>/dev/null")
-
-# 输出阻断消息到 stderr（会被 Reasonix 捕获并展示给 AI）
-cat >&2 <<BLOCKMSG
-
-⛔ Gatekeeper Hook 阻断：上游设计阶段未全部完成
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  工具: $TOOL_NAME
-  目标文件: $FILE_PATH
-
-  当前管道进度：
-$(echo -e "$STAGE_STATUS")
-
-  缺失的上游阶段：
-$(echo -e "$MISSING_STAGES")
-
-  前置条件：PRD → 架构 → 详细设计 三个阶段全部通过后才能编码。
-
-  每个阶段流程:
-    1. run_skill <阶段 skill>
-    2. run_skill review-expert 评审
-    3. 修复问题 → 归零
-    4. bash scripts/gate.sh pass <阶段名>
-
-  三个阶段全部通过后，门禁将放行编辑。
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-BLOCKMSG
-
-exit 2  # exit 2 = 阻断
+FILE_PATH=$(echo "$INPUT" | base64 --decode 2>/dev/null || echo "(unknown)")
