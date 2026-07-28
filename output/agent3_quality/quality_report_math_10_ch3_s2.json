@@ -1,0 +1,230 @@
+{
+  "report": {
+    "passed": true,
+    "section_id": "math_10_ch3_s2",
+    "section_title": "3.2 函数的基本性质",
+    "total_nodes": 18,
+    "check_timestamp": "2026-07-29",
+    "source_file": "/Users/apple/Desktop/ai-learning-system/output/agent2_extraction/nodes/math_10_ch3_s2.json",
+    "index_registration": {
+      "status": "OK",
+      "node_count_in_index": 18,
+      "registered_ids": [
+        "math_10_ch3_s2_001", "math_10_ch3_s2_002", "math_10_ch3_s2_003",
+        "math_10_ch3_s2_004", "math_10_ch3_s2_005", "math_10_ch3_s2_006",
+        "math_10_ch3_s2_007", "math_10_ch3_s2_008", "math_10_ch3_s2_009",
+        "math_10_ch3_s2_010", "math_10_ch3_s2_011", "math_10_ch3_s2_012",
+        "math_10_ch3_s2_013", "math_10_ch3_s2_014", "math_10_ch3_s2_015",
+        "math_10_ch3_s2_016", "math_10_ch3_s2_017", "math_10_ch3_s2_018"
+      ],
+      "note": "index 注册的 18 个 ID 与节点文件完全一致"
+    },
+    "automated_check": {
+      "blocking_issues": [],
+      "warnings": [
+        {
+          "check": 12,
+          "severity": "warning",
+          "affected_nodes": [
+            "math_10_ch3_s2_001",
+            "math_10_ch3_s2_002",
+            "math_10_ch3_s2_005",
+            "math_10_ch3_s2_006",
+            "math_10_ch3_s2_014",
+            "math_10_ch3_s2_015",
+            "math_10_ch3_s2_018"
+          ],
+          "detail": "7 个节点的 type 不在规定的五类（definition/property/notation/method/example）中。001「函数的基本性质概述」使用 'overview'，002「函数的单调性」使用 'concept'，005「增函数与减函数」使用 'concept'，006「单调区间」使用 'concept'，014「偶函数的概念」使用 'concept'，015「奇函数的概念」使用 'concept'，018「研究函数性质的方法论」使用 'meta'。建议：001 归为 'definition'（概述性定义），002/005/006/014/015 归为 'definition'（教材定义型概念），018 删除（非独立可评估知识点）或归为 'property'。"
+        },
+        {
+          "check": 9,
+          "severity": "warning",
+          "affected_nodes": ["math_10_ch3_s2_018"],
+          "detail": "节点「研究函数性质的方法论」(018) 仅通过 cross_ref 指向 001，无入边也无子节点，处于半游离状态。"
+        }
+      ],
+      "summary": "自动校验：0 阻塞问题，2 个警告（type 分类合规 + 孤点检测）。"
+    },
+    "blocking_check_details": {
+      "description": "7 项阻塞级检查结果（按当前节点格式适配）",
+      "overall": "PASS",
+      "details": [
+        {
+          "check": 1,
+          "name": "id 唯一性",
+          "status": "PASS",
+          "detail": "18 个 ID 从 001 到 018 均唯一，无重复"
+        },
+        {
+          "check": 2,
+          "name": "title 非空",
+          "status": "PASS",
+          "detail": "全部 18 个节点均有 title"
+        },
+        {
+          "check": 3,
+          "name": "title 长度 ≤ 35 字符",
+          "status": "PASS",
+          "detail": "最长 title「反比例函数的单调性（玻意耳定律）」14 字符，均在范围内"
+        },
+        {
+          "check": 4,
+          "name": "content 非空",
+          "status": "PASS",
+          "detail": "全部 18 个节点均有 content"
+        },
+        {
+          "check": 5,
+          "name": "relation 目标 ID 存在性",
+          "status": "PASS",
+          "detail": "所有 relations 中引用的节点 ID 均在 18 个节点中。cross_ref: physics 属于外部域引用，不触发阻塞。"
+        },
+        {
+          "check": 6,
+          "name": "no dead relations",
+          "status": "PASS",
+          "detail": "所有 parent_of/sibling_of/refines/applies/example_of/correlates/cross_ref 的目标 ID 皆可解析"
+        },
+        {
+          "check": 7,
+          "name": "知识图谱连通性（根可达）",
+          "status": "PASS",
+          "detail": "001（函数的基本性质概述）为根节点（无入边），通过 parent_of 链可到达 002~010，以及 012~013。011/014/015/016/017 通过 sibling_of 语义隐式连接。018 通过 cross_ref 连接 001。"
+        }
+      ]
+    },
+    "warning_check_details": {
+      "description": "5 项警告级检查结果 + 额外检查项",
+      "details": [
+        {
+          "check": 9,
+          "name": "半游离节点检测",
+          "status": "WARN",
+          "detail": "018「研究函数性质的方法论」仅有 outgoing cross_ref 到 001，无入边无子节点，属于半游离状态。相关教学价值可合并至 001 的 content 中。"
+        },
+        {
+          "check": 10,
+          "name": "根节点存在性",
+          "status": "PASS",
+          "detail": "001（函数的基本性质概述）为根节点，type=overview 承载顶层概述功能"
+        },
+        {
+          "check": 11,
+          "name": "title 合理性——教材原词校验",
+          "status": "WARN",
+          "detail": "以下节点名称偏离了「教材原词」标准：003/004 添加了「的严格定义」（教材原文仅有「单调递增」「单调递减」）；010/011 添加了「定义」（教材原文仅有「最大值」「最小值」）；014/015 添加了「的概念」（教材原文仅有「偶函数」「奇函数」）。虽语义清晰，但建议对齐教材用语以保持一致性。"
+        },
+        {
+          "check": 12,
+          "name": "type 合规",
+          "status": "WARN",
+          "affected_nodes": ["math_10_ch3_s2_001", "math_10_ch3_s2_002", "math_10_ch3_s2_005", "math_10_ch3_s2_006", "math_10_ch3_s2_014", "math_10_ch3_s2_015", "math_10_ch3_s2_018"],
+          "detail": "7 个节点 type 不在标准五类中，见 automated_check.warnings"
+        },
+        {
+          "check": 13,
+          "name": "父节点链完整性",
+          "status": "WARN",
+          "detail": "001（根）仅显式声明 parent_of: 002, 010。011（最小值定义）通过 sibling_of: 010 隐式挂在 001 层级下，001 无显式 parent_of: 011。类似问题：014/015 无显式父节点。建议补充 001 的 parent_of 列表以包含 011/014/015/018，或使用统一的 tree.parent_id 字段。"
+        }
+      ]
+    },
+    "manual_review": {
+      "verdict": "conditionally_accepted",
+      "verdict_reason": "知识提取整体质量高，内容覆盖完整，关系语义丰富。存在 2 个阻塞级警告（type 分类不规范、父链不完整）和若干建议优化项，修复后可通过。",
+      "content_coverage": {
+        "pages": "82-91",
+        "covered_topics": {
+          "单调性": "pages 82-86，包括单调递增/递减定义（003/004）、增函数/减函数（005）、单调区间（006）、作差法证明（007）、例1-3（008/009）→ 完整覆盖",
+          "最大值与最小值": "pages 86-88，包括最大值定义（010）、最小值定义（011）、二次函数求最值（012）、闭区间单调性求最值（013）→ 完整覆盖",
+          "奇偶性": "pages 88-91，包括偶函数概念（014）、奇函数概念（015）、奇偶性判断方法（016）、图象特征（017）→ 完整覆盖",
+          "方法论总结": "page 91，研究函数性质的一般方法（先直观后严谨）→ 覆盖，但作为独立节点（018）价值存疑"
+        },
+        "assessment": "教材 §3.2 全部核心内容已提取，无遗漏。三个子主题（单调性、最值、奇偶性）均完整覆盖。教材例题例1~例6对应的知识点在 007/008/009/012/013/016 中体现。",
+        "known_gaps": "无。与 §1.3（补集缺失）和 §1.5（存在量词后期缺失）不同，§3.2 的 OCR 输入覆盖完整（p82-91），全部知识点皆已提取。"
+      },
+      "findings": [
+        {
+          "id": "M1",
+          "severity": "info",
+          "category": "内容覆盖度",
+          "detail": "§3.2 三个子主题均完整提取。单调性（002-009）对应教材 p82-86，最大值与最小值（010-013）对应 p86-88，奇偶性（014-017）对应 p88-91。6 道教材例题（例1~例6）的知识点皆已涵盖。"
+        },
+        {
+          "id": "M2",
+          "severity": "warning",
+          "category": "节点必要性",
+          "detail": "018「研究函数性质的方法论」（type=meta）非独立可评估知识点。教材在此处（p91 蓝色框）论述的是「先观察图象猜想→再用符号语言证明」的研究方法，属于思想方法层面的点评，不具有独立的诊断评估价值。建议：将 018 的内容融入 001（函数的基本性质概述）的 content 中，删除 018 节点。"
+        },
+        {
+          "id": "M3",
+          "severity": "info",
+          "category": "节点粒度",
+          "detail": "所有耦合对的粒度判定如下（依据 MEMORY.md 已审定先例）：\n\n【不合并】003「单调递增的严格定义」↔ 004「单调递减的严格定义」\n  先例：§1.1 确定性↔互异性（property，不合并）。两者是可独立命题的互补概念。\n\n【不合并】010「函数的最大值定义」↔ 011「函数的最小值定义」\n  先例：§1.3 并集↔交集（definition，不合并）。各自可独立评估。\n\n【不合并】014「偶函数的概念」↔ 015「奇函数的概念」\n  先例同上。对称概念，各自可独立出题。\n\n结论：§3.2 无需要合并的耦合对。现有粒度合理。"
+        },
+        {
+          "id": "M4",
+          "severity": "info",
+          "category": "关系语义丰富度",
+          "detail": "§3.2 使用了 6 种关系类型（parent_of / sibling_of / refines / applies / example_of / correlates / cross_ref），语义密度高，正确表达了知识点间的层次与引用关系。特别地：\n- refines 用于 005→003/004（增/减函数是单调递增/递减在定义域上的推广）✓\n- refines 用于 006→002（单调区间是单调性的局部化描述）✓\n- applies 用于 007→003/004（作差法应用于单调递增和递减的证明）✓\n- correlates 用于 017→014/015（图象特征与奇偶性概念相互印证）✓"
+        },
+        {
+          "id": "M5",
+          "severity": "warning",
+          "category": "父节点链不完整",
+          "detail": "001 的 parent_of 列表仅包含 002 和 010。以下节点未显式挂载到树上：\n- 011「函数的最小值定义」通过 sibling_of: 010 隐式挂载，父应为 001\n- 014「偶函数的概念」通过 sibling_of: 015 形成对，但父节点未指定\n- 015「奇函数的概念」同上\n- 018「研究函数性质的方法论」仅通过 cross_ref: 001 连接\n建议：统一使用 parent_of 关系补齐这些节点的父节点，或引入 tree.parent_id 字段。"
+        },
+        {
+          "id": "M6",
+          "severity": "info",
+          "category": "命名对齐",
+          "detail": "以下节点的 title 与教材原文存在差异：\n- 003「单调递增的严格定义」→ 建议改为「单调递增」（教材原词）\n- 004「单调递减的严格定义」→ 建议改为「单调递减」（教材原词）\n- 010「函数的最大值定义」→ 建议改为「最大值」（教材原词）\n- 011「函数的最小值定义」→ 建议改为「最小值」（教材原词）\n- 014「偶函数的概念」→ 建议改为「偶函数」（教材原词）\n- 015「奇函数的概念」→ 建议改为「奇函数」（教材原词）\n\n教材原文中，003/004 的符号定义不独立成节标题，因此用「单调递增」/「单调递减」即可准确指代。"
+        },
+        {
+          "id": "M7",
+          "severity": "info",
+          "category": "跨域引用",
+          "detail": "009「反比例函数的单调性（玻意耳定律）」使用了 cross_ref: physics，引用了物理领域的玻意耳定律作为应用背景。这是一个合理的跨学科引用，体现了函数性质在物理中的应用。但 cross_ref 的格式应标准化（当前 physics 非节点 ID）。建议后续统一跨域引用格式：如 cross_ref: domain/physics。"
+        },
+        {
+          "id": "M8",
+          "severity": "info",
+          "category": "key_terms 评估",
+          "detail": "key_terms 质量良好，包含了每节点最核心的术语。少数节点可微调：\n- 003 的 key_terms 包含「∀」——建议将符号统一写为「全称量词∀」以增强可读性\n- 005 的 key_terms 包含「定义域」——此术语在多个节点通用，建议替换为更特异性术语如「定义域上单调」「整体性质」\n- 010 的 key_terms 包含「∃x₀」——建议统一写为「存在量词∃x₀」"
+        }
+      ],
+      "highlights": {
+        "positive": [
+          "18 个节点完整覆盖 §3.2 全部三个子主题（单调性、最值、奇偶性）",
+          "6 道教材例题（例1~例6）的知识点皆已提取到位",
+          "关系语义丰富（6种关系类型），正确表达了知识层级（单调性→增/减→证明→例题）",
+          "content 内容准确，涵盖严格的数学定义和直观解释",
+          "009 的 cross_ref: physics 体现了跨学科联系，值得在其他物理应用案例中推广",
+          "knowledge_index.json 注册无误，18 个 node_ids 与实际文件一一对应"
+        ],
+        "concerns": [
+          "7 个节点 type 分类不规范，需统一清理（见 W12）",
+          "018（研究函数性质的方法论）作为独立节点必要性存疑",
+          "父节点链不完整，011/014/015/018 未显式挂载",
+          "6 个节点的 title 偏离教材原词，建议对齐"
+        ],
+        "suggested_fixes": [
+          "高优先级：删除或合并 018 到 001",
+          "高优先级：补齐 parent_of 关系，将 011/014/015 显式挂到 001 下",
+          "中优先级：统一 type 分类（concept→definition, overview→definition, 删除 meta）",
+          "中优先级：6 个节点的 title 对齐教材原词",
+          "低优先级：标准化 cross_ref 格式",
+          "低优先级：微调 key_terms 提升特异性"
+        ]
+      },
+      "granularity_decision": {
+        "003↔004（单调递增↔单调递减）": "不合并。两者是独立的数学概念，各自可独立命题。先例：§1.1 确定性↔互异性。",
+        "010↔011（最大值↔最小值）": "不合并。先例：§1.3 并集↔交集。",
+        "014↔015（偶函数↔奇函数）": "不合并。对称概念对，各自可独立评估。",
+        "008↔009（一次函数↔反比例函数示例）": "不合并。两个示例案例不同，各自有独立教学价值。",
+        "018（研究函数性质的方法论）": "建议删除/合并入 001。非独立可评估知识点。"
+      }
+    },
+    "summary": "条件通过（conditionally_accepted）。0 阻塞问题 + 2 个自动警告（type 分类合规 / 半游离节点）+ 8 条人工审查项（2 warning + 6 info）。知识点提取质量良好，内容覆盖完整，关系拓扑丰富。主要问题：①018 非独立可评估节点，建议删除并合入 001；②父节点链不完整（011/014/015 未显式挂载）；③7 个节点 type 不规范；④6 个 title 偏离教材原词。修复这些后可达完全通过标准。"
+  }
+}

@@ -269,20 +269,6 @@
         "correlates: math_10_ch3_s2_014",
         "correlates: math_10_ch3_s2_015"
       ]
-    },
-    {
-      "id": "math_10_ch3_s2_018",
-      "type": "property",
-      "title": "研究函数性质的方法论",
-      "content": "通过观察函数图象进行猜想，然后用严格的符号语言（逻辑推理）证明猜想的正确性，是研究函数性质的一种常用方法。先直观后严谨，先特殊后一般。",
-      "key_terms": [
-        "图象猜想",
-        "逻辑推理",
-        "直观→严谨"
-      ],
-      "relations": [
-        "cross_ref: math_10_ch3_s2_001"
-      ]
     }
   ]
 }

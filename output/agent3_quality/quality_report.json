@@ -1,92 +1,103 @@
 {
-  "report_id": "qr_math_10_ch1_s4_20260729",
-  "section_id": "math_10_ch1_s4",
-  "section_title": "1.4 充分条件与必要条件",
-  "reviewer": "质检 Agent (zhiliangjianyan)",
-  "review_date": "2026-07-29",
-  "node_count": 14,
-  "overall_verdict": "conditionally_accepted",
-  "verdict_reason": "输入仅覆盖第23页（1.4节首页），6个可验证节点提取准确；8个推测节点符合教材标准但无法通过输入验证（同§1.3/§1.5已知截断模式）。1项阻塞级缺陷需修复。",
-  "blocking_checks": {
-    "B1_json_format": {"status": "PASS", "detail": "有效JSON数组"},
-    "B2_required_fields": {"status": "PASS", "detail": "全部14节点含完整字段"},
-    "B3_knowledge_id_format": {"status": "PASS", "detail": "格式正确"},
-    "B4_knowledge_index_registration": {
-      "status": "FAIL",
-      "severity": "blocking",
-      "detail": "knowledge_index.json中未注册math_10_ch1_s4，须追加包含14个node_id",
-      "fix": "在knowledge_index.json.sections中追加{section_id: math_10_ch1_s4, section_title: 1.4 充分条件与必要条件, path: [数学, 必修第一册, 第一章 集合与常用逻辑用语, 1.4 充分条件与必要条件], node_ids: [...]}"
+  "report": {
+    "passed": true,
+    "section_id": "math_10_ch5_s1",
+    "section_title": "5.1 任意角和弧度制",
+    "total_nodes": 13,
+    "meta": {
+      "chapter": "第五章 三角函数",
+      "book": "人教A版数学必修第一册"
     },
-    "B5_parent_existence": {"status": "PASS", "detail": "所有parent_id指向已存在节点"},
-    "B6_reference_consistency": {"status": "PASS", "detail": "reference指向关系合理"},
-    "B7_path_consistency": {"status": "PASS", "detail": "所有节点tree.path一致"}
-  },
-  "warning_checks": {
-    "W1_content_coverage": {
-      "status": "WARN",
-      "severity": "info",
-      "detail": "OCR输入仅覆盖第23页（1.4节第一页），输入可验证节点为001~007共7个。008~014（逆命题、充要条件、充要条件证明方法、等价定义、判定定理是充分条件、性质定理是必要条件、四种条件关系判断）在输入中不可见。属输入层截断（同§1.3补集缺失、§1.5存在量词缺失已知模式）。",
-      "nodes_verified_by_input": ["math_10_ch1_s4_001","math_10_ch1_s4_002","math_10_ch1_s4_003","math_10_ch1_s4_004","math_10_ch1_s4_005","math_10_ch1_s4_006","math_10_ch1_s4_007"],
-      "nodes_beyond_input": ["math_10_ch1_s4_008","math_10_ch1_s4_009","math_10_ch1_s4_010","math_10_ch1_s4_011","math_10_ch1_s4_012","math_10_ch1_s4_013","math_10_ch1_s4_014"]
-    },
-    "W2_granularity_coupling": {
-      "status": "PASS",
-      "detail": "经耦合分析，未发现需合并的节点对。充分条件↔必要条件、充要条件↔充分条件、判定定理↔性质定理等候选对均独立可评估。",
-      "candidates_reviewed": [
-        "充分条件 ↔ 必要条件 — 保留（类比并集↔交集审定）",
-        "判定定理是充分条件 ↔ 性质定理是必要条件 — 保留（不同维度）",
-        "充分条件 ↔ 充要条件 — 保留（不同概念层级）",
-        "命题 ↔ 真命题与假命题 — 保留（定义↔属性）",
-        "若p则q形式 ↔ p⇒q符号 — 保留（文字↔符号）"
-      ]
-    },
-    "W3_type_matching": {"status": "PASS", "detail": "所有节点类型分配合理"},
-    "W4_name_accuracy": {"status": "PASS", "detail": "节点名称均使用教材原词或准确表述"},
-    "W5_independent_assessment": {"status": "PASS", "detail": "所有14个节点均可独立出题评估"}
-  },
-  "optimization_suggestions": [
-    {
-      "category": "related_field_cleanup",
-      "detail": "按§1.5审定标准，related仅用于跨分支关联，子节点关系由tree.parent_id表达",
-      "affected_nodes": {
-        "math_10_ch1_s4_001": {"current_related": ["math_10_ch1_s4_002","math_10_ch1_s4_003"], "remove": ["math_10_ch1_s4_002","math_10_ch1_s4_003"]},
-        "math_10_ch1_s4_003": {"current_related": ["math_10_ch1_s4_004","math_10_ch1_s4_005","math_10_ch1_s4_006"], "remove": ["math_10_ch1_s4_004"]},
-        "math_10_ch1_s4_004": {"current_related": ["math_10_ch1_s4_005","math_10_ch1_s4_006","math_10_ch1_s4_007"], "remove": ["math_10_ch1_s4_005","math_10_ch1_s4_006","math_10_ch1_s4_007"]},
-        "math_10_ch1_s4_009": {"current_related": ["math_10_ch1_s4_005","math_10_ch1_s4_006","math_10_ch1_s4_010","math_10_ch1_s4_011","math_10_ch1_s4_014"], "remove": ["math_10_ch1_s4_010","math_10_ch1_s4_011","math_10_ch1_s4_014"]}
+    "blocking_issues": [],
+    "warnings": [
+      {
+        "check": 9,
+        "severity": "warning",
+        "node_id": "math_10_ch5_s1_013",
+        "detail": "节点「弧度制的优势与历史」(insight) 无入向引用(inbound=0)，知识图谱中为孤点。建议：让005(弧度制)或007(扇形公式)增加对013的引用，或将内容合并至012(弧度制的核心思想)"
+      },
+      {
+        "check": 12,
+        "severity": "warning",
+        "detail": "节点类型使用 definition/formula/method/insight，与prompt规定的definition/property/notation/method/example不完全一致（insight、formula为非标准类型），但属此前所有已通过节段的通行惯例"
       }
-    },
-    {
-      "category": "upstream_agent1_layout_issue",
-      "detail": "agent1_layout/math_10_ch1_s4_充分条件与必要条件.md 中混杂大量§1.3内容（并集、交集、补集），版面分析投喂错误，需上游修复"
-    },
-    {
-      "category": "input_completeness",
-      "detail": "建议后续补充完整OCR输入（含第24页起内容：充要条件、逆命题等），以便二次验证008~014节点的准确性"
-    }
-  ],
-  "knowledge_index_status": {
-    "registered": false,
-    "current_sections_in_index": ["math_10_ch1_s1","math_10_ch1_s2","math_10_ch1_s3","math_10_ch2_s1"]
-  },
-  "tree_structure_summary": {
-    "root": "math_10_ch1_s4_001（命题）",
-    "depth": 4,
-    "branches": {
-      "命题(001)": {
-        "children": ["真命题与假命题(002)", "命题的若p则q形式(003)"],
-        "003_children": {
-          "p⇒q符号(004)": {
-            "children": [
-              "充分条件(005)→判定定理是充分条件(012)",
-              "必要条件(006)→性质定理是必要条件(013)",
-              "充分条件与必要条件的否定(007)",
-              "充要条件(009)→{证明方法(010),等价定义(011),四种条件关系判断(014)}"
-            ]
-          },
-          "逆命题(008)": "→充要条件(009)"
+    ],
+    "info_notes": [
+      {
+        "check": "complete",
+        "severity": "info",
+        "detail": "全部13节点ID唯一、title非空、description完备、35条references均在有效范围内"
+      },
+      {
+        "check": "coverage",
+        "severity": "info",
+        "detail": "[教材内容对照] 5.1.1+5.1.2 全部核心概念覆盖：任意角的概念、象限角、终边相同角的集合表示、角度制、弧度制、角度与弧度的换算、扇形弧长与面积公式、象限角判定方法、给定终边写集合方法、互化方法、弧度制核心思想、弧度制优势与历史"
+      },
+      {
+        "check": 10,
+        "severity": "info",
+        "detail": "核心概念锚点：弧度制(005)被引用5次、角度与弧度的换算(006)被引用5次，结构稳固"
+      }
+    ],
+    "granularity_analysis": {
+      "candidates_reviewed": 6,
+      "merge_recommended": 0,
+      "details": [
+        {
+          "pair": "弧度制 ↔ 角度与弧度的换算",
+          "type": "definition ↔ formula, 高密度互引",
+          "topology": "互为引用，同簇成员(005-006-012)，类型不同",
+          "verdict": "不合并",
+          "reason": "定义(什么是弧度制)与换算公式(如何与角度制互化)是独立知识单元，各自可独立出题"
+        },
+        {
+          "pair": "弧度制 ↔ 弧度制的核心思想：比值度量",
+          "type": "definition ↔ insight, 高密度互引",
+          "topology": "互为引用，同簇成员(005-006-012)，类型不同",
+          "verdict": "不合并",
+          "reason": "「是什么」与「为什么这样定义」分属不同认知层级，各自可独立评估"
+        },
+        {
+          "pair": "角度与弧度的换算 ↔ 弧度制的核心思想：比值度量",
+          "type": "formula ↔ insight, 高密度互引",
+          "topology": "互为引用，同簇成员(005-006-012)，类型不同",
+          "verdict": "不合并",
+          "reason": "操作工具(换算公式)与深层原理(比值度量)用途不同，各自可独立评估"
+        },
+        {
+          "pair": "弧度制的核心思想 ↔ 弧度制的优势与历史",
+          "type": "insight ↔ insight, low-confidence",
+          "topology": "013单向引用012，同位insight，内容有交集",
+          "verdict": "不合并",
+          "reason": "012讲比值度量的数学原则，013讲公式简化优势与欧拉历史，视角不同。但013是孤点(inbound=0)需关注"
+        },
+        {
+          "pair": "象限角判定与终边相同角找法 ↔ 给定终边位置写出角的集合",
+          "type": "method ↔ method",
+          "topology": "008引用003、002、006；009仅引用003。008和009不直接互引，共同依赖003",
+          "verdict": "不合并",
+          "reason": "008回答「给定角→判断象限」，009回答「给定终边位置→写出集合」，两个独立解题场景"
+        },
+        {
+          "pair": "任意角的概念 ↔ 角的概念推广的思想",
+          "type": "definition ↔ insight",
+          "topology": "互为引用，类型不同",
+          "verdict": "不合并",
+          "reason": "概念定义(什么是任意角)与思想方法(为什么推广、推广了什么)分属不同认知层级"
         }
+      ],
+      "cluster_check": {
+        "005_006_012": {
+          "nodes": ["弧度制", "角度与弧度的换算", "弧度制的核心思想：比值度量"],
+          "density": "100%（三对均互引）",
+          "verdict": "不合并",
+          "reason": "三节点分别承载定义、操作工具、深层原理三个维度，各自可独立出题评估。外层连接(005→004角度制、006→010互化方法、012→007扇形公式)说明不是封闭簇"
+        }
+      },
+      "supplementary_nodes": {
+        "013(弧度制的优势与历史)": {"inbound": 0, "outbound": 3, "verdict": "孤点。内容含欧拉历史与公式简化优势，建议补充入向引用或合并入012"}
       }
     },
-    "assessment": "树结构逻辑清晰，知识层次递进合理"
+    "summary": "✅ 通过：0 阻塞问题，2 警告（013 孤点 + 类型惯例警告）。经教材全文对照+关系拓扑分析，13个节点结构完整、概念覆盖完整，6个粒度候选经领域知识终判均不合并。"
   }
 }
