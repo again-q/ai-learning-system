@@ -1,0 +1,446 @@
+[
+  {
+    "id": "math_10_ch4_s3_001",
+    "type": "definition",
+    "title": "对数的定义",
+    "description": "一般地，如果 aˣ = N（a > 0，且 a ≠ 1），那么数 x 叫做以 a 为底 N 的对数（logarithm），记作 x = log_a N。其中 a 叫做对数的底数，N 叫做真数。对数是指数运算的逆运算——已知底数和幂的值，求指数。",
+    "keywords": ["对数", "对数定义", "logarithm", "逆运算"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.1 页首定义段（由2=1.11ˣ引入）",
+    "related_nodes": [
+      "math_10_ch4_s3_002",
+      "math_10_ch4_s3_004",
+      "math_10_ch4_s1_001"
+    ],
+    "examples": [
+      {
+        "title": "从指数到对数",
+        "summary": "2 = 1.11ˣ → x = log₁.₁₁ 2；4² = 16 → log₄ 16 = 2"
+      },
+      {
+        "title": "例1(1)(2)——指数式化对数式",
+        "summary": "5⁴ = 625 → log₅ 625 = 4；2⁻⁶ = 1/64 → log₂(1/64) = -6"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_002",
+    "type": "definition",
+    "title": "常用对数与自然对数",
+    "description": "常用对数（common logarithm）：以 10 为底的对数，log₁₀ N 记为 lg N。自然对数（natural logarithm）：以无理数 e = 2.71828… 为底的对数，log_e N 记为 ln N。在科技、经济和社会生活中广泛使用自然对数。",
+    "keywords": ["常用对数", "自然对数", "lg", "ln", "e", "common logarithm", "natural logarithm"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.1 常用对数与自然对数定义段",
+    "related_nodes": [
+      "math_10_ch4_s3_001",
+      "math_10_ch4_s3_011",
+      "math_10_ch4_s1_011"
+    ],
+    "examples": [
+      {
+        "title": "常用对数记法",
+        "summary": "lg 100 = log₁₀ 100；lg 0.01 = -2"
+      },
+      {
+        "title": "自然对数记法",
+        "summary": "ln 10 = log_e 10 ≈ 2.303；ln e² = 2"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_003",
+    "type": "theorem",
+    "title": "指数与对数的互化关系",
+    "description": "当 a > 0，a ≠ 1 时，aˣ = N ⇔ x = log_a N。这是对数与指数的核心关系式：指数式 aˣ = N 和对数式 x = log_a N 是同一关系的两种等价表示形式。利用此关系可以在指数式和对数式之间自由转换。",
+    "keywords": ["指数与对数关系", "互化", "等价关系", "aˣ=N ⇔ x=log_aN"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.1 对数与指数关系段",
+    "related_nodes": [
+      "math_10_ch4_s3_001",
+      "math_10_ch4_s3_004",
+      "math_10_ch4_s3_006",
+      "math_10_ch4_s1_001",
+      "math_10_ch4_s1_012"
+    ],
+    "examples": [
+      {
+        "title": "互化关系",
+        "summary": "aˣ = N ⇔ x = log_a N（双向等价）"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_004",
+    "type": "theorem",
+    "title": "对数的基本性质（特殊值与存在条件）",
+    "description": "根据指数与对数的互化关系，可得三条基本结论：① 负数和 0 没有对数（因为 aˣ > 0 恒成立，真数 N 必须为正）；② log_a 1 = 0（因为 a⁰ = 1）；③ log_a a = 1（因为 a¹ = a）。这三条性质是对数定义的自然推论，也是对数的运算基础。",
+    "keywords": ["log_a1=0", "log_aa=1", "负数和零无对数", "对数存在条件", "真数大于零"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.1 对数基本结论段",
+    "related_nodes": [
+      "math_10_ch4_s3_001",
+      "math_10_ch4_s3_003",
+      "math_10_ch4_s3_007"
+    ],
+    "examples": [
+      {
+        "title": "特殊值",
+        "summary": "log₅ 1 = 0（任何底数的1的对数都是0）；log₅ 5 = 1（底数与真数相等时对数为1）"
+      },
+      {
+        "title": "存在条件（选择题考点）",
+        "summary": "使 log₂ₓ₋₁(2-x) 有意义的条件：2-x>0 且 2x-1>0 且 2x-1≠1 → 1/2 < x < 2 且 x ≠ 1"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_005",
+    "type": "method",
+    "title": "指数式与对数式的互化方法",
+    "description": "利用 aˣ = N ⇔ x = log_a N 在指数式和对数式之间进行转换。指数式化对数式时：底数 a 不变成为对数的底数，幂 N 变成真数，指数 x 变成对数的值。对数式化指数式时：底数 a 不变，对数的值 x 成为指数，真数 N 成为幂的值。",
+    "keywords": ["互化方法", "指数式化对数式", "对数式化指数式", "对应关系"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.1 例1",
+    "related_nodes": [
+      "math_10_ch4_s3_001",
+      "math_10_ch4_s3_003",
+      "math_10_ch4_s3_006"
+    ],
+    "examples": [
+      {
+        "title": "指数式→对数式",
+        "summary": "5⁴=625 → log₅625=4；2⁻⁶=1/64 → log₂(1/64)=-6；(1/3)ᵐ=5.73 → log₁/₃5.73=m"
+      },
+      {
+        "title": "对数式→指数式",
+        "summary": "log₁/₂16=-4 → (1/2)⁻⁴=16；lg0.01=-2 → 10⁻²=0.01；ln10=2.303 → e²·³⁰³=10"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_006",
+    "type": "method",
+    "title": "利用定义求对数的值",
+    "description": "将待求的对数式（如 log₆₄ x = -2/3）转化为指数式，利用指数幂运算法则求解未知数。步骤：①对 log_a N = x 转化为 aˣ = N；②若求 x（已知 a,N），解指数方程；③若求 N（已知 a,x），计算 aˣ；④若求 a（已知 x,N），开方或取根。注意底数 a>0,a≠1，真数 N>0 的限制。",
+    "keywords": ["对数求值", "定义法", "转化", "指数方程"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.1 例2",
+    "related_nodes": [
+      "math_10_ch4_s3_001",
+      "math_10_ch4_s3_005",
+      "math_10_ch4_s1_006",
+      "math_10_ch4_s1_007"
+    ],
+    "examples": [
+      {
+        "title": "例2(1)——求真数",
+        "summary": "log₆₄ x = -2/3 → x = 64⁻²/³ = (4³)⁻²/³ = 4⁻² = 1/16"
+      },
+      {
+        "title": "例2(2)——求底数",
+        "summary": "log_x 8 = 6 → x⁶ = 8 → x = 8¹/⁶ = (2³)¹/⁶ = 2¹/² = √2"
+      },
+      {
+        "title": "例2(3)——求对数值",
+        "summary": "lg 100 = x → 10ˣ = 100 → 10ˣ = 10² → x = 2"
+      },
+      {
+        "title": "例2(4)——含负号的对数",
+        "summary": "-ln e² = x → ln e² = -x → e² = e⁻ˣ → x = -2"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_007",
+    "type": "formula",
+    "title": "积的对数——log_a(MN) = log_a M + log_a N",
+    "description": "如果 a > 0，且 a ≠ 1，M > 0，N > 0，则 log_a(MN) = log_a M + log_a N。即：两个正数积的对数等于同一底数下各因子对数的和。该性质来自指数运算中 aᵐ·aⁿ = aᵐ⁺ⁿ，通过对数与指数的关系推导得出。",
+    "keywords": ["积的对数", "log_a(MN)", "对数加法", "对数运算性质"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.2 探究段及运算性质(1)",
+    "related_nodes": [
+      "math_10_ch4_s3_008",
+      "math_10_ch4_s3_009",
+      "math_10_ch4_s3_003",
+      "math_10_ch4_s1_010"
+    ],
+    "examples": [
+      {
+        "title": "例3(2)——积的对数应用",
+        "summary": "log₂(4⁷×2⁵) = log₂4⁷ + log₂2⁵ = 7×2 + 5×1 = 19"
+      },
+      {
+        "title": "练习1(2)——lg5+lg2",
+        "summary": "lg5+lg2 = lg(5×2) = lg10 = 1"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_008",
+    "type": "formula",
+    "title": "商的对数——log_a(M/N) = log_a M - log_a N",
+    "description": "如果 a > 0，且 a ≠ 1，M > 0，N > 0，则 log_a(M/N) = log_a M - log_a N。即：两个正数商的对数等于同一底数下被除数的对数减去除数的对数。该性质来自指数运算中 aᵐ÷aⁿ = aᵐ⁻ⁿ。",
+    "keywords": ["商的对数", "log_a(M/N)", "对数减法", "对数运算性质"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.2 运算性质(2)（由 aᵐ÷aⁿ=aᵐ⁻ⁿ 推导）",
+    "related_nodes": [
+      "math_10_ch4_s3_007",
+      "math_10_ch4_s3_009",
+      "math_10_ch4_s3_003"
+    ],
+    "examples": [
+      {
+        "title": "例4——用 lnx, lny, lnz 表示",
+        "summary": "ln(x²√y/³√z) = 2lnx + ½ lny - ⅓ lnz"
+      },
+      {
+        "title": "练习1(3)——对数减法",
+        "summary": "log₅3 - log₅(3/25) = log₅(3÷3/25) = log₅25 = 2"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_009",
+    "type": "formula",
+    "title": "幂的对数——log_a Mⁿ = n log_a M",
+    "description": "如果 a > 0，且 a ≠ 1，M > 0，n ∈ R，则 log_a Mⁿ = n log_a M。即：正数幂的对数等于幂指数乘以该正数的对数。当 n 为分数时也成立（如开方的对数），这是三条运算性质中应用最灵活的一条。该性质来自指数运算中 (aᵐ)ⁿ = aᵐⁿ。",
+    "keywords": ["幂的对数", "log_a Mⁿ", "n log_a M", "对数运算性质", "开方便捷"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.2 运算性质(3)（由 (aᵐ)ⁿ=aᵐⁿ 推导）",
+    "related_nodes": [
+      "math_10_ch4_s3_007",
+      "math_10_ch4_s3_008",
+      "math_10_ch4_s3_010"
+    ],
+    "examples": [
+      {
+        "title": "例3(1)——开方化幂",
+        "summary": "lg∛100 = lg(100¹/³) = ⅓·lg100 = ⅓×2 = 2/3"
+      },
+      {
+        "title": "例4——开方转化为分数指数",
+        "summary": "ln(x²√y/³√z) = 2lnx + ½ lny - ⅓ lnz"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_010",
+    "type": "formula",
+    "title": "对数换底公式",
+    "description": "log_a b = log_c b / log_c a（a > 0，且 a ≠ 1；b > 0；c > 0，且 c ≠ 1）。即：以 a 为底 b 的对数，等于以 c 为底 b 的对数除以以 c 为底 a 的对数。特别地，通常取 c = 10 或 c = e，将任意底对数转化为常用对数或自然对数，便于查表和计算。",
+    "keywords": ["换底公式", "底数转换", "log_a_b", "lg/lg", "ln/ln"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.2 探究段换底公式推导",
+    "related_nodes": [
+      "math_10_ch4_s3_002",
+      "math_10_ch4_s3_007",
+      "math_10_ch4_s3_009",
+      "math_10_ch4_s3_011",
+      "math_10_ch4_s3_012"
+    ],
+    "examples": [
+      {
+        "title": "换底公式推导",
+        "summary": "设 log_a b = x → aˣ = b → log_c aˣ = log_c b → x log_c a = log_c b → x = log_c b / log_c a"
+      },
+      {
+        "title": "4.2.1问题1的应用",
+        "summary": "x = log₁.₁₁ 2 = lg2/lg1.11 ≈ 0.3010/0.0453 ≈ 6.64 ≈ 7（年）"
+      },
+      {
+        "title": "练习3(1)——链式约分",
+        "summary": "log₂3 × log₃4 × log₄5 × log₅2 = (lg3/lg2)(lg4/lg3)(lg5/lg4)(lg2/lg5) = 1"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_011",
+    "type": "method",
+    "title": "换底公式的常用技巧与恒等变形",
+    "description": "换底公式的常见变形与应用：①化同底——将不同底数的对数统一为同底后合并运算（常用 lg 或 ln）；②链式约分——log_a b × log_b c = log_a c（约去中间底），推广可得 n 项连乘积的规律；③逆用换底公式——将分数形式写回单一对数；④底数与真数互换——log_a b = 1/log_b a；⑤底数幂次变形——log_{a^m} b^n = (n/m) log_a b（由换底公式和幂的对数推出）。",
+    "keywords": ["换底技巧", "链式约分", "化同底", "底数互换", "log_{a^m}bⁿ"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.2 换底公式应用、习题第3(6)题、第7题",
+    "related_nodes": [
+      "math_10_ch4_s3_010",
+      "math_10_ch4_s3_009"
+    ],
+    "examples": [
+      {
+        "title": "链式约分",
+        "summary": "log₂3×log₃4×log₄5×log₅2 = 1（中间底全部约掉）"
+      },
+      {
+        "title": "底数与真数互换",
+        "summary": "log_a b = 1/log_b a（由换底公式取 c=b 可得）"
+      },
+      {
+        "title": "底数幂次变形（习题7(2)）",
+        "summary": "log_{a^m} bⁿ = (n/m) log_a b（证明：利用换底公式取 c=a）"
+      },
+      {
+        "title": "循环乘积恒等（习题7(1)）",
+        "summary": "log_a b · log_b c · log_c a = 1"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_012",
+    "type": "method",
+    "title": "对数运算性质的综合运用",
+    "description": "将三条对数运算性质（积/商/幂）与换底公式结合，解决复杂的对数计算与化简问题。核心策略：①先判断结构（积→拆和，商→拆差，幂→提前系数）；②不同底时先用换底公式统一底数；③系数可回写为幂指数形式；④复杂表达式从最外层运算开始逐步展开；⑤注意运用指数与对数的互化来化简中间结果。",
+    "keywords": ["对数综合运算", "性质联合运用", "化简", "展开策略"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.2 例3、例4、练习",
+    "related_nodes": [
+      "math_10_ch4_s3_007",
+      "math_10_ch4_s3_008",
+      "math_10_ch4_s3_009",
+      "math_10_ch4_s3_010",
+      "math_10_ch4_s3_011"
+    ],
+    "examples": [
+      {
+        "title": "给定数值求对数式（习题5）",
+        "summary": "已知 lg2 = a, lg3 = b，则 lg6 = lg2+lg3 = a+b；log₃4 = lg4/lg3 = 2lg2/lg3 = 2a/b"
+      },
+      {
+        "title": "指数对数复合求值（习题6(1)）",
+        "summary": "若 x log₃4 = 1 → x = log₄3 → 4ˣ+4⁻ˣ = 4^{log₄3}+4^{-log₄3} = 3+1/3 = 10/3"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_013",
+    "type": "application",
+    "title": "对数的实际应用——地震能量与震级",
+    "description": "地震释放能量 E（焦耳）与里氏震级 M 的关系为 lg E = 4.8 + 1.5M。利用对数运算性质，可以计算震级差与能量倍数的对应关系：lg(E₁/E₂) = 1.5(M₁-M₂)。例如震级每相差 1 级，能量约为 10¹·⁵ ≈ 32 倍。",
+    "keywords": ["地震能量", "里氏震级", "对数应用", "lgE=4.8+1.5M", "震级差"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.2 例5",
+    "related_nodes": [
+      "math_10_ch4_s3_007",
+      "math_10_ch4_s3_008",
+      "math_10_ch4_s3_010"
+    ],
+    "examples": [
+      {
+        "title": "例5——日本9.0级 vs 汶川8.0级",
+        "summary": "lg(E₁/E₂) = 1.5×(9.0-8.0) = 1.5 → E₁/E₂ = 10¹·⁵ ≈ 32（倍）"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_014",
+    "type": "application",
+    "title": "对数的实际应用——增长率与倍数问题",
+    "description": "已知初始量和增长率，求达到指定倍数所需时间的问题，归结为解指数方程 y = aˣ 中的 x。通过取对数转化为 x = log_a y = lg y / lg a，即可求解。例如在 1.11ˣ = 2 中，x = log₁.₁₁ 2 = lg2/lg1.11。",
+    "keywords": ["增长率", "对数应用", "求时间", "指数方程", "实际建模"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.1 页首引入 + 4.3.2 换底公式应用",
+    "related_nodes": [
+      "math_10_ch4_s3_010",
+      "math_10_ch4_s3_012",
+      "math_10_ch4_s2_003"
+    ],
+    "examples": [
+      {
+        "title": "B地景区游客人次翻倍",
+        "summary": "1.11ˣ = 2 → x = log₁.₁₁2 = lg2/lg1.11 ≈ 6.64 ≈ 7年"
+      },
+      {
+        "title": "习题8——GDP翻两番",
+        "summary": "GDP增长率6.5%，问多少年翻两番（即4倍）：(1+6.5%)ˣ=4 → x = log₁.₀₆₅4"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_015",
+    "type": "theorem",
+    "title": "对数恒等式 a^{log_a N} = N（隐性知识点）",
+    "description": "由对数的定义直接可得：如果 x = log_a N，则 aˣ = N，故 a^{log_a N} = N。这个恒等式将对数形式嵌入指数运算中，在简化含对数与指数嵌套的表达式时非常关键。注意适用范围 a > 0, a ≠ 1, N > 0。",
+    "keywords": ["对数恒等式", "a^{log_aN}=N", "指数对数嵌套", "隐式推导"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.1 对数定义（隐性推导）",
+    "related_nodes": [
+      "math_10_ch4_s3_001",
+      "math_10_ch4_s3_003",
+      "math_10_ch4_s3_006"
+    ],
+    "examples": [
+      {
+        "title": "指数和对数互消",
+        "summary": "2^{log₂5} = 5；e^{ln 3} = 3；10^{lg 0.01} = 0.01"
+      },
+      {
+        "title": "习题6(1)——指数与对数嵌套",
+        "summary": "若 x = log₄3，则 4ˣ = 4^{log₄3} = 3；同理 4⁻ˣ = 1/3"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_016",
+    "type": "concept",
+    "title": "对数运算的条件限制与易错点（隐性）",
+    "description": "对数运算中必须严格遵循的条件限制，是学生最容易出错的地方：①底数 a > 0 且 a ≠ 1（隐含条件，解题时常需要讨论）；②真数必须为正（负数和零没有对数）；③运算性质 log_a(MN) = log_a M + log_a N 成立的前提是 M > 0 且 N > 0；④当使用换底公式时新底数 c 也要满足 c > 0 且 c ≠ 1；⑤指数式化对数式前需保证 N > 0。在实际题目中，定义域问题（如习题2(1)）是常见考点。",
+    "keywords": ["对数定义域", "底数条件", "真数>0", "易错点", "隐含条件", "分类讨论"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.1 基本结论段；习题2(1)",
+    "related_nodes": [
+      "math_10_ch4_s3_004",
+      "math_10_ch4_s3_005",
+      "math_10_ch4_s3_007"
+    ],
+    "examples": [
+      {
+        "title": "习题2(1)——对数有意义条件",
+        "summary": "log₂ₓ₋₁(2-x) 有意义：①2-x>0→x<2；②2x-1>0→x>1/2；③2x-1≠1→x≠1。综合：1/2 < x < 2 且 x ≠ 1"
+      },
+      {
+        "title": "习题2(2)——lga与lgb互为相反数",
+        "summary": "lga + lgb = 0 → lg(ab) = 0 → ab = 1（a>0, b>0）"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_017",
+    "type": "idea",
+    "title": "对数化归思想——运算降级（隐性思想方法）",
+    "description": "对数的核心思想是将运算层级降低：通过取对数，乘法→加法，除法→减法，乘方→乘法，开方→除法。这一运算降级思想在历史上极大地简化了天文、航海中的大数计算，也是现代数值计算中对数函数被广泛应用的根本原因。提炼为一句话：「对数将高一级运算转化为低一级运算」。",
+    "keywords": ["化归思想", "运算降级", "对数本质", "乘化加", "数学思想方法"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "4.3.2 对数运算性质推导（全篇思想主线）",
+    "related_nodes": [
+      "math_10_ch4_s3_007",
+      "math_10_ch4_s3_008",
+      "math_10_ch4_s3_009",
+      "math_10_ch4_s3_018"
+    ],
+    "examples": [
+      {
+        "title": "运算降级映射表",
+        "summary": "乘法 MN → 加法 log_a M + log_a N；除法 M/N → 减法 log_a M - log_a N；乘方 Mⁿ → 乘法 n log_a M；开方 ⁿ√M → 除法 (1/n) log_a M"
+      }
+    ]
+  },
+  {
+    "id": "math_10_ch4_s3_018",
+    "type": "history",
+    "title": "对数的发明历史（阅读与思考）",
+    "description": "16-17世纪天文航海发展需要简化大数运算。1614年苏格兰数学家纳皮尔出版《奇妙的对数定律说明书》，用运动学几何方法定义对数，制作了三角函数对数表。其后布里格斯改进为以10为底的常用对数（1的对数为0，10的对数为1），出版14位常用对数表。1737年笛卡儿开始使用指数符号，到1770年欧拉发现指数与对数的互逆关系，指出「对数源出于指数」。对数的发明先于指数，成为数学史上的珍闻。",
+    "keywords": ["对数发明史", "纳皮尔", "布里格斯", "欧拉", "对数计算尺", "奇妙的对数定律说明书"],
+    "source_section": "math_10_ch4_s3",
+    "source_ref": "阅读与思考——对数的发明",
+    "related_nodes": [
+      "math_10_ch4_s3_001",
+      "math_10_ch4_s3_003",
+      "math_10_ch4_s3_017"
+    ],
+    "examples": [
+      {
+        "title": "历史启示",
+        "summary": "纳皮尔用运动学定义对数时尚无指数概念；欧拉100多年后才发现 aˣ=N ⇔ x=log_aN，完善了对数的理论体系"
+      }
+    ]
+  }
+]
