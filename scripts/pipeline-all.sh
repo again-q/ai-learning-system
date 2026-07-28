@@ -50,7 +50,10 @@ for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
     echo ""
     echo "━━━ [${total}] ${SID} ${TITLE} ━━━"
     
-    # Agent 1 — 读原始 txt，输出为同名的 .md
+    # Agent 1 输出文件路径
+    LAYOUT_FILE="${PROJECT}/output/agent1_layout/${BASENAME}.md"
+    
+    # Agent 1 — 读原始 txt，输出为同名 .md
     echo "▶️  Agent 1 版面..."
     T1=$(date +%s)
     qwenpaw agent chat \
@@ -59,9 +62,12 @@ for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
       --text "处理章节 ${SID}，输入 ${F}，输出到 ${PROJECT}/output/agent1_layout/${BASENAME}.md" \
       2>&1 || true
     D1=$(( $(date +%s) - T1 ))
-    LAYOUT_FILE="${PROJECT}/output/agent1_layout/${BASENAME}.md"
-    if ! grep -q "Agent 1 完成" <(echo "$LAYOUT_FILE") 2>/dev/null && [ ${PIPESTATUS[0]} -ne 0 ]; then
-        echo "❌ Agent 1 失败 (${D1}s)"; echo "${SID} agent1" >> "${FAILED}"; ((fail++)); continue
+    
+    if [ ! -f "$LAYOUT_FILE" ]; then
+        echo "❌ Agent 1 失败 (${D1}s)"
+        echo "${SID} agent1" >> "${FAILED}"
+        ((fail++))
+        continue
     fi
     echo "   ✅ (${D1}s)"
     
@@ -74,16 +80,16 @@ for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
       --text "从 ${LAYOUT_FILE} 提取知识点，section_id=${SID}，输出到 ${PROJECT}/output/agent2_extraction/nodes/" \
       2>&1 || true
     D2=$(( $(date +%s) - T2 ))
-    if [ ${PIPESTATUS[0]} -ne 0 ]; then
-        echo "❌ Agent 2 失败 (${D2}s)"; echo "${SID} agent2" >> "${FAILED}"; ((fail++)); continue
-    fi
-    echo "   ✅ (${D2}s)"
     
-    # 找到 Agent 2 产出的实际文件名
+    # 找 Agent 2 最新产出
     NODE_FILE=$(ls -t "${PROJECT}/output/agent2_extraction/nodes/${SID}"*.json 2>/dev/null | head -1)
     if [ -z "$NODE_FILE" ]; then
-        echo "❌ Agent 2 未产出文件"; echo "${SID} agent2_no_output" >> "${FAILED}"; ((fail++)); continue
+        echo "❌ Agent 2 失败 (${D2}s) — 未产出节点文件"
+        echo "${SID} agent2" >> "${FAILED}"
+        ((fail++))
+        continue
     fi
+    echo "   ✅ (${D2}s)"
     
     # Agent 3 — 传实际节点文件路径
     echo "▶️  Agent 3 质检..."
@@ -94,9 +100,6 @@ for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
       --text "审查 ${SID} 的知识点提取质量，节点文件在 ${NODE_FILE}" \
       2>&1 || true
     D3=$(( $(date +%s) - T3 ))
-    if [ ${PIPESTATUS[0]} -ne 0 ]; then
-        echo "❌ Agent 3 失败 (${D3}s)"; echo "${SID} agent3" >> "${FAILED}"; ((fail++)); continue
-    fi
     echo "   ✅ (${D3}s)"
     
     # 看质检结果
