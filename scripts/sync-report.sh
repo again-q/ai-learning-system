@@ -37,7 +37,7 @@ for arg in "$@"; do
 done
 
 # 生成一个临时 Python 脚本，避免引号嵌套问题
-TMP_PY=$(mktemp /tmp/sync-report-XXXXXX.py)
+TMP_PY=$(mktemp /tmp/sync-report-$$.XXXXXX.py)
 trap 'rm -f "$TMP_PY"' EXIT
 
 cat > "$TMP_PY" << 'PYEOF'

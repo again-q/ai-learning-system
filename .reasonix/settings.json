@@ -3,8 +3,8 @@
     "PreToolUse": [
       {
         "command": "bash scripts/gate-hook.sh",
-        "match": "^(edit_file|write_file)$",
-        "description": "阶段门禁检查：编辑代码前验证详细设计是否已完成评审",
+        "match": "^(edit_file|write_file|multi_edit|delete_range|delete_symbol|move_file|bash)$",
+        "description": "阶段门禁检查：编辑代码或通过 bash 写入前验证详细设计是否已完成评审",
         "timeout": 5000
       }
     ],

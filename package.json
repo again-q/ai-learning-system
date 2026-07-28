@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "pdf-parse": "^2.4.5",
+    "pdfjs-dist": "^6.1.200",
     "wechat-devtools-mcp": "^0.0.1"
   }
 }

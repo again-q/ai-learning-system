@@ -34,6 +34,7 @@
       "label": "🕸️ 知识图谱与规格",
       "files": [
         { "source": "doc/知识图谱结构规范.md",  "category": "项目独有", "external": "知识图谱结构规范" },
+        { "source": "doc/methodology-knowledge-graph.md", "category": "项目独有", "external": "教材知识图谱构建方法论" },
         { "source": "specs/K-dimension-final.md",   "category": "项目独有", "external": "K 维度规格 v1" },
         { "source": "specs/K-dimension-final-v2.md","category": "项目独有", "external": "K 维度规格 v2" }
       ]

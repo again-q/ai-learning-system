@@ -1,42 +1,134 @@
 {
   "report": {
-    "passed": true,
-    "section_id": "math_10_ch1_s3",
-    "section_title": "1.3 集合的基本运算",
-    "total_nodes": 10,
+    "section_id": "math_10_ch1_s5",
+    "section_title": "1.5 全称量词与存在量词",
+    "total_nodes": 4,
+    "passed": false,
     "blocking_issues": [],
-    "warnings": [
+    "warnings": [],
+    "summary": "未通过：0 个阻塞问题，5 个警告（含 1 个输入层问题和 1 个索引登记问题，非 Agent 2 提取错误）",
+    "expert_analysis": {
+      "overall_verdict": "提取质量良好（在输入受限条件下），因 OCR 输入截断导致知识点覆盖严重不完整",
+      "ocr_input_assessment": {
+        "pages_covered": "第 26-32 页",
+        "actual_s5_content_pages": "仅第 32 页（不足 1 页）",
+        "note": "第 26-31 页内容均为 §1.4 充要条件的剩余内容（习题1.4、阅读与思考），§1.5 从第 32 页开始，仅在页末覆盖至全称量词命题的符号表示，后续页码（第 33 页起）未被包含在 OCR 页范围内",
+        "verdict": "输入截断（与 §1.3 补集缺失同源），非 Agent 2 提取错误"
+      }
+    },
+    "node_level_review": [
       {
-        "check": 12,
-        "severity": "warning",
-        "detail": "知识遗漏：缺少核心概念「补集」—— OCR输入仅覆盖至第18页（全集定义），补集定义（∁UA）在后续页面未捕获，非Agent 2提取问题"
+        "knowledge_id": "math_10_ch1_s5_001",
+        "name": "量词",
+        "type": "definition",
+        "parent": "math_10_ch1_s4_001 (命题)",
+        "verdict": "通过",
+        "comments": "source_text 正确覆盖量词的定义，跨节 parent 指向 s4_001（命题）逻辑正确。related 字段包含 002、003（均为子节点），建议仅保留 reference 关系，将子节点通过 tree 层级体现"
       },
       {
-        "check": "13a",
-        "severity": "warning",
-        "detail": "节点「并集」与「交集」互为引用、同父（root）同类型（definition），属于中低置信度耦合对"
-      }
-    ],
-    "domain_judgments": [
-      {
-        "check": "13a",
-        "pair": "并集 ↔ 交集",
-        "verdict": "不合并",
-        "reason": "并集与交集是集合的两大独立基本运算，各自可独立评估（学生可掌握其一而不掌握其二），类比1.1中列举法↔描述法的处理"
-      }
-    ],
-    "additional_observations": [
-      {
-        "node": "008 数轴法求区间集合的并集",
-        "type": "note",
-        "detail": "该节点名称限定为「并集」场景，但数轴法同样适用于交集、补集。当前粒度可接受（教材例2专用），后续如有交集数轴法节点可考虑合并为通用「数轴法」"
+        "knowledge_id": "math_10_ch1_s5_002",
+        "name": "全称量词",
+        "type": "definition",
+        "parent": "math_10_ch1_s5_001 (量词)",
+        "verdict": "通过",
+        "comments": "source_text 完整包含定义、符号 ∀、常见全称量词举例。related 字段包含 003、004（均为子节点），建议清理（理由同上）"
       },
       {
-        "node": "009 同一问题在不同全集下的解集差异",
-        "type": "note",
-        "detail": "此节点提取自补集前的引文示例，是一段铺垫内容。由于OCR缺了补集定义，该节点成了「有前奏无主歌」的状态。建议补充补集后再评估是否保留"
+        "knowledge_id": "math_10_ch1_s5_003",
+        "name": "全称量词命题",
+        "type": "definition",
+        "parent": "math_10_ch1_s5_002 (全称量词)",
+        "verdict": "通过",
+        "comments": "source_text 包含定义和举例。related_to s4_001（命题）是合理的跨节回溯关联"
+      },
+      {
+        "knowledge_id": "math_10_ch1_s5_004",
+        "name": "全称量词命题的符号表示",
+        "type": "notation",
+        "parent": "math_10_ch1_s5_003 (全称量词命题)",
+        "verdict": "通过",
+        "comments": "符号 ∀x∈M, p(x) 提取正确。related 为空，作为叶节点合理"
       }
     ],
-    "summary": "通过：0 阻塞，2 警告（告警#12因OCR截断不可归责、告警#13a经领域判断不合并）。10节点全绿通过，跨节引用（1.1/1.2）全部有效，关系拓扑合理"
+    "known_missing_nodes_due_to_input_truncation": [
+      {
+        "expected_name": "存在量词",
+        "expected_type": "definition",
+        "expected_parent": "math_10_ch1_s5_001 (量词)",
+        "source": "教材 1.5.1 第二段：短语'存在一个''至少有一个'在逻辑中通常叫做存在量词，符号 ∃"
+      },
+      {
+        "expected_name": "存在量词命题",
+        "expected_type": "definition",
+        "expected_parent": "存在量词",
+        "source": "教材 1.5.1：含有存在量词的命题叫做存在量词命题"
+      },
+      {
+        "expected_name": "存在量词命题的符号表示",
+        "expected_type": "notation",
+        "expected_parent": "存在量词命题",
+        "source": "教材 1.5.1：∃x∈M, p(x)"
+      },
+      {
+        "expected_name": "全称量词命题的否定",
+        "expected_type": "method",
+        "expected_parent": "math_10_ch1_s5_003 (全称量词命题)",
+        "source": "教材 1.5.2：全称量词命题的否定是存在量词命题"
+      },
+      {
+        "expected_name": "存在量词命题的否定",
+        "expected_type": "method",
+        "expected_parent": "存在量词命题",
+        "source": "教材 1.5.3：存在量词命题的否定是全称量词命题"
+      }
+    ],
+    "issues": [
+      {
+        "id": "W01",
+        "severity": "warning",
+        "check": "index_registration",
+        "detail": "§1.5 节点文件存在，但 knowledge_index.json 的 sections 列表中未注册 math_10_ch1_s5，索引仅包含 s1/s2/s3 共 3 节",
+        "suggestion": "将 math_10_ch1_s5 及其 4 个 node_ids 添加到 knowledge_index.json 中"
+      },
+      {
+        "id": "W02",
+        "severity": "warning",
+        "check": "input_truncation",
+        "detail": "OCR 输入仅覆盖 §1.5 的第 32 页前半页（至全称量词命题的符号表示），缺少 存在量词、存在量词命题、存在量词命题的符号表示、全称量词命题的否定、存在量词命题的否定 共 5 个知识点。参见 known_missing_nodes_due_to_input_truncation",
+        "suggestion": "补充 OCR 源数据（§1.5 继续的第 33 页及后续页码），重新运行 Agent 2 提取"
+      },
+      {
+        "id": "W03",
+        "severity": "warning",
+        "check": "relation_cleanup",
+        "detail": "节点 001（量词）的 related 列表包含 002、003 两个子节点；节点 002（全称量词）的 related 列表包含 003、004 两个子节点。related 字段应仅用于跨分支关联，子节点关系已由 tree.parent_id 表达",
+        "suggestion": "清除 001 的 related（原 [s5_002, s5_003]）和 002 的 related（原 [s5_003, s5_004]），或改为只保留 reference 关系"
+      },
+      {
+        "id": "W04",
+        "severity": "warning",
+        "check": "cross_section_reference",
+        "detail": "节点 001 的 parent_id 指向 math_10_ch1_s4_001（命题），属于跨节父子引用。这在语义上正确（量词建立在命题概念之上），但跨节引用在独立文件校验中会触发阻塞检查",
+        "suggestion": "确认这是预期的跨节层级结构，暂不修改。如需在全局校验中通过，可将 命题 的概念嵌入本节的 path 中作为根节点"
+      },
+      {
+        "id": "W05",
+        "severity": "info",
+        "check": "granularity",
+        "detail": "4 个节点形成线性链条（量词→全称量词→全称量词命题→符号表示），无同父同类型双向耦合对。各节点均可独立评估，粒度合理",
+        "suggestion": "无需合并"
+      }
+    ],
+    "metadata": {
+      "reviewer": "质检 Agent",
+      "review_date": "2026-07-29",
+      "quality_decision": "conditionally_accepted",
+      "next_steps": [
+        "补充 OCR 页面范围以覆盖 §1.5 完整内容（第 32-36 页或更广）",
+        "重新运行 Agent 2 提取",
+        "将 math_10_ch1_s5 注册到 knowledge_index.json",
+        "清理 001、002 的 related 字段"
+      ]
+    }
   }
 }

@@ -64,28 +64,6 @@ if [ "$SHOULD_CHECK" = false ]; then
     exit 0
 fi
 
-# ---- 放行 knowledge-base/ 路径的写入（同步知识库无需门禁） ----
-FILE_PATH=$(echo "$INPUT" | python3 -c "
-import sys, json
-data = json.load(sys.stdin)
-args = data.get('toolArgs', {})
-if isinstance(args, dict):
-    print(args.get('path', ''))
-else:
-    print('')
-" 2>/dev/null)
-
-KB_DETECTED=false
-if [ -n "$FILE_PATH" ] && echo "$FILE_PATH" | grep -q '/knowledge-base/'; then
-    KB_DETECTED=true
-fi
-if [ -n "$BASH_COMMAND" ] && echo "$BASH_COMMAND" | grep -q '/knowledge-base/'; then
-    KB_DETECTED=true
-fi
-if [ "$KB_DETECTED" = true ]; then
-    exit 0
-fi
-
 # ---- 获取项目根目录 ----
 PROJECT_ROOT=$(echo "$INPUT" | python3 -c "
 import sys, json

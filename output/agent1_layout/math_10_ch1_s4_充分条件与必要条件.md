@@ -1,26 +1,27 @@
-# 第一章 集合与常用逻辑用语
+## 1.4 充分条件与必要条件
 
-## 1.3 集合的基本运算
-
-（前接并集内容）
-
-### 思考
-
-下列关系式成立吗？
-
-(1) $A \cup A = A$; (2) $A \cup \varnothing = A$.
+**教材**：人教A版高中数学必修第一册
 
 ---
 
-## 交集
+### 并集
 
-### 思考
+思考
+
+下列关系式成立吗？
+
+1. $A \cup A = A$；
+2. $A \cup \emptyset = A$.
+
+### 交集
+
+思考
 
 观察下面的集合，集合 $A$，$B$ 与集合 $C$ 之间有什么关系？
 
-$$(1) A = \{2, 4, 6, 8, 10\},\ B = \{3, 5, 8, 12\},\ C = \{8\};$$
+$$(1)\ A = \{2, 4, 6, 8, 10\},\ B = \{3, 5, 8, 12\},\ C = \{8\};$$
 
-$$(2) A = \{x \mid x \text{是立德中学今年在校的女同学}\},\ B = \{x \mid x \text{是立德中学今年在校的高一年级同学}\},\ C = \{x \mid x \text{是立德中学今年在校的高一年级女同学}\}.$$
+$$(2)\ A = \{x \mid x \text{ 是立德中学今年在校的女同学}\},\ B = \{x \mid x \text{ 是立德中学今年在校的高一年级同学}\},\ C = \{x \mid x \text{ 是立德中学今年在校的高一年级女同学}\}.$$
 
 在上述两个问题中，集合 $C$ 是由所有既属于集合 $A$ 又属于集合 $B$ 的元素组成的。
 
@@ -30,217 +31,203 @@ $$A \cap B = \{x \mid x \in A,\ \text{且}\ x \in B\}.$$
 
 可用 Venn 图（图 1.3-3）表示。
 
-这样，在上述问题 (1)(2) 中，$A \cap B = C$.
+这样，在上述问题（1）（2）中，$A \cap B = C$.
 
 ### 例 3
 
 立德中学开运动会，设
 
-$$A = \{x \mid x \text{是立德中学高一年级参加百米赛跑的同学}\},$$
-$$B = \{x \mid x \text{是立德中学高一年级参加跳高比赛的同学}\},$$
+$$A = \{x \mid x \text{ 是立德中学高一年级参加百米赛跑的同学}\},$$
+$$B = \{x \mid x \text{ 是立德中学高一年级参加跳高比赛的同学}\},$$
 
 求 $A \cap B$.
 
-**解：** $A \cap B$ 就是立德中学高一年级中那些既参加百米赛跑又参加跳高比赛的同学组成的集合。所以，
+**解**：$A \cap B$ 就是立德中学高一年级中那些既参加百米赛跑又参加跳高比赛的同学组成的集合。所以，
 
-$$A \cap B = \{x \mid x \text{是立德中学高一年级既参加百米赛跑又参加跳高比赛的同学}\}.$$
+$$A \cap B = \{x \mid x \text{ 是立德中学高一年级既参加百米赛跑又参加跳高比赛的同学}\}.$$
 
 ### 例 4
 
 设平面内直线 $l_1$ 上点的集合为 $L_1$，直线 $l_2$ 上点的集合为 $L_2$，试用集合的运算表示 $l_1$，$l_2$ 的位置关系。
 
-**解：** 平面内直线 $l_1$，$l_2$ 可能有三种位置关系，即相交于一点、平行或重合。
+**解**：平面内直线 $l_1$，$l_2$ 可能有三种位置关系，即相交于一点、平行或重合。
 
 1. 直线 $l_1$，$l_2$ 相交于一点 $P$ 可表示为
-   $$L_1 \cap L_2 = \{\text{点}\ P\};$$
+
+   $$L_1 \cap L_2 = \{\text{点 } P\};$$
+
 2. 直线 $l_1$，$l_2$ 平行可表示为
+
    $$L_1 \cap L_2 = \varnothing;$$
+
 3. 直线 $l_1$，$l_2$ 重合可表示为
+
    $$L_1 \cap L_2 = L_1 = L_2.$$
 
-### 思考
+思考
 
 下列关系式成立吗？
 
-$$(1) A \cap A = A; \quad (2) A \cap \varnothing = \varnothing.$$
+$$(1)\ A \cap A = A;\qquad (2)\ A \cap \varnothing = \varnothing.$$
 
 ### 练习
 
-1. 设 $A = \{3, 5, 6, 8\}$，$B = \{4, 5, 7, 8\}$，求 $A \cap B$，$A \cup B$。
-2. 设 $A = \{x \mid x^2 - 4x - 5 = 0\}$，$B = \{x \mid x^2 = 1\}$，求 $A \cup B$，$A \cap B$。
-3. 设 $A = \{x \mid x \text{是等腰三角形}\}$，$B = \{x \mid x \text{是直角三角形}\}$，求 $A \cap B$，$A \cup B$。
-4. 设 $A = \{x \mid x \text{是幸福农场的汽车}\}$，$B = \{x \mid x \text{是幸福农场的货车}\}$，求 $A \cup B$。
+1. 设 $A = \{3,5,6,8\}$，$B = \{4,5,7,8\}$，求 $A \cap B$，$A \cup B$.
+2. 设 $A = \{x \mid x^2 - 4x - 5 = 0\}$，$B = \{x \mid x^2 = 1\}$，求 $A \cup B$，$A \cap B$.
+3. 设 $A = \{x \mid x \text{ 是等腰三角形}\}$，$B = \{x \mid x \text{ 是直角三角形}\}$，求 $A \cap B$，$A \cup B$.
+4. 设 $A = \{x \mid x \text{ 是幸福农场的汽车}\}$，$B = \{x \mid x \text{ 是幸福农场的货车}\}$，求 $A \cup B$.
 
----
-
-## 补集
+### 补集
 
 在研究问题时，我们经常需要确定研究对象的范围。例如，从小学到初中，数的研究范围逐步地由自然数到正分数，再到有理数，引进无理数后，数的研究范围扩充到实数。在高中阶段，数的研究范围将进一步扩充。
 
 在不同范围研究同一个问题，可能有不同的结果。例如方程 $(x-2)(x^2-3)=0$ 的解集，在有理数范围内只有一个解 $2$，即
 
-$$\{x \in \mathbf{Q} \mid (x-2)(x^2-3)=0\} = \{2\};$$
+$$\{x \in \mathbf{Q} \mid (x-2)(x^2-3) = 0\} = \{2\};$$
 
 在实数范围内有三个解：$2$，$\sqrt{3}$，$-\sqrt{3}$，即
 
-$$\{x \in \mathbf{R} \mid (x-2)(x^2-3)=0\} = \{2,\ \sqrt{3},\ -\sqrt{3}\}.$$
+$$\{x \in \mathbf{R} \mid (x-2)(x^2-3) = 0\} = \{2,\ \sqrt{3},\ -\sqrt{3}\}.$$
 
-一般地，如果一个集合含有所研究问题中涉及的所有元素，那么就称这个集合为**全集**（universe set），通常记作 $U$。
+一般地，如果一个集合含有所研究问题中涉及的所有元素，那么就称这个集合为全集（universe set），通常记作 $U$.
 
-对于一个集合 $A$，由全集 $U$ 中不属于集合 $A$ 的所有元素组成的集合称为集合 $A$ 相对于全集 $U$ 的补集（complementary set），简称为集合 $A$ 的补集，记作 $C_U A$，即
+对于一个集合 $A$，由全集 $U$ 中不属于集合 $A$ 的所有元素组成的集合称为集合 $A$ 相对于全集 $U$ 的补集（complementary set），简称为集合 $A$ 的补集，记作 $\complement_U A$，即
 
-$$C_U A = \{x \mid x \in U,\ \text{且}\ x \notin A\}.$$
+$$\complement_U A = \{x \mid x \in U,\ \text{且}\ x \notin A\}.$$
 
 可用 Venn 图（图 1.3-4）表示。
 
 ### 例 5
 
-设 $U = \{x \mid x \text{是小于}\ 9 \text{的正整数}\}$，$A = \{1, 2, 3\}$，$B = \{3, 4, 5, 6\}$，求 $C_U A$，$C_U B$。
+设 $U = \{x \mid x \text{ 是小于 } 9 \text{ 的正整数}\}$，$A = \{1,2,3\}$，$B = \{3,4,5,6\}$，求 $\complement_U A$，$\complement_U B$.
 
-**解：** 根据题意可知，$U = \{1, 2, 3, 4, 5, 6, 7, 8\}$，所以
+**解**：根据题意可知，$U = \{1,2,3,4,5,6,7,8\}$，所以
 
-$$C_U A = \{4, 5, 6, 7, 8\},$$
-$$C_U B = \{1, 2, 7, 8\}.$$
+$$\complement_U A = \{4,5,6,7,8\},$$
+$$\complement_U B = \{1,2,7,8\}.$$
 
 ### 例 6
 
-设全集 $U = \{x \mid x \text{是三角形}\}$，$A = \{x \mid x \text{是锐角三角形}\}$，$B = \{x \mid x \text{是钝角三角形}\}$，求 $A \cap B$，$C_U(A \cup B)$。
+设全集 $U = \{x \mid x \text{ 是三角形}\}$，$A = \{x \mid x \text{ 是锐角三角形}\}$，$B = \{x \mid x \text{ 是钝角三角形}\}$，求 $A \cap B$，$\complement_U(A \cup B)$.
 
-**解：** 根据三角形的分类可知
+**解**：根据三角形的分类可知
 
 $$A \cap B = \varnothing,$$
-$$A \cup B = \{x \mid x \text{是锐角三角形或钝角三角形}\},$$
-$$C_U(A \cup B) = \{x \mid x \text{是直角三角形}\}.$$
+$$A \cup B = \{x \mid x \text{ 是锐角三角形或钝角三角形}\},$$
+$$\complement_U(A \cup B) = \{x \mid x \text{ 是直角三角形}\}.$$
 
 ### 练习
 
-1. 已知 $U = \{1, 2, 3, 4, 5, 6, 7\}$，$A = \{2, 4, 5\}$，$B = \{1, 3, 5, 7\}$，求 $A \cap (C_U B)$，$(C_U A) \cap (C_U B)$。
-2. 设 $S = \{x \mid x \text{是平行四边形或梯形}\}$，$A = \{x \mid x \text{是平行四边形}\}$，$B = \{x \mid x \text{是菱形}\}$，$C = \{x \mid x \text{是矩形}\}$，求 $B \cap C$，$C_S B$，$C_S A$。
+1. 已知 $U = \{1,2,3,4,5,6,7\}$，$A = \{2,4,5\}$，$B = \{1,3,5,7\}$，求 $A \cap (\complement_U B)$，$(\complement_U A) \cap (\complement_U B)$.
+2. 设 $S = \{x \mid x \text{ 是平行四边形或梯形}\}$，$A = \{x \mid x \text{ 是平行四边形}\}$，$B = \{x \mid x \text{ 是菱形}\}$，$C = \{x \mid x \text{ 是矩形}\}$，求 $B \cap C$，$\complement_S B$，$\complement_S A$.
 3. 图中 $U$ 是全集，$A$，$B$ 是 $U$ 的两个子集，用阴影表示：
-   $$(1)\ (C_U A) \cap (C_U B);$$
-   $$(2)\ (C_U A) \cup (C_U B).$$
 
----
+   $$(1)\ (\complement_U A) \cap (\complement_U B);$$
+   $$(2)\ (\complement_U A) \cup (\complement_U B).$$
 
-## 习题 1.3
+### 习题 1.3
 
-### 复习巩固
+#### 复习巩固
 
-1. 集合 $A = \{x \mid 2 \le x < 4\}$，$B = \{x \mid 3x - 7 \ge 8 - 2x\}$，求 $A \cup B$，$A \cap B$。
-2. 设 $A = \{x \mid x \text{是小于}\ 9 \text{的正整数}\}$，$B = \{1, 2, 3\}$，$C = \{3, 4, 5, 6\}$，求 $A \cap B$，$A \cap C$，$A \cap (B \cup C)$，$A \cup (B \cap C)$。
-3. 学校开运动会，设 $A = \{x \mid x \text{是参加}\ 100\text{m}\ \text{跑的同学}\}$，$B = \{x \mid x \text{是参加}\ 200\text{m}\ \text{跑的同学}\}$，$C = \{x \mid x \text{是参加}\ 400\text{m}\ \text{跑的同学}\}$，学校规定，每个参加上述比赛的同学最多只能参加两项比赛，请你用集合的运算说明这项规定，并解释以下集合运算的含义：
+1. 集合 $A = \{x \mid 2 \le x < 4\}$，$B = \{x \mid 3x - 7 \ge 8 - 2x\}$，求 $A \cup B$，$A \cap B$.
+2. 设 $A = \{x \mid x \text{ 是小于 } 9 \text{ 的正整数}\}$，$B = \{1,2,3\}$，$C = \{3,4,5,6\}$．求 $A \cap B$，$A \cap C$，$A \cap (B \cup C)$，$A \cup (B \cap C)$.
+3. 学校开运动会，设 $A = \{x \mid x \text{ 是参加 } 100\text{m} \text{ 跑的同学}\}$，$B = \{x \mid x \text{ 是参加 } 200\text{m} \text{ 跑的同学}\}$，$C = \{x \mid x \text{ 是参加 } 400\text{m} \text{ 跑的同学}\}$，学校规定，每个参加上述比赛的同学最多只能参加两项比赛，请你用集合的运算说明这项规定，并解释以下集合运算的含义：
+
    (1) $A \cup B$；
-   (2) $A \cap C$。
+   (2) $A \cap C$.
 
-### 综合运用
+#### 综合运用
 
-4. 已知集合 $A = \{x \mid 3 \le x < 7\}$，$B = \{x \mid 2 < x < 10\}$，求 $C_{\mathbf{R}}(A \cup B)$，$C_{\mathbf{R}}(A \cap B)$，$(C_{\mathbf{R}} A) \cap B$，$A \cup (C_{\mathbf{R}} B)$。
-5. 设集合 $A = \{x \mid (x-3)(x-a)=0,\ a \in \mathbf{R}\}$，$B = \{x \mid (x-4)(x-1)=0\}$，求 $A \cup B$，$A \cap B$。
+4. 已知集合 $A = \{x \mid 3 \le x < 7\}$，$B = \{x \mid 2 < x < 10\}$，求 $\complement_{\mathbf{R}}(A \cup B)$，$\complement_{\mathbf{R}}(A \cap B)$，$(\complement_{\mathbf{R}}A) \cap B$，$A \cup (\complement_{\mathbf{R}}B)$.
+5. 设集合 $A = \{x \mid (x-3)(x-a)=0,\ a \in \mathbf{R}\}$，$B = \{x \mid (x-4)(x-1)=0\}$，求 $A \cup B$，$A \cap B$.
 
-### 拓广探索
+#### 拓广探索
 
-6. 已知全集 $U = A \cup B = \{x \in \mathbf{N} \mid 0 \le x \le 10\}$，$A \cap (C_U B) = \{1, 3, 5, 7\}$，试求集合 $B$。
+6. 已知全集 $U = A \cup B = \{x \in \mathbf{N} \mid 0 \le x \le 10\}$，$A \cap (\complement_U B) = \{1,3,5,7\}$，试求集合 $B$.
 
 ---
 
-## 阅读与思考
-### 集合中元素的个数
+### 阅读与思考
 
-在研究集合时，经常遇到有关集合中元素的个数问题。我们把含有限个元素的集合 $A$ 叫做有限集，用 $\operatorname{card}(A)$ 来表示有限集合 $A$ 中元素的个数。例如，$A = \{a, b, c\}$，则 $\operatorname{card}(A) = 3$。
+#### 集合中元素的个数
 
-看一个问题。某超市进了两次货，第一次进的货是圆珠笔、钢笔、橡皮、笔记本、方便面、汽水共 6 种，第二次进的货是圆珠笔、铅笔、火腿肠、方便面共 4 种，两次一共进了几种货？
+在研究集合时，经常遇到有关集合中元素的个数问题。我们把含有限个元素的集合 $A$ 叫做有限集，用 $\text{card}(A)$ 来表示有限集合 $A$ 中元素的个数。例如，$A = \{a,b,c\}$，则 $\text{card}(A)=3$.
 
-回答两次一共进了 $10 (= 6 + 4)$ 种，显然是不对的。让我们试着从集合的角度考虑这个问题。
+看一个问题。某超市进了两次货，第一次进的货是圆珠笔、钢笔、橡皮、笔记本、方便面、汽水共 $6$ 种，第二次进的货是圆珠笔、铅笔、火腿肠、方便面共 $4$ 种，两次一共进了几种货？
+
+回答两次一共进了 $10(=6+4)$ 种，显然是不对的。让我们试着从集合的角度考虑这个问题。
 
 用集合 $A$ 表示第一次进货的品种，用集合 $B$ 表示第二次进货的品种，就有
 
-$$
-\begin{aligned}
-A &= \{\text{圆珠笔, 钢笔, 橡皮, 笔记本, 方便面, 汽水}\},\\
-B &= \{\text{圆珠笔, 铅笔, 火腿肠, 方便面}\}.
-\end{aligned}
-$$
+$$A = \{\text{圆珠笔, 钢笔, 橡皮, 笔记本, 方便面, 汽水}\},$$
+$$B = \{\text{圆珠笔, 铅笔, 火腿肠, 方便面}\}.$$
 
-这里 $\operatorname{card}(A) = 6$，$\operatorname{card}(B) = 4$。求两次一共进了几种货，这个问题指的是求 $\operatorname{card}(A \cup B)$。这个例子中，两次进的货里有相同的品种，相同的品种数实际就是 $\operatorname{card}(A \cap B)$。$\operatorname{card}(A)$，$\operatorname{card}(B)$，$\operatorname{card}(A \cap B)$，$\operatorname{card}(A \cup B)$ 之间有什么关系呢？
+这里 $\text{card}(A)=6$，$\text{card}(B)=4$。求两次一共进了几种货，这个问题指的是求 $\text{card}(A \cup B)$。这个例子中，两次进的货里有相同的品种，相同的品种数实际就是 $\text{card}(A \cap B)$。$\text{card}(A)$，$\text{card}(B)$，$\text{card}(A \cap B)$，$\text{card}(A \cup B)$ 之间有什么关系呢？
 
 可以算出
 
-$$\operatorname{card}(A \cup B) = 8,$$
-$$\operatorname{card}(A \cap B) = 2.$$
+$$\text{card}(A \cup B) = 8,$$
+$$\text{card}(A \cap B) = 2.$$
 
 一般地，对任意两个有限集合 $A$，$B$，有
 
-$$\operatorname{card}(A \cup B) = \operatorname{card}(A) + \operatorname{card}(B) - \operatorname{card}(A \cap B).$$
+$$\text{card}(A \cup B) = \text{card}(A) + \text{card}(B) - \text{card}(A \cap B).$$
 
-再来看一个问题。学校先举办了一次田径运动会，某班有 8 名同学参赛，又举办了一次球类运动会，这个班有 12 名同学参赛，两次运动会都参赛的有 3 人。两次运动会中，这个班共有多少名同学参赛？
+再来看一个问题。学校先举办了一次田径运动会，某班有 $8$ 名同学参赛，又举办了一次球类运动会，这个班有 $12$ 名同学参赛，两次运动会都参赛的有 $3$ 人。两次运动会中，这个班共有多少名同学参赛？
 
 用集合 $A$ 表示田径运动会参赛的学生，用集合 $B$ 表示球类运动会参赛的学生，就有
 
-$$
-\begin{aligned}
-A &= \{x \mid x \text{是田径运动会参赛的学生}\},\\
-B &= \{x \mid x \text{是球类运动会参赛的学生}\}.
-\end{aligned}
-$$
+$$A = \{x \mid x \text{ 是田径运动会参赛的学生}\},$$
+$$B = \{x \mid x \text{ 是球类运动会参赛的学生}\},$$
 
 那么
 
-$$
-\begin{aligned}
-A \cap B &= \{x \mid x \text{是两次运动会都参赛的学生}\},\\
-A \cup B &= \{x \mid x \text{是所有参赛的学生}\}.
-\end{aligned}
-$$
+$$A \cap B = \{x \mid x \text{ 是两次运动会都参赛的学生}\},$$
+$$A \cup B = \{x \mid x \text{ 是所有参赛的学生}\},$$
 
-$$
-\begin{aligned}
-\operatorname{card}(A \cup B) &= \operatorname{card}(A) + \operatorname{card}(B) - \operatorname{card}(A \cap B)\\
+$$\begin{aligned}
+\text{card}(A \cup B) &= \text{card}(A) + \text{card}(B) - \text{card}(A \cap B) \\
 &= 8 + 12 - 3 = 17.
-\end{aligned}
-$$
+\end{aligned}$$
 
-所以，在两次运动会中，这个班共有 17 名同学参赛。
+所以，在两次运动会中，这个班共有 $17$ 名同学参赛。
 
-我们也可以用 Venn 图来求解。在图中相应于 $A \cap B$ 的区域里先填上 $3$（$\operatorname{card}(A \cap B)=3$），再在 $A$ 中不包括 $A \cap B$ 的区域里填上 $5$（$\operatorname{card}(A) - \operatorname{card}(A \cap B)=5$），在 $B$ 中不包括 $A \cap B$ 的区域里填上 $9$（$\operatorname{card}(B) - \operatorname{card}(A \cap B)=9$），最后把这三个数加起来得 $17$，这就是 $\operatorname{card}(A \cup B)$。
+我们也可以用 Venn 图来求解。在上图中相应于 $A \cap B$ 的区域里先填上 $3$（$\text{card}(A \cap B)=3$），再在 $A$ 中不包括 $A \cap B$ 的区域里填上 $5$（$\text{card}(A)-\text{card}(A \cap B)=5$），在 $B$ 中不包括 $A \cap B$ 的区域里填上 $9$（$\text{card}(B)-\text{card}(A \cap B)=9$）。最后把这三个数加起来得 $17$，这就是 $\text{card}(A \cup B)$。
 
-这种图解法对于解比较复杂的问题（例如涉及三个以上集合的并、交的问题）更能显示出它的优越性。对于有限集合 $A$，$B$，$C$，你能发现 $\operatorname{card}(A \cup B \cup C)$，$\operatorname{card}(A)$，$\operatorname{card}(B)$，$\operatorname{card}(C)$，$\operatorname{card}(A \cap B)$，$\operatorname{card}(B \cap C)$，$\operatorname{card}(A \cap C)$，$\operatorname{card}(A \cap B \cap C)$ 之间的关系吗？通过一个具体的例子，算一算。
+这种图解法对于解比较复杂的问题（例如涉及三个以上集合的并、交的问题）更能显示出它的优越性。对于有限集合 $A$，$B$，$C$，你能发现 $\text{card}(A \cup B \cup C)$，$\text{card}(A)$，$\text{card}(B)$，$\text{card}(C)$，$\text{card}(A \cap B)$，$\text{card}(B \cap C)$，$\text{card}(A \cap C)$，$\text{card}(A \cap B \cap C)$ 之间的关系吗？通过一个具体的例子，算一算。
 
 有限集合中元素的个数，我们可以一一数出来。而对于元素个数无限的集合，如
 
-$$
-\begin{aligned}
-A &= \{1, 2, 3, 4, \dots, n, \dots\},\\
-B &= \{2, 4, 6, 8, \dots, 2n, \dots\},
-\end{aligned}
-$$
+$$A = \{1,2,3,4,\dots,n,\dots\},$$
+$$B = \{2,4,6,8,\dots,2n,\dots\},$$
 
 我们无法数出集合中元素的个数，但可以比较这两个集合中元素个数的多少。你能设计一种比较这两个集合中元素个数多少的方法吗？
 
 ---
 
-## 1.4 充分条件与必要条件
+### 1.4 充分条件与必要条件
 
-在初中，我们已经对命题有了初步的认识。一般地，我们把用语言、符号或式子表达的，可以判断真假的陈述句叫做命题。判断为真的语句是真命题，判断为假的语句是假命题。中学数学中的许多命题可以写成"若 $p$，则 $q$"或"如果 $p$，那么 $q$"等形式。其中 $p$ 称为命题的条件，$q$ 称为命题的结论。本节主要讨论这种形式的命题。下面我们将进一步考察"若 $p$，则 $q$"形式的命题中 $p$ 和 $q$ 的关系，学习数学中的三个常用的逻辑用语——充分条件、必要条件和充要条件。
+在初中，我们已经对命题有了初步的认识。一般地，我们把用语言、符号或式子表达的，可以判断真假的陈述句叫做命题。判断为真的语句是真命题，判断为假的语句是假命题。中学数学中的许多命题可以写成"若 $p$，则 $q$""如果 $p$，那么 $q$"等形式。其中 $p$ 称为命题的条件，$q$ 称为命题的结论。本节主要讨论这种形式的命题。下面我们将进一步考察"若 $p$，则 $q$"形式的命题中 $p$ 和 $q$ 的关系，学习数学中的三个常用的逻辑用语——充分条件、必要条件和充要条件。
 
-### 1.4.1 充分条件与必要条件
+#### 1.4.1 充分条件与必要条件
 
-#### 思考
+##### 思考
 
 下列"若 $p$，则 $q$"形式的命题中，哪些是真命题？哪些是假命题？
 
 1. 若平行四边形的对角线互相垂直，则这个平行四边形是菱形；
 2. 若两个三角形的周长相等，则这两个三角形全等；
 3. 若 $x^2 - 4x + 3 = 0$，则 $x = 1$；
-4. 若平面内两条直线 $a$ 和 $b$ 均垂直于直线 $l$，则 $a \parallel b$。
+4. 若平面内两条直线 $a$ 和 $b$ 均垂直于直线 $l$，则 $a \parallel b$.
 
-在命题 (1)(4) 中，由条件 $p$ 通过推理可以得出结论 $q$，所以它们是真命题。在命题 (2)(3) 中，由条件 $p$ 不能得出结论 $q$，所以它们是假命题。
+在命题（1）（4）中，由条件 $p$ 通过推理可以得出结论 $q$，所以它们是真命题。在命题（2）（3）中，由条件 $p$ 不能得出结论 $q$，所以它们是假命题。
 
 一般地，"若 $p$，则 $q$"为真命题，是指由 $p$ 通过推理可以得出 $q$。这时，我们就说，由 $p$ 可以推出 $q$，记作
 
 $$p \Rightarrow q,$$
 
-并且说，$p$ 是 $q$ 的**充分条件**（sufficient condition），$q$ 是 $p$ 的**必要条件**（necessary condition）。
+并且说，$p$ 是 $q$ 的充分条件（sufficient condition），$q$ 是 $p$ 的必要条件（necessary condition）。
 
 如果"若 $p$，则 $q$"为假命题，那么由条件 $p$ 不能推出结论 $q$，记作 $p \nRightarrow q$。此时，我们就说 $p$ 不是 $q$ 的充分条件，$q$ 不是 $p$ 的必要条件。
 
-上述命题 (1)(4) 中的 $p$ 是 $q$ 的充分条件，$q$ 是 $p$ 的必要条件。
+上述命题（1）（4）中的 $p$ 是 $q$ 的充分条件，$q$ 是 $p$ 的必要条件。
