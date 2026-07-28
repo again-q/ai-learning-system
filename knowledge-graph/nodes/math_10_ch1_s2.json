@@ -1,0 +1,380 @@
+{
+  "section": {
+    "section_id": "math_10_ch1_s2",
+    "section_title": "1.2 集合间的基本关系",
+    "path": [
+      "数学",
+      "必修第一册",
+      "第一章 集合与常用逻辑用语",
+      "1.2 集合间的基本关系"
+    ]
+  },
+  "nodes": [
+    {
+      "knowledge_id": "math_10_ch1_s2_001",
+      "basic": {
+        "name": "子集",
+        "type": "definition",
+        "subject": "数学",
+        "stage": "高中",
+        "grade": "必修第一册"
+      },
+      "tree": {
+        "parent_id": null,
+        "path": [
+          "数学",
+          "必修第一册",
+          "第一章 集合与常用逻辑用语",
+          "1.2 集合间的基本关系"
+        ]
+      },
+      "concept": {
+        "source_text": "一般地，对于两个集合A, B，如果集合A中任意一个元素都是集合B中的元素，就称集合A为集合B的子集(subset)；记作 A⊆B (或 B⊇A)，读作'A包含于B'（或'B包含A'）",
+        "level": "knowledge"
+      },
+      "relations": {
+        "reference": [
+          "math_10_ch1_s1_001",
+          "math_10_ch1_s1_002",
+          "math_10_ch1_s1_007"
+        ],
+        "related": [
+          "math_10_ch1_s2_004",
+          "math_10_ch1_s2_006",
+          "math_10_ch1_s2_008"
+        ]
+      },
+      "importance": {
+        "curriculum_weight": 3,
+        "exam_frequency": 3
+      }
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_003",
+      "basic": {
+        "name": "Venn图",
+        "type": "method",
+        "subject": "数学",
+        "stage": "高中",
+        "grade": "必修第一册"
+      },
+      "tree": {
+        "parent_id": "math_10_ch1_s2_001",
+        "path": [
+          "数学",
+          "必修第一册",
+          "第一章 集合与常用逻辑用语",
+          "1.2 集合间的基本关系"
+        ]
+      },
+      "concept": {
+        "source_text": "在数学中，我们经常用平面上封闭曲线的内部代表集合，这种图称为Venn图",
+        "level": "knowledge"
+      },
+      "relations": {
+        "reference": [
+          "math_10_ch1_s1_001",
+          "math_10_ch1_s2_001"
+        ],
+        "related": [
+          "math_10_ch1_s2_001"
+        ]
+      },
+      "importance": {
+        "curriculum_weight": 2,
+        "exam_frequency": 2
+      }
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_004",
+      "basic": {
+        "name": "集合相等",
+        "type": "definition",
+        "subject": "数学",
+        "stage": "高中",
+        "grade": "必修第一册"
+      },
+      "tree": {
+        "parent_id": null,
+        "path": [
+          "数学",
+          "必修第一册",
+          "第一章 集合与常用逻辑用语",
+          "1.2 集合间的基本关系"
+        ]
+      },
+      "concept": {
+        "source_text": "一般地，如果集合A的任何一个元素都是集合B的元素，同时集合B的任何一个元素都是集合A的元素，那么集合A与集合B相等，记作A=B；若 A⊆B，且 B⊆A，则 A=B",
+        "level": "knowledge"
+      },
+      "relations": {
+        "reference": [
+          "math_10_ch1_s1_005",
+          "math_10_ch1_s2_001"
+        ],
+        "related": [
+          "math_10_ch1_s2_001"
+        ]
+      },
+      "importance": {
+        "curriculum_weight": 3,
+        "exam_frequency": 3
+      }
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_006",
+      "basic": {
+        "name": "真子集",
+        "type": "definition",
+        "subject": "数学",
+        "stage": "高中",
+        "grade": "必修第一册"
+      },
+      "tree": {
+        "parent_id": null,
+        "path": [
+          "数学",
+          "必修第一册",
+          "第一章 集合与常用逻辑用语",
+          "1.2 集合间的基本关系"
+        ]
+      },
+      "concept": {
+        "source_text": "如果集合 A⊆B，但存在元素 x∈B，且 x∉A，就称集合A是集合B的真子集(proper subset)；记作 A⊊B (或 B⊋A)，读作'A真包含于B'（或'B真包含A'）",
+        "level": "knowledge"
+      },
+      "relations": {
+        "reference": [
+          "math_10_ch1_s2_001",
+          "math_10_ch1_s1_007"
+        ],
+        "related": [
+          "math_10_ch1_s2_001"
+        ]
+      },
+      "importance": {
+        "curriculum_weight": 3,
+        "exam_frequency": 3
+      }
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_008",
+      "basic": {
+        "name": "空集",
+        "type": "definition",
+        "subject": "数学",
+        "stage": "高中",
+        "grade": "必修第一册"
+      },
+      "tree": {
+        "parent_id": null,
+        "path": [
+          "数学",
+          "必修第一册",
+          "第一章 集合与常用逻辑用语",
+          "1.2 集合间的基本关系"
+        ]
+      },
+      "concept": {
+        "source_text": "一般地，我们把不含任何元素的集合叫做空集(empty set)；记为 ∅",
+        "level": "knowledge"
+      },
+      "relations": {
+        "reference": [
+          "math_10_ch1_s1_001",
+          "math_10_ch1_s1_002"
+        ],
+        "related": [
+          "math_10_ch1_s2_001",
+          "math_10_ch1_s2_010"
+        ]
+      },
+      "importance": {
+        "curriculum_weight": 3,
+        "exam_frequency": 3
+      }
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_010",
+      "basic": {
+        "name": "空集是任何集合的子集",
+        "type": "property",
+        "subject": "数学",
+        "stage": "高中",
+        "grade": "必修第一册"
+      },
+      "tree": {
+        "parent_id": "math_10_ch1_s2_008",
+        "path": [
+          "数学",
+          "必修第一册",
+          "第一章 集合与常用逻辑用语",
+          "1.2 集合间的基本关系"
+        ]
+      },
+      "concept": {
+        "source_text": "并规定：空集是任何集合的子集",
+        "level": "knowledge"
+      },
+      "relations": {
+        "reference": [
+          "math_10_ch1_s2_001",
+          "math_10_ch1_s2_008"
+        ],
+        "related": [
+          "math_10_ch1_s2_008",
+          "math_10_ch1_s2_001"
+        ]
+      },
+      "importance": {
+        "curriculum_weight": 3,
+        "exam_frequency": 3
+      }
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_011",
+      "basic": {
+        "name": "子集的自反性",
+        "type": "property",
+        "subject": "数学",
+        "stage": "高中",
+        "grade": "必修第一册"
+      },
+      "tree": {
+        "parent_id": "math_10_ch1_s2_001",
+        "path": [
+          "数学",
+          "必修第一册",
+          "第一章 集合与常用逻辑用语",
+          "1.2 集合间的基本关系"
+        ]
+      },
+      "concept": {
+        "source_text": "任何一个集合是它本身的子集，即 A⊆A",
+        "level": "knowledge"
+      },
+      "relations": {
+        "reference": [
+          "math_10_ch1_s2_001"
+        ],
+        "related": [
+          "math_10_ch1_s2_012"
+        ]
+      },
+      "importance": {
+        "curriculum_weight": 2,
+        "exam_frequency": 2
+      }
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_012",
+      "basic": {
+        "name": "子集的传递性",
+        "type": "property",
+        "subject": "数学",
+        "stage": "高中",
+        "grade": "必修第一册"
+      },
+      "tree": {
+        "parent_id": "math_10_ch1_s2_001",
+        "path": [
+          "数学",
+          "必修第一册",
+          "第一章 集合与常用逻辑用语",
+          "1.2 集合间的基本关系"
+        ]
+      },
+      "concept": {
+        "source_text": "对于集合A, B, C，如果 A⊆B，且 B⊆C，那么 A⊆C",
+        "level": "knowledge"
+      },
+      "relations": {
+        "reference": [
+          "math_10_ch1_s2_001"
+        ],
+        "related": [
+          "math_10_ch1_s2_011",
+          "math_10_ch1_s2_004"
+        ]
+      },
+      "importance": {
+        "curriculum_weight": 2,
+        "exam_frequency": 2
+      }
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_013",
+      "basic": {
+        "name": "属于关系与包含关系的区别",
+        "type": "property",
+        "subject": "数学",
+        "stage": "高中",
+        "grade": "必修第一册"
+      },
+      "tree": {
+        "parent_id": "math_10_ch1_s2_001",
+        "path": [
+          "数学",
+          "必修第一册",
+          "第一章 集合与常用逻辑用语",
+          "1.2 集合间的基本关系"
+        ]
+      },
+      "concept": {
+        "source_text": "包含关系 {a}⊆A 与属于关系 a∈A 有什么区别？前者是集合与集合之间的关系，后者是元素与集合之间的关系",
+        "level": "knowledge"
+      },
+      "relations": {
+        "reference": [
+          "math_10_ch1_s2_001",
+          "math_10_ch1_s1_002",
+          "math_10_ch1_s1_007"
+        ],
+        "related": [
+          "math_10_ch1_s2_001"
+        ]
+      },
+      "importance": {
+        "curriculum_weight": 2,
+        "exam_frequency": 2
+      }
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_014",
+      "basic": {
+        "name": "列举所有子集的方法",
+        "type": "method",
+        "subject": "数学",
+        "stage": "高中",
+        "grade": "必修第一册"
+      },
+      "tree": {
+        "parent_id": "math_10_ch1_s2_001",
+        "path": [
+          "数学",
+          "必修第一册",
+          "第一章 集合与常用逻辑用语",
+          "1.2 集合间的基本关系"
+        ]
+      },
+      "concept": {
+        "source_text": "写出集合的所有子集，先写空集∅，再逐一写出含有一个元素、两个元素……的子集，最后写出集合本身",
+        "level": "knowledge"
+      },
+      "relations": {
+        "reference": [
+          "math_10_ch1_s2_001",
+          "math_10_ch1_s2_008"
+        ],
+        "related": [
+          "math_10_ch1_s2_001",
+          "math_10_ch1_s2_008"
+        ]
+      },
+      "importance": {
+        "curriculum_weight": 2,
+        "exam_frequency": 2
+      }
+    }
+  ]
+}

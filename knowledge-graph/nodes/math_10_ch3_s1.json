@@ -1,0 +1,537 @@
+[
+  {
+    "knowledge_id": "math_10_ch3_s1_001",
+    "basic": {
+      "name": "函数概念的引入——从实际问题抽象",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "问题1：列车路程 S=350t，t∈A₁={t|0≤t≤0.5}，S∈B₁={S|0≤S≤175}。问题2：工人工资 w=350d，d∈A₂={1,2,3,4,5,6}。问题3：北京市AQI指数随时间t变化的图象。问题4：恩格尔系数r随年份y变化的表格。共同特征：①包含两个非空数集A,B；②有一个对应关系；③对于A中任一x，在B中都有唯一确定的y与之对应。",
+      "level": "comprehension"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s1_001",
+        "math_10_ch1_s1_002"
+      ],
+      "related": [
+        "math_10_ch3_s1_002"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 1
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s1_002",
+    "basic": {
+      "name": "函数的定义（三要素与符号表示）",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch3_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "设A,B是非空的实数集，如果对于集合A中的任意一个数x，按照某种确定的对应关系f，在集合B中都有唯一确定的数y和它对应，那么就称f:A→B为从集合A到集合B的一个函数（function），记作y=f(x), x∈A。其中x叫做自变量，x的取值范围A叫做函数的定义域（domain）；与x的值相对应的y值叫做函数值，函数值的集合{f(x)|x∈A}叫做函数的值域（range）。值域是集合B的子集。",
+      "level": "comprehension"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch3_s1_001"
+      ],
+      "related": [
+        "math_10_ch3_s1_003",
+        "math_10_ch3_s1_004",
+        "math_10_ch3_s1_008"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s1_003",
+    "basic": {
+      "name": "定义域——自变量的取值范围",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "函数的定义域通常由问题的实际背景确定。如果只给出解析式y=f(x)而没有指明它的定义域，那么函数的定义域就是指能使这个式子有意义的实数的集合。例2：f(x)=√(x+3)+1/(x+2)的定义域为{x|x≥-3且x≠-2}=[-3,-2)∪(-2,+∞)，由根式有意义和分母不为零共同约束。",
+      "level": "comprehension"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch3_s1_002"
+      ],
+      "related": [
+        "math_10_ch3_s1_004",
+        "math_10_ch3_s1_005"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s1_004",
+    "basic": {
+      "name": "值域——函数值的集合",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "值域是函数值的集合{f(x)|x∈A}，是集合B的子集（不一定等于B）。问题1中值域=B₁={S|0≤S≤175}；问题2中值域=B₂={350,700,1050,1400,1750,2100}；问题3中值域是B₃={I|0<I<150}的真子集；问题4中值域C₄={0.3669,0.3681,0.3817,0.3569,0.3515,0.3353,0.3387,0.2989,0.2935,0.2857}是B₄={r|0<r≤1}的真子集。",
+      "level": "comprehension"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch3_s1_002"
+      ],
+      "related": [
+        "math_10_ch3_s1_003",
+        "math_10_ch3_s1_005"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s1_005",
+    "basic": {
+      "name": "求函数值——代入法",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "f(x)表示x对应的函数值，不是f乘以x。代入法：将自变量的值代入函数解析式即可求出函数值。例2：f(-3)=√(-3+3)+1/(-3+2)=-1；f(2/3)=√(11/3)+3/8；f(a)=√(a+3)+1/(a+2)；f(a-1)=√(a+2)+1/(a+1)。注意代入时需确保自变量在定义域内。",
+      "level": "application"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch3_s1_002"
+      ],
+      "related": [
+        "math_10_ch3_s1_003"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s1_006",
+    "basic": {
+      "name": "函数相等（同一函数）的判定",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "两个函数是同一个函数的充要条件：定义域相同且对应关系相同（与变量所用字母无关）。例3判断与y=x是否为同一函数：①y=(√x)²=x(x≥0)——定义域不同，不是；②u=∛v³=v(v∈R)——定义域和对应关系都相同，是；③y=√x²=|x|——对应关系不同，不是；④m=n²/n=n(n≠0)——定义域不同，不是。",
+      "level": "application"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch3_s1_002",
+        "math_10_ch3_s1_003"
+      ],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s1_007",
+    "basic": {
+      "name": "区间表示法",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "设a<b，规定：①闭区间[a,b]={x|a≤x≤b}；②开区间(a,b)={x|a<x<b}；③半开半闭区间[a,b)={x|a≤x<b}、(a,b]={x|a<x≤b}。实数集R用(-∞,+∞)表示。x≥a→[a,+∞)；x>a→(a,+∞)；x≤b→(-∞,b]；x<b→(-∞,b)。数轴上实心点表示包括端点，空心点表示不包括端点。∞读作\"无穷大\"，是记号不是数。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch3_s1_002"
+      ],
+      "related": [
+        "math_10_ch3_s1_003"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s1_008",
+    "basic": {
+      "name": "常见基本函数的定义域与值域",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "一次函数y=ax+b(a≠0)：定义域R，值域R。二次函数y=ax²+bx+c(a≠0)：定义域R，a>0时值域{y|y≥(4ac-b²)/(4a)}，a<0时值域{y|y≤(4ac-b²)/(4a)}。反比例函数y=k/x(k≠0)：定义域{x|x≠0}，值域{y|y≠0}。",
+      "level": "comprehension"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch3_s1_002",
+        "math_10_ch3_s1_003",
+        "math_10_ch3_s1_004"
+      ],
+      "related": [
+        "math_10_ch3_s1_007"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s1_009",
+    "basic": {
+      "name": "函数的三种表示法",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "解析法：用数学表达式表示变量间的对应关系（如S=350t）。列表法：列出表格表示对应关系（如表3.1-1恩格尔系数）。图象法：用图象表示对应关系（如图3.1-1 AQI曲线）。函数图象可以是连续的曲线、直线、折线、离散的点等。三种表示法各有特点，实际应用时可综合使用。",
+      "level": "comprehension"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch3_s1_002"
+      ],
+      "related": [
+        "math_10_ch3_s1_010",
+        "math_10_ch3_s1_013"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s1_010",
+    "basic": {
+      "name": "分段函数",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch3_s1_009",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "像y={-x(x<0); x(x≥0)}这样的函数称为分段函数。在定义域的不同部分，有不同的对应关系。如例5的y=|x|，例6的M(x)=max{f(x),g(x)}，例8的个税税额计算。生活中很多问题可以用分段函数描述，如出租车的计费、个人所得税纳税额等。注意分段函数是一个函数，不是多个函数。",
+      "level": "comprehension"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch3_s1_009",
+        "math_10_ch3_s1_002"
+      ],
+      "related": [
+        "math_10_ch3_s1_011",
+        "math_10_ch3_s1_012"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s1_011",
+    "basic": {
+      "name": "取大/取小函数（max/min函数）",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch3_s1_010",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "例6：∀x∈R，用M(x)表示f(x),g(x)中的较大者，记为M(x)=max{f(x),g(x)}。当x=2时，M(2)=max{3,9}=9。通过图象法求出分段点（解方程f(x)=g(x)得x=-1或0），得到M(x)的分段解析式。同理可用m(x)=min{f(x),g(x)}表示取小函数。这类问题综合考查函数图象与解析式的转化。",
+      "level": "application"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch3_s1_010",
+        "math_10_ch3_s1_009"
+      ],
+      "related": [
+        "math_10_ch3_s1_013"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s1_012",
+    "basic": {
+      "name": "分段函数的实际应用——个税计算",
+      "type": "example",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch3_s1_010",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "例8：个税税额=应纳税所得额×税率−速算扣除数。应纳税所得额t=综合所得收入额−基本减除费用(60000元)−专项扣除−专项附加扣除−依法确定的其他扣除。y=f(t)是分段函数，7段税率从3%到45%。小王年收入189600元，各项扣除后t=34320元，适用3%税率，应缴税额1029.6元。完整展示\"实际问题→数学模型→计算求解\"的数学建模过程。",
+      "level": "application"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch3_s1_010"
+      ],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s1_013",
+    "basic": {
+      "name": "函数表示法的选择与图象应用分析",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch3_s1_009",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "例7：用表3.1-4给出三名同学六次数学测试成绩及班级平均分。列表法数据详细但不直观；图象法（六个离散点连成折线）能直观对比：王伟成绩始终高于班级平均水平且稳定；张城波动大，在班级平均分上下摆动；赵磊低于平均分但呈上升趋势。这说明了面对实际问题时选择恰当的函数表示法的重要性。",
+      "level": "analysis"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch3_s1_009"
+      ],
+      "related": [
+        "math_10_ch3_s1_014"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s1_014",
+    "basic": {
+      "name": "函数图象的判定依据（垂线检验法）",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch3_s1_009",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "函数图象既可以是连续的曲线，也可以是直线、折线、离散的点等等。判断一个图形是否为函数图象的依据：对于定义域中的每一个x，在图象上只能有唯一确定的y与之对应。即平行于y轴的直线与图象至多有一个交点（垂线检验法）。",
+      "level": "comprehension"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch3_s1_009",
+        "math_10_ch3_s1_002"
+      ],
+      "related": [
+        "math_10_ch3_s1_013"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s1_015",
+    "basic": {
+      "name": "构建函数模型描述变量关系",
+      "type": "example",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    "concept": {
+      "source_text": "例1：函数的解析式是从实际问题中抽象出来的，可以广泛刻画一类事物。正比例函数y=kx可描述匀速运动路程与时间、质量与体积、圆周长与半径等。试构建问题情境使变量关系可用y=x(10-x)描述：长方形周长20，一边长x(0<x<10)，面积y=x(10-x)，值域(0,25]。这体现了\"舍弃实际背景→抽象解析式→再赋予实际情境\"的函数建模思想。",
+      "level": "analysis"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch3_s1_002",
+        "math_10_ch3_s1_008"
+      ],
+      "related": [
+        "math_10_ch3_s1_001"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  }
+]
