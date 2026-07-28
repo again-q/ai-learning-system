@@ -1,0 +1,108 @@
+{
+  "report_id": "math_10_ch2_s2_quality_20260729",
+  "section_id": "math_10_ch2_s2",
+  "section_title": "2.2 基本不等式",
+  "reviewed_at": "2026-07-29",
+  "total_nodes": 12,
+  "verdict": "FAIL",
+  
+  "blocking_checks": {
+    "description": "以下 7 项为阻塞级问题，任何一项 FAIL 则整体判定 FAIL",
+    "overall": "FAIL",
+    "details": [
+      {
+        "check_id": "B1",
+        "check_name": "节点 type 属于定义/性质/符号/方法/案例五类",
+        "status": "FAIL",
+        "affected_nodes": ["math_10_ch2_s2__001", "math_10_ch2_s2__002", "math_10_ch2_s2__006", "math_10_ch2_s2__007", "math_10_ch2_s2__012"],
+        "issue": "节点使用了 'theorem'（001, 002, 006, 007）和 'extension'（012）类型，不在规定的五类（definition/property/symbol/method/application）范围内。建议：001、002、006、007 归为 'property'（性质/定理型知识点），012 归为 'application'（拓展应用）或 'method'。"
+      },
+      {
+        "check_id": "B2",
+        "check_name": "节点 ID 格式规范（section_id 前缀 + 三位编号）",
+        "status": "WARN",
+        "affected_nodes": ["全部 12 个节点"],
+        "issue": "本 section 节点 ID 使用双下划线格式 'math_10_ch2_s2__XXX'，而知识图谱中其他 section（如 math_10_ch1_s1 → 'math_10_ch1_s1_001'、math_10_ch2_s1 → 'math_10_ch2_s1_001'）均使用单下划线。格式不统一可能导致索引查询时被视作不同模式。建议统一为单下划线格式。"
+      },
+      {
+        "check_id": "B3",
+        "check_name": "每个节点有 level 且为 A/B/C/D 之一",
+        "status": "PASS",
+        "affected_nodes": [],
+        "issue": "全部 12 个节点均正确标注了 level（A:4个, B:4个, C:3个, D:1个），层级分布合理。"
+      },
+      {
+        "check_id": "B4",
+        "check_name": "每个节点有非空的 summary",
+        "status": "PASS",
+        "affected_nodes": [],
+        "issue": "全部 12 个节点均有 summary，内容实质性、概括准确。"
+      },
+      {
+        "check_id": "B5",
+        "check_name": "prerequisites 引用的节点 ID 在本 section 内存在",
+        "status": "PASS",
+        "affected_nodes": [],
+        "issue": "全部 prerequisites 引用（001→002→004/005/006/007→008→011 和 003→005→012 等链路）均指向本 section 内存在的节点 ID，无悬空引用。关系链路合理可溯源。"
+      },
+      {
+        "check_id": "B6",
+        "check_name": "related_nodes 引用的节点 ID 存在",
+        "status": "PASS",
+        "affected_nodes": [],
+        "issue": "全部 related_nodes 引用均指向有效节点，双向关系完整。"
+      },
+      {
+        "check_id": "B7",
+        "check_name": "examples 引用的例题/习题存在",
+        "status": "PASS",
+        "affected_nodes": [],
+        "issue": "全部 examples 引用（例1-例4、练习第2(2)题、习题2.2第1(1)题、习题2.2第5题）均可以在教材布局文件中找到对应内容。"
+      }
+    ]
+  },
+
+  "warning_checks": {
+    "description": "以下 5 项为警告级问题，不影响整体 PASS/FAIL，但建议修复以提升质量",
+    "details": [
+      {
+        "check_id": "W1",
+        "check_name": "教材核心内容覆盖度",
+        "status": "WARN",
+        "issue": "主要定理、例题覆盖完整（基本不等式、分析法、几何解释、例1-例4均提取到位），但以下教材内容未被提取为独立节点：\n- 练习1：ab ≤ ((a+b)/2)²（基本不等式的重要变形，后续学习中常见）\n- 练习5：直角三角形面积→直角边和最小（实际应用模型）\n- 习题2.2 复习巩固第3题：房屋造价（实际应用模型）\n- 习题2.2 综合运用第4题：(x+y)(y+z)(z+x) ≥ 8xyz（三元情况拓展）\n建议：考虑是否将 ab ≤ ((a+b)/2)² 提取为 level B 节点（性质），作为基本不等式的等价形式。"
+      },
+      {
+        "check_id": "W2",
+        "check_name": "节点粒度适当（可独立评估）",
+        "status": "PASS",
+        "issue": "每个节点均可在不依赖其他节点的情况下独立评估。层级从 A（核心概念）到 D（拓展技巧）递进合理。特别认可将例2拆分为 006（积定和最小）和 007（和定积最大）两个独立节点，以及从习题中提取 011（配凑技巧）的做法。"
+      },
+      {
+        "check_id": "W3",
+        "check_name": "节点名称使用教材原词",
+        "status": "WARN",
+        "issue": "以下节点名称使用了概括性表述而非教材原文：\n- 006「积定和最小原理」→ 教材原文为「如果积xy等于定值P……x+y有最小值2√P」\n- 007「和定积最大原理」→ 教材原文为「如果和x+y等于定值S……积xy有最大值¼S²」\n- 008「直接型最值问题」→ 教材中对应例1，未给出此类标题\n- 011「配凑技巧（拆项法）」→ 来源于习题，教材无此命名\n- 012「均值不等式链（拓展）」→ 拓展内容，教材无此命名\n建议：如要求严格使用教材原词，006/007 可改为例2原文摘句；对于教材未明确命名的知识点，可保留当前概括性命名但标注为「概括性名称」。"
+      },
+      {
+        "check_id": "W4",
+        "check_name": "relation 关系可追溯",
+        "status": "PASS",
+        "issue": "prerequisites 和 related_nodes 构成了完整的依赖图谱：001(重要不等式)→002(基本不等式)→004(分析法)/005(几何解释)/006(积定和最小)/007(和定积最大)→008(直接型最值)/009(矩形应用)→010(造价应用)→011(配凑技巧)，以及 003(定义)→005/012。每条边都具有明确的数学推导依据，可追溯。"
+      },
+      {
+        "check_id": "W5",
+        "check_name": "source_text 与教材内容匹配",
+        "status": "PASS",
+        "issue": "全部 source_text 经与 agent1_layout 文件逐一比对，内容精准对应教材原文，引用页码（50-55页）与教材章节范围一致。"
+      }
+    ]
+  },
+
+  "summary": {
+    "blocking_pass": 5,
+    "blocking_warn": 1,
+    "blocking_fail": 1,
+    "blocking_verdict": "FAIL",
+    "recommendation": "B1（type 分类违规）必须修复：将 001/002/006/007 的 type 从 'theorem' 改为 'property'（或新增 'theorem' 到允许列表中），将 012 的 type 从 'extension' 改为 'application'（或 'method'）。B2（ID 格式不一致）建议统一为单下划线以与其他 section 保持一致。其余检查项均通过。修复 B1 后即可提升至 PASS。总体质量水平良好，知识点提取完整、粒度合理、关系清晰。"
+  }
+}

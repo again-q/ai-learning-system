@@ -1,0 +1,175 @@
+{
+  "report": {
+    "passed": true,
+    "section_id": "math_10_ch3_s1",
+    "section_title": "3.1 函数的概念及其表示",
+    "total_nodes": 15,
+    "check_timestamp": "2026-07-29",
+    "source_file": "/Users/apple/Desktop/ai-learning-system/output/agent2_extraction/nodes/math_10_ch3_s1.json",
+    "automated_check": {
+      "blocking_issues": [],
+      "warnings": [
+        {
+          "check": 12,
+          "severity": "warning",
+          "affected_nodes": [
+            "math_10_ch3_s1_001",
+            "math_10_ch3_s1_008",
+            "math_10_ch3_s1_009",
+            "math_10_ch3_s1_012",
+            "math_10_ch3_s1_015"
+          ],
+          "detail": "5 个节点的 type 不在规定的五类（definition/property/notation/method/example）中。001「函数概念的引入」使用 'concept'，008「常见基本函数的定义域与值域」使用 'concept'，009「函数的三种表示法」使用 'concept'，012「分段函数的实际应用——个税计算」使用 'application'，015「构建函数模型描述变量关系」使用 'application'。建议：001/008/009 归为 'property' 或 'definition'，012/015 归为 'example'（对应教材例8和例1）。"
+        }
+      ],
+      "summary": "自动校验：0 阻塞问题，1 个警告（type 分类合规）。"
+    },
+    "blocking_check_details": {
+      "description": "7 项阻塞级检查结果",
+      "overall": "PASS",
+      "details": [
+        {
+          "check": 1,
+          "name": "name 非空",
+          "status": "PASS",
+          "detail": "全部 15 个节点均有 name"
+        },
+        {
+          "check": 2,
+          "name": "name 长度 1~35 字符",
+          "status": "PASS",
+          "detail": "最长 name（函数概念的引入——从实际问题抽象）16 字符，均在范围内"
+        },
+        {
+          "check": 3,
+          "name": "source_text 非空",
+          "status": "PASS",
+          "detail": "全部 15 个节点均有 source_text"
+        },
+        {
+          "check": 4,
+          "name": "path 完整性",
+          "status": "PASS",
+          "detail": "全部 path 均为完整四层：['数学', '必修第一册', '第三章 函数的概念与性质', '3.1 函数的概念及其表示']"
+        },
+        {
+          "check": 5,
+          "name": "parent_id 存在",
+          "status": "PASS",
+          "detail": "所有 parent_id（含跨章引用的 ch1_s1_001/002）均指向知识库中已存在的节点"
+        },
+        {
+          "check": 6,
+          "name": "reference/related ID 存在",
+          "status": "PASS",
+          "detail": "全部引用关系可追溯：本 section 内引用指向 14 个同级节点，跨 section 引用 math_10_ch1_s1_001/002 已在 ch1_s1 中提取"
+        },
+        {
+          "check": 7,
+          "name": "knowledge_id 唯一",
+          "status": "PASS",
+          "detail": "15 个 ID 从 001 到 015 均唯一，无重复"
+        }
+      ]
+    },
+    "warning_check_details": {
+      "description": "5 项警告级检查结果",
+      "details": [
+        {
+          "check": 8,
+          "name": "节点数量 8~15",
+          "status": "PASS",
+          "detail": "15 个节点，在上限 15 以内"
+        },
+        {
+          "check": 9,
+          "name": "孤点检测",
+          "status": "PASS",
+          "detail": "无孤点。所有节点均有至少一条 reference 或 related 关系"
+        },
+        {
+          "check": 10,
+          "name": "核心概念锚点",
+          "status": "PASS",
+          "detail": "math_10_ch3_s1_001（函数概念的引入）为根节点 parent_id=null"
+        },
+        {
+          "check": 11,
+          "name": "name 合理性",
+          "status": "PASS",
+          "detail": "所有名称使用教材原词或准确描述性名称。如「区间表示法」「分段函数」「函数相等（同一函数）的判定」均为教材标准术语"
+        },
+        {
+          "check": 12,
+          "name": "type 合规",
+          "status": "WARN",
+          "affected_nodes": ["math_10_ch3_s1_001", "math_10_ch3_s1_008", "math_10_ch3_s1_009", "math_10_ch3_s1_012", "math_10_ch3_s1_015"],
+          "detail": "5 个节点的 type 不在规定五类中，见 automated_check.warnings"
+        }
+      ]
+    },
+    "manual_review": {
+      "verdict": "accepted",
+      "findings": [
+        {
+          "id": "M1",
+          "severity": "info",
+          "category": "内容覆盖度",
+          "detail": "教材内容覆盖完整。3.1.1 节（函数概念）的4个实际问题、函数定义、定义域/值域、区间表示法、例1~例3全部提取到位；3.1.2 节（函数表示法）的三种表示法、分段函数、例4~例8全部提取到位。练习题未提取为独立节点，符合粒度标准。"
+        },
+        {
+          "id": "M2",
+          "severity": "info",
+          "category": "跨节引用",
+          "detail": "节点 001 通过 reference 引用 ch1_s1_001（集合）和 ch1_s1_002（元素），合理体现了函数概念对集合知识的依赖。但注意 knowledge_index.json 的 node_ids 列表仅列本 section 节点，跨节引用依赖需在外层验证。"
+        },
+        {
+          "id": "M3",
+          "severity": "info",
+          "category": "节点粒度",
+          "detail": "粒度决策合理：\n- 4个实际问题合并为 1 个节点（001）而非拆成 4 个——它们共同引出函数定义，合并不损失评估粒度\n- 定义域（003）与值域（004）拆分为独立节点——两者可独立命题，且互相不紧耦合\n- 例2拆入定义域（003）和求函数值（005）——合理分配\n- max/min函数（011）从分段函数（010）中拆出——例6复杂度高，拆分后均可独立评估\n- 个税计算（012）独立节点——体现了分段函数的实际应用建模过程\n- 垂线检验法（014）独立节点——函数图象判定是独立考点"
+        },
+        {
+          "id": "M4",
+          "severity": "info",
+          "category": "关系语义",
+          "detail": "部分节点的 related 列表包含了其子节点（由 tree.parent_id 表达）。例如 002 的 related 包含 003/004/008，而 003/004/008 的 parent_id 均为 002；009 的 related 包含 010/013，而 010/013 的 parent_id 均为 009。related 应仅用于跨分支关联，子节点关系已由 tree 结构承载。建议统一清理，避免冗余。此问题与 §1.5、§2.3 已知问题一致。"
+        },
+        {
+          "id": "M5",
+          "severity": "info",
+          "category": "source_text 准确性",
+          "detail": "经与 agent1_layout 逐一比对，全部 source_text 内容与教材原文一致，无信息失真或错误概括。但部分节点的 source_text 末尾包含提取者添加的概括性语句（如 015 的「这体现了……函数建模思想」），虽不影响准确性，建议标注清晰的原文/提炼区分。"
+        },
+        {
+          "id": "M6",
+          "severity": "info",
+          "category": "节点层级结构",
+          "detail": "父节点分配整体合理，但 015（构建函数模型）直接挂于 002（函数定义）之下不太精确。015 对应的例1更贴近「函数概念的应用」或「函数建模」主题，若设一个中间节点（如「函数概念的应用」）挂于 002 下再将 015 作为其子节点，层级会更清晰。当前结构不造成阻塞，建议后续版本优化。"
+        }
+      ],
+      "highlights": {
+        "positive": [
+          "15 个节点完整覆盖了本节两个子章节（3.1.1 函数概念 + 3.1.2 函数表示法）的主要知识点",
+          "节点名称普遍使用教材原词（如「区间表示法」「分段函数」「函数的三种表示法」）",
+          "关系拓扑分析显示知识图谱结构清晰：001→002→003/004/005/006/007/008/009→010/013/014/015→011/012 形成了层层递进的知识链路",
+          "source_text 详实准确，全部与教材原文一致",
+          "knowledge_index.json 中注册信息完整，15 个 node_ids 与实际文件一致",
+          "level 分布合理：knowledge(1) + comprehension(9) + application(4) + analysis(2)，从识记到分析层次递进"
+        ],
+        "concerns": [
+          "5 个节点 type 分类不规范（见 W12），统一清理后可消除所有警告",
+          "related 列表中包含子节点的情况是跨 section 的系统性冗余问题",
+          "015 的父节点定位可进一步优化"
+        ]
+      },
+      "granularity_decision": {
+        "4个实际问题合并为1个节点": "不拆分。4个问题共用核心目的——引出函数定义，各自无法独立作为考查节点，合并不损失教学粒度。",
+        "定义域与值域分开": "不合并。定义域和值域是函数三要素中的两个独立要素，各自可独立命题。003 与 004 之间的 related 关系正确。",
+        "个税计算独立成节点": "保留。例8展示了完整的数学建模流程（实际问题→分段函数模型→计算求解），具有独立评估价值，不是简单的代入计算。",
+        "垂线检验法独立成节点": "保留。函数图象判定是独立考点，与三种表示法、图象分析等节点形成互补。"
+      }
+    },
+    "summary": "通过。0 阻塞问题 + 1 个自动警告（type 分类合规）+ 6 条人工审查信息项。知识点提取质量良好，内容覆盖完整，关系链路清晰，粒度拆解合理。建议修复 type 分类后即可完全达标。"
+  }
+}

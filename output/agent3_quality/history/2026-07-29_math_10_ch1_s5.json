@@ -1,0 +1,79 @@
+{
+  "report_id": "qr_math_10_ch1_s5_20260729",
+  "section_id": "math_10_ch1_s5",
+  "section_title": "1.5 全称量词与存在量词",
+  "reviewer": "质检 Agent (zhiliangjianyan)",
+  "review_date": "2026-07-29",
+  "node_count": 13,
+  "overall_verdict": "PASS",
+  "summary": {
+    "blocking_issues": 0,
+    "warning_issues": 2,
+    "optimization_suggestions": 2,
+    "action_items": 0
+  },
+  "blocking_checks": {
+    "B1_json_format": {"status": "PASS", "detail": "有效JSON数组，13个节点结构完整"},
+    "B2_required_fields": {"status": "PASS", "detail": "全部13节点含basic, tree, concept, relations, importance五部分完整字段"},
+    "B3_knowledge_id_format": {"status": "PASS", "detail": "全部ID格式 math_10_ch1_s5_XXX 合法，无重复"},
+    "B4_knowledge_index_registration": {"status": "PASS", "detail": "knowledge_index.json 已注册 math_10_ch1_s5，含13个node_ids"},
+    "B5_parent_existence": {"status": "PASS", "detail": "所有parent_id指向已存在节点"},
+    "B6_reference_consistency": {"status": "PASS", "detail": "所有reference/related指向的节点ID均存在于当前节节点列表中，无悬空引用"},
+    "B7_path_consistency": {"status": "PASS", "detail": "所有13节点tree.path一致"}
+  },
+  "warning_checks": {
+    "W1_content_coverage": {
+      "status": "PASS",
+      "detail": "对照教材原文（agent1_layout/math_10_ch1_s5_全称量词与存在量词.md），13个节点完整覆盖本节所有核心知识点。",
+      "required_concepts": ["量词","全称量词","全称量词命题","全称量词命题的符号表示","全称量词命题的真假判定","存在量词","存在量词命题","存在量词命题的符号表示","存在量词命题的真假判定","命题的否定","全称量词命题的否定","存在量词命题的否定","举反例"],
+      "all_covered": true
+    },
+    "W2_granularity_coupling": {
+      "status": "PASS",
+      "detail": "经拓扑耦合分析，无高置信合并候选。4组低置信等效对经判定均保留。",
+      "candidates_reviewed": [
+        {"pair": "全称量词命题的否定(011) ↔ 存在量词命题的否定(012)", "topology": "同父同type互related", "verdict": "保留", "reason": "底层命题形式不同，各自可独立评估"},
+        {"pair": "全称量词命题的真假判定(005) ↔ 存在量词命题的真假判定(009)", "topology": "不同父同type交叉引用", "verdict": "保留", "reason": "验证方法不同（全称→全部，存在→存在），各自独立"},
+        {"pair": "全称量词命题(003) ↔ 存在量词命题(007)", "topology": "不同父同type无互引", "verdict": "保留", "reason": "全称与存在两种不同量词命题类型"},
+        {"pair": "全称量词符号表示(004) ↔ 存在量词符号表示(008)", "topology": "不同父同type互related", "verdict": "保留", "reason": "∀ vs ∃，不同符号形式"}
+      ]
+    },
+    "W3_type_matching": {"status": "PASS", "detail": "全部13节点type分配合理"},
+    "W4_name_accuracy": {"status": "PASS", "detail": "所有节点名称使用教材原词"},
+    "W5_independent_assessment": {"status": "PASS", "detail": "全部13节点均可独立出题评估"}
+  },
+  "optimization_suggestions": [
+    {
+      "category": "related_field_cleanup",
+      "detail": "按§1.4审定标准，related仅用于跨分支关联。8个节点的related中存在冗余的父子/兄弟引用。",
+      "affected": ["001→002,006","002→003","003→004,005","006→007","007→008,009","010→011,012","011→012","012→011"]
+    },
+    {
+      "category": "symbol_notation_completeness",
+      "detail": "教材1.5.2引入逻辑非符号¬，可考虑增设notation节点，但非必需。"
+    }
+  ],
+  "node_detail": [
+    {"knowledge_id":"math_10_ch1_s5_001","name":"量词","type":"definition","parent_id":null,"verdict":"PASS"},
+    {"knowledge_id":"math_10_ch1_s5_002","name":"全称量词","type":"definition","parent_id":"math_10_ch1_s5_001","verdict":"PASS"},
+    {"knowledge_id":"math_10_ch1_s5_003","name":"全称量词命题","type":"definition","parent_id":"math_10_ch1_s5_002","verdict":"PASS"},
+    {"knowledge_id":"math_10_ch1_s5_004","name":"全称量词命题的符号表示","type":"notation","parent_id":"math_10_ch1_s5_003","verdict":"PASS"},
+    {"knowledge_id":"math_10_ch1_s5_005","name":"全称量词命题的真假判定","type":"method","parent_id":"math_10_ch1_s5_003","verdict":"PASS"},
+    {"knowledge_id":"math_10_ch1_s5_006","name":"存在量词","type":"definition","parent_id":"math_10_ch1_s5_001","verdict":"PASS"},
+    {"knowledge_id":"math_10_ch1_s5_007","name":"存在量词命题","type":"definition","parent_id":"math_10_ch1_s5_006","verdict":"PASS"},
+    {"knowledge_id":"math_10_ch1_s5_008","name":"存在量词命题的符号表示","type":"notation","parent_id":"math_10_ch1_s5_007","verdict":"PASS"},
+    {"knowledge_id":"math_10_ch1_s5_009","name":"存在量词命题的真假判定","type":"method","parent_id":"math_10_ch1_s5_007","verdict":"PASS"},
+    {"knowledge_id":"math_10_ch1_s5_010","name":"命题的否定","type":"definition","parent_id":null,"verdict":"PASS"},
+    {"knowledge_id":"math_10_ch1_s5_011","name":"全称量词命题的否定","type":"method","parent_id":"math_10_ch1_s5_010","verdict":"PASS"},
+    {"knowledge_id":"math_10_ch1_s5_012","name":"存在量词命题的否定","type":"method","parent_id":"math_10_ch1_s5_010","verdict":"PASS"},
+    {"knowledge_id":"math_10_ch1_s5_013","name":"举反例","type":"method","parent_id":"math_10_ch1_s5_005","verdict":"PASS"}
+  ],
+  "tree_structure_summary": {
+    "roots": ["量词(001)", "命题的否定(010)"],
+    "max_depth": 4,
+    "branches": {
+      "量词(001)": {"children": ["全称量词(002)→全称量词命题(003)→{符号表示(004),真假判定(005)→举反例(013)}","存在量词(006)→存在量词命题(007)→{符号表示(008),真假判定(009)}"]},
+      "命题的否定(010)": {"children": ["全称量词命题的否定(011)","存在量词命题的否定(012)"]}
+    }
+  }
+}
