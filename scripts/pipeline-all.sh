@@ -50,48 +50,54 @@ for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
     echo ""
     echo "━━━ [${total}] ${SID} ${TITLE} ━━━"
     
-    # Agent 1 输出文件路径
-    LAYOUT_FILE="${PROJECT}/output/agent1_layout/${BASENAME}.md"
-    
-    # Agent 1 — 读原始 txt，输出为同名 .md
+    # Agent 1 — 如果已有版面文件就跳过
     echo "▶️  Agent 1 版面..."
     T1=$(date +%s)
-    qwenpaw agent chat \
-      --from-agent default \
-      --to-agent ai-learning-system-math-banmianfenxi-agent \
-      --text "处理章节 ${SID}，输入 ${F}，输出到 ${PROJECT}/output/agent1_layout/${BASENAME}.md" \
-      2>&1 || true
-    D1=$(( $(date +%s) - T1 ))
-    
-    if [ ! -f "$LAYOUT_FILE" ]; then
-        echo "❌ Agent 1 失败 (${D1}s)"
-        echo "${SID} agent1" >> "${FAILED}"
-        ((fail++))
-        continue
+    LAYOUT_FILE="${PROJECT}/output/agent1_layout/${BASENAME}.md"
+    if [ -f "$LAYOUT_FILE" ]; then
+        echo "   ⏭️  已有，跳过"
+        D1=0
+    else
+        qwenpaw agent chat \
+          --from-agent default \
+          --to-agent ai-learning-system-math-banmianfenxi-agent \
+          --text "处理章节 ${SID}，输入 ${F}，输出到 ${PROJECT}/output/agent1_layout/${BASENAME}.md" \
+          2>&1 || true
+        D1=$(( $(date +%s) - T1 ))
+        if [ ! -f "$LAYOUT_FILE" ]; then
+            echo "❌ Agent 1 失败 (${D1}s)"
+            echo "${SID} agent1" >> "${FAILED}"
+            ((fail++))
+            continue
+        fi
+        echo "   ✅ (${D1}s)"
     fi
-    echo "   ✅ (${D1}s)"
     
-    # Agent 2 — 读 Agent 1 产出（用实际文件名）
+    # Agent 2 — 如果已有节点文件就跳过
     echo "▶️  Agent 2 提取..."
     T2=$(date +%s)
-    qwenpaw agent chat \
-      --from-agent default \
-      --to-agent ai-learning-system-math-jiegouzhuanhua-agent \
-      --text "从 ${LAYOUT_FILE} 提取知识点，section_id=${SID}，输出到 ${PROJECT}/output/agent2_extraction/nodes/" \
-      2>&1 || true
-    D2=$(( $(date +%s) - T2 ))
-    
-    # 找 Agent 2 最新产出
     NODE_FILE=$(ls -t "${PROJECT}/output/agent2_extraction/nodes/${SID}"*.json 2>/dev/null | head -1)
-    if [ -z "$NODE_FILE" ]; then
-        echo "❌ Agent 2 失败 (${D2}s) — 未产出节点文件"
-        echo "${SID} agent2" >> "${FAILED}"
-        ((fail++))
-        continue
+    if [ -n "$NODE_FILE" ]; then
+        echo "   ⏭️  已有，跳过"
+        D2=0
+    else
+        qwenpaw agent chat \
+          --from-agent default \
+          --to-agent ai-learning-system-math-jiegouzhuanhua-agent \
+          --text "从 ${LAYOUT_FILE} 提取知识点，section_id=${SID}，输出到 ${PROJECT}/output/agent2_extraction/nodes/" \
+          2>&1 || true
+        D2=$(( $(date +%s) - T2 ))
+        NODE_FILE=$(ls -t "${PROJECT}/output/agent2_extraction/nodes/${SID}"*.json 2>/dev/null | head -1)
+        if [ -z "$NODE_FILE" ]; then
+            echo "❌ Agent 2 失败 (${D2}s)"
+            echo "${SID} agent2" >> "${FAILED}"
+            ((fail++))
+            continue
+        fi
+        echo "   ✅ (${D2}s)"
     fi
-    echo "   ✅ (${D2}s)"
     
-    # Agent 3 — 传实际节点文件路径
+    # Agent 3
     echo "▶️  Agent 3 质检..."
     T3=$(date +%s)
     qwenpaw agent chat \
