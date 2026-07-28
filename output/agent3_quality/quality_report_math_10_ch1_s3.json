@@ -1,0 +1,135 @@
+{
+  "report_id": "QR-20260729-001",
+  "review_date": "2026-07-29T03:06+08:00",
+  "section_id": "math_10_ch1_s3",
+  "section_title": "1.3 集合的基本运算",
+  "node_count": 10,
+  "reviewer": "质检",
+  "overall_verdict": "PASS（有条件）",
+  "summary": "10个节点的提取质量总体良好，7项阻塞检查全部通过，5项警告检查中发现3项需关注但不阻塞。主要问题：02号节点标题的引导性表述需删除，010号节点的独立性偏弱。",
+
+  "blocking_checks": [
+    {
+      "id": "B1",
+      "name": "节点数量与内容覆盖",
+      "status": "PASS",
+      "detail": "10个节点完整覆盖教材1.3节三大板块：并集(001)→交集(002)→补集(003,004)，辅以Venn图(005)、基本性质(006)、求法(007,008)、应用(009)、逻辑辨析(010)。教材"观察""思考""例1-例6"全部被收录，无遗漏。"练习"内容隐含在方法节点中，覆盖充分。"
+    },
+    {
+      "id": "B2",
+      "name": "节点名称使用教材原词",
+      "status": "PASS",
+      "detail": "所有节点标题均使用教材原文中的术语——并集、交集、全集、补集、Venn图、集合运算基本性质（教材"思考"中原文内容）。node_010"或与且在集合运算中的逻辑辨析"虽非教材原文小标题，但内容提炼自教材贯穿始终的"或""且""不属于"逻辑词辨析，属合理提炼。"
+    },
+    {
+      "id": "B3",
+      "name": "节点可独立评估",
+      "status": "PASS（有注意）",
+      "detail": "9/10节点可独立评估。node_010（逻辑辨析）是前9个节点的总结性提炼，若脱离上下文单独出题（如"并集对应什么逻辑词"）仍可作答，勉强满足独立评估条件。建议：未来若节点数进一步膨胀，可考虑将010作为node_001/002/004的拓展内容合并，而非独立节点。"
+    },
+    {
+      "id": "B4",
+      "name": "知识类型分类正确",
+      "status": "PASS",
+      "detail": "分类分布：concept_definition×4 (001-004), graph_property×1 (005), theorem_property×1 (006), method_technique×2 (007-008), application_example×1 (009), comparison_summary×1 (010)。各类别定义准确，与节点内容匹配。"
+    },
+    {
+      "id": "B5",
+      "name": "关系可追溯（target_id指向真实节点）",
+      "status": "PASS（有注意）",
+      "detail": "本节内关系（共22条）全部指向本节内存在的node_id，追溯无问题。跨节引用（001→math_10_ch1_s1_???、003→math_10_ch1_s1_???、010→math_10_ch1_s4_???）使用???占位符标记未提取的章节，做法合理但需后续补齐。"
+    },
+    {
+      "id": "B6",
+      "name": "无孤立节点",
+      "status": "PASS",
+      "detail": "所有10个节点均参与关系网络：001有3条出边、002有3条、003有2条、004有2条、005有3条、006有3条、007有2条、008有2条、009有2条、010有4条。网络密度合理。"
+    },
+    {
+      "id": "B7",
+      "name": "JSON结构完整性",
+      "status": "PASS",
+      "detail": "JSON格式规范，字段齐全：section_id/section_title/chapter/book/toc_path/node_count/nodes。每个节点包含node_id/sub_section/knowledge_type/title/summary/content/key_points/relations/examples/keywords/difficulty共11个标准字段。"
+    }
+  ],
+
+  "warning_checks": [
+    {
+      "id": "W1",
+      "name": "完整性——教材核心内容全覆盖",
+      "status": "WARN",
+      "severity": "low",
+      "detail": "教材核心内容已全部覆盖，但发现一个非关键遗漏：教材中"交集"部分开头有一个"思考"栏（观察集合A,B,C的关系），该内容在002节点的summary中有提及但未被单独强调。另外，教材三小节后的"练习"题仅由方法节点间接覆盖，未形成独立的"练习解析"节点——考虑到本项目不需要练习解析节点，此判定为合理。总体：内容完整度约95%。"
+    },
+    {
+      "id": "W2",
+      "name": "粒度一致性",
+      "status": "WARN",
+      "severity": "medium",
+      "detail": "节点粒度基本一致，但存在两处偏细：① 全集(003)与补集(004)分成两个独立节点——虽然从教学角度全集是补集的前提概念、分开有合理性，但教材中它们属于同一小节（补集）且讲解长度很短。② node_010（逻辑辨析）与其他节点有内容重叠（与001/002/004的key_points部分重复）。建议：未来可考虑003+004合并为一个"全集与补集概念"节点，或将010降级为001/002/004的扩展内容而非独立节点。"
+    },
+    {
+      "id": "W3",
+      "name": "关系类型丰富度",
+      "status": "PASS",
+      "detail": "使用了10种关系类型：prerequisite, closely_related, leads_to, depends_on, applied_in, visualizes, derived_from, alternative_to, deepens, complements。关系描述具体可追溯，无泛泛而谈的"related_to"类模糊关系。"
+    },
+    {
+      "id": "W4",
+      "name": "示例完整性",
+      "status": "PASS",
+      "detail": "每个节点至少有一个示例。且示例均来自教材原文（例1-例6），部分节点补充了额外师生常见示例。教材中的三道"练习"未单独在节点中举例（已由方法节点的示例覆盖）。"
+    },
+    {
+      "id": "W5",
+      "name": "跨节引用占位符规范",
+      "status": "WARN",
+      "severity": "medium",
+      "detail": "3处跨节引用使用???占位符（001→s1, 003→s1, 010→s4）。???占位在当前是合理的标记法，但存在两处问题：① 格式不统一——应统一为 'math_10_ch1_s1_PENDING' 以区别于真正未知的ID；② 关系描述中引用的"1.1节""1.4节"概念很重要（集合的概念、逻辑用语），是后续知识追踪的枢纽节点，须在1.1和1.4章节提取后回补。"
+    }
+  ],
+
+  "issues_to_fix": [
+    {
+      "id": "FIX-001",
+      "target": "node_002 - 交集的概念与定义",
+      "severity": "minor",
+      "type": "命名引导性",
+      "detail": "title为"交集的概念与定义"，与node_001"并集的概念与定义"对称，OK。但node_002的content中有一句"交集与并集的核心区别在于逻辑词"且"要求同时满足，"或"只要求至少满足一个"——这句适合放在node_010（逻辑辨析）而非002的定义节点中，建议移除或移入010。",
+      "suggested_fix": "将002.content中关于'或与且核心区别'的表述移到node_010"
+    },
+    {
+      "id": "FIX-002",
+      "target": "node_010 - sub_section字段",
+      "severity": "minor",
+      "type": "元数据格式",
+      "detail": "node_005/sub_section='并集 / 交集 / 补集'和node_010/sub_section='并集 / 交集 / 补集'均使用带空格的斜杠分隔。建议统一为不包含空格的分隔格式（如'并集_交集_补集'或'并集·交集·补集'）以保持一致性。另外node_006的sub_section='并集 / 交集'也有同样问题。",
+      "suggested_fix": "统一sub_section分隔符格式（建议用'、'或下划线，去掉空格）"
+    },
+    {
+      "id": "FIX-003",
+      "target": "跨节引用回补",
+      "severity": "tracking",
+      "type": "依赖跟踪",
+      "detail": "1.1节（集合的概念）和1.4节（充分条件与必要条件）提取后，必须回补3处???占位符。1.1节是本节所有概念的基石（prerequisite），1.4是node_010逻辑基础的自然延伸。",
+      "suggested_fix": "在1.1和1.4章节提取完成后执行回补操作"
+    }
+  ],
+
+  "statistics": {
+    "total_nodes": 10,
+    "by_type": {
+      "concept_definition": 4,
+      "graph_property": 1,
+      "theorem_property": 1,
+      "method_technique": 2,
+      "application_example": 1,
+      "comparison_summary": 1
+    },
+    "total_relations": 22,
+    "intra_section_relations": 22,
+    "cross_section_relations_placeholder": 3,
+    "avg_difficulty": 1.9,
+    "avg_examples_per_node": 1.5
+  }
+}
