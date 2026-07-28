@@ -18,7 +18,7 @@
       ]
     },
     "concept": {
-      "source_text": "在现实世界和日常生活中，大量存在着相等关系和不等关系……相等用等式表示，不等用不等式表示。",
+      "source_text": "在现实世界和日常生活中，大量存在着相等关系和不等关系……相等用等式表示，不等用不等式表示。\n",
       "level": "knowledge"
     },
     "relations": {
@@ -277,78 +277,6 @@
     "importance": {
       "curriculum_weight": 3,
       "exam_frequency": 3
-    }
-  },
-  {
-    "knowledge_id": "math_10_ch2_s1_009",
-    "basic": {
-      "name": "不等式的性质4（乘法保序性）",
-      "type": "property",
-      "subject": "数学",
-      "stage": "高中",
-      "grade": "必修第一册"
-    },
-    "tree": {
-      "parent_id": "math_10_ch2_s1_001",
-      "path": [
-        "数学",
-        "必修第一册",
-        "第二章 一元二次函数、方程和不等式",
-        "2.1 等式性质与不等式性质"
-      ]
-    },
-    "concept": {
-      "source_text": "如果 a>b，c>0，那么 ac>bc；如果 a>b，c<0，那么 ac<bc。即不等式两边同乘一个正数，所得不等式与原不等式同向；同乘一个负数，所得不等式与原不等式反向。",
-      "level": "knowledge"
-    },
-    "relations": {
-      "reference": [
-        "math_10_ch2_s1_001"
-      ],
-      "related": [
-        "math_10_ch2_s1_011",
-        "math_10_ch2_s1_012"
-      ]
-    },
-    "importance": {
-      "curriculum_weight": 3,
-      "exam_frequency": 3
-    }
-  },
-  {
-    "knowledge_id": "math_10_ch2_s1_010",
-    "basic": {
-      "name": "不等式的性质5（同向可加性）",
-      "type": "property",
-      "subject": "数学",
-      "stage": "高中",
-      "grade": "必修第一册"
-    },
-    "tree": {
-      "parent_id": "math_10_ch2_s1_001",
-      "path": [
-        "数学",
-        "必修第一册",
-        "第二章 一元二次函数、方程和不等式",
-        "2.1 等式性质与不等式性质"
-      ]
-    },
-    "concept": {
-      "source_text": "如果 a>b，c>d，那么 a+c>b+d。证明：由 a>b 和性质3得 a+c>b+c；由 c>d 和性质3得 b+c>b+d；再根据性质2（传递性），得 a+c>b+d。",
-      "level": "knowledge"
-    },
-    "relations": {
-      "reference": [
-        "math_10_ch2_s1_008",
-        "math_10_ch2_s1_007"
-      ],
-      "related": [
-        "math_10_ch2_s1_011"
-      ]
-    },
-    "importance": {
-      "curriculum_weight": 2,
-      "exam_frequency": 2
     }
   },
   {
