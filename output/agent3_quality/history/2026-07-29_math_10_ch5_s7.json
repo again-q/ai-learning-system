@@ -1,0 +1,29 @@
+{
+  "report_id": "qr_math_10_ch5_s7",
+  "section_id": "math_10_ch5_s7",
+  "section_title": "5.7 三角函数的应用",
+  "chapter": "第五章 三角函数",
+  "reviewed_at": "2026-07-29T02:10:00+08:00",
+  "reviewer": "质检",
+  "total_nodes": 12,
+  "blockers": 0,
+  "warnings": 0,
+  "passed": true,
+  "blocker_items": [],
+  "warning_items": [],
+  "passed_checks": [
+    {"check": "B1 — name 非空", "status": "PASS", "detail": "12/12 节点 title 均非空"},
+    {"check": "B2 — name 长度 1~35 字符", "status": "PASS", "detail": "最长 34 字（005），最短 11 字，均合规"},
+    {"check": "B3 — source_text (description) 非空", "status": "PASS", "detail": "12/12 节点 description 字段完整，最少 224 字，最多 368 字"},
+    {"check": "B4 — path 完整性", "status": "PASS", "detail": "knowledge_index.json path: [数学, 必修第一册, 第五章 三角函数, 5.7 三角函数的应用]"},
+    {"check": "B5 — parent_id / 根节点可追溯", "status": "PASS", "detail": "模型节点 001 和 010 被引 5 次，充当根锚点"},
+    {"check": "B6 — reference ID 可追溯", "status": "PASS", "detail": "内部 12 处 + 跨节 7 处引用全部在全局索引中验证存在"},
+    {"check": "B7 — knowledge_id 全局唯一", "status": "PASS", "detail": "12 个 ID (math_10_ch5_s7_001~012) 无冲突"},
+    {"check": "W8 — 孤点检测", "status": "PASS", "detail": "所有节点均有出度/入度"},
+    {"check": "W9 — 核心概念锚点", "status": "PASS", "detail": "001 和 010 被引 5 次，充当概念锚点"},
+    {"check": "W10 — 名称合理性", "status": "PASS", "detail": "节点名称使用教材原词"},
+    {"check": "W11 — 知识点完整性", "status": "PASS", "detail": "教材正文全覆盖：问题1/2、例1/2、阅读与思考、建模步骤"},
+    {"check": "W12 — 知识点粒度（拓扑分析法）", "status": "PASS", "detail": "11对相互引用均非仅彼此引用，无高置信合并候选"}
+  ],
+  "summary": "12 节点全绿通过。模型→方法→案例→阅读四层结构，知识覆盖完整，粒度适中。"
+}
