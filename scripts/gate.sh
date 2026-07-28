@@ -76,7 +76,7 @@ if [ "$CMD" = "allow-write" ] || [ "$CMD" = "revoke-write" ]; then
         echo "请在下方输入 yes 确认："
         echo ""
         /bin/echo -n "> "
-        read USER_INPUT
+        read USER_INPUT < /dev/tty
         if [ "$USER_INPUT" = "yes" ]; then
             {
                 echo "ACK:YES"

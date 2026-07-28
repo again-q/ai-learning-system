@@ -1,11 +1,11 @@
 # 教材知识图谱构建方法论（AI学习助手）
 
-> 状态：v1.4 定稿
-> 适用范围：独立离线模块（教材PDF → 结构化JSON）
+> 状态：v1.5 定稿
+> 适用范围：独立离线模块（教材PDF → 结构化JSON）  
 > 消费方：AI学习助手微信小程序（Canvas 2D 知识地图 + 五维诊断）
 > 核心参考：追笋学堂 KF 知识图谱构建方法论（外部，仅吸收策略层）
 > 对应规范文件：[知识图谱结构规范.md](知识图谱结构规范.md)
-> **最新产出**：21/24节通过质检，318节点（截至2026-07-28）
+> **最新产出**：21/24节通过质检，318节点（截至2026-07-28），文件位于 `knowledge-graph/`
 
 ---
 
@@ -14,8 +14,9 @@
 **目标**：给定教材章节（PDF/电子版），产出符合本项目 JSON 规范的、可用于 K 维诊断的知识图谱结构化文件。
 
 **产物**：
-1. **知识节点文件**：`final/*_knowledge_graph.json`（所有知识节点的结构化数组）
-2. **校验报告**：`quality_report.json`（质量门禁结果）
+1. **知识节点文件**：`knowledge-graph/nodes/*.json`（每节一个独立 JSON，含知识节点的结构化数组）
+2. **知识节点索引**：`knowledge-graph/knowledge_index.json`（全本节点总索引）
+3. **校验报告**：`output/agent3_quality/quality_report.json`（质量门禁结果）
 
 产物**不是**小程序内置模块，是独立离线脚本生成的静态数据。
 
@@ -52,17 +53,27 @@
 
 ## 2. 全链路设计：教材PDF → 结构化JSON
 
-### 整体流程
+### 实际执行流程（2026-07-28 定稿）
 
 ```
-教材PDF → [阶段一：解析] → 逐页文本 + 目录JSON
-    → [阶段一·五：按节拆分] → 每节独立文本/Markdown
-    → [阶段二：知识点提取] → 候选节点清单
-    → [阶段三：关系构建] → 依赖/关联关系
-    → [阶段四：格式化输出] → 项目JSON规范文件
-    → [阶段五：质量校验] → 校验报告
-    → [阶段六：对接五维模型] → CloudBase 导入
+教材PDF → [OCR识别] → 逐页文本JSON
+    → [TOC建表+按节拆分] → 每节独立 .txt
+    → [Agent 1：版面分析] → 每节 .md（QwenPaw AI Agent）
+    → [Agent 2：知识点提取] → 每节 nodes .json（QwenPaw AI Agent）
+    → [Agent 3：质量校验] → quality_report.json（QwenPaw AI Agent）
+    → [后处理修复] → type规范化 / ID清理 / 跨节引用修复
+    → [文件归档] → knowledge-graph/（节点JSON + 总索引）
 ```
+
+**关键差异**（对比原设计）：
+
+| 原设计 | 实际做法 | 原因 |
+|--------|---------|------|
+| MinerU 解析PDF | 腾讯云 OCR 逐页识别 | MinerU Mac MPS 不可用 |
+| Node.js 脚本处理各阶段 | 3 个 QwenPaw AI Agent CLI 串行调度 | Agent 粒度更细，质量更高 |
+| `deepseek-v4-flash` API | QwenPaw 内置模型（Agent 自行决定）| QwenPaw 封装了模型调用 |
+| `final/*_knowledge_graph.json` | `knowledge-graph/nodes/*.json` | 更直观的目录结构 |
+| 阶段二/三/四独立 | Agent 2 同时提取知识点+构建关系+格式化输出 | 减少 API 调用次数 |
 
 ### 阶段一：教材PDF解析（OCR识别）
 
@@ -429,29 +440,41 @@ AI教练读取：学生知识状态 + 知识节点 source_text + 五维报告
 
 | 阶段 | 工具/方式 | 产出 |
 |------|----------|------|
-| 1. OCR识别 | Python `PyMuPDF` + 腾讯云 `GeneralAccurateOCR` | `pages/page_XXX.json` |
-| 1.5 建TOC | Node.js 脚本（从目录页提取） | `toc.json` |
-| 1.5 按节拆分 | Node.js 脚本（按页号合并） | `sections/*.txt` + `sections_meta.json` |
-| 2. 知识点提取 | Node.js 脚本 + `deepseek-v4-flash`（逐节） | `candidates/*.json` |
-| 3. 关系构建 | Node.js 脚本 + `deepseek-v4-flash`（逐节） | `relations/*.json` |
-| 4. 格式化输出 | Node.js 脚本（name→ID映射） | `final/*_knowledge_graph.json` |
-| 5. 质量校验 | Node.js 校验脚本 | `quality_report.json` |
-| 6. 导入消费 | CloudBase 数据库 | `knowledge_nodes` 集合 |
+| 1. OCR识别 | Python `PyMuPDF` + 腾讯云 `GeneralAccurateOCR` | `output/raw/ocr_pageXXX.json` |
+| 1.5 建TOC+按节拆分 | Python `PyMuPDF`（读取）+ Python 脚本合并 | `output/sections/*.txt` + `output/sections/sections_meta.json` |
+| 2. 版面分析 | QwenPaw Agent `banmianfenxi-agent`（CLI `qwenpaw agent chat`） | `output/agent1_layout/*.md` |
+| 3. 知识点提取+关系+格式化 | QwenPaw Agent `jiegouzhuanhua-agent`（CLI `qwenpaw agent chat`） | `output/agent2_extraction/nodes/*.json` |
+| 4. 质量校验 | QwenPaw Agent `zhiliangjianyan-agent`（CLI `qwenpaw agent chat`） | `output/agent3_quality/quality_report.json` |
+| 5. 后处理修复 | Python 脚本（type映射/ID清理/引用修复/节点增删） | 修复后的 `knowledge-graph/nodes/*.json` |
+| 6. 文件归档 | `mv` 命令 | `knowledge-graph/`（节点JSON + 索引） |
 
-**目录结构建议**（放在项目根目录下）：
+**目录结构**（项目根目录下）：
 
 ```
-knowledge-graph-builder/
-├── input/          # 教材PDF
-├── output/
-│   ├── raw/        # MinerU 解析产出（.md + images/）
-│   ├── sections/   # 按节拆分的独立 Markdown
-│   ├── candidates/ # 阶段二产出
-│   ├── relations/  # 阶段三产出
-│   ├── final/      # 最终JSON
-│   └── quality_report.json
-├── scripts/        # Node.js 脚本（拆分/提取/校验）
-└── README.md
+knowledge-graph/                 # ✅ 知识图谱最终产出（独立目录）
+├── knowledge_index.json         # 节点总索引
+├── nodes/                       # 每节独立 JSON
+│   ├── math_10_ch1_s1.json
+│   └── ...
+├── README.md
+
+output/                          # 中间产物（保留供追溯）
+├── raw/                         # OCR 逐页 JSON + TOC
+├── sections/                    # 按节合并的 OCR 文本
+├── agent1_layout/               # Agent 1 版面分析 .md
+├── agent2_extraction/           # Agent 2 中间态
+├── agent3_quality/              # Agent 3 质检报告
+├── _failed.log                  # 失败记录
+└── _needs_review.log            # 需复核记录
+
+scripts/                         # 管线脚本
+├── pipeline-all.sh              # 全自动三Agent管线
+└── retry-4.2-4.4.sh             # 重跑 4.2~4.4
+
+doc/                             # 项目文档
+├── decision-log.md              # 决策记录（本文档）
+├── methodology-knowledge-graph.md   # 方法论
+└── 知识图谱结构规范.md              # JSON 规范
 ```
 
 ---
