@@ -1,0 +1,49 @@
+{
+  "name": "AI 薄弱点诊断系统 — 知识库同步配置",
+  "version": "1.0",
+  "description": "定义项目文件 → knowledge-base/ → 外部知识库平台（Notion/飞书/语雀等）的映射关系",
+
+  "groups": {
+    "core-theory": {
+      "label": "⭐ 核心理论",
+      "files": [
+        { "source": "五维能力向量框架-理论文档.md", "category": "项目独有", "external": "五维能力向量框架（K/A/T/Q/S 模型）" },
+        { "source": "知识库架构决策文档.md",       "category": "项目独有", "external": "知识库架构决策（课标锚定 + 个人补充）" }
+      ]
+    },
+    "dev-standards": {
+      "label": "📋 开发规范",
+      "files": [
+        { "source": "CLAUDE.md",           "category": "项目独有", "external": "CLAUDE.md — AI 协作流程规则" },
+        { "source": "AI协作手册.md",        "category": "项目独有", "external": "AI 协作手册" },
+        { "source": "coding-rules.md",      "category": "项目独有", "external": "编码强制规则" }
+      ]
+    },
+    "project-overview": {
+      "label": "🏗️ 项目概况与规划",
+      "files": [
+        { "source": "README.md",            "category": "项目独有", "external": "项目总览 README" },
+        { "source": "Code-Wiki.md",         "category": "项目独有", "external": "代码百科 Code-Wiki" },
+        { "source": "ROADMAP.md",           "category": "项目独有", "external": "项目路线图 ROADMAP" },
+        { "source": "ENGINEERING_TODO.md",  "category": "项目独有", "external": "工程待办 ENGINEERING_TODO" },
+        { "source": "REVIEW_STRUCTURE.md",  "category": "项目独有", "external": "代码评审结构 REVIEW_STRUCTURE" },
+        { "source": "GATE_SUMMARY.md",      "category": "项目独有", "external": "门禁系统 GATE_SUMMARY" }
+      ]
+    },
+    "knowledge-graph": {
+      "label": "🕸️ 知识图谱与规格",
+      "files": [
+        { "source": "doc/知识图谱结构规范.md",  "category": "项目独有", "external": "知识图谱结构规范" },
+        { "source": "specs/K-dimension-final.md",   "category": "项目独有", "external": "K 维度规格 v1" },
+        { "source": "specs/K-dimension-final-v2.md","category": "项目独有", "external": "K 维度规格 v2" }
+      ]
+    },
+    "common": {
+      "label": "📂 通用知识（可复用于其他项目）",
+      "files": [
+        { "source": "设计语言规范.md",          "category": "通用", "external": "设计语言规范" },
+        { "source": "前端视觉与动画工程经验.md", "category": "通用", "external": "前端视觉与动画工程经验" }
+      ]
+    }
+  }
+}

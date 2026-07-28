@@ -1,0 +1,10 @@
+{
+  "report": {
+    "passed": true,
+    "section_id": "math_10_ch1_s1",
+    "total_nodes": 11,
+    "blocking_issues": [],
+    "warnings": [],
+    "summary": "通过：0 个阻塞问题，0 个警告（2 个候选对经领域知识判定：不合并）"
+  }
+}

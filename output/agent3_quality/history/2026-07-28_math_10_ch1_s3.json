@@ -1,0 +1,54 @@
+{
+  "report": {
+    "passed": true,
+    "section_id": "math_10_ch1_s3",
+    "section_title": "1.3 集合的基本运算",
+    "total_nodes": 10,
+    "blocking_issues": [],
+    "warnings": [
+      {
+        "check": 12,
+        "severity": "warning",
+        "detail": "知识遗漏：缺少核心概念「补集」—— OCR输入仅覆盖至第18页（全集定义），补集定义（∁UA）在后续页面未捕获，非Agent 2提取问题"
+      },
+      {
+        "check": "13a",
+        "severity": "warning",
+        "detail": "节点「并集」与「交集」互为引用、同父（root）同类型（definition），属于中低置信度耦合对"
+      }
+    ],
+    "domain_judgments": [
+      {
+        "check": "13a",
+        "pair": "并集 ↔ 交集",
+        "verdict": "不合并",
+        "reason": "并集与交集是集合的两大独立基本运算，各自可独立评估（学生可掌握其一而不掌握其二），类比1.1中列举法↔描述法的处理"
+      }
+    ],
+    "additional_observations": [
+      {
+        "node": "008 数轴法求区间集合的并集",
+        "type": "note",
+        "detail": "该节点名称限定为「并集」场景，但数轴法同样适用于交集、补集。当前粒度可接受（教材例2专用），后续如有交集数轴法节点可考虑合并为通用「数轴法」"
+      },
+      {
+        "node": "009 同一问题在不同全集下的解集差异",
+        "type": "note",
+        "detail": "此节点提取自补集前的引文示例，是一段铺垫内容。由于OCR缺了补集定义，该节点成了「有前奏无主歌」的状态。建议补充补集后再评估是否保留"
+      }
+    ],
+    "node_list": [
+      "001 并集 (definition, root)",
+      "002 交集 (definition, root)",
+      "003 全集 (definition, root)",
+      "004 并集的运算性质 (property, parent=001)",
+      "005 交集的运算性质 (property, parent=002)",
+      "006 用交集表示直线的位置关系 (method, parent=002)",
+      "007 Venn图表示集合运算 (method, root)",
+      "008 数轴法求区间集合的并集 (method, parent=001)",
+      "009 同一问题在不同全集下的解集差异 (property, parent=003)",
+      "010 并集中元素的互异性 (property, parent=001)"
+    ],
+    "summary": "通过：0 阻塞，2 警告。警告#12因OCR截断不可归责于Agent 2，警告#13a经领域知识判断不合并。跨节引用（1.1: s1_001/003/005/007, 1.2: s2_003/008）全部有效，10节点全绿通过"
+  }
+}

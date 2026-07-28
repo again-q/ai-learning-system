@@ -1,0 +1,744 @@
+============================================================
+5.5 三角恒等变换
+教材：人教A版高中数学必修第一册
+OCR：腾讯云 | 第215-230页
+============================================================
+
+
+=== 第215页 ===
+π
+π
+3π
+3π
+角x
+2kπ→2kπ+
+2kπ+
+→2kπ+π2kπ+π→2kπ+
+2kπ+
+→2kπ+2π
+2
+2
+2
+2
+P点纵坐标的变化
+0→1
+1→0
+0→-1
+-1→0
+sinx的单调性
+单调递增
+单调递减
+单调递减
+单调递增
+(4)最大值、最小值
+余弦函数的最大值、最小值:
+角x
+π+2kπ
+2kπ
+P点的横坐标
+-1
+1
+cos x
+最小值
+最大值
+正弦函数的最大值、最小值:
+角x
+-π
+π
++2kπ
+2
+2
++2kπ
+P点的纵坐标
+-1
+1
+sin x
+最小值
+最大值
+在后续的学习中我们还可以看到，借助单位圆的性质(主要是对称性)，不
+仅可以得到三角函数的各种性质，而且可以推导各种三角公式.
+5.4.3正切函数的性质与图象
+思考
+(1)根据研究正弦函数、余弦函数的经验，你认为应如何研究正切函数的图象与性质?
+(2)你能用不同的方法研究正切函数吗?
+有了前面的知识准备，我们可以换个角度，即从正切函数的定义出发研究它的性质，
+再利用性质研究正切函数的图象.
+1.周期性
+由诱导公式
+π
+$$ \tan(x+\pi)=\tan x, \quad x\in\mathbf{R}, \quad 且 x\neq_{2}^{\pi}+k\pi, \quad k\in\mathbf{Z} $$
+可知，正切函数是周期函数，周期是π
+第五章三角函数 209
+
+=== 第216页 ===
+2.奇偶性
+由诱导公式
+$$ \tan(-x) = -\tan x, x \in \mathbf{R}, \quad 且 x \neq \bar{2}^{\pi} + k\pi, k \in \mathbf{Z} $$
+可知，正切函数是奇函数.
+思考
+你认为正切函数的周期性和奇偶性对研究它的图象及其他性质会有什么帮助?
+可以先考察函数 $y=\tan x$, $x \in [0, \bar{2})$
+的图象与性质，然后再根据奇偶性、周期性
+进行拓展.
+探究
+如何画出函数 $y=\tan x$, $x \in [0, \pi_2)$ 的图象?
+如图5.4-9, 设 $x \in [0, \pi_2)$, 在直角
+坐标系中画出角x的终边与单位圆的交点
+$B(x_0, y_0)$. 过点 $B$ 作 $x$ 轴的垂线, 垂足
+M A(1.0) x
+为M;过点A(1，0)作x轴的垂线与角x
+的终边交于点T，则
+y0 MB AT
+tan x
+=
+图5.4-9
+x0
+=
+OM OA
+=AT.
+由此可见，当 $x \in [0, \bar{2})$ 时，线段
+AT的长度就是相应角x的正切值.我们可
+以利用线段AT画出函数y=tanx,x∈
+[0, $\bar{2}\bar{\pi}_{2})$ 的图象, 如图 5.4-10 所示.
+B
+观察图 5.4-10 可知, 当 $x \in [0, \pi_2)$
+01
+0
+时，随着x的增大，线段AT的长度也在
+π
+增大,而且当x趋向于2时,AT的长度
+图5.4-10
+210第五章三角函数
+
+=== 第217页 ===
+趋向于无穷大. 相应地, 函数 $y=\tan x$, $x\in[0, \pi_2)$ 的图象从左向右呈不断上升趋势,
+π
+且向右上方无限逼近直线 $x=_{2}^{\pi}$.
+探究
+你能借助以上结论，并根据正切函数的性质，画出正切函数的图象吗?正切函数
+的图象有怎样的特征?
+根据正切函数是奇函数, 只要画 $y=\tan x$, $x\in[0, \pi_2)$ 的图象关于原点的对称图形,
+就可得到 $y=\tan x$, $x \in (-\sqrt{2}, 0]$ 的图象; 根据正切函数的周期性, 只要把函数 $y=$
+$\tan x, x\in(-\sqrt{2}, \sqrt{2})$ 的图象向左、右平移, 每次平移 $\pi$ 个单位, 就可得到正切函数
+π
+$$y = \tan x, x \in \mathbf{R}, x \neq \sqrt{2} + k\pi, k \in \mathbf{Z}$$
+2
+的图象,我们把它叫做正切曲线 (tangent curve) (图5.4-11).
+3π
+5π
+13π
+2
+2π
+-π
+0
+π
+2π
+图5.4-11
+$\pi_2 + k\pi, k\in\mathbf{Z} 所$$
+从图5.4-11可以看出,正切曲线是被与y轴平行的一系列直线$x=2^\pi+k\pi$, $k\in\mathbf{Z}$所
+隔开的无穷多支形状相同的曲线组成的.
+3. 单调性
+π
+观察正切曲线可知,正切函数在区间(一2,2)上单调递增.
+由正切函数的周期性可得,
+第五章三角函数 211
+
+=== 第218页 ===
+正切函数在每一个区间(-2+kπ,2+k\pi)(k∈Z)上都单调递增.
+4. 值域
+当 $x \in (-
+\pi/2, 2) 时, \tan x 在 $(-\infty, +\infty)$ 内可取到任意实数值, 但没有最大值、最小值.
+因此, 正切函数的值域是实数集 $R$.
+例 6 求函数 $y=\tan(\pi_2x+\pi_3)$ 的定义域、周期及单调区间.
+分析: 利用正切函数的性质, 通过代数变形可以得出相应的结论.
+解: 自变量 $x$ 的取值应满足
+$$ \bar{2}^{x+}\bar{3}^{\pi} +
+π
+$$ \pi_3 \neq k\pi + \pi_2, k\in\mathbb{Z}, $$
+$$k\in\mathbb{Z},$$
+即
+$$x \neq 2k + \sqrt{3}, k \in \mathbb{Z}.$$
+π
+设 $z = \sqrt{2}x + \sqrt{3}$, 又 \tan(z + \pi) = \tan z$,
+π
+所以
+$$ \tan[(\sqrt{2}x+\sqrt{3})+\pi] = \tan(\sqrt{2}x+\sqrt{3}), $$
+即
+$$ \tan[\bar{2}(x+2)+\bar{3}] = \tan(\bar{2} x+\bar{3}). $$
+因为 $\forall x \in \{x | x \neq 2k + \sqrt{3}$, $k \in \mathbf{Z}\}$ 都有
+[π
+$$ \tan[\bar{\pi}_2(x+2)+\bar{3}] = \tan(\bar{2} x+\bar{3}), $$
+所以, 函数的周期为 2.
+由 $-\sqrt{2}+k\pi<\sqrt{2}x+\sqrt{3}<\sqrt{\pi}+k\pi$, $k\in\mathbb{Z}$ 解得
+π
+π
+π
+π
+$$ -\bar{3}^{\pi} + 2k < x < \bar{3}^{1} $$
+因此, 函数在区间(-3+2k, $1_3+2k)$, $k \in Z$ 上单调递增.
+212 第五章三角函数
+
+=== 第219页 ===
+练习
+1. 借助函数 $y=\tan x$ 的图象解不等式 $\tan x \ge-1$, $x \in [0$, $\bar{2}) \cup (\bar{2}, \pi)$.
+2.观察正切曲线，写出满足下列条件的x值的范围:
+(1) tan x>0;
+(2) tan x=0;
+(3) tan x<0.
+3.求函数y=tan3x的定义域.
+4.求下列函数的周期:
+π
+x
+(1) y=tan 2x, x≠
+4
++
+(k∈Z);
+(2) y=5tan2,
+x≠(2k+1)π(k∈Z).
+5. 不通过求值，比较下列各组中两个正切值的大小:
+17π
+(1) $\tan(-52^\circ)$ 与 \tan(-47^\circ)$;
+(2)
+tan
+13π
+与
+tan
+5
+习题5.4
+复习巩固
+1.画出下列函数的简图:
+$$(1) y = 1 - \sin x, x \in [0, 2\pi];$$
+$$(2) y = 3\cos x + 1, x \in [0, 2\pi].$$
+2.求下列函数的周期:
+2
+1
+(1) y=sin
+3x,
+x∈R;
+(2) y=
+2
+-cos4x,x∈R.
+3.下列函数中，哪些是奇函数?哪些是偶函数?哪些既不是奇函数，也不是偶函数?
+(1) y=|sin x|;
+$$(2) y = 1 - \cos 2x;$$
+(3) y=-3sin 2x;
+$$(4) y = 1 + 2\tan x.$$
+4.求使下列函数取得最大值、最小值的自变量x的集合,并求出最大值、最小值:
+1
+π
+(1) $y=1-2\cos(\sqrt{3}x, x\in\mathbf{R};$$
+$$ (2) \quad y = 3\sin(2x + \bar{4}), x \in \mathbf{R}; $$
+$$ (3) y = -\sqrt{3} \cos(\sqrt{2} x - \sqrt{6}), x \in \mathbf{R}; $$
+$$ (4) y = \sqrt{2} \sin(\sqrt{2} x + \sqrt{3}), x \in \mathbf{R}. \qquad (4) y = \sqrt{2} \sin(\sqrt{2} x + \sqrt{3}), x \in \mathbf{R}. $$
+5. 利用函数的单调性比较下列各组中两个三角函数值的大小:
+(1) sin 103°15'与 sin 164°30';
+$$ (2) \cos(-\sqrt{3}\pi) 与 \cos(-\sqrt{4}\pi); $$
+$$ (4) \cos(\sqrt{10}\pi) 与 \cos(\sqrt{9}\pi). $$
+(3) sin 508°与 sin 144°;
+6.求下列函数的单调区间:
+$$(1) \quad y = 1 + \sin x, x \in [0, 2\pi];$$
+$$ (2) \quad y = -\cos x, x \in [0, 2\pi]. $$
+7. 求函数 $y=-\tan(x+\sqrt{6})+2$ 的定义域.
+8. 求函数 $y=\tan(2x-\sqrt{3})$, $x \neq \sqrt{12}^{5\pi} + \sqrt{2}^{(k \in Z)}$ 的周期.
+5π
+第五章三角函数 213
+
+=== 第220页 ===
+9.利用正切函数的单调性比较下列各组中两个函数值的大小:
+(1) $\tan(-\sqrt{5})$ 与 \tan(-\sqrt{7})$;
+(2) tan 1 519°与 tan 1 493°;
+(3) tan 6π与tan(-5π);
+(4) tan 8与tan 6
+综合运用
+10.求下列函数的值域:
+(1) y=sin x, x∈
+[π,5π];
+$$ (2) \quad y = \cos(x + \pi_3), x \in [0, \pi_2]. $$
+11.根据正弦函数、余弦函数的图象，写出使下列不等式成立的x的取值集合:
+√3
+(1) sin x≥
+(x∈R);
+$$(2) \sqrt{2} + 2\cos x \geqslant 0(x \in \mathbf{R}).$$
+2
+12.下列四个函数中，以 $\pi$ 为最小正周期，且在区间(2，π)上单调递减的是().
+(A) y=|sin x|
+(B) y=cos x
+(C) y=tan x
+(D) y=cos
+x2
+13.若x是斜三角形的一个内角，写出使下列不等式成立的x的集合:
+(1)1+tanx≤0;
+(2) tanx-√3≥0.
+14.求函数y=-tan(2x-3π)的单调区间.
+15.已知函数y=f(x)是定义在R上周期为2的奇函数，若f(0.5)=1，求f(1)，f(3.5)的值.
+16. 已知函数 $f(x) = 1_2 \sin(2x - \pi_3)$, $x \in \mathbb{R}$,
+(1)求f(x)的最小正周期;
+(2)求f(x)在区间
+[-π,π]
+上的最大值和最小值.
+拓广探索
+17.在直角坐标系中，已知⊙O是以原点O为圆心，半径长为2的圆，角x(rad)的终边与⊙O
+的交点为B，求点B的纵坐标y关于x的函数解析式，并借助信息技术画出其图象.
+18.已知周期函数y=f(x)的图象如图所示，
+y
+(1)求函数的周期;
+(2)画出函数y=f(x+1)的图象;
+1
+(3)写出函数y=f(x)的解析式.
+19.容易知道，正弦函数y=sinx是奇函数，
+0
+1
+正弦曲线关于原点对称，即原点是正弦曲
+(第18题)
+线的对称中心.除原点外，正弦曲线还有
+其他对称中心吗?如果有，那么对称中心的坐标是什么?另外，正弦曲线是轴对称图形吗?
+如果是，那么对称轴的方程是什么?你能用已经学过的正弦函数性质解释上述现象吗?对余
+弦函数和正切函数，讨论上述同样的问题.
+214第五章三角函数
+
+=== 第221页 ===
+5.5三角恒等变换
+前面我们学习了诱导公式，利用它们对三角函数式进行
+恒等变形，可以达到化简、求值或证明的目的.这种利用公
+式对三角函数式进行的恒等变形就是三角恒等变换.观察诱
+导公式，可以发现它们都是特殊角与任意角a的和(或差)
+的三角函数与这个任意角a的三角函数的恒等关系.如果把
+特殊角换为任意角β，那么任意角α与β的和(或差)的三
+角函数与 $\alpha, \beta$ 的三角函数会有什么关系呢?下面来研究这
+个问题.
+5.5.1 两角和与差的正弦、余弦和正切公式
+1.两角差的余弦公式
+探究
+如果已知任意角 $\alpha$, $\beta$ 的正弦、余弦, 能由此推出 $\alpha+\beta$, $\alpha-\beta$ 的正弦、余弦吗?
+下面, 我们来探究 $\cos(\alpha-\beta)$ 与角 $\alpha, \beta$ 的正弦、
+a终边
+余弦之间的关系.
+P1
+β终边
+A1
+$$ \alpha - \beta \ 终 边 $$
+不妨令 $\alpha \neq 2k\pi + \beta$, $k \in \mathbb{Z}$.
+P
+如图5.5-1，设单位圆与x轴的正半轴相交于点
+$$A(1, 0)^*x$$
+$A(1, 0)$, 以 $x$ 轴非负半轴为始边作角 $\alpha$, $\beta$, $\alpha-\beta$,
+它们的终边分别与单位圆相交于点 $P_1(\cos \alpha, \sin \alpha)$,
+$A_1(\cos \beta, \sin \beta), P(\cos(\alpha-\beta), \sin(\alpha-\beta)).$$
+连接 $A_1 P_1$, AP$, 若把扇形 $OAP$ 绕着点 $O$ 旋转
+图5.5-1
+β角，则点A，P分别与点A1，P1重合.根据圆的旋
+转对称性可知，$A_P$ 与 $A_1 P_1$ 重合，从而 $A_P = \sqrt{A_1 P_1}$,
+所以AP=A1P1.
+任意一个圆绕着其圆
+心旋转任意角后都与原来
+的圆重合，这一性质叫做
+圆的旋转对称性.
+第五章三角函数215
+
+=== 第222页 ===
+根据两点间的距离公式，得
+$$ [\cos(\alpha-\beta)-1]^2 + \sin^2(\alpha-\beta) $$
+平面上任意两点P1
+$$=(\cos \alpha - \cos \beta)^2 + (\sin \alpha - \sin \beta)^2,$$
+$$(x_1, y_1), P_2(x_2, y_2)$$
+化简得
+间的距离公式 $P_1 P_2 =
+$$ \cos(\alpha - \beta) = \cos \alpha \cos \beta + \sin \alpha \sin \beta. $$
+$$\sqrt{(x_2-x_1)^2} + (y_2-y_1)^2}. $$
+当 $\alpha = 2k\pi + \beta(k \in \mathbf{Z})$ 时，容易证明上式仍然成立.
+所以，对于任意角α，β有
+$$ \cos(\alpha - \beta) = \cos \alpha \cos \beta + \sin \alpha \sin \beta, $$
+$$ (C_{(a-\beta)}) $$
+此公式给出了任意角 $\alpha, \beta$ 的正弦、余弦与其差角 $\alpha-\beta$ 的余弦之间的关系，称为差角
+的余弦公式，简记作 $C_{(a-\beta)}$.
+例1 利用公式 $C_{(\alpha-\beta)}$ 证明:
+(1)
+$$ \pi_2 -\alpha) = \sin \alpha ; $$
+$$ (2) \cos(\pi-\alpha) = -\cos \alpha. $$
+$$ \text{证明: (1) } \cos(\sqrt{2}-\alpha) = \cos \sqrt{2} \cos \alpha + \sin \sqrt{2} \sin \alpha $$
+π
+=0+1xsin a
+=sin α.
+$$ (2) \cos(\pi-\alpha) = \cos \pi \cos \alpha + \sin \pi \sin \alpha $$
+$$ =(-1) \times \cos \alpha + 0 $$
+=-cos a.
+例 2 已知 $\sin \alpha = \sqrt{5}$, $\alpha \in (\sqrt{2}, \pi)$, $\cos \beta = -\sqrt{13}$, $\beta$ 是第三象限角, 求 $\cos(\alpha - \beta)$的值.
+5
+解: 由 \sin \alpha = 5, \alpha \in (\sqrt{2}, \pi), 得
+$$\cos \alpha = -\sqrt{1-\sin^2\alpha} $$
+$$ = -\sqrt{1-(\sqrt{5})^2} = -\sqrt{3}. $$
+又由 $\cos \beta = -\sqrt{13}$,
+，β是第三象限角，得
+$$ \sin \beta = -\sqrt{1-\cos^2\beta} $$
+所以
+$$ \cos(\alpha - \beta) = \cos \alpha \cos \beta + \sin \alpha \sin \beta $$
+216第五章三角函数
+
+=== 第223页 ===
+$$ =(-\sqrt{3}) \times (-\sqrt{3}) + 4\sqrt{5} \times (-\sqrt{13}) $$
+33
+=-65
+练习
+1. 利用公式 $C_{(a-\beta)}$ 证明:
+(1) $\cos(\sqrt{3\pi}-\alpha) = -\sin \alpha$;
+$$(2) \cos(-\alpha) = \cos \alpha.$$
+2. 利用公式 $C_{(a-\beta)}$ 求 \cos 15^\circ$ 的值.
+3. 已知 $\cos \alpha = -3, \alpha \in (\sqrt{2}, \pi)$, 求 $\cos(\sqrt{\pi}-\alpha)$ 的值.
+4.已知sinθ=
+=15
+17
+, \theta 是第二象限角, 求 $\cos(\theta-\sqrt{3})$ 的值.
+5. 已知 $\sin \alpha = -\sqrt{3}$, $\alpha \in (\pi, \sqrt{2})$, \cos \beta = \sqrt{3}$, $\beta \in (\sqrt{2}^{3\pi}, 2\pi)$, 求 $\cos(\beta - a)$ 的值.
+2. 两角和与差的正弦、余弦、正切公式
+思考
+由公式 $C_{(a-\beta)}$ 出发, 你能推导出两角和与差的三角函数的其他公式吗?
+下面以公式 $C_{(a-\beta)}$ 为基础来推导其他公式.
+例如，比较 $\cos(\alpha-\beta)$ 与 $\cos(\alpha+\beta)$ ，并注意到 $\alpha+\beta$ 与
+$\alpha - \beta$ 之间的联系: $\alpha + \beta = \alpha - (-\beta)$, 则由公式 C_{(a-\beta)}$, 有
+这里用到的是加法和
+$$ \cos(\alpha+\beta) = \cos[\alpha - (-\beta)] $$
+减法的联系，也可用换元
+的观点来考虑:由于公式
+$$ = \cos \alpha \cos(-\beta) + \sin \alpha \sin(-\beta) $$
+$C_{(a-\beta)}$ 对于任意 $\alpha$, \beta$ 都成
+$$ = \cos \alpha \cos \beta - \sin \alpha \sin \beta_* $$
+立，那么把其中的β换成
+于是得到了两角和的余弦公式，简记作 $C_{(a+\beta)}$.
+一β后，也一定成立.由此
+也可推得公式 $C_{(a+\beta)}$。
+$$\cos(\alpha+\beta) = \cos \alpha \cos \beta - \sin \alpha \sin \beta.$$
+(C(a+β))
+探究
+上面得到了两角和与差的余弦公式. 我们知道, 用诱导公式五(或六)可以实现
+正弦、余弦的互化. 你能根据 $C_{(a+\beta)}$, $C_{(a-\beta)}$ 及诱导公式五(或六), 推导出用任意角
+$\alpha, \beta$ 的正弦、余弦表示 $\sin(\alpha+\beta)$, \sin(\alpha-\beta)$ 的公式吗?
+第五章三角函数217
+
+=== 第224页 ===
+通过推导，可以得到:
+$$ \sin(\alpha + \beta) = \sin \alpha \cos \beta + \cos \alpha \sin \beta, \quad (S_{(\alpha + \beta)}) $$
+$$ (S_{(a+\beta)}) $$
+sin(a-β)=sin a cosβ-cos a sin β.
+$$ (S_{(a-\beta)}) $$
+探究
+你能根据正切函数与正弦函数、余弦函数的关系，从 $C_{(a\pm\beta)}$, $S_{(a\pm\beta)}$ 出发, 推导
+出用任意角 $\alpha, \beta$ 的正切表示 $\tan(\alpha+\beta)$, $\tan(\alpha-\beta)$ 的公式吗?
+通过推导，可以得到:
+tan α+tan β
+tan(a+β)=
+$$(T_{(a+\beta)}) $$
+1-tan αtan β’
+tan α-tan β
+tan(a-β)=
+$$ (T_{(a-\beta)}) $$
+1+tan αtan β'
+公式 $S_{(a+\beta)}$, C_{(a+\beta)}$, $T_{(a+\beta)}$ 给出了任意角 $\alpha$, $\beta$ 的三角函数值与其和角 $\alpha+\beta$ 的三角函
+数值之间的关系，为方便起见，我们把这三个公式都叫做和角公式.
+类似地，$S_{(a-\beta)}$, $C_{(a-\beta)}$, $T_{(a-\beta)}$都叫做差角公式.
+探究
+和(差) 角公式中, $\alpha$, \beta$ 都是任意角. 如果令 $\alpha$ 为某些特殊角, 就能得到许多
+有用的公式. 你能从和(差)角公式出发推导出诱导公式吗?你还能得到哪些等式?
+3
+例3
+5
+$\alpha$ 是第四象限角, 求 \sin(\sqrt{4}-\alpha), \cos(\sqrt{4}+\alpha), \tan(\alpha-\sqrt{4}) 的值.
+3
+解:由 $\sin \alpha = -\sqrt{5}$, $\alpha$ 是第四象限角, 得
+$$ \cos \alpha = \sqrt{1-\sin^2\alpha} = \sqrt{1-(-3/5)^2} = 5^4, $$
+3
+sin a
+=
+-5
+3
+所以
+tan a=
+\cos \alpha =
+4
+=-
+4
+5
+于是有
+$\sin(\sqrt{4}-\alpha) = \sin^{\pi} \sqrt{2} $$
+$$ \pi_4 \cos \alpha - \cos \pi_4 \sin \alpha $$
+π
+218第五章三角函数
+
+=== 第225页 ===
+$$ \cos(\bar{\pi}_4 + \alpha) = \cos \bar{\pi}_4 \cos \alpha - \sin \bar{4} \sin \alpha $$
+$$ = \sqrt{2} \times \sqrt{5} - \sqrt{2} \times (-3/5) = \sqrt{10}; $$
+π
+tan $\alpha - tan$
+4
+=
+tan $\alpha-1$
+$$ \tan(\alpha-\sqrt{4}) = -
+$$ \pi = 1 + \tan \alpha - 1 $$
+1+tan $\alpha$ tan $\sqrt{4}$
+=-7.
+1+(-3)
+思考
+由以上解答可以看到, 在本题条件下有 $\sin(\sqrt{4}-\alpha) = \cos(\sqrt{4}+\alpha)$. 那么对于任意
+角 $\alpha$, 此等式成立吗? 若成立, 你会用几种方法予以证明?
+例4 利用和(差)角公式计算下列各式的值:
+$$(1) \sin 72^\circ \cos 42^\circ - \cos 72^\circ \sin 42^\circ;$$
+$$ (2) \cos 20^\circ \cos 70^\circ - \sin 20^\circ \sin 70^\circ; $$
+1+tan 15°
+1-tan 15°
+分析: 和、差角公式把 $\alpha \pm \beta$ 的三角函数式转化成了 $\alpha$, $\beta$ 的三角函数式. 如果反过
+来，从右到左使用公式，就可以将上述三角函数式化简.
+解:(1)由公式$S_{(a-\beta)}$,得
+$$ \sin 72^\circ \cos 42^\circ - \cos 72^\circ \sin 42^\circ $$
+$$ = \sin(72^\circ - 42^\circ) $$
+$$ = \sin 30^\circ $$
+=1
+$$=2^\circ.$$
+(2)由公式 $C_{(a+\beta)}$, 得
+$$ \cos 20^\circ \cos 70^\circ - \sin 20^\circ \sin 70^\circ $$
+$$ = \cos(20^\circ + 70^\circ) $$
+$$ =\cos 90^\circ $$
+=0.
+(3) 由公式 $T_{(a+\beta)}$ 及 $\tan 45^\circ = 1$, 得
+第五章三角函数 219
+
+=== 第226页 ===
+1+tan 15° $\tan 45^\circ + \tan 15^\circ$
+1-tan 15°-1-tan 45°tan 15°
+=tan(45°+15°)
+=tan 60°
+=√3.
+练习
+1.利用和(差)角公式，求下列各式的值:
+(1) sin 15°;
+(2) cos 75°;
+(3) sin 75°;
+(4)
+tan 15°,
+2. (1) 已知 $\cos \theta = -\sqrt{3}$, $\theta \in (\sqrt{2}$, \pi)$, 求 $\sin(\theta + \sqrt{3})$ 的值;
+(2)已知sin $\theta=-\sqrt{13}$, $\theta$ 是第三象限角, 求 $\cos(\sqrt{6}+\theta)$ 的值;
+(3) 已知 $\tan \alpha = 3$, 求 $\tan(\alpha + \sqrt{4})$ 的值.
+3.求下列各式的值:
+$$(1) \sin 72^\circ \cos 18^\circ + \cos 72^\circ \sin 18^\circ;$$
+$$ (2) \cos 72^\circ \cos 12^\circ + \sin 72^\circ \sin 12^\circ; $$
+tan 12°+tan 33°
+(3)
+1-tan 12°tan 33°;
+$$ (4) \cos 74^\circ \sin 14^\circ - \sin 74^\circ \cos 14^\circ; $$
+$$ (5) \sin 34^\circ \sin 26^\circ - \cos 34^\circ \cos 26^\circ; $$
+$$ (6) \sin 20^\circ \cos 110^\circ + \cos 160^\circ \sin 70^\circ. $$
+4.化简:
+x-
+$$ \cos x - \sqrt{3} - \sin x ; $$
+1
+√3
+(1)
+sin x;
+$$ (2) \sqrt{3} \sin x + \cos x ; $$
+(3) $\sqrt{2}(\sin x - \cos x);$$
+$$ (4) \sqrt{2} \cos x - \sqrt{6} \sin x. $$
+5. 已知 $\sin(\alpha-\beta)\cos a-\cos(\beta-\alpha)\sin\alpha=5^3$,
+, $\beta$ 是第三象限角, 求 \sin(\beta+
+5π
+)的值.
+4
+3.二倍角的正弦、余弦、正切公式
+以公式 $C_{(a-\beta)}$ 为基础，我们已经得到六个和(差)角公式，下面将以和(差)角公式
+为基础来推导倍角公式.
+探究
+你能利用 $S_{(a\pm\beta)}$, $C_{(a\pm\beta)}$, $T_{(a\pm\beta)}$ 推导出 $\sin 2\alpha$, $\cos 2\alpha$, $\tan 2\alpha$ 的公式吗?
+通过推导，可以得到:
+220第五章三角函数
+
+=== 第227页 ===
+(S2a)
+$$ \sin 2\alpha = 2\sin \alpha \cos \alpha, $$
+$$ \cos 2\alpha = \cos^2 a - \sin^2 a, $$
+$$(C_{2a})$$
+2tan α
+tan 2α=
+1-tan2α
+$$(T_{2\alpha})$$
+如果要求二倍角的余弦公式($C_{2\alpha}$) 中仅含 $\alpha$ 的正弦(余弦), 那么又可得到:
+$$ \cos 2\alpha = 1 - 2\sin^2 a , $$
+$$\cos 2\alpha = 2\cos^2 \alpha - 1.$$
+这里的“倍角”专指
+“二倍角”，遇到“三倍
+以上这些公式都叫做倍角公式. 倍角公式给出了 $\alpha$ 的三
+角”等名词时，“三”字
+角函数与 $2\alpha$ 的三角函数之间的关系.
+等不可省去.
+归纳
+从和(差)角公式、倍角公式的推导过程可以发现，这些公式存在紧密的逻辑联
+系, 请你进行归纳总结.
+5
+例5 已知 $\sin 2\alpha = 5, \pi < \alpha < \pi, 求 $\sin 4\alpha, \cos 4\alpha, \tan 4\alpha$ 的值.
+分析: 已知条件给出了 $2\alpha$ 的正弦函数值. 由于 $4\alpha$ 是 $2\alpha$ 的二倍角, 因此可以考虑用
+倍角公式.
+π
+π/4<α<
+π
+解:由
+2
+得
+π
+“倍”是描述两个数
+2
+量之间关系的，$2\alpha$是 $\alpha$的
+5
+二倍，4a是2a的二倍，
+又
+$\sqrt{2} 是 \sqrt{4}$ 的二倍, 这里蕴含
+所以
+$$ \cos 2\alpha = -\sqrt{1-(_{13}^{5})^{2}} = -12^{13} $$
+着换元思想.
+13
+于是
+$$ \sin 4\alpha = \sin[2 \times (2\alpha)] $$
+$$ = 2\sin 2\alpha \cos 2\alpha $$
+$$ = 2 \times \sqrt{13} \times (-\sqrt{13})^2 = \sqrt{13}^2 $$
+$$ \cos 4\alpha = \cos[2\alpha(2\alpha)] $$
+=1-2sin22α
+$$ = 1 - 2 \times (\sqrt{13}^{5})^{2} = \sqrt{169^{3}}; $$
+第五章三角函数 221
+
+=== 第228页 ===
+sin 4a
+tan 4α
+=
+cos 4a
+120 169
+--
+120
+=-
+169
+X
+119
+-119
+4
+例 6 在 $\triangle ABC$ 中, $\cos A = \sqrt{5}$, $\tan B = 2$, 求 $\tan(2A + 2B)$ 的值.
+解法1:在△ABC中,
+4
+由 $\cos A = \sqrt{5}$, $0 < A < \pi$, 得
+$$ \sin A = \sqrt{1 - \cos^2 A} = \sqrt{1 - (\sqrt{5})} = \sqrt{3}, \quad \sin A = \sqrt{1 - (\sqrt{5})} = \sqrt{5}, \quad \sin A = \sqrt{1}- \cos^2 A} = \sqrt{1}-(\sqrt{5})} = \sqrt{3}, \quad \sin A = \sqrt{1}-(\sqrt{5})} = \sqrt{5}, $$
+$$ 2A + 2B \ 与 A , B \ 之 $$
+间能构成怎样的关系?
+sinA
+3
+5
+所以
+tan A=
+cosA
+x4=4
+2x3
+3
+2tanA
+24
+tan 2A=
+1-tan2A
+1-(3/4)
+-7.
+又
+tan B=2,
+2tanB 2x2 4
+所以
+tan 2B=
+1-tan2B-1-22--3
+24
+tan 2A+tan 2B
+73
+44
+于是 $\tan(2A+2B)=1-\tan 2A$ \tan 2B$
+1-24x(-4/3)
+117
+解法2:在△ABC中,
+由 $\cos A = \sqrt{5}^{4}, \quad 0 < A < \pi$, 得
+$$ \sin A = \sqrt{1-\cos^2 A} = \sqrt{1-(\sqrt{5})^2} = \sqrt{5}, $$
+所以
+sin A
+tan A=
+\cos
+A
+=
+35
+5
+=
+_
+3
+4
+又 $\tan B = 2$,
+所以
+3+2
+tan A+tan B
+11
+tan(A+B)=
+1-tan A tan B
+2,
+1-3/4x2
+所以
+222 第五章三角函数
+
+=== 第229页 ===
+$$ \tan(2A+2B) = \tan[2(A+B)] $$
+2tan(A+B)
+=1-tan2(A+B)
+2x(-1/2)
+44
+117
+1-(-11)2
+练习
+-
+1. 已知 $\cos \bar{a}_{8} = -\sqrt{5}$, $8\pi < \alpha < 12\pi$, 求 $\sin \bar{a}_{4}$, \cos \bar{a}_{4}$, \tan \bar{a}_{4}$ 的值.
+2.已知sin(a-π)=5，求cos2a的值.
+3. 已知 $\sin 2\alpha = -\sin \alpha, \alpha \in (\pi_2, \pi)$, 求 $\tan \alpha$ 的值.
+4.已知tan2a=3
+3
+5.求下列各式的值:
+$$ \pi_8 - \sin^2 \sqrt{8}; $$
+π
+(1) sin 15°cos 15°;
+(2)
+cos2
+tan 22.5°
+$$ (4) \quad 2\cos^2 22.5^\circ - 1. $$
+1-tan222.5°
+第五章三角函数223
+
+=== 第230页 ===
+信息技术应用
+利用信息技术制作三角函数表
+前面在“对数的发明”中曾经谈到，纳皮尔利用
+开始
+对数制作了0°~90°每隔1'的八位三角函数表.应当
+说，纳皮尔仅仅凭借手工运算得到这个三角函数表的
+输入sin 1'
+工作量是非常大的，这也显示出他超人的毅力和为科
+的近似值s0
+学献身的精神.今天，我们可以利用已经学会的三角
+函数知识以及算法知识，借助信息技术，容易地制作
+$$c0=\sqrt{1-s0^2}$$
+出非常精确的三角函数表，下面我们借助信息技术来
+作一个0°~90°每隔1'的八位三角函数表.
+输出s0
+用计算工具可得:
+$$ \sin 1' = 2.908 882 046 \times 10^{-4} $$
+s=s0
+≈0.000 290 888.
+以此作为初始值，利用
+c=c0
+$$ \cos 1' = \sqrt{1-\sin^2 1'}; $$
+n=2
+$$ \alpha_0 = 1', \alpha_n = \alpha_{n-1} + 1', \quad n \ge 1; $$
+$$ \sin a_n = \sin 1' \cos a_{n-1} + \cos 1' \sin a_{n-1}, $$
+$$s=s*c^{0+c*s}()$$
+$$ \cos a_n = \sqrt{1-\sin^2 a_n} , $$
+就可以写出一个程序框图(如右图所示)，然后通过
+$$ c = \sqrt{1-s^2} $$
+信息技术得到一个正弦函数的三角函数表.
+请同学们根据上述思路，自己编写程序，得出一
+输出s
+个三角函数表.
+n=n+1
+n>5400?
+否
+是
+结束
+224第五章三角函数
