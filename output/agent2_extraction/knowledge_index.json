@@ -274,7 +274,8 @@
         "math_10_ch3_s4_010",
         "math_10_ch3_s4_011",
         "math_10_ch3_s4_012",
-        "math_10_ch3_s4_013"
+        "math_10_ch3_s4_013",
+        "math_10_ch3_s4_014"
       ]
     },
     {
@@ -363,6 +364,32 @@
       ]
     },
     {
+      "section_id": "math_10_ch5_s2",
+      "section_title": "5.2 三角函数的概念",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第五章 三角函数",
+        "5.2 三角函数的概念"
+      ],
+      "node_ids": [
+        "math_10_ch5_s2_001",
+        "math_10_ch5_s2_002",
+        "math_10_ch5_s2_003",
+        "math_10_ch5_s2_004",
+        "math_10_ch5_s2_005",
+        "math_10_ch5_s2_006",
+        "math_10_ch5_s2_007",
+        "math_10_ch5_s2_008",
+        "math_10_ch5_s2_009",
+        "math_10_ch5_s2_010",
+        "math_10_ch5_s2_011",
+        "math_10_ch5_s2_012",
+        "math_10_ch5_s2_013",
+        "math_10_ch5_s2_014"
+      ]
+    },
+    {
       "section_id": "math_10_ch1_s4",
       "section_title": "1.4 充分条件与必要条件",
       "path": [
@@ -389,5 +416,5 @@
       ]
     }
   ],
-  "total_nodes": 205
+  "total_nodes": 220
 }
