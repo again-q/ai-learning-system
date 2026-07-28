@@ -626,7 +626,30 @@
         "math_10_ch4_s2_11",
         "math_10_ch4_s2_12"
       ]
+    },
+    {
+      "section_id": "math_10_ch4_s4",
+      "section_title": "4.4 对数函数",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第四章 指数函数与对数函数",
+        "4.4 对数函数"
+      ],
+      "node_ids": [
+        "math_10_ch4_s4_001",
+        "math_10_ch4_s4_002",
+        "math_10_ch4_s4_003",
+        "math_10_ch4_s4_004",
+        "math_10_ch4_s4_005",
+        "math_10_ch4_s4_006",
+        "math_10_ch4_s4_007",
+        "math_10_ch4_s4_008",
+        "math_10_ch4_s4_009",
+        "math_10_ch4_s4_010",
+        "math_10_ch4_s4_011"
+      ]
     }
   ],
-  "total_nodes": 348
+  "total_nodes": 359
 }
