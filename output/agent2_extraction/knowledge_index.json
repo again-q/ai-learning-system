@@ -43,6 +43,49 @@
         "application_example": ["math_10_ch4_s4_010"],
         "exploration": ["math_10_ch4_s4_011"]
       }
+    },
+    {
+      "section_id": "math_10_ch1_s3",
+      "section_title": "1.3 集合的基本运算",
+      "chapter": "第一章 集合与常用逻辑用语",
+      "node_count": 10,
+      "node_ids": [
+        "math_10_ch1_s3_001",
+        "math_10_ch1_s3_002",
+        "math_10_ch1_s3_003",
+        "math_10_ch1_s3_004",
+        "math_10_ch1_s3_005",
+        "math_10_ch1_s3_006",
+        "math_10_ch1_s3_007",
+        "math_10_ch1_s3_008",
+        "math_10_ch1_s3_009",
+        "math_10_ch1_s3_010"
+      ],
+      "node_titles": [
+        "并集的概念与定义",
+        "交集的概念与定义",
+        "全集的概念",
+        "补集的概念与定义",
+        "Venn 图在集合运算中的应用",
+        "集合运算的基本性质",
+        "求集合的并集与交集的方法",
+        "求集合补集的方法",
+        "用集合运算表示直线的位置关系",
+        "\"或\"与\"且\"在集合运算中的逻辑辨析"
+      ],
+      "knowledge_types": {
+        "concept_definition": [
+          "math_10_ch1_s3_001",
+          "math_10_ch1_s3_002",
+          "math_10_ch1_s3_003",
+          "math_10_ch1_s3_004"
+        ],
+        "graph_property": ["math_10_ch1_s3_005"],
+        "theorem_property": ["math_10_ch1_s3_006"],
+        "method_technique": ["math_10_ch1_s3_007", "math_10_ch1_s3_008"],
+        "application_example": ["math_10_ch1_s3_009"],
+        "comparison_summary": ["math_10_ch1_s3_010"]
+      }
     }
   ]
 }
