@@ -1,0 +1,340 @@
+============================================================
+5.3 诱导公式
+教材：人教A版高中数学必修第一册 | PDF第194-201页
+============================================================
+
+
+=== 第194页 ===
+5.3 诱导公式
+前面利用圆的几何性质，得到了同角三角函数之间的基
+本关系.我们知道,圆的最重要的性质是对称性,而对称性
+(如奇偶性)也是函数的重要性质.由此想到,可以利用圆
+的对称性，研究三角函数的对称性.
+探究1
+如图5.3-1，在直角坐标系内，设任意角a的
+终边与单位圆交于点 $P_1$.
+(1) 作 $P_1$ 关于原点的对称点 $P_2$, 以 $OP_2$ 为
+终边的角 $\beta$ 与角 $\alpha$ 有什么关系? 角 $\beta$, $\alpha$ 的三角函
+$\alpha$
+0
+x
+数值之间有什么关系?
+P2
+(2) 如果作 $P_1$ 关于 $x$ 轴(或 $y$ 轴) 的对称点
+$P_3$ (或 $P_4$), 那么又可以得到什么结论?
+图5.3-1
+下面, 借助单位圆的对称性进行探究.
+如图5.3-2, 以 $OP_2$ 为终边的角 $\beta$ 都是与角 $\pi+\alpha$
+终边相同的角, 即 $\beta = 2k\pi + (\pi + \alpha)(k \in \mathbb{Z})$. 因此,
+只要探究角 $\pi+\alpha$ 与 $\alpha$ 的三角函数值之间的关系
+即可.
+$$x+\alpha$
+$$ \sqrt{\alpha} $$
+设 $P_1(x_1, y_1)$, $P_2(x_2, y_2)$, 因为 $P_2$ 是点 $P_1$
+P2
+关于原点的对称点,所以
+$$x_2 = -x_1, y_2 = -y_1.$$
+根据三角函数的定义, 得
+图5.3-2
+$\sin \alpha = y_1, $$
+$\cos a = x_1, $$
+tan a=
+x1
+$\sin(\pi+\alpha) = y_2, \cos(\pi+\alpha) = x_2, \tan(\pi+\alpha) = y_2. \quad \text{角} \pi+\alpha \text{还可以看作} $\bar{x}_2. $$
+角 π+a$ 还可以看作
+x2
+是角a的终边按逆时针方
+从而得
+向旋转角π得到的，
+188第五章三角函数
+
+=== 第195页 ===
+公式二
+$$ \sin(\pi+\alpha) = -\sin\alpha, $$
+$$\cos(\pi+\alpha) = -\cos\alpha,$$
+$$ \alpha $$
+$$ \tan(\pi+\alpha) = \tan \alpha, $$
+$$ \alpha -\alpha $$
+P3
+如图5.3-3, 作 $P_1$ 关于 $x$ 轴的对称点 $P_3$, 则以
+OP3为终边的角为一α,并且有
+公式三
+图5.3-3
+$$ \sin(-\alpha) = -\sin\alpha, $$
+$$\cos(-\alpha) = \cos \alpha,$$
+$$\tan(-\alpha) = -\tan\alpha,$$
+P4
+如图5.3-4，作 $P_1$ 关于 $y$ 轴的对称点 $P_4$，则以
+$\pi-\alpha$$
+$OP_4$ 为终边的角为 $\pi-\alpha$, 并且有
+0
+公式四
+$$ \sin(\pi-\alpha) = \sin \alpha, $$
+$$\cos(\pi-\alpha) = -\cos\alpha,$$
+图5.3-4
+$$\tan(\pi-\alpha) = -\tan\alpha,$$
+请你类比公式二, 证
+例1 利用公式求下列三角函数值:
+明公式三和公式四.
+8π
+$$(1) \cos 225^\circ; $$
+(2) sin
+3
+$$ (3) \sin(-\sqrt{16\pi}); $$
+$$ (4) \tan(-2 040^\circ). $$
+$$ \text{解:} (1) \cos 225^\circ = \cos(180^\circ + 45^\circ) $$
+$$ = -\cos 45^\circ = -\sqrt{2}, $$
+$$ (2) \sin \overline{3} \pi = \sin(2\pi + \sqrt{3}) $$
+$$ = \sin \bar{3} \pi = \sin(\pi - \bar{3}) $$
+$$ = \sin_3^\pi = \sqrt{3} $$
+$$ (3) \sin(-\sqrt{16\pi}) = -\sin \sqrt{3} $$
+$$ = -\sin(5\pi + \bar{3}) $$
+第五章三角函数 189
+
+=== 第196页 ===
+$$ = -(-\sin_3^\pi) = \sqrt{3}; $$
+$$ (4) \tan(-2 \quad 040^\circ) = -\tan 2 \quad 040^\circ $$
+$$ = -\tan(6 \times 360^\circ - 120^\circ) $$
+$$ = \tan 120^\circ = \tan(180^\circ - 60^\circ) $$
+$$ = -\tan 60^\circ = -\sqrt{3}. $$
+思考
+由例1，你对公式一~公式四的作用有什么进一步的认识?你能自己归纳一下把
+任意角的三角函数转化为锐角三角函数的步骤吗?
+利用公式一~公式四，可以把任意角的三角函数转化为锐角三角函数，一般可按下面
+步骤进行:
+任意负角的
+用公式
+任意正角的
+三角函数
+三或一
+三角函数
+用公式一
+锐角的三角
+用公式
+0~2π的角
+函数
+二或四
+的三角函数
+数学史上, 求三角函数值曾经是一个重要而困难的问题. 数学家制作了锐角三角函数
+表，并通过公式一~公式四，按上述步骤解决了问题.现在，我们可以利用计算工具方便
+地求任意角的三角函数值,所以这些公式的“求值”作用已经不重要了,但它们所体现的
+三角函数的对称性，在解决三角函数的各种问题中却依然有重要的作用.
+例2 化简
+$$ \cos(180^\circ + \alpha) \sin(\alpha + 360^\circ) $$
+$$ \tan(-\alpha-180^\circ) \cos(-180^\circ+\alpha)^\circ $$
+$$ \text{解:} \tan(-\alpha-180^\circ) = \tan[-(180^\circ + \alpha)] $$
+$$ = -\tan(180^\circ + a) $$
+$$ = -\tan \alpha, $$
+$$\cos(-180^\circ + a) = \cos[-(180^\circ - a)]$$
+$$ = \cos(180^\circ - \alpha) $$
+$$ = -\cos \alpha, $$
+所以
+$$ -\cos a \sin a $$
+$$ \text{原式} = -\tan \alpha )(-\cos \alpha) $$
+$$ = -\cos a_* $$
+190第五章三角函数
+
+=== 第197页 ===
+练习
+1.将下列三角函数转化为锐角三角函数，并填在题中横线上:
+13
+(1) cos
+9π=
+_;
+(2) sin(1+π)=
+$$ (3) \sin(-\sqrt{5}) = \quad , $$
+6π
+(4) tan(-70°6')=
+(5)
+cos 7=
+(6) tan 1000°21'=
+2.利用公式求下列三角函数值:
+(1) cos(-420°);
+(2) sin(-7π);
+(3) tan(-1 140°);
+(4) cos(-7/6π);
+(6) $\sin(-1/4^{11}\pi)$.
+(5) tan 315°;
+3.化简:
+$$(1) \sin(-\alpha-180^\circ) \cos(-\alpha) \sin(-\alpha+180^\circ);$$
+(2) $\cos^3(-\alpha)\sin(2\pi+\alpha)\tan^3(-\alpha-\pi)$.
+4.填表:
+_4π
+5π
+5π
+-7π
+_8π
+11π
+-4
+a
+-3
+-3
+-3
+-3
+4
+sin a
+cos a
+tan a
+下面在探究1的基础上继续探究.
+探究2
+作 $P_1$ 关于直线 $y=x$ 的对称点 $P_5$，以 $OP_5$ 为终边的角 $\gamma$ 与角 $\alpha$ 有什么关系? 角
+y与角α的三角函数值之间有什么关系?
+π
+如图5.3-5，以OP5为终边的角y都是与角2-a终边相
+同的角，即 $\gamma = 2k\pi + (\pi_2 - a)(k \in \mathbf{Z})$. 因此，只要探究角
+π2-a与a的三角函数值之间的关系即可.
+设P5(x5,y5),由于P5是点P1关于直线y=x的对称
+点，可以证明
+图5.3-5
+第五章三角函数 191
+
+=== 第198页 ===
+$$x_5 = y_1, \quad y_5 = x_1.$$
+根据三角函数的定义，得
+你能利用平面几何的知
+$$ \sin(\sqrt{2}-\alpha) = y_5, \cos(\sqrt{2}-\alpha) = x_5, $$
+识，就图5.3-5所示的情况
+证明①式吗?其他情况呢?
+从而得
+公式五
+$$ \sin(\sqrt{\pi}-\alpha) = \cos\alpha, $$
+cos(
+$$ \cos(\sqrt{2}-\alpha) = \sin \alpha, $$
+探究3
+作 $P_5$ 关于 $y$ 轴的对称点, 又能得到什么结论?
+类似地，可得
+公式六
+π
+角
+2
+$$ \pi_2 + a$ 的终边与角 \alpha $$
+$$ \sin(\bar{2}+\alpha) =
+$$ \cos \alpha, $$
+的终边具有怎样的对称
+性?据此你将如何证明公
+$$ \cos(
+$$ \pi_2 + a) = -\sin \alpha, $$
+式六?
+利用公式五或公式六, 可以实现正弦函数与余弦函数的相互转化.
+公式一~公式六都叫做诱导公式(induction formula).
+例3
+证明:
+3π
+(1) \sin(\sqrt{2}^{3\pi}
+$$ \pi_{2} -\alpha) = -\cos\alpha; $$
+$$ (2) \cos(\sqrt{2}+\alpha) = \sin \alpha. $$
+$$ \text{证明: (1) } \sin(\sqrt{3\pi}-\alpha) = \sin[\pi+(\sqrt{2}-\alpha)] $$
+$$ = -\sin(\sqrt{2}-\alpha) = -\cos \alpha; $$
+$$ (2) \cos(\sqrt{2}+\alpha) = \cos[\pi+(\sqrt{2}+\alpha)] $$
+$$ = -\cos(\bar{2}+\alpha) = \sin \alpha. $$
+192 第五章 三角函数
+
+=== 第199页 ===
+例4 化简
+$$ \sin(2\pi-\alpha)\cos(\pi+\alpha)\cos(\sqrt{2}+\alpha)\cos(\sqrt{11\pi}-\alpha) $$
+$$ \cos(\pi-\alpha) \sin(3\pi-\alpha) \sin(-\pi-\alpha) \sin(2^{9\pi}+\alpha)^{\circ}. $$
+解:原式
+$$ (-\sin \alpha)(-\cos \alpha)(-\sin \alpha) \cos [5\pi+(\sqrt{2}-\alpha)] $$
+$$ (-\cos \alpha) \sin(\pi-\alpha)[-\sin(\pi+\alpha)] \sin[4\pi+(\sqrt{2}+\alpha)] $$
+$$ -\sin^2\alpha\cos\alpha[-\cos(\sqrt{2}-\alpha)] $$
+$$ = -\sin^2\alpha\cos\alpha[-\cos(\sqrt{2}-\alpha)] $$
+$$ = -\sin \alpha $$
+$$ = -\tan \alpha. $$
+$\cos \alpha$
+$$ \text{例} 5 \quad \text{已知 } \sin(53^\circ - \alpha) = \sqrt{5} \quad \text{, 且 } -270^\circ < \alpha < -90^\circ, \text{ 求 } \sin(37^\circ + \alpha) \text{的值.} $$
+1
+分析: 联系条件与结论, 注意到 $(53^\circ - a) + (37^\circ + a) = 90^\circ$, 由此可利用诱导公式解决
+问题.
+解: 因为 $(53^\circ - a) + (37^\circ + \alpha) = 90^\circ$, 所以由诱导公式五, 得
+$$ \sin(37^\circ + \alpha) = \sin[90^\circ - (53^\circ - \alpha)] $$
+$$ = \cos(53^\circ - \alpha) $$
+因为
+$$ -270^\circ < a < -90^\circ, $$
+所以
+$$ 143^\circ < 53^\circ - a < 323^\circ. $$
+$$ \text{由 } \sin(53^\circ - \alpha) = \sqrt{5} > 0$, 得 $143^\circ < 53^\circ - \alpha < 180^\circ. $$
+所以
+$$ \cos(53^\circ - a) = -\sqrt{1 - \sin^2(53^\circ - \alpha)} = -\sqrt{1 - (1/5)^\circ} = -2\sqrt{6}, $$
+2\sqrt6
+所以
+$$ \sin(37^\circ + \alpha) = -
+练习
+1. 用诱导公式求下列三角函数值 (可用计算工具, 第(3)(4)(6) 题精确到 0.000 1):
+65
+(1) cos
+65元;
+(2)
+$$(3) \cos(-1182^\circ 13^\circ);$$
+$$ (4) \sin 670^\circ 39^\circ; $$
+$$ (5) \tan(-\sqrt{3}); $$
+$$(6) \tan 580^\circ 21^\circ.$$
+第五章三角函数 193
+
+=== 第200页 ===
+2. 证明:
+$$(1) \cos(\sqrt{2}\pi-\alpha) = \sin \alpha; $$
+$$ (2) \cos(\sqrt{2}\pi+\alpha) = \sin \alpha; $$
+$$ (3) \sin(\sqrt{2}\pi-\alpha) = \cos \alpha; $$
+$$ (4) \sin(\sqrt{2}\pi-\alpha) = -\cos \alpha, $$
+3. 化简:
+$$\cos(\alpha-\pi) $$
+$$ (2) \cos^2(-\alpha) - \tan(360^\circ + \alpha); $$
+(1)
+$$ \sin(\alpha-2\pi)\cos(2\pi-\alpha); $$
+$$ \sin(\sqrt{2}+\alpha) $$
+$$ \cos(\sqrt{2}+\alpha) $$
+$$ \cos(\alpha-3\pi) \cos(\sqrt{3\pi}-\alpha) $$
+(3)
+$$ \sin^2(\alpha-\sqrt{2}) $$
+习题5.3
+复习巩固
+1. 用诱导公式求下列三角函数值 (可用计算工具, 第(2)(3)(4)(5)题精确到 $0.000 1)$;
+$$(1) \cos(-17\pi); $$
+-17π);
+$$(2) \sin(-1 574^\circ); $$
+$$(3) \sin(-2 160^\circ 52');$$
+$$(4) \cos(-1 \tau51^\circ 36^\circ); $$
+$$ (6) \sin(-\sqrt{3}^{26}\pi). $$
+2.求证:
+$$(1) \sin(360^\circ -\alpha) = -\sin \alpha;$$
+$$(2) \cos(360^\circ - a) = \cos a;$$
+$$(3) \tan(360^\circ - a) = -\tan \alpha.$$
+3. 化简:
+$$(1) 1 + \sin(\alpha - 2\pi) \sin(\pi + \alpha) - 2\cos^2(-\alpha); $$
+$$(2) \sin(-1 071^\circ) \sin 99^\circ + \sin(-171^\circ) \sin(-261^\circ).$$
+4. 在单位圆中, 已知角 $\alpha$ 的终边与单位圆的交点为 $P(-\sqrt{5}$, \sqrt{4})$, 分别求角 $\pi+\alpha$, $-\alpha$, $\pi+\alpha$
+π
+的正弦、余弦函数值.
+综合运用
+已知 $\sin(\sqrt{7\pi}+\alpha) = \sqrt{5}$, 那么 $\cos \alpha = (\quad)$.
+5.
+(A)
+-4/5
+(B)-5
+(C)
+(D)
+45
+194 第五章 三角函数
+
+=== 第201页 ===
+6. 已知 $\sin(\pi+\alpha)=-\sqrt{2}$, 计算:
+(1) $\sin(5\pi-\alpha);$$
+$$ (2) \sin(\sqrt{\pi}+\alpha); $$
+$$ (3) \cos (\alpha-3\pi); $$
+(4) \tan (\bar{2}-\alpha). $$
+7. 在 $\triangle ABC$中, 试判断下列关系是否成立, 并说明理由.
+$$(1) \cos(A+B) = \cos C \neq $$
+$$(2) \sin(A+B) = \sin C;$$
+$$ (3) \sin \sqrt{2} = \sin \sqrt{2}; $$
+A+B C;
+(4) cos 2
+A+B-cos2
+C
+8. 已知 $\sin(\pi_3-x)-1_3$, 且 $0<x<\sqrt{2}$, 求 $\sin(\pi_6+x)$ 和 $\cos(2\pi+x)$ 的值.
+拓广探索
+9. 化简下列各式, 其中 $n \in \mathbb{Z}$:
+(1) $\sin(\sqrt{2}+\alpha)$;
+$$ (2) \cos(\sqrt{2}-\alpha). $$
+10. 借助单位圆，还可以建立角的终边之间的哪些特殊位置关系?由此还能得到三角函数值之间
+的哪些恒等关系?
+第五章三角函数 195

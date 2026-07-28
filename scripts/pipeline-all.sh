@@ -33,7 +33,7 @@ for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
     BASENAME=$(basename "$F" .txt)
     
     # 从文件名提取 section_id：文件名去掉后缀就是，如 math_10_ch1_4
-    SID="$BASENAME"
+    SID=$(echo "$BASENAME" | cut -d"_" -f1-4)
     
     # 跳过已完成（用索引里的 node_ids 判断）
     if grep -q "\"${SID}\"" "${INDEX}" 2>/dev/null; then
