@@ -1,3 +1,9 @@
 *.DS_Store
 .DS_Store
 node_modules/
+.venv_ocr/
+.reasonix/
+output/raw/ocr_page*.json
+output/_failed.log
+output/_test_1.3.log
+output/_needs_review.log
