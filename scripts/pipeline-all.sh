@@ -30,14 +30,13 @@ total=0 ok=0 skip_done=0 skip_fail=0 review=0 fail=0
 
 for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
     [ -f "$F" ] || continue
-    B=$(basename "$F" .txt)
+    BASENAME=$(basename "$F" .txt)
     
-    # 从文件名解析 section_id：math_10_ch1_4 → 把最后的 _数字 改成 _s数字
-    # 已OCR格式: math_10_ch1_s1, math_10_ch1_4
-    SID=$(echo "$B" | sed -E 's/_([0-9]+)$/_s\1/')
+    # 从文件名提取 section_id：文件名去掉后缀就是，如 math_10_ch1_4
+    SID="$BASENAME"
     
-    # 跳过已完成
-    if grep -q "^${SID}$" /tmp/_done.txt 2>/dev/null; then
+    # 跳过已完成（用索引里的 node_ids 判断）
+    if grep -q "\"${SID}\"" "${INDEX}" 2>/dev/null; then
         ((skip_done++)); continue
     fi
     # 跳过已失败
@@ -51,27 +50,28 @@ for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
     echo ""
     echo "━━━ [${total}] ${SID} ${TITLE} ━━━"
     
-    # Agent 1
+    # Agent 1 — 读原始 txt，输出为同名的 .md
     echo "▶️  Agent 1 版面..."
     T1=$(date +%s)
     qwenpaw agent chat \
       --from-agent default \
       --to-agent ai-learning-system-math-banmianfenxi-agent \
-      --text "处理章节 ${SID}，输入 ${F}，输出到 ${PROJECT}/output/agent1_layout/" \
+      --text "处理章节 ${SID}，输入 ${F}，输出到 ${PROJECT}/output/agent1_layout/${BASENAME}.md" \
       2>&1 || true
     D1=$(( $(date +%s) - T1 ))
-    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+    LAYOUT_FILE="${PROJECT}/output/agent1_layout/${BASENAME}.md"
+    if ! grep -q "Agent 1 完成" <(echo "$LAYOUT_FILE") 2>/dev/null && [ ${PIPESTATUS[0]} -ne 0 ]; then
         echo "❌ Agent 1 失败 (${D1}s)"; echo "${SID} agent1" >> "${FAILED}"; ((fail++)); continue
     fi
     echo "   ✅ (${D1}s)"
     
-    # Agent 2
+    # Agent 2 — 读 Agent 1 产出（用实际文件名）
     echo "▶️  Agent 2 提取..."
     T2=$(date +%s)
     qwenpaw agent chat \
       --from-agent default \
       --to-agent ai-learning-system-math-jiegouzhuanhua-agent \
-      --text "从 ${PROJECT}/output/agent1_layout/${SID}.md 提取知识点，输出到 ${PROJECT}/output/agent2_extraction/nodes/" \
+      --text "从 ${LAYOUT_FILE} 提取知识点，section_id=${SID}，输出到 ${PROJECT}/output/agent2_extraction/nodes/" \
       2>&1 || true
     D2=$(( $(date +%s) - T2 ))
     if [ ${PIPESTATUS[0]} -ne 0 ]; then
@@ -79,13 +79,19 @@ for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
     fi
     echo "   ✅ (${D2}s)"
     
-    # Agent 3
+    # 找到 Agent 2 产出的实际文件名
+    NODE_FILE=$(ls -t "${PROJECT}/output/agent2_extraction/nodes/${SID}"*.json 2>/dev/null | head -1)
+    if [ -z "$NODE_FILE" ]; then
+        echo "❌ Agent 2 未产出文件"; echo "${SID} agent2_no_output" >> "${FAILED}"; ((fail++)); continue
+    fi
+    
+    # Agent 3 — 传实际节点文件路径
     echo "▶️  Agent 3 质检..."
     T3=$(date +%s)
     qwenpaw agent chat \
       --from-agent default \
       --to-agent ai-learning-system-math-zhiliangjianyan-agent \
-      --text "审查 ${SID} 的知识点提取质量" \
+      --text "审查 ${SID} 的知识点提取质量，节点文件在 ${NODE_FILE}" \
       2>&1 || true
     D3=$(( $(date +%s) - T3 ))
     if [ ${PIPESTATUS[0]} -ne 0 ]; then
