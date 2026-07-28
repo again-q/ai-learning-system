@@ -3,104 +3,192 @@
   "book": "人教A版数学必修第一册",
   "chapter": "第三章 函数的概念与性质",
   "title": "3.2 函数的基本性质",
-  "pages": [82, 91],
+  "pages": [
+    82,
+    91
+  ],
   "extraction_time": "2026-07-29",
   "nodes": [
     {
       "id": "math_10_ch3_s2_001",
-      "type": "overview",
+      "type": "property",
       "title": "函数的基本性质概述",
       "content": "通过观察函数图象的特征，研究函数的变化规律，包括函数值随自变量的变化趋势（单调性）、最大值与最小值、函数图象的对称特征（奇偶性）等。",
-      "key_terms": ["函数性质", "变化规律", "图象特征"],
-      "relations": ["parent_of: math_10_ch3_s2_002", "parent_of: math_10_ch3_s2_010"]
+      "key_terms": [
+        "函数性质",
+        "变化规律",
+        "图象特征"
+      ],
+      "relations": [
+        "parent_of: math_10_ch3_s2_002",
+        "parent_of: math_10_ch3_s2_010"
+      ]
     },
     {
       "id": "math_10_ch3_s2_002",
-      "type": "concept",
+      "type": "definition",
       "title": "函数的单调性",
       "content": "函数值随自变量的增大而增大（或减小）的性质叫做函数的单调性。单调性是用符号语言精确刻画函数图象的升降特征。",
-      "key_terms": ["单调性", "上升", "下降"],
-      "relations": ["parent_of: math_10_ch3_s2_003", "parent_of: math_10_ch3_s2_004", "parent_of: math_10_ch3_s2_005", "parent_of: math_10_ch3_s2_006", "parent_of: math_10_ch3_s2_007"]
+      "key_terms": [
+        "单调性",
+        "上升",
+        "下降"
+      ],
+      "relations": [
+        "parent_of: math_10_ch3_s2_003",
+        "parent_of: math_10_ch3_s2_004",
+        "parent_of: math_10_ch3_s2_005",
+        "parent_of: math_10_ch3_s2_006",
+        "parent_of: math_10_ch3_s2_007"
+      ]
     },
     {
       "id": "math_10_ch3_s2_003",
       "type": "definition",
       "title": "单调递增的严格定义",
       "content": "设函数f(x)的定义域为I，区间D⊆I。如果∀x₁,x₂∈D，当x₁<x₂时，都有f(x₁)<f(x₂)，那么就称函数f(x)在区间D上单调递增。",
-      "key_terms": ["单调递增", "增函数", "∀"],
-      "relations": ["sibling_of: math_10_ch3_s2_004"]
+      "key_terms": [
+        "单调递增",
+        "增函数",
+        "∀"
+      ],
+      "relations": [
+        "sibling_of: math_10_ch3_s2_004"
+      ]
     },
     {
       "id": "math_10_ch3_s2_004",
       "type": "definition",
       "title": "单调递减的严格定义",
       "content": "设函数f(x)的定义域为I，区间D⊆I。如果∀x₁,x₂∈D，当x₁<x₂时，都有f(x₁)>f(x₂)，那么就称函数f(x)在区间D上单调递减。",
-      "key_terms": ["单调递减", "减函数", "∀"],
-      "relations": ["sibling_of: math_10_ch3_s2_003"]
+      "key_terms": [
+        "单调递减",
+        "减函数",
+        "∀"
+      ],
+      "relations": [
+        "sibling_of: math_10_ch3_s2_003"
+      ]
     },
     {
       "id": "math_10_ch3_s2_005",
-      "type": "concept",
+      "type": "definition",
       "title": "增函数与减函数",
       "content": "当函数f(x)在它的定义域上单调递增时，称它是增函数（increasing function）；当函数f(x)在它的定义域上单调递减时，称它是减函数（decreasing function）。",
-      "key_terms": ["增函数", "减函数", "定义域"],
-      "relations": ["refines: math_10_ch3_s2_003", "refines: math_10_ch3_s2_004"]
+      "key_terms": [
+        "增函数",
+        "减函数",
+        "定义域"
+      ],
+      "relations": [
+        "refines: math_10_ch3_s2_003",
+        "refines: math_10_ch3_s2_004"
+      ]
     },
     {
       "id": "math_10_ch3_s2_006",
-      "type": "concept",
+      "type": "definition",
       "title": "单调区间",
       "content": "如果函数y=f(x)在区间D上单调递增或单调递减，那么就说函数在这一区间具有（严格的）单调性，区间D叫做y=f(x)的单调区间。单调性是函数在定义域内某个区间上的局部性质。",
-      "key_terms": ["单调区间", "局部性质"],
-      "relations": ["refines: math_10_ch3_s2_002"]
+      "key_terms": [
+        "单调区间",
+        "局部性质"
+      ],
+      "relations": [
+        "refines: math_10_ch3_s2_002"
+      ]
     },
     {
       "id": "math_10_ch3_s2_007",
       "type": "method",
       "title": "单调性的证明方法（作差法）",
       "content": "证明步骤：①在区间上任取x₁,x₂且x₁<x₂；②作差f(x₁)-f(x₂)；③对差值进行因式分解或变形；④根据条件判断差值的符号；⑤得出f(x₁)<f(x₂)或f(x₁)>f(x₂)的结论，从而确定单调性。关键是比较f(x₁)-f(x₂)与0的大小关系。",
-      "key_terms": ["作差法", "因式分解", "符号判断"],
-      "relations": ["applies: math_10_ch3_s2_003", "applies: math_10_ch3_s2_004"]
+      "key_terms": [
+        "作差法",
+        "因式分解",
+        "符号判断"
+      ],
+      "relations": [
+        "applies: math_10_ch3_s2_003",
+        "applies: math_10_ch3_s2_004"
+      ]
     },
     {
       "id": "math_10_ch3_s2_008",
       "type": "example",
       "title": "一次函数的单调性",
       "content": "对于一次函数f(x)=kx+b(k≠0)，当k>0时，f(x)是增函数；当k<0时，f(x)是减函数。通过作差法f(x₁)-f(x₂)=k(x₁-x₂)，由k的符号判断差值符号。",
-      "key_terms": ["一次函数", "斜率", "k>0增", "k<0减"],
-      "relations": ["applies: math_10_ch3_s2_007", "example_of: math_10_ch3_s2_002"]
+      "key_terms": [
+        "一次函数",
+        "斜率",
+        "k>0增",
+        "k<0减"
+      ],
+      "relations": [
+        "applies: math_10_ch3_s2_007",
+        "example_of: math_10_ch3_s2_002"
+      ]
     },
     {
       "id": "math_10_ch3_s2_009",
       "type": "example",
       "title": "反比例函数的单调性（玻意耳定律）",
       "content": "对于反比例函数p=k/V(V>0)，通过作差法可证明其在(0,+∞)上是减函数。即当体积V减小时，压强p增大。函数y=k/x在(-∞,0)上单调递增，在(0,+∞)上单调递减。",
-      "key_terms": ["反比例函数", "玻意耳定律", "物理应用"],
-      "relations": ["applies: math_10_ch3_s2_007", "example_of: math_10_ch3_s2_002", "cross_ref: physics"]
+      "key_terms": [
+        "反比例函数",
+        "玻意耳定律",
+        "物理应用"
+      ],
+      "relations": [
+        "applies: math_10_ch3_s2_007",
+        "example_of: math_10_ch3_s2_002",
+        "cross_ref: physics"
+      ]
     },
     {
       "id": "math_10_ch3_s2_010",
       "type": "definition",
       "title": "函数的最大值定义",
       "content": "设函数y=f(x)的定义域为I，如果存在实数M满足：①∀x∈I，都有f(x)≤M；②∃x₀∈I，使得f(x₀)=M。那么称M是函数y=f(x)的最大值。两个条件缺一不可：上界性和可达性。",
-      "key_terms": ["最大值", "上界", "可达性", "∃x₀"],
-      "relations": ["sibling_of: math_10_ch3_s2_011", "parent_of: math_10_ch3_s2_012", "parent_of: math_10_ch3_s2_013"]
+      "key_terms": [
+        "最大值",
+        "上界",
+        "可达性",
+        "∃x₀"
+      ],
+      "relations": [
+        "sibling_of: math_10_ch3_s2_011",
+        "parent_of: math_10_ch3_s2_012",
+        "parent_of: math_10_ch3_s2_013"
+      ]
     },
     {
       "id": "math_10_ch3_s2_011",
       "type": "definition",
       "title": "函数的最小值定义",
       "content": "设函数y=f(x)的定义域为I，如果存在实数M满足：①∀x∈I，都有f(x)≥M；②∃x₀∈I，使得f(x₀)=M。那么称M是函数y=f(x)的最小值。",
-      "key_terms": ["最小值", "下界", "可达性"],
-      "relations": ["sibling_of: math_10_ch3_s2_010"]
+      "key_terms": [
+        "最小值",
+        "下界",
+        "可达性"
+      ],
+      "relations": [
+        "sibling_of: math_10_ch3_s2_010"
+      ]
     },
     {
       "id": "math_10_ch3_s2_012",
       "type": "method",
       "title": "二次函数求最值（公式法）",
       "content": "对于二次函数f(x)=ax²+bx+c(a≠0)，顶点横坐标x=-b/(2a)，此时函数取得最值f= (4ac-b²)/(4a)。当a<0时取得最大值，当a>0时取得最小值。",
-      "key_terms": ["二次函数", "顶点公式", "配方法"],
-      "relations": ["applies: math_10_ch3_s2_010"],
+      "key_terms": [
+        "二次函数",
+        "顶点公式",
+        "配方法"
+      ],
+      "relations": [
+        "applies: math_10_ch3_s2_010"
+      ],
       "example": "烟花问题：h(t)=-4.9t²+14.7t+18，t=-14.7/(2×(-4.9))=1.5s时最高，h≈29m"
     },
     {
@@ -108,49 +196,93 @@
       "type": "method",
       "title": "闭区间上利用单调性求最值",
       "content": "若函数在闭区间[a,b]上单调递减，则最大值在左端点x=a处取得，最小值在右端点x=b处取得；若单调递增则相反。先证明函数的单调性，再代入端点计算。",
-      "key_terms": ["闭区间", "端点值", "单调性", "最值"],
-      "relations": ["applies: math_10_ch3_s2_010", "applies: math_10_ch3_s2_011"],
+      "key_terms": [
+        "闭区间",
+        "端点值",
+        "单调性",
+        "最值"
+      ],
+      "relations": [
+        "applies: math_10_ch3_s2_010",
+        "applies: math_10_ch3_s2_011"
+      ],
       "example": "f(x)=2/(x-1)在[2,6]上单调递减，最大值f(2)=2，最小值f(6)=0.4"
     },
     {
       "id": "math_10_ch3_s2_014",
-      "type": "concept",
+      "type": "definition",
       "title": "偶函数的概念",
       "content": "设函数f(x)的定义域为I，如果∀x∈I，都有-x∈I，且f(-x)=f(x)，那么函数f(x)就叫做偶函数（even function）。偶函数的图象关于y轴对称。",
-      "key_terms": ["偶函数", "f(-x)=f(x)", "y轴对称"],
-      "relations": ["sibling_of: math_10_ch3_s2_015", "parent_of: math_10_ch3_s2_016", "parent_of: math_10_ch3_s2_017"]
+      "key_terms": [
+        "偶函数",
+        "f(-x)=f(x)",
+        "y轴对称"
+      ],
+      "relations": [
+        "sibling_of: math_10_ch3_s2_015",
+        "parent_of: math_10_ch3_s2_016",
+        "parent_of: math_10_ch3_s2_017"
+      ]
     },
     {
       "id": "math_10_ch3_s2_015",
-      "type": "concept",
+      "type": "definition",
       "title": "奇函数的概念",
       "content": "设函数f(x)的定义域为I，如果∀x∈I，都有-x∈I，且f(-x)=-f(x)，那么函数f(x)就叫做奇函数（odd function）。奇函数的图象关于原点成中心对称。",
-      "key_terms": ["奇函数", "f(-x)=-f(x)", "原点对称"],
-      "relations": ["sibling_of: math_10_ch3_s2_014", "parent_of: math_10_ch3_s2_016"]
+      "key_terms": [
+        "奇函数",
+        "f(-x)=-f(x)",
+        "原点对称"
+      ],
+      "relations": [
+        "sibling_of: math_10_ch3_s2_014",
+        "parent_of: math_10_ch3_s2_016"
+      ]
     },
     {
       "id": "math_10_ch3_s2_016",
       "type": "method",
       "title": "函数奇偶性的判断方法",
       "content": "步骤：①确定函数的定义域，判断其是否关于原点对称（∀x∈I,-x∈I）；若不对称则为非奇非偶函数；②计算f(-x)；③若f(-x)=f(x)则为偶函数，若f(-x)=-f(x)则为奇函数，若两者都不是则为非奇非偶函数。奇偶性是函数的整体性质。",
-      "key_terms": ["奇偶性判断", "定义域对称", "整体性质"],
-      "relations": ["applies: math_10_ch3_s2_014", "applies: math_10_ch3_s2_015"]
+      "key_terms": [
+        "奇偶性判断",
+        "定义域对称",
+        "整体性质"
+      ],
+      "relations": [
+        "applies: math_10_ch3_s2_014",
+        "applies: math_10_ch3_s2_015"
+      ]
     },
     {
       "id": "math_10_ch3_s2_017",
       "type": "property",
       "title": "奇偶性的图象特征",
       "content": "偶函数的图象关于y轴对称；奇函数的图象关于原点成中心对称。利用奇偶性可以简化函数研究：已知函数在y轴一侧的图象，可由对称性推出另一侧的图象。",
-      "key_terms": ["y轴对称", "原点对称", "中心对称", "利用对称性简化"],
-      "relations": ["correlates: math_10_ch3_s2_014", "correlates: math_10_ch3_s2_015"]
+      "key_terms": [
+        "y轴对称",
+        "原点对称",
+        "中心对称",
+        "利用对称性简化"
+      ],
+      "relations": [
+        "correlates: math_10_ch3_s2_014",
+        "correlates: math_10_ch3_s2_015"
+      ]
     },
     {
       "id": "math_10_ch3_s2_018",
-      "type": "meta",
+      "type": "property",
       "title": "研究函数性质的方法论",
       "content": "通过观察函数图象进行猜想，然后用严格的符号语言（逻辑推理）证明猜想的正确性，是研究函数性质的一种常用方法。先直观后严谨，先特殊后一般。",
-      "key_terms": ["图象猜想", "逻辑推理", "直观→严谨"],
-      "relations": ["cross_ref: math_10_ch3_s2_001"]
+      "key_terms": [
+        "图象猜想",
+        "逻辑推理",
+        "直观→严谨"
+      ],
+      "relations": [
+        "cross_ref: math_10_ch3_s2_001"
+      ]
     }
   ]
 }
