@@ -1,0 +1,2663 @@
+{
+  "TextDetections": [
+    {
+      "DetectedText": "第四章",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 547,
+          "Y": 251
+        },
+        {
+          "X": 678,
+          "Y": 254
+        },
+        {
+          "X": 677,
+          "Y": 300
+        },
+        {
+          "X": 547,
+          "Y": 296
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":1}}",
+      "ItemPolygon": {
+        "X": 547,
+        "Y": 251,
+        "Width": 131,
+        "Height": 49
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "指数函数与对数函数",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 711,
+          "Y": 251
+        },
+        {
+          "X": 1091,
+          "Y": 253
+        },
+        {
+          "X": 1091,
+          "Y": 300
+        },
+        {
+          "X": 711,
+          "Y": 296
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":2}}",
+      "ItemPolygon": {
+        "X": 711,
+        "Y": 251,
+        "Width": 380,
+        "Height": 49
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "103",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1430,
+          "Y": 264
+        },
+        {
+          "X": 1488,
+          "Y": 264
+        },
+        {
+          "X": 1488,
+          "Y": 296
+        },
+        {
+          "X": 1430,
+          "Y": 296
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":3}}",
+      "ItemPolygon": {
+        "X": 1430,
+        "Y": 264,
+        "Width": 58,
+        "Height": 32
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "4.1",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 631,
+          "Y": 317
+        },
+        {
+          "X": 686,
+          "Y": 317
+        },
+        {
+          "X": 686,
+          "Y": 349
+        },
+        {
+          "X": 631,
+          "Y": 349
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":4}}",
+      "ItemPolygon": {
+        "X": 631,
+        "Y": 317,
+        "Width": 55,
+        "Height": 32
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "指数",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 713,
+          "Y": 314
+        },
+        {
+          "X": 793,
+          "Y": 314
+        },
+        {
+          "X": 793,
+          "Y": 353
+        },
+        {
+          "X": 713,
+          "Y": 353
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":5}}",
+      "ItemPolygon": {
+        "X": 713,
+        "Y": 314,
+        "Width": 80,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "104",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1434,
+          "Y": 317
+        },
+        {
+          "X": 1488,
+          "Y": 317
+        },
+        {
+          "X": 1488,
+          "Y": 349
+        },
+        {
+          "X": 1434,
+          "Y": 349
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":6}}",
+      "ItemPolygon": {
+        "X": 1434,
+        "Y": 317,
+        "Width": 54,
+        "Height": 32
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "4.2",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 629,
+          "Y": 369
+        },
+        {
+          "X": 686,
+          "Y": 369
+        },
+        {
+          "X": 686,
+          "Y": 401
+        },
+        {
+          "X": 629,
+          "Y": 401
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":7}}",
+      "ItemPolygon": {
+        "X": 629,
+        "Y": 369,
+        "Width": 57,
+        "Height": 32
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "指数函数",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 713,
+          "Y": 367
+        },
+        {
+          "X": 856,
+          "Y": 367
+        },
+        {
+          "X": 856,
+          "Y": 405
+        },
+        {
+          "X": 713,
+          "Y": 405
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":8}}",
+      "ItemPolygon": {
+        "X": 713,
+        "Y": 367,
+        "Width": 143,
+        "Height": 38
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "111",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1434,
+          "Y": 369
+        },
+        {
+          "X": 1485,
+          "Y": 369
+        },
+        {
+          "X": 1485,
+          "Y": 399
+        },
+        {
+          "X": 1434,
+          "Y": 399
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":9}}",
+      "ItemPolygon": {
+        "X": 1434,
+        "Y": 369,
+        "Width": 51,
+        "Height": 30
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "阅读与思考",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 716,
+          "Y": 419
+        },
+        {
+          "X": 885,
+          "Y": 419
+        },
+        {
+          "X": 885,
+          "Y": 458
+        },
+        {
+          "X": 716,
+          "Y": 458
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":10}}",
+      "ItemPolygon": {
+        "X": 716,
+        "Y": 419,
+        "Width": 169,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "放射性物质的衰减",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 912,
+          "Y": 421
+        },
+        {
+          "X": 1188,
+          "Y": 419
+        },
+        {
+          "X": 1188,
+          "Y": 455
+        },
+        {
+          "X": 912,
+          "Y": 458
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":11}}",
+      "ItemPolygon": {
+        "X": 912,
+        "Y": 419,
+        "Width": 276,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "115",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1430,
+          "Y": 421
+        },
+        {
+          "X": 1488,
+          "Y": 421
+        },
+        {
+          "X": 1488,
+          "Y": 458
+        },
+        {
+          "X": 1430,
+          "Y": 458
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":12}}",
+      "ItemPolygon": {
+        "X": 1430,
+        "Y": 421,
+        "Width": 58,
+        "Height": 37
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "信息技术应用",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 716,
+          "Y": 471
+        },
+        {
+          "X": 918,
+          "Y": 471
+        },
+        {
+          "X": 918,
+          "Y": 510
+        },
+        {
+          "X": 716,
+          "Y": 510
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":13}}",
+      "ItemPolygon": {
+        "X": 716,
+        "Y": 471,
+        "Width": 202,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "探究指数函数的性质",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 943,
+          "Y": 471
+        },
+        {
+          "X": 1253,
+          "Y": 471
+        },
+        {
+          "X": 1253,
+          "Y": 510
+        },
+        {
+          "X": 943,
+          "Y": 510
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":14}}",
+      "ItemPolygon": {
+        "X": 943,
+        "Y": 471,
+        "Width": 310,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "120",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1430,
+          "Y": 474
+        },
+        {
+          "X": 1488,
+          "Y": 474
+        },
+        {
+          "X": 1488,
+          "Y": 510
+        },
+        {
+          "X": 1430,
+          "Y": 510
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":15}}",
+      "ItemPolygon": {
+        "X": 1430,
+        "Y": 474,
+        "Width": 58,
+        "Height": 36
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "4.3",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 629,
+          "Y": 526
+        },
+        {
+          "X": 687,
+          "Y": 526
+        },
+        {
+          "X": 687,
+          "Y": 562
+        },
+        {
+          "X": 629,
+          "Y": 562
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":16}}",
+      "ItemPolygon": {
+        "X": 629,
+        "Y": 526,
+        "Width": 58,
+        "Height": 36
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "对数",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 711,
+          "Y": 525
+        },
+        {
+          "X": 791,
+          "Y": 525
+        },
+        {
+          "X": 791,
+          "Y": 564
+        },
+        {
+          "X": 711,
+          "Y": 564
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":17}}",
+      "ItemPolygon": {
+        "X": 711,
+        "Y": 525,
+        "Width": 80,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "122",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1430,
+          "Y": 526
+        },
+        {
+          "X": 1488,
+          "Y": 526
+        },
+        {
+          "X": 1488,
+          "Y": 562
+        },
+        {
+          "X": 1430,
+          "Y": 562
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":18}}",
+      "ItemPolygon": {
+        "X": 1430,
+        "Y": 526,
+        "Width": 58,
+        "Height": 36
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "阅读与思考",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 716,
+          "Y": 576
+        },
+        {
+          "X": 885,
+          "Y": 576
+        },
+        {
+          "X": 885,
+          "Y": 617
+        },
+        {
+          "X": 716,
+          "Y": 617
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":19}}",
+      "ItemPolygon": {
+        "X": 716,
+        "Y": 576,
+        "Width": 169,
+        "Height": 41
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "对数的发明",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 912,
+          "Y": 578
+        },
+        {
+          "X": 1086,
+          "Y": 578
+        },
+        {
+          "X": 1086,
+          "Y": 617
+        },
+        {
+          "X": 912,
+          "Y": 617
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":20}}",
+      "ItemPolygon": {
+        "X": 912,
+        "Y": 578,
+        "Width": 174,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "128",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1430,
+          "Y": 580
+        },
+        {
+          "X": 1488,
+          "Y": 580
+        },
+        {
+          "X": 1488,
+          "Y": 617
+        },
+        {
+          "X": 1430,
+          "Y": 617
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":21}}",
+      "ItemPolygon": {
+        "X": 1430,
+        "Y": 580,
+        "Width": 58,
+        "Height": 37
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "4.4",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 629,
+          "Y": 630
+        },
+        {
+          "X": 691,
+          "Y": 630
+        },
+        {
+          "X": 691,
+          "Y": 669
+        },
+        {
+          "X": 629,
+          "Y": 669
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":22}}",
+      "ItemPolygon": {
+        "X": 629,
+        "Y": 630,
+        "Width": 62,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "对数函数",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 710,
+          "Y": 630
+        },
+        {
+          "X": 858,
+          "Y": 628
+        },
+        {
+          "X": 858,
+          "Y": 669
+        },
+        {
+          "X": 711,
+          "Y": 672
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":23}}",
+      "ItemPolygon": {
+        "X": 710,
+        "Y": 628,
+        "Width": 148,
+        "Height": 44
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "130",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1430,
+          "Y": 633
+        },
+        {
+          "X": 1488,
+          "Y": 633
+        },
+        {
+          "X": 1488,
+          "Y": 669
+        },
+        {
+          "X": 1430,
+          "Y": 669
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":24}}",
+      "ItemPolygon": {
+        "X": 1430,
+        "Y": 633,
+        "Width": 58,
+        "Height": 36
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "探究与发现",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 713,
+          "Y": 683
+        },
+        {
+          "X": 871,
+          "Y": 683
+        },
+        {
+          "X": 871,
+          "Y": 721
+        },
+        {
+          "X": 713,
+          "Y": 721
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":25}}",
+      "ItemPolygon": {
+        "X": 713,
+        "Y": 683,
+        "Width": 158,
+        "Height": 38
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "互为反函数的两个函数图象间的关系 ··· 135",
+      "Confidence": 94,
+      "Polygon": [
+        {
+          "X": 891,
+          "Y": 683
+        },
+        {
+          "X": 1488,
+          "Y": 683
+        },
+        {
+          "X": 1488,
+          "Y": 721
+        },
+        {
+          "X": 891,
+          "Y": 721
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":26}}",
+      "ItemPolygon": {
+        "X": 891,
+        "Y": 683,
+        "Width": 597,
+        "Height": 38
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "4.5",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 629,
+          "Y": 737
+        },
+        {
+          "X": 691,
+          "Y": 737
+        },
+        {
+          "X": 691,
+          "Y": 771
+        },
+        {
+          "X": 629,
+          "Y": 771
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":27}}",
+      "ItemPolygon": {
+        "X": 629,
+        "Y": 737,
+        "Width": 62,
+        "Height": 34
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "函数的应用(二)",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 713,
+          "Y": 735
+        },
+        {
+          "X": 967,
+          "Y": 735
+        },
+        {
+          "X": 967,
+          "Y": 776
+        },
+        {
+          "X": 713,
+          "Y": 776
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":28}}",
+      "ItemPolygon": {
+        "X": 713,
+        "Y": 735,
+        "Width": 254,
+        "Height": 41
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "142",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1429,
+          "Y": 737
+        },
+        {
+          "X": 1488,
+          "Y": 737
+        },
+        {
+          "X": 1488,
+          "Y": 774
+        },
+        {
+          "X": 1429,
+          "Y": 774
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":29}}",
+      "ItemPolygon": {
+        "X": 1429,
+        "Y": 737,
+        "Width": 59,
+        "Height": 37
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "阅读与思考 中外历史上的方程求解 ...............",
+      "Confidence": 92,
+      "Polygon": [
+        {
+          "X": 716,
+          "Y": 787
+        },
+        {
+          "X": 1488,
+          "Y": 787
+        },
+        {
+          "X": 1488,
+          "Y": 828
+        },
+        {
+          "X": 716,
+          "Y": 828
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":30}}",
+      "ItemPolygon": {
+        "X": 716,
+        "Y": 787,
+        "Width": 772,
+        "Height": 41
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "文献阅读与数学写作\" 对数概念的形成与发展 ...... 157",
+      "Confidence": 94,
+      "Polygon": [
+        {
+          "X": 631,
+          "Y": 834
+        },
+        {
+          "X": 1488,
+          "Y": 839
+        },
+        {
+          "X": 1488,
+          "Y": 884
+        },
+        {
+          "X": 631,
+          "Y": 880
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":31}}",
+      "ItemPolygon": {
+        "X": 631,
+        "Y": 834,
+        "Width": 857,
+        "Height": 50
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "小结",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 631,
+          "Y": 896
+        },
+        {
+          "X": 711,
+          "Y": 896
+        },
+        {
+          "X": 711,
+          "Y": 933
+        },
+        {
+          "X": 631,
+          "Y": 933
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":32}}",
+      "ItemPolygon": {
+        "X": 631,
+        "Y": 896,
+        "Width": 80,
+        "Height": 37
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "158",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1434,
+          "Y": 896
+        },
+        {
+          "X": 1488,
+          "Y": 896
+        },
+        {
+          "X": 1488,
+          "Y": 933
+        },
+        {
+          "X": 1434,
+          "Y": 933
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":33}}",
+      "ItemPolygon": {
+        "X": 1434,
+        "Y": 896,
+        "Width": 54,
+        "Height": 37
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "复习参考题4",
+      "Confidence": 98,
+      "Polygon": [
+        {
+          "X": 631,
+          "Y": 946
+        },
+        {
+          "X": 829,
+          "Y": 946
+        },
+        {
+          "X": 829,
+          "Y": 987
+        },
+        {
+          "X": 631,
+          "Y": 987
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":34}}",
+      "ItemPolygon": {
+        "X": 631,
+        "Y": 946,
+        "Width": 198,
+        "Height": 41
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "159",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1430,
+          "Y": 949
+        },
+        {
+          "X": 1488,
+          "Y": 949
+        },
+        {
+          "X": 1488,
+          "Y": 985
+        },
+        {
+          "X": 1430,
+          "Y": 985
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":35}}",
+      "ItemPolygon": {
+        "X": 1430,
+        "Y": 949,
+        "Width": 58,
+        "Height": 36
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "数学建模",
+      "Confidence": 96,
+      "Polygon": [
+        {
+          "X": 547,
+          "Y": 1037
+        },
+        {
+          "X": 718,
+          "Y": 1037
+        },
+        {
+          "X": 718,
+          "Y": 1080
+        },
+        {
+          "X": 547,
+          "Y": 1080
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":36}}",
+      "ItemPolygon": {
+        "X": 547,
+        "Y": 1037,
+        "Width": 171,
+        "Height": 43
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "建立函数模型解决实际问题",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 754,
+          "Y": 1037
+        },
+        {
+          "X": 1256,
+          "Y": 1037
+        },
+        {
+          "X": 1256,
+          "Y": 1080
+        },
+        {
+          "X": 754,
+          "Y": 1080
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":37}}",
+      "ItemPolygon": {
+        "X": 754,
+        "Y": 1037,
+        "Width": 502,
+        "Height": 43
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "162",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1425,
+          "Y": 1046
+        },
+        {
+          "X": 1491,
+          "Y": 1046
+        },
+        {
+          "X": 1491,
+          "Y": 1083
+        },
+        {
+          "X": 1425,
+          "Y": 1083
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":38}}",
+      "ItemPolygon": {
+        "X": 1425,
+        "Y": 1046,
+        "Width": 66,
+        "Height": 37
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "第五章",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 547,
+          "Y": 1135
+        },
+        {
+          "X": 675,
+          "Y": 1135
+        },
+        {
+          "X": 675,
+          "Y": 1178
+        },
+        {
+          "X": 547,
+          "Y": 1178
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":39}}",
+      "ItemPolygon": {
+        "X": 547,
+        "Y": 1135,
+        "Width": 128,
+        "Height": 43
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "三角函数",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 713,
+          "Y": 1135
+        },
+        {
+          "X": 891,
+          "Y": 1135
+        },
+        {
+          "X": 891,
+          "Y": 1178
+        },
+        {
+          "X": 713,
+          "Y": 1178
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":40}}",
+      "ItemPolygon": {
+        "X": 713,
+        "Y": 1135,
+        "Width": 178,
+        "Height": 43
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "167",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1425,
+          "Y": 1144
+        },
+        {
+          "X": 1491,
+          "Y": 1144
+        },
+        {
+          "X": 1491,
+          "Y": 1180
+        },
+        {
+          "X": 1425,
+          "Y": 1180
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":41}}",
+      "ItemPolygon": {
+        "X": 1425,
+        "Y": 1144,
+        "Width": 66,
+        "Height": 36
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "5.1",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 631,
+          "Y": 1196
+        },
+        {
+          "X": 684,
+          "Y": 1196
+        },
+        {
+          "X": 684,
+          "Y": 1230
+        },
+        {
+          "X": 631,
+          "Y": 1230
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":42}}",
+      "ItemPolygon": {
+        "X": 631,
+        "Y": 1196,
+        "Width": 53,
+        "Height": 34
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "任意角和弧度制",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 716,
+          "Y": 1194
+        },
+        {
+          "X": 956,
+          "Y": 1194
+        },
+        {
+          "X": 956,
+          "Y": 1233
+        },
+        {
+          "X": 716,
+          "Y": 1233
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":43}}",
+      "ItemPolygon": {
+        "X": 716,
+        "Y": 1194,
+        "Width": 240,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "168",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 1429,
+          "Y": 1200
+        },
+        {
+          "X": 1488,
+          "Y": 1200
+        },
+        {
+          "X": 1488,
+          "Y": 1233
+        },
+        {
+          "X": 1429,
+          "Y": 1233
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":44}}",
+      "ItemPolygon": {
+        "X": 1429,
+        "Y": 1200,
+        "Width": 59,
+        "Height": 33
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "5.2",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 629,
+          "Y": 1249
+        },
+        {
+          "X": 686,
+          "Y": 1249
+        },
+        {
+          "X": 686,
+          "Y": 1283
+        },
+        {
+          "X": 629,
+          "Y": 1283
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":45}}",
+      "ItemPolygon": {
+        "X": 629,
+        "Y": 1249,
+        "Width": 57,
+        "Height": 34
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "三角函数的概念",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 714,
+          "Y": 1249
+        },
+        {
+          "X": 952,
+          "Y": 1246
+        },
+        {
+          "X": 952,
+          "Y": 1285
+        },
+        {
+          "X": 716,
+          "Y": 1287
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":46}}",
+      "ItemPolygon": {
+        "X": 714,
+        "Y": 1246,
+        "Width": 238,
+        "Height": 41
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "177",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1429,
+          "Y": 1249
+        },
+        {
+          "X": 1488,
+          "Y": 1249
+        },
+        {
+          "X": 1488,
+          "Y": 1287
+        },
+        {
+          "X": 1429,
+          "Y": 1287
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":47}}",
+      "ItemPolygon": {
+        "X": 1429,
+        "Y": 1249,
+        "Width": 59,
+        "Height": 38
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "阅读与思考",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 716,
+          "Y": 1301
+        },
+        {
+          "X": 888,
+          "Y": 1301
+        },
+        {
+          "X": 888,
+          "Y": 1337
+        },
+        {
+          "X": 716,
+          "Y": 1337
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":48}}",
+      "ItemPolygon": {
+        "X": 716,
+        "Y": 1301,
+        "Width": 172,
+        "Height": 36
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "三角学与天文学",
+      "Confidence": 97,
+      "Polygon": [
+        {
+          "X": 912,
+          "Y": 1301
+        },
+        {
+          "X": 1154,
+          "Y": 1301
+        },
+        {
+          "X": 1154,
+          "Y": 1339
+        },
+        {
+          "X": 912,
+          "Y": 1339
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":49}}",
+      "ItemPolygon": {
+        "X": 912,
+        "Y": 1301,
+        "Width": 242,
+        "Height": 38
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "186",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1429,
+          "Y": 1303
+        },
+        {
+          "X": 1488,
+          "Y": 1303
+        },
+        {
+          "X": 1488,
+          "Y": 1339
+        },
+        {
+          "X": 1429,
+          "Y": 1339
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":50}}",
+      "ItemPolygon": {
+        "X": 1429,
+        "Y": 1303,
+        "Width": 59,
+        "Height": 36
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "5.3",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 631,
+          "Y": 1355
+        },
+        {
+          "X": 686,
+          "Y": 1355
+        },
+        {
+          "X": 686,
+          "Y": 1389
+        },
+        {
+          "X": 631,
+          "Y": 1389
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":51}}",
+      "ItemPolygon": {
+        "X": 631,
+        "Y": 1355,
+        "Width": 55,
+        "Height": 34
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "诱导公式",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 713,
+          "Y": 1353
+        },
+        {
+          "X": 856,
+          "Y": 1353
+        },
+        {
+          "X": 856,
+          "Y": 1392
+        },
+        {
+          "X": 713,
+          "Y": 1392
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":52}}",
+      "ItemPolygon": {
+        "X": 713,
+        "Y": 1353,
+        "Width": 143,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "188",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 1430,
+          "Y": 1355
+        },
+        {
+          "X": 1488,
+          "Y": 1355
+        },
+        {
+          "X": 1488,
+          "Y": 1392
+        },
+        {
+          "X": 1430,
+          "Y": 1392
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":53}}",
+      "ItemPolygon": {
+        "X": 1430,
+        "Y": 1355,
+        "Width": 58,
+        "Height": 37
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "5.4",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 631,
+          "Y": 1408
+        },
+        {
+          "X": 686,
+          "Y": 1408
+        },
+        {
+          "X": 686,
+          "Y": 1442
+        },
+        {
+          "X": 631,
+          "Y": 1442
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":54}}",
+      "ItemPolygon": {
+        "X": 631,
+        "Y": 1408,
+        "Width": 55,
+        "Height": 34
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "三角函数的图象与性",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 713,
+          "Y": 1405
+        },
+        {
+          "X": 1200,
+          "Y": 1405
+        },
+        {
+          "X": 1200,
+          "Y": 1444
+        },
+        {
+          "X": 713,
+          "Y": 1444
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":55}}",
+      "ItemPolygon": {
+        "X": 713,
+        "Y": 1405,
+        "Width": 487,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": ".... 196",
+      "Confidence": 89,
+      "Polygon": [
+        {
+          "X": 1379,
+          "Y": 1408
+        },
+        {
+          "X": 1488,
+          "Y": 1408
+        },
+        {
+          "X": 1488,
+          "Y": 1444
+        },
+        {
+          "X": 1379,
+          "Y": 1444
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":56}}",
+      "ItemPolygon": {
+        "X": 1379,
+        "Y": 1408,
+        "Width": 109,
+        "Height": 36
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "探究与发现",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 713,
+          "Y": 1460
+        },
+        {
+          "X": 885,
+          "Y": 1460
+        },
+        {
+          "X": 885,
+          "Y": 1496
+        },
+        {
+          "X": 713,
+          "Y": 1496
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":57}}",
+      "ItemPolygon": {
+        "X": 713,
+        "Y": 1460,
+        "Width": 172,
+        "Height": 36
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "函数 $y=A\\sin(wx+\\varphi)$ 及",
+      "Confidence": 95,
+      "Polygon": [
+        {
+          "X": 915,
+          "Y": 1461
+        },
+        {
+          "X": 1280,
+          "Y": 1457
+        },
+        {
+          "X": 1282,
+          "Y": 1496
+        },
+        {
+          "X": 916,
+          "Y": 1500
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":58}}",
+      "ItemPolygon": {
+        "X": 915,
+        "Y": 1457,
+        "Width": 367,
+        "Height": 43
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "函数 $y=A\\cos(\\omega x+\\varphi)$ 的周期…… 203$",
+      "Confidence": 93,
+      "Polygon": [
+        {
+          "X": 918,
+          "Y": 1512
+        },
+        {
+          "X": 1491,
+          "Y": 1512
+        },
+        {
+          "X": 1491,
+          "Y": 1549
+        },
+        {
+          "X": 918,
+          "Y": 1549
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":59}}",
+      "ItemPolygon": {
+        "X": 918,
+        "Y": 1512,
+        "Width": 573,
+        "Height": 37
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "探究与发现",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 713,
+          "Y": 1564
+        },
+        {
+          "X": 885,
+          "Y": 1564
+        },
+        {
+          "X": 885,
+          "Y": 1601
+        },
+        {
+          "X": 713,
+          "Y": 1601
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":60}}",
+      "ItemPolygon": {
+        "X": 713,
+        "Y": 1564,
+        "Width": 172,
+        "Height": 37
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "利用单位圆的性质研究正弦函数、",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 912,
+          "Y": 1564
+        },
+        {
+          "X": 1402,
+          "Y": 1564
+        },
+        {
+          "X": 1402,
+          "Y": 1603
+        },
+        {
+          "X": 912,
+          "Y": 1603
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":61}}",
+      "ItemPolygon": {
+        "X": 912,
+        "Y": 1564,
+        "Width": 490,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "余弦函数的性质",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 916,
+          "Y": 1617
+        },
+        {
+          "X": 1151,
+          "Y": 1619
+        },
+        {
+          "X": 1151,
+          "Y": 1655
+        },
+        {
+          "X": 915,
+          "Y": 1653
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":62}}",
+      "ItemPolygon": {
+        "X": 915,
+        "Y": 1617,
+        "Width": 236,
+        "Height": 38
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "208",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 1425,
+          "Y": 1619
+        },
+        {
+          "X": 1488,
+          "Y": 1619
+        },
+        {
+          "X": 1488,
+          "Y": 1653
+        },
+        {
+          "X": 1425,
+          "Y": 1653
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":63}}",
+      "ItemPolygon": {
+        "X": 1425,
+        "Y": 1619,
+        "Width": 63,
+        "Height": 34
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "5.5",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 629,
+          "Y": 1669
+        },
+        {
+          "X": 687,
+          "Y": 1669
+        },
+        {
+          "X": 687,
+          "Y": 1705
+        },
+        {
+          "X": 629,
+          "Y": 1705
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":64}}",
+      "ItemPolygon": {
+        "X": 629,
+        "Y": 1669,
+        "Width": 58,
+        "Height": 36
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "三角恒等变换",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 711,
+          "Y": 1669
+        },
+        {
+          "X": 922,
+          "Y": 1669
+        },
+        {
+          "X": 922,
+          "Y": 1708
+        },
+        {
+          "X": 711,
+          "Y": 1708
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":65}}",
+      "ItemPolygon": {
+        "X": 711,
+        "Y": 1669,
+        "Width": 211,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "215",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 1430,
+          "Y": 1671
+        },
+        {
+          "X": 1488,
+          "Y": 1671
+        },
+        {
+          "X": 1488,
+          "Y": 1705
+        },
+        {
+          "X": 1430,
+          "Y": 1705
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":66}}",
+      "ItemPolygon": {
+        "X": 1430,
+        "Y": 1671,
+        "Width": 58,
+        "Height": 34
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "信息技术应用",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 713,
+          "Y": 1723
+        },
+        {
+          "X": 909,
+          "Y": 1723
+        },
+        {
+          "X": 909,
+          "Y": 1760
+        },
+        {
+          "X": 713,
+          "Y": 1760
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":67}}",
+      "ItemPolygon": {
+        "X": 713,
+        "Y": 1723,
+        "Width": 196,
+        "Height": 37
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "利用信息技术制作三角函数表 $\\cdots\\cdots\\cdots$ 224$",
+      "Confidence": 87,
+      "Polygon": [
+        {
+          "X": 933,
+          "Y": 1721
+        },
+        {
+          "X": 1488,
+          "Y": 1721
+        },
+        {
+          "X": 1488,
+          "Y": 1760
+        },
+        {
+          "X": 933,
+          "Y": 1760
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":68}}",
+      "ItemPolygon": {
+        "X": 933,
+        "Y": 1721,
+        "Width": 555,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "5.6",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 629,
+          "Y": 1776
+        },
+        {
+          "X": 686,
+          "Y": 1776
+        },
+        {
+          "X": 686,
+          "Y": 1812
+        },
+        {
+          "X": 629,
+          "Y": 1812
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":69}}",
+      "ItemPolygon": {
+        "X": 629,
+        "Y": 1776,
+        "Width": 57,
+        "Height": 36
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "函数 $y=A\\sin(\\omega x",
+      "Confidence": 91,
+      "Polygon": [
+        {
+          "X": 713,
+          "Y": 1776
+        },
+        {
+          "X": 1156,
+          "Y": 1776
+        },
+        {
+          "X": 1156,
+          "Y": 1814
+        },
+        {
+          "X": 713,
+          "Y": 1814
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":70}}",
+      "ItemPolygon": {
+        "X": 713,
+        "Y": 1776,
+        "Width": 443,
+        "Height": 38
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "231",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1432,
+          "Y": 1775
+        },
+        {
+          "X": 1490,
+          "Y": 1778
+        },
+        {
+          "X": 1488,
+          "Y": 1815
+        },
+        {
+          "X": 1430,
+          "Y": 1812
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":71}}",
+      "ItemPolygon": {
+        "X": 1430,
+        "Y": 1775,
+        "Width": 60,
+        "Height": 40
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "5.7",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 629,
+          "Y": 1830
+        },
+        {
+          "X": 686,
+          "Y": 1830
+        },
+        {
+          "X": 686,
+          "Y": 1864
+        },
+        {
+          "X": 629,
+          "Y": 1864
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":72}}",
+      "ItemPolygon": {
+        "X": 629,
+        "Y": 1830,
+        "Width": 57,
+        "Height": 34
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "三角函数的应用",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 713,
+          "Y": 1828
+        },
+        {
+          "X": 956,
+          "Y": 1828
+        },
+        {
+          "X": 956,
+          "Y": 1869
+        },
+        {
+          "X": 713,
+          "Y": 1869
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":73}}",
+      "ItemPolygon": {
+        "X": 713,
+        "Y": 1828,
+        "Width": 243,
+        "Height": 41
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "242",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 1432,
+          "Y": 1830
+        },
+        {
+          "X": 1490,
+          "Y": 1833
+        },
+        {
+          "X": 1488,
+          "Y": 1867
+        },
+        {
+          "X": 1430,
+          "Y": 1865
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":74}}",
+      "ItemPolygon": {
+        "X": 1430,
+        "Y": 1830,
+        "Width": 60,
+        "Height": 37
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "阅读与思考",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 716,
+          "Y": 1880
+        },
+        {
+          "X": 885,
+          "Y": 1880
+        },
+        {
+          "X": 885,
+          "Y": 1919
+        },
+        {
+          "X": 716,
+          "Y": 1919
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":75}}",
+      "ItemPolygon": {
+        "X": 716,
+        "Y": 1880,
+        "Width": 169,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "振幅、周期、频率、相位",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 911,
+          "Y": 1880
+        },
+        {
+          "X": 1300,
+          "Y": 1880
+        },
+        {
+          "X": 1300,
+          "Y": 1919
+        },
+        {
+          "X": 911,
+          "Y": 1919
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":76}}",
+      "ItemPolygon": {
+        "X": 911,
+        "Y": 1880,
+        "Width": 389,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "250",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 1429,
+          "Y": 1883
+        },
+        {
+          "X": 1488,
+          "Y": 1883
+        },
+        {
+          "X": 1488,
+          "Y": 1919
+        },
+        {
+          "X": 1429,
+          "Y": 1919
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":77}}",
+      "ItemPolygon": {
+        "X": 1429,
+        "Y": 1883,
+        "Width": 59,
+        "Height": 36
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "小结",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 631,
+          "Y": 1933
+        },
+        {
+          "X": 704,
+          "Y": 1933
+        },
+        {
+          "X": 704,
+          "Y": 1974
+        },
+        {
+          "X": 631,
+          "Y": 1974
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":78}}",
+      "ItemPolygon": {
+        "X": 631,
+        "Y": 1933,
+        "Width": 73,
+        "Height": 41
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "251",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1430,
+          "Y": 1937
+        },
+        {
+          "X": 1485,
+          "Y": 1937
+        },
+        {
+          "X": 1485,
+          "Y": 1971
+        },
+        {
+          "X": 1430,
+          "Y": 1971
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":79}}",
+      "ItemPolygon": {
+        "X": 1430,
+        "Y": 1937,
+        "Width": 55,
+        "Height": 34
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "复习参考题5",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 631,
+          "Y": 1987
+        },
+        {
+          "X": 829,
+          "Y": 1987
+        },
+        {
+          "X": 829,
+          "Y": 2026
+        },
+        {
+          "X": 631,
+          "Y": 2026
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":80}}",
+      "ItemPolygon": {
+        "X": 631,
+        "Y": 1987,
+        "Width": 198,
+        "Height": 39
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "253",
+      "Confidence": 100,
+      "Polygon": [
+        {
+          "X": 1429,
+          "Y": 1989
+        },
+        {
+          "X": 1488,
+          "Y": 1989
+        },
+        {
+          "X": 1488,
+          "Y": 2025
+        },
+        {
+          "X": 1429,
+          "Y": 2025
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":81}}",
+      "ItemPolygon": {
+        "X": 1429,
+        "Y": 1989,
+        "Width": 59,
+        "Height": 36
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "部分中英文词汇索引",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 547,
+          "Y": 2076
+        },
+        {
+          "X": 856,
+          "Y": 2076
+        },
+        {
+          "X": 856,
+          "Y": 2114
+        },
+        {
+          "X": 547,
+          "Y": 2114
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":82}}",
+      "ItemPolygon": {
+        "X": 547,
+        "Y": 2076,
+        "Width": 309,
+        "Height": 38
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    },
+    {
+      "DetectedText": "258",
+      "Confidence": 99,
+      "Polygon": [
+        {
+          "X": 1429,
+          "Y": 2078
+        },
+        {
+          "X": 1491,
+          "Y": 2078
+        },
+        {
+          "X": 1491,
+          "Y": 2112
+        },
+        {
+          "X": 1429,
+          "Y": 2112
+        }
+      ],
+      "AdvancedInfo": "{\"Parag\":{\"ParagNo\":83}}",
+      "ItemPolygon": {
+        "X": 1429,
+        "Y": 2078,
+        "Width": 62,
+        "Height": 34
+      },
+      "Words": [],
+      "WordCoordPoint": [],
+      "Language": null
+    }
+  ],
+  "Angel": 0,
+  "Angle": 0,
+  "RequestId": "a076b190-ad5d-4e35-8b8e-0cfe1b7564a8"
+}

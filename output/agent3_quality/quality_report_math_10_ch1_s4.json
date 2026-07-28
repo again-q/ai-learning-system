@@ -1,0 +1,201 @@
+{
+  "report_id": "qr_math_10_ch1_s4_20260729",
+  "section_id": "math_10_ch1_s4",
+  "section_title": "1.4 充分条件与必要条件",
+  "review_date": "2026-07-29",
+  "reviewer": "质检 agent（手动审查）",
+
+  "summary": {
+    "total_nodes": 14,
+    "blocking_issues": 0,
+    "warning_issues": 2,
+    "action_items": 1,
+    "verdict": "PASS"
+  },
+
+  "blocking_issues": [],
+
+  "warning_issues": [
+    {
+      "id": "W01",
+      "severity": "warning",
+      "category": "粒度 — 充分条件与必要条件的耦合关系",
+      "check": "13a",
+      "description": "节点 005「充分条件」与 006「必要条件」互为引用、同父同类型（均为 definition，父节点为 004「逻辑蕴含符号 p⇒q 与 p⇏q」），属于中低置信度的紧密耦合对。两者是教材中天然成对出现的概念，教学上也经常同时讲授，但各自可独立评估（"p是q的充分条件"和"q是p的必要条件"是两个不同的判断方向），建议保留不合并，本次标记为注意性警告。",
+      "affected_nodes": ["math_10_ch1_s4_005", "math_10_ch1_s4_006"],
+      "recommendation": "确认保留。两个概念虽配对出现，但可独立评估，符合粒度原则。"
+    },
+    {
+      "id": "W02",
+      "severity": "warning",
+      "category": "完整性 — source_text 中英混杂",
+      "check": "manual",
+      "description": "节点 005「充分条件」与 006「必要条件」的 source_text 中包含英文标注 '(sufficient condition)' 和 '(necessary condition)'。虽为教材原文内容，但术语使用中英混杂，在知识图谱节点中建议统一为中文，或将英文作为单独字段存入标注信息。",
+      "affected_nodes": ["math_10_ch1_s4_005", "math_10_ch1_s4_006"],
+      "recommendation": "建议在 source_text 中保留教材原文（含英文），同时考虑在节点结构中添加 i18n 或 alias 字段来单独记录英文术语。"
+    }
+  ],
+
+  "action_items": [
+    {
+      "id": "A01",
+      "severity": "must_fix",
+      "category": "索引完整性 — knowledge_index.json 缺少 s4 条目",
+      "description": "knowledge_index.json 的 sections 数组中仅包含 s1/s2/s3，缺少 math_10_ch1_s4 的条目，也未注册 14 个节点 ID。这会导致索引与节点文件脱节，影响后续的知识图谱构建和跨节引用校验。",
+      "affected_nodes": [],
+      "recommendation": "向 knowledge_index.json 添加 s4 条目，包含 section_id、section_title、path 和 14 个 node_ids。"
+    }
+  ],
+
+  "additional_notes": [
+    "布局文件 (agent1_layout) 存在两点问题：(1) 开头混入了大量 1.3 节内容（并集、交集、补集、「阅读与思考—集合中元素的个数」），属布局/OCR 提取污染；(2) 只覆盖了 1.4.1 的开头部分，缺少 1.4.2 充要条件及后续例题、练习内容。尽管如此，节点文件的内容质量未受影响——提取 agent 正确地从 PDF 原文中捕获了完整的 1.4 知识点。",
+    "节点数量 14 个，相比 s1(11)/s2(10)/s3(10) 略多，但「充分条件与必要条件」一节涉及定义、符号、方法、性质四个不同类型的知识点外加成对概念，14 个节点合理，无过度拆分。",
+    "所有节点的 type 字段严格在定义的五类（definition/property/notation/method）内，无不合规类型。",
+    "importance 权重分配合理：充要条件(009)、充要条件的证明方法(010)、四种条件关系的判断(014) 为 5/5，教材核心；其余为 3/3，基础概念。",
+    "关系（relations）设置清晰：reference 指向直接依赖（如充分条件→逻辑蕴含符号），related 指向同级关联（如充分条件↔必要条件），分层明确。",
+    "节点 011「充要条件与等价定义」的 level=comprehension，节点 012/013 的 level=comprehension，均正确反映了这些内容属于理解层面的系统化知识而非基本概念。"
+  ],
+
+  "node_detail": [
+    {
+      "knowledge_id": "math_10_ch1_s4_001",
+      "name": "命题",
+      "type": "definition",
+      "level": "knowledge",
+      "parent_id": null,
+      "verdict": "PASS",
+      "notes": "根节点，核心概念锚点。定义准确，source_text 引用教材原文。"
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_002",
+      "name": "真命题与假命题",
+      "type": "property",
+      "level": "knowledge",
+      "parent_id": "math_10_ch1_s4_001",
+      "verdict": "PASS",
+      "notes": "与 001 的父子关系正确。真/假对称概念放在一个节点合理。"
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_003",
+      "name": "命题的「若p则q」形式",
+      "type": "notation",
+      "level": "knowledge",
+      "parent_id": "math_10_ch1_s4_001",
+      "verdict": "PASS",
+      "notes": "提炼准确，作为命题的子节点定位合理。"
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_004",
+      "name": "逻辑蕴含符号 p⇒q 与 p⇏q",
+      "type": "notation",
+      "level": "knowledge",
+      "parent_id": "math_10_ch1_s4_003",
+      "verdict": "PASS",
+      "notes": "符号覆盖完整（⇒ 和 ⇏），父节点正确。"
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_005",
+      "name": "充分条件",
+      "type": "definition",
+      "level": "knowledge",
+      "parent_id": "math_10_ch1_s4_004",
+      "verdict": "PASS",
+      "notes": "定义准确。source_text 含英文 'sufficient condition'，教材原文如此，可保留。"
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_006",
+      "name": "必要条件",
+      "type": "definition",
+      "level": "knowledge",
+      "parent_id": "math_10_ch1_s4_004",
+      "verdict": "PASS",
+      "notes": "定义准确。与 005 为镜像概念，置于同一父节点下合理。"
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_007",
+      "name": "充分条件与必要条件的否定",
+      "type": "property",
+      "level": "knowledge",
+      "parent_id": "math_10_ch1_s4_004",
+      "verdict": "PASS",
+      "notes": "补充了否定情况的处理，内容完整。reference 指向 004/005/006，依赖清楚。"
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_008",
+      "name": "逆命题",
+      "type": "definition",
+      "level": "knowledge",
+      "parent_id": "math_10_ch1_s4_003",
+      "verdict": "PASS",
+      "notes": "作为「若p则q」形式的自然延伸，独立为一个节点合理。"
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_009",
+      "name": "充要条件（充分必要条件）",
+      "type": "definition",
+      "level": "knowledge",
+      "parent_id": "math_10_ch1_s4_004",
+      "verdict": "PASS",
+      "notes": "本节最重要的概念。importance=5/5，父节点定位（→逻辑蕴含符号）合理。"
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_010",
+      "name": "充要条件的证明方法",
+      "type": "method",
+      "level": "method",
+      "parent_id": "math_10_ch1_s4_009",
+      "verdict": "PASS",
+      "notes": "解题方法节点，充分性+必要性双向证明框架清晰。level=method 与 type=method 一致。"
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_011",
+      "name": "充要条件与等价定义",
+      "type": "property",
+      "level": "comprehension",
+      "parent_id": "math_10_ch1_s4_009",
+      "verdict": "PASS",
+      "notes": "level=comprehension 正确反映了这是理解层面的知识。平行四边形的等价定义例子恰当。"
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_012",
+      "name": "判定定理是充分条件",
+      "type": "property",
+      "level": "comprehension",
+      "parent_id": "math_10_ch1_s4_005",
+      "verdict": "PASS",
+      "notes": "level=comprehension，提炼了判定定理的逻辑本质。父节点定位在「充分条件」下合理。"
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_013",
+      "name": "性质定理是必要条件",
+      "type": "property",
+      "level": "comprehension",
+      "parent_id": "math_10_ch1_s4_006",
+      "verdict": "PASS",
+      "notes": "与 012 对称，父节点定位在「必要条件」下合理。"
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_014",
+      "name": "四种条件关系的判断",
+      "type": "method",
+      "level": "method",
+      "parent_id": "math_10_ch1_s4_009",
+      "verdict": "PASS",
+      "notes": "实用性很强的解题方法节点。完整覆盖了四种条件关系（充分不必要、必要不充分、充要、既不充分也不必要）以及集合观点判断法。importance=5/5 合理。"
+    }
+  ],
+
+  "passed_checks": [
+    "knowledge_id 唯一性 — 14 个节点 ID 均唯一，无重复",
+    "必填字段完整 — 每个节点的 basic、tree、concept、relations、importance 五部分完整",
+    "name 非空且长度合规 — 所有 name 非空，最长 15 字符（≤35 限制）",
+    "source_text 非空 — 所有节点均有教材原文引用",
+    "path 完整性 — 所有节点 path 均为 [数学, 必修第一册, 第一章 集合与常用逻辑用语, 1.4 充分条件与必要条件]",
+    "parent_id 链路有效 — 所有非根节点的父节点均存在于节点列表中",
+    "引用关系闭环 — 所有 reference/related 跨节内引用均有效",
+    "type 字段合规 — 全部 14 个节点 type 属于 definition/property/notation/method 四类（不含 example），无不规范类型",
+    "有核心锚点 — 节点 001「命题」作为根节点（parent_id=null）",
+    "无孤点 — 所有节点均有出入关系",
+    "知识点粒度合理 — 无过度拆分，充分/必要条件虽成对但可独立评估"
+  ]
+}

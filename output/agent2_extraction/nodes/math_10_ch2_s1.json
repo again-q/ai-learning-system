@@ -1,0 +1,366 @@
+[
+  {
+    "knowledge_id": "math_10_ch2_s1_001",
+    "basic": {
+      "name": "不等式的概念",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": ["数学", "必修第一册", "第二章 一元二次函数、方程和不等式", "2.1 等式性质与不等式性质"]
+    },
+    "concept": {
+      "source_text": "在现实世界和日常生活中，大量存在着相等关系和不等关系……相等用等式表示，不等用不等式表示。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": ["math_10_ch2_s1_002", "math_10_ch2_s1_006"]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s1_002",
+    "basic": {
+      "name": "用不等式（组）表示不等关系",
+      "type": "application",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s1_001",
+      "path": ["数学", "必修第一册", "第二章 一元二次函数、方程和不等式", "2.1 等式性质与不等式性质"]
+    },
+    "concept": {
+      "source_text": "从实际问题中抽象出不等关系，用不等式或不等式组表示。例如：限速40 km/h → 0<v≤40；酸奶脂肪f≥2.5%、蛋白质p≥2.3%；三角形两边之和大于第三边 a+b>c，两边之差小于第三边 a-b<c；垂线段最短 CD<CE。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": ["math_10_ch2_s1_001"],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s1_003",
+    "basic": {
+      "name": "实数大小比较的基本事实",
+      "type": "proposition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": ["数学", "必修第一册", "第二章 一元二次函数、方程和不等式", "2.1 等式性质与不等式性质"]
+    },
+    "concept": {
+      "source_text": "如果 a-b 是正数，那么 a>b；如果 a-b 等于0，那么 a=b；如果 a-b 是负数，那么 a<b。反过来也对。即：a>b ⇔ a-b>0；a=b ⇔ a-b=0；a<b ⇔ a-b<0。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": ["math_10_ch2_s1_004", "math_10_ch2_s1_005", "math_10_ch2_s1_007"]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s1_004",
+    "basic": {
+      "name": "作差法比较代数式的大小",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s1_003",
+      "path": ["数学", "必修第一册", "第二章 一元二次函数、方程和不等式", "2.1 等式性质与不等式性质"]
+    },
+    "concept": {
+      "source_text": "要比较两个实数（或代数式）的大小，可以转化为比较它们的差与0的大小。基本流程：作差→变形（因式分解、配方等）→判断符号→得出结论。例：(x+2)(x+3)−(x+1)(x+4)=2>0，所以(x+2)(x+3)>(x+1)(x+4)。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": ["math_10_ch2_s1_003"],
+      "related": ["math_10_ch2_s1_005"]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s1_005",
+    "basic": {
+      "name": "a²+b²≥2ab（基本不等式的雏形）",
+      "type": "proposition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s1_003",
+      "path": ["数学", "必修第一册", "第二章 一元二次函数、方程和不等式", "2.1 等式性质与不等式性质"]
+    },
+    "concept": {
+      "source_text": "一般地，∀a,b∈R，有 a²+b²≥2ab，当且仅当 a=b 时，等号成立。证明：a²+b²−2ab=(a−b)²≥0，由实数大小比较的基本事实得 a²+b²≥2ab。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": ["math_10_ch2_s1_003", "math_10_ch2_s1_004"],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s1_006",
+    "basic": {
+      "name": "不等式的性质1（对称性）",
+      "type": "proposition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s1_001",
+      "path": ["数学", "必修第一册", "第二章 一元二次函数、方程和不等式", "2.1 等式性质与不等式性质"]
+    },
+    "concept": {
+      "source_text": "如果 a>b，那么 b<a；如果 b<a，那么 a>b，即 a>b ⇔ b<a。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": ["math_10_ch2_s1_001"],
+      "related": ["math_10_ch2_s1_007", "math_10_ch2_s1_008", "math_10_ch2_s1_009"]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s1_007",
+    "basic": {
+      "name": "不等式的性质2（传递性）",
+      "type": "proposition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s1_001",
+      "path": ["数学", "必修第一册", "第二章 一元二次函数、方程和不等式", "2.1 等式性质与不等式性质"]
+    },
+    "concept": {
+      "source_text": "如果 a>b，b>c，那么 a>c。即 a>b, b>c ⇒ a>c。证明：a>b ⇒ a−b>0，b>c ⇒ b−c>0 ⇒ (a−b)+(b−c)>0 ⇒ a−c>0 ⇒ a>c。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": ["math_10_ch2_s1_001", "math_10_ch2_s1_003"],
+      "related": ["math_10_ch2_s1_010"]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s1_008",
+    "basic": {
+      "name": "不等式的性质3（加法保序性）",
+      "type": "proposition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s1_001",
+      "path": ["数学", "必修第一册", "第二章 一元二次函数、方程和不等式", "2.1 等式性质与不等式性质"]
+    },
+    "concept": {
+      "source_text": "如果 a>b，那么 a+c>b+c。即不等式的两边都加上同一个实数，所得不等式与原不等式同向。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": ["math_10_ch2_s1_001"],
+      "related": ["math_10_ch2_s1_010", "math_10_ch2_s1_013"]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s1_009",
+    "basic": {
+      "name": "不等式的性质4（乘法保序性）",
+      "type": "proposition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s1_001",
+      "path": ["数学", "必修第一册", "第二章 一元二次函数、方程和不等式", "2.1 等式性质与不等式性质"]
+    },
+    "concept": {
+      "source_text": "如果 a>b，c>0，那么 ac>bc；如果 a>b，c<0，那么 ac<bc。即不等式两边同乘一个正数，所得不等式与原不等式同向；同乘一个负数，所得不等式与原不等式反向。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": ["math_10_ch2_s1_001"],
+      "related": ["math_10_ch2_s1_011", "math_10_ch2_s1_012"]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s1_010",
+    "basic": {
+      "name": "不等式的性质5（同向可加性）",
+      "type": "proposition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s1_001",
+      "path": ["数学", "必修第一册", "第二章 一元二次函数、方程和不等式", "2.1 等式性质与不等式性质"]
+    },
+    "concept": {
+      "source_text": "如果 a>b，c>d，那么 a+c>b+d。证明：由 a>b 和性质3得 a+c>b+c；由 c>d 和性质3得 b+c>b+d；再根据性质2（传递性），得 a+c>b+d。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": ["math_10_ch2_s1_008", "math_10_ch2_s1_007"],
+      "related": ["math_10_ch2_s1_011"]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s1_011",
+    "basic": {
+      "name": "不等式的性质6（同向正数可乘性）",
+      "type": "proposition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s1_001",
+      "path": ["数学", "必修第一册", "第二章 一元二次函数、方程和不等式", "2.1 等式性质与不等式性质"]
+    },
+    "concept": {
+      "source_text": "如果 a>b>0，c>d>0，那么 ac>bd。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": ["math_10_ch2_s1_009", "math_10_ch2_s1_007"],
+      "related": ["math_10_ch2_s1_012"]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s1_012",
+    "basic": {
+      "name": "不等式的性质7（正数乘方保序性）",
+      "type": "proposition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s1_001",
+      "path": ["数学", "必修第一册", "第二章 一元二次函数、方程和不等式", "2.1 等式性质与不等式性质"]
+    },
+    "concept": {
+      "source_text": "如果 a>b>0，那么 aⁿ>bⁿ（n∈N，n≥2）。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": ["math_10_ch2_s1_009", "math_10_ch2_s1_007"],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 1
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s1_013",
+    "basic": {
+      "name": "移项法则",
+      "type": "proposition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s1_008",
+      "path": ["数学", "必修第一册", "第二章 一元二次函数、方程和不等式", "2.1 等式性质与不等式性质"]
+    },
+    "concept": {
+      "source_text": "由性质3可得，a+b>c ⇒ a+b+(−b)>c+(−b) ⇒ a>c−b。这表明，不等式中任何一项可以改变符号后移到不等号的另一边。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": ["math_10_ch2_s1_008"],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s1_014",
+    "basic": {
+      "name": "类比法研究不等式的性质",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s1_001",
+      "path": ["数学", "必修第一册", "第二章 一元二次函数、方程和不等式", "2.1 等式性质与不等式性质"]
+    },
+    "concept": {
+      "source_text": "因为不等式与等式一样，都是对大小关系的刻画，所以可以从等式的性质及其研究方法中获得启发，类比得到不等式的性质。等式性质1（对称性）→不等式性质1；等式性质2（传递性）→不等式性质2；等式性质3~5（运算中的不变性）→不等式性质3~4（运算中的保序性）。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": ["math_10_ch2_s1_001"],
+      "related": ["math_10_ch2_s1_008", "math_10_ch2_s1_009"]
+    },
+    "importance": {
+      "curriculum_weight": 1,
+      "exam_frequency": 1
+    }
+  }
+]

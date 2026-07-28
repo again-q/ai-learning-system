@@ -17,4 +17,4 @@ args = ["-y", "@yfme/weapp-dev-mcp"]
 transport = "stdio"
 
 [permissions]
-allow = ["Bash(cd /Users/apple/Desktop/ai-learning-system && git log --oneline -20)", "Bash(cd /Users/apple/Desktop/ai-learning-system && git status --short)"]
+allow = ["Bash(cd /Users/apple/Desktop/ai-learning-system && git log --oneline -20)", "Bash(cd /Users/apple/Desktop/ai-learning-system && git status --short)", "explore", "Bash(cd /Users/apple/Desktop/ai-learning-system && git log --oneline --since=\"2026-07-01\" --until=\"2026-07-24\" --date=short --format=\"%h %ad %an: %s\" 2>&1 | head -60)"]

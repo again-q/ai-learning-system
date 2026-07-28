@@ -69,7 +69,33 @@
         "math_10_ch1_s3_009",
         "math_10_ch1_s3_010"
       ]
+    },
+    {
+      "section_id": "math_10_ch2_s1",
+      "section_title": "2.1 等式性质与不等式性质",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.1 等式性质与不等式性质"
+      ],
+      "node_ids": [
+        "math_10_ch2_s1_001",
+        "math_10_ch2_s1_002",
+        "math_10_ch2_s1_003",
+        "math_10_ch2_s1_004",
+        "math_10_ch2_s1_005",
+        "math_10_ch2_s1_006",
+        "math_10_ch2_s1_007",
+        "math_10_ch2_s1_008",
+        "math_10_ch2_s1_009",
+        "math_10_ch2_s1_010",
+        "math_10_ch2_s1_011",
+        "math_10_ch2_s1_012",
+        "math_10_ch2_s1_013",
+        "math_10_ch2_s1_014"
+      ]
     }
   ],
-  "total_nodes": 31
+  "total_nodes": 45
 }
