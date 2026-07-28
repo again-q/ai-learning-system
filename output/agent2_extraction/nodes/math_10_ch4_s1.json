@@ -1,13 +1,22 @@
 [
   {
     "id": "math_10_ch4_s1_001",
-    "type": "concept",
+    "type": "definition",
     "title": "n次方根的定义",
     "description": "一般地，如果 xⁿ = a，那么 x 叫做 a 的 n 次方根，其中 n > 1 且 n ∈ N*。平方根（n=2时）和立方根（n=3时）是 n 次方根的特例。",
-    "keywords": ["n次方根", "方根", "根式定义", "平方根", "立方根"],
+    "keywords": [
+      "n次方根",
+      "方根",
+      "根式定义",
+      "平方根",
+      "立方根"
+    ],
     "source_section": "math_10_ch4_s1",
     "source_ref": "4.1.1 正文定义段",
-    "related_nodes": ["math_10_ch4_s1_002", "math_10_ch4_s1_003"],
+    "related_nodes": [
+      "math_10_ch4_s1_002",
+      "math_10_ch4_s1_003"
+    ],
     "examples": [
       {
         "title": "平方根与立方根",
@@ -21,13 +30,23 @@
   },
   {
     "id": "math_10_ch4_s1_002",
-    "type": "concept",
+    "type": "definition",
     "title": "n次方根的存在性与符号规律",
     "description": "n为奇数时：正数的n次方根是正数，负数的n次方根是负数，用 √[n]{a} 表示。n为偶数时：正数的n次方根有两个互为相反数，用 ±√[n]{a} (a>0) 表示；负数没有偶次方根。0的任何次方根都是0，记作 √[n]{0}=0。",
-    "keywords": ["n次方根存在性", "奇偶分类", "符号规律", "负数无偶次方根", "0的方根"],
+    "keywords": [
+      "n次方根存在性",
+      "奇偶分类",
+      "符号规律",
+      "负数无偶次方根",
+      "0的方根"
+    ],
     "source_section": "math_10_ch4_s1",
     "source_ref": "4.1.1 正文（奇数/偶数分类讨论段）",
-    "related_nodes": ["math_10_ch4_s1_001", "math_10_ch4_s1_003", "math_10_ch4_s1_004"],
+    "related_nodes": [
+      "math_10_ch4_s1_001",
+      "math_10_ch4_s1_003",
+      "math_10_ch4_s1_004"
+    ],
     "examples": [
       {
         "title": "奇数情形",
@@ -41,13 +60,23 @@
   },
   {
     "id": "math_10_ch4_s1_003",
-    "type": "concept",
+    "type": "definition",
     "title": "根式的定义与基本恒等式",
     "description": "式子 √[n]{a} 叫做根式（radical），n 叫做根指数，a 叫做被开方数。根据 n 次方根的意义，有基本恒等式 (√[n]{a})ⁿ = a。",
-    "keywords": ["根式", "根指数", "被开方数", "根式恒等式", "radical"],
+    "keywords": [
+      "根式",
+      "根指数",
+      "被开方数",
+      "根式恒等式",
+      "radical"
+    ],
     "source_section": "math_10_ch4_s1",
     "source_ref": "4.1.1 根式定义段",
-    "related_nodes": ["math_10_ch4_s1_001", "math_10_ch4_s1_004", "math_10_ch4_s1_006"],
+    "related_nodes": [
+      "math_10_ch4_s1_001",
+      "math_10_ch4_s1_004",
+      "math_10_ch4_s1_006"
+    ],
     "examples": [
       {
         "title": "基本恒等式举例",
@@ -57,13 +86,23 @@
   },
   {
     "id": "math_10_ch4_s1_004",
-    "type": "concept",
+    "type": "definition",
     "title": "√[n]{aⁿ} 的化简规则",
     "description": "n为奇数时，√[n]{aⁿ} = a；n为偶数时，√[n]{aⁿ} = |a| = { a (a≥0); -a (a<0) }。注意当n为偶数且被开方数的底为负数时，需要先取绝对值再化简。",
-    "keywords": ["根式化简", "绝对值", "奇偶性", "开方", "√[n]{aⁿ}"],
+    "keywords": [
+      "根式化简",
+      "绝对值",
+      "奇偶性",
+      "开方",
+      "√[n]{aⁿ}"
+    ],
     "source_section": "math_10_ch4_s1",
     "source_ref": "4.1.1 探究段落、例1",
-    "related_nodes": ["math_10_ch4_s1_003", "math_10_ch4_s1_002", "math_10_ch4_s1_005"],
+    "related_nodes": [
+      "math_10_ch4_s1_003",
+      "math_10_ch4_s1_002",
+      "math_10_ch4_s1_005"
+    ],
     "examples": [
       {
         "title": "例1(1) — 奇数情形",
@@ -88,10 +127,18 @@
     "type": "method",
     "title": "根式化简与求值（运用 √[n]{aⁿ} 规则）",
     "description": "计算形如 √[n]{aⁿ} 的根式时：①判断根指数 n 的奇偶性；②n为奇数时直接等于底数 a；③n为偶数时先化为 |a|，再根据 a 的符号去绝对值。当被开方数含 π 等常数时需比较大小确定正负。",
-    "keywords": ["根式化简", "求值", "去绝对值", "奇偶判断"],
+    "keywords": [
+      "根式化简",
+      "求值",
+      "去绝对值",
+      "奇偶判断"
+    ],
     "source_section": "math_10_ch4_s1",
     "source_ref": "4.1.1 例1",
-    "related_nodes": ["math_10_ch4_s1_004", "math_10_ch4_s1_008"],
+    "related_nodes": [
+      "math_10_ch4_s1_004",
+      "math_10_ch4_s1_008"
+    ],
     "examples": [
       {
         "title": "例1",
@@ -101,13 +148,24 @@
   },
   {
     "id": "math_10_ch4_s1_006",
-    "type": "concept",
+    "type": "definition",
     "title": "分数指数幂的定义",
     "description": "正数的正分数指数幂：a^(m/n) = √[n]{a^m} (a>0, m,n∈N*, n>1)。正数的负分数指数幂：a^(-m/n) = 1/a^(m/n) = 1/√[n]{a^m} (a>0, m,n∈N*, n>1)。0的正分数指数幂等于0，0的负分数指数幂无意义。当根式的被开方数指数能被根指数整除时，根式可表示为整数指数幂形式。",
-    "keywords": ["分数指数幂", "正分数指数", "负分数指数", "根式互化", "幂的拓展"],
+    "keywords": [
+      "分数指数幂",
+      "正分数指数",
+      "负分数指数",
+      "根式互化",
+      "幂的拓展"
+    ],
     "source_section": "math_10_ch4_s1",
     "source_ref": "4.1.1 思考段和规定段",
-    "related_nodes": ["math_10_ch4_s1_003", "math_10_ch4_s1_007", "math_10_ch4_s1_008", "math_10_ch4_s1_010"],
+    "related_nodes": [
+      "math_10_ch4_s1_003",
+      "math_10_ch4_s1_007",
+      "math_10_ch4_s1_008",
+      "math_10_ch4_s1_010"
+    ],
     "examples": [
       {
         "title": "根式→分数指数幂",
@@ -128,10 +186,19 @@
     "type": "method",
     "title": "分数指数幂的求值",
     "description": "求分数指数幂值时，先将底数化为幂的形式（如 8=2³, 1/81=3⁻⁴），再利用幂的运算性质 (a^r)^s = a^(rs) 计算。注意负指数要先取倒数再化为正指数计算。",
-    "keywords": ["分数指数幂求值", "底数转化", "幂运算", "负指数"],
+    "keywords": [
+      "分数指数幂求值",
+      "底数转化",
+      "幂运算",
+      "负指数"
+    ],
     "source_section": "math_10_ch4_s1",
     "source_ref": "4.1.1 例2",
-    "related_nodes": ["math_10_ch4_s1_006", "math_10_ch4_s1_010", "math_10_ch4_s1_009"],
+    "related_nodes": [
+      "math_10_ch4_s1_006",
+      "math_10_ch4_s1_010",
+      "math_10_ch4_s1_009"
+    ],
     "examples": [
       {
         "title": "例2(1)",
@@ -148,10 +215,20 @@
     "type": "method",
     "title": "根式与分数指数幂的互化计算",
     "description": "将根式先化为分数指数幂形式，再利用幂的运算性质（同底数幂相乘/除，幂的乘方）进行计算。关键是正确地将 √[n]{a^m} 转化为 a^(m/n)，以及处理多层根号（如 √[a√[3]{a}]）时由内向外逐层化。",
-    "keywords": ["根式化指数", "分数指数幂", "互化", "多层根号", "幂运算"],
+    "keywords": [
+      "根式化指数",
+      "分数指数幂",
+      "互化",
+      "多层根号",
+      "幂运算"
+    ],
     "source_section": "math_10_ch4_s1",
     "source_ref": "4.1.1 例3",
-    "related_nodes": ["math_10_ch4_s1_006", "math_10_ch4_s1_009", "math_10_ch4_s1_010"],
+    "related_nodes": [
+      "math_10_ch4_s1_006",
+      "math_10_ch4_s1_009",
+      "math_10_ch4_s1_010"
+    ],
     "examples": [
       {
         "title": "例3(1)",
@@ -168,10 +245,19 @@
     "type": "method",
     "title": "指数幂综合运算（多底数乘除混合）",
     "description": "涉及多个不同底数幂的乘除混合运算时：①分别计算系数部分和字母部分的幂运算；②同底数幂相乘指数相加，相除指数相减；③幂的乘方指数相乘；④注意字母的幂指数是分数时需通分后合并；⑤负指数结果写为分式形式。",
-    "keywords": ["指数幂运算", "混合运算", "多底数", "系数运算", "幂运算性质应用"],
+    "keywords": [
+      "指数幂运算",
+      "混合运算",
+      "多底数",
+      "系数运算",
+      "幂运算性质应用"
+    ],
     "source_section": "math_10_ch4_s1",
     "source_ref": "4.1.1 例4",
-    "related_nodes": ["math_10_ch4_s1_008", "math_10_ch4_s1_010"],
+    "related_nodes": [
+      "math_10_ch4_s1_008",
+      "math_10_ch4_s1_010"
+    ],
     "examples": [
       {
         "title": "例4(1) — 乘除混合",
@@ -189,13 +275,24 @@
   },
   {
     "id": "math_10_ch4_s1_010",
-    "type": "concept",
+    "type": "definition",
     "title": "有理数指数幂的运算性质",
     "description": "整数指数幂的运算性质对于有理数指数幂同样适用。对任意有理数 r, s：① a^r a^s = a^(r+s) (a>0, r,s∈Q)；② (a^r)^s = a^(rs) (a>0, r,s∈Q)；③ (ab)^r = a^r b^r (a>0, b>0, r∈Q)。",
-    "keywords": ["有理数指数幂", "运算性质", "同底数幂相乘", "幂的乘方", "积的乘方"],
+    "keywords": [
+      "有理数指数幂",
+      "运算性质",
+      "同底数幂相乘",
+      "幂的乘方",
+      "积的乘方"
+    ],
     "source_section": "math_10_ch4_s1",
     "source_ref": "4.1.1 运算性质段",
-    "related_nodes": ["math_10_ch4_s1_006", "math_10_ch4_s1_007", "math_10_ch4_s1_009", "math_10_ch4_s1_012"],
+    "related_nodes": [
+      "math_10_ch4_s1_006",
+      "math_10_ch4_s1_007",
+      "math_10_ch4_s1_009",
+      "math_10_ch4_s1_012"
+    ],
     "examples": [
       {
         "title": "三条性质",
@@ -205,13 +302,23 @@
   },
   {
     "id": "math_10_ch4_s1_011",
-    "type": "concept",
+    "type": "definition",
     "title": "无理数指数幂的意义（逼近思想）",
     "description": "无理数指数幂 a^α (a>0, α为无理数) 通过有理数指数幂的逼近来定义：用 α 的不足近似值序列 x₁,x₂,... 和过剩近似值序列 y₁,y₂,... 分别计算 a^xᵢ 和 a^yᵢ，两端序列趋向同一个确定的实数，这个数就是 a^α。即 a^α 是一个由有理数指数幂序列逼近而确定的实数。",
-    "keywords": ["无理数指数幂", "逼近思想", "有理数近似", "极限", "实数指数幂"],
+    "keywords": [
+      "无理数指数幂",
+      "逼近思想",
+      "有理数近似",
+      "极限",
+      "实数指数幂"
+    ],
     "source_section": "math_10_ch4_s1",
     "source_ref": "4.1.2 正文及探究、表4.1-1、图4.1-1",
-    "related_nodes": ["math_10_ch4_s1_012", "math_10_ch4_s1_013", "math_10_ch4_s1_014"],
+    "related_nodes": [
+      "math_10_ch4_s1_012",
+      "math_10_ch4_s1_013",
+      "math_10_ch4_s1_014"
+    ],
     "examples": [
       {
         "title": "5^√2 的逼近",
@@ -225,13 +332,22 @@
   },
   {
     "id": "math_10_ch4_s1_012",
-    "type": "concept",
+    "type": "definition",
     "title": "实数指数幂的运算性质",
     "description": "整数指数幂的运算性质也适用于实数指数幂。对任意实数 r, s：① a^r a^s = a^(r+s) (a>0, r,s∈R)；② (a^r)^s = a^(rs) (a>0, r,s∈R)；③ (ab)^r = a^r b^r (a>0, b>0, r∈R)。至此指数从整数→有理数→全体实数的拓展完成。",
-    "keywords": ["实数指数幂", "运算性质", "指数拓展", "实数指数", "幂的运算"],
+    "keywords": [
+      "实数指数幂",
+      "运算性质",
+      "指数拓展",
+      "实数指数",
+      "幂的运算"
+    ],
     "source_section": "math_10_ch4_s1",
     "source_ref": "4.1.2 运算性质段",
-    "related_nodes": ["math_10_ch4_s1_010", "math_10_ch4_s1_011"],
+    "related_nodes": [
+      "math_10_ch4_s1_010",
+      "math_10_ch4_s1_011"
+    ],
     "examples": [
       {
         "title": "三条性质（同有理数）",
@@ -241,13 +357,22 @@
   },
   {
     "id": "math_10_ch4_s1_013",
-    "type": "skill",
+    "type": "method",
     "title": "逼近思想（用有理数逼近无理数）",
     "description": "通过有理数（不足近似值和过剩近似值）的双向逼近来定义无理数指数幂。这是一套重要的数学思想方法——当面对未知或无理对象时，用已知的（有理数）序列从两侧逼近，极限值即定义该对象。这与用有理数认识无理数的方法一脉相承。",
-    "keywords": ["逼近思想", "极限", "有理数逼近", "不足近似", "过剩近似", "数学思想"],
+    "keywords": [
+      "逼近思想",
+      "极限",
+      "有理数逼近",
+      "不足近似",
+      "过剩近似",
+      "数学思想"
+    ],
     "source_section": "math_10_ch4_s1",
     "source_ref": "4.1.2 正文及探究（表4.1-1逼近过程）",
-    "related_nodes": ["math_10_ch4_s1_011"],
+    "related_nodes": [
+      "math_10_ch4_s1_011"
+    ],
     "examples": [
       {
         "title": "√2的有理数逼近",
@@ -261,13 +386,21 @@
   },
   {
     "id": "math_10_ch4_s1_014",
-    "type": "skill",
+    "type": "method",
     "title": "数学新概念引入的相容性原则",
     "description": "引进一个新的概念或法则时，总希望它与已有的概念或法则相容。本节中：分数指数幂的定义希望保持整数指数幂的运算性质仍适用；无理数指数幂的定义也保持同样性质。这一原则指导了数学概念的自然拓展。",
-    "keywords": ["相容性原则", "概念拓展", "数学思想", "定义合理性"],
+    "keywords": [
+      "相容性原则",
+      "概念拓展",
+      "数学思想",
+      "定义合理性"
+    ],
     "source_section": "math_10_ch4_s1",
     "source_ref": "4.1.1 边栏说明段、4.1.2 运算性质说明段",
-    "related_nodes": ["math_10_ch4_s1_006", "math_10_ch4_s1_011"],
+    "related_nodes": [
+      "math_10_ch4_s1_006",
+      "math_10_ch4_s1_011"
+    ],
     "examples": [
       {
         "title": "分数指数幂的相容性",

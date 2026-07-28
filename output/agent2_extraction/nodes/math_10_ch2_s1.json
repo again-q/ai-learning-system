@@ -70,7 +70,7 @@
     "knowledge_id": "math_10_ch2_s1_003",
     "basic": {
       "name": "实数大小比较的基本事实",
-      "type": "proposition",
+      "type": "property",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册"
@@ -140,7 +140,7 @@
     "knowledge_id": "math_10_ch2_s1_005",
     "basic": {
       "name": "a²+b²≥2ab（基本不等式的雏形）",
-      "type": "proposition",
+      "type": "property",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册"
@@ -174,7 +174,7 @@
     "knowledge_id": "math_10_ch2_s1_006",
     "basic": {
       "name": "不等式的性质1（对称性）",
-      "type": "proposition",
+      "type": "property",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册"
@@ -211,7 +211,7 @@
     "knowledge_id": "math_10_ch2_s1_007",
     "basic": {
       "name": "不等式的性质2（传递性）",
-      "type": "proposition",
+      "type": "property",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册"
@@ -247,7 +247,7 @@
     "knowledge_id": "math_10_ch2_s1_008",
     "basic": {
       "name": "不等式的性质3（加法保序性）",
-      "type": "proposition",
+      "type": "property",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册"
@@ -283,7 +283,7 @@
     "knowledge_id": "math_10_ch2_s1_009",
     "basic": {
       "name": "不等式的性质4（乘法保序性）",
-      "type": "proposition",
+      "type": "property",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册"
@@ -319,7 +319,7 @@
     "knowledge_id": "math_10_ch2_s1_010",
     "basic": {
       "name": "不等式的性质5（同向可加性）",
-      "type": "proposition",
+      "type": "property",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册"
@@ -355,7 +355,7 @@
     "knowledge_id": "math_10_ch2_s1_011",
     "basic": {
       "name": "不等式的性质6（同向正数可乘性）",
-      "type": "proposition",
+      "type": "property",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册"
@@ -391,7 +391,7 @@
     "knowledge_id": "math_10_ch2_s1_012",
     "basic": {
       "name": "不等式的性质7（正数乘方保序性）",
-      "type": "proposition",
+      "type": "property",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册"
@@ -425,7 +425,7 @@
     "knowledge_id": "math_10_ch2_s1_013",
     "basic": {
       "name": "移项法则",
-      "type": "proposition",
+      "type": "property",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册"
