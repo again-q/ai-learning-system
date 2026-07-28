@@ -20,7 +20,7 @@
       "prerequisites": [],
       "examples": [],
       "related_nodes": [
-        "math_10_ch2_s2__002"
+        "math_10_ch2_s2_002"
       ],
       "tags": [
         "重要不等式",
@@ -46,8 +46,8 @@
         "例4"
       ],
       "related_nodes": [
-        "math_10_ch2_s2__001",
-        "math_10_ch2_s2__003"
+        "math_10_ch2_s2_001",
+        "math_10_ch2_s2_003"
       ],
       "tags": [
         "基本不等式",
@@ -67,8 +67,8 @@
       "prerequisites": [],
       "examples": [],
       "related_nodes": [
-        "math_10_ch2_s2__002",
-        "math_10_ch2_s2__005"
+        "math_10_ch2_s2_002",
+        "math_10_ch2_s2_005"
       ],
       "tags": [
         "算术平均数",
@@ -89,8 +89,8 @@
       ],
       "examples": [],
       "related_nodes": [
-        "math_10_ch2_s2__002",
-        "math_10_ch2_s2__005"
+        "math_10_ch2_s2_002",
+        "math_10_ch2_s2_005"
       ],
       "tags": [
         "分析法",
@@ -113,8 +113,8 @@
       ],
       "examples": [],
       "related_nodes": [
-        "math_10_ch2_s2__002",
-        "math_10_ch2_s2__003"
+        "math_10_ch2_s2_002",
+        "math_10_ch2_s2_003"
       ],
       "tags": [
         "几何解释",
@@ -140,9 +140,9 @@
         "例3(1)"
       ],
       "related_nodes": [
-        "math_10_ch2_s2__002",
-        "math_10_ch2_s2__007",
-        "math_10_ch2_s2__009"
+        "math_10_ch2_s2_002",
+        "math_10_ch2_s2_007",
+        "math_10_ch2_s2_009"
       ],
       "tags": [
         "积定和最小",
@@ -167,8 +167,8 @@
         "例3(2)"
       ],
       "related_nodes": [
-        "math_10_ch2_s2__002",
-        "math_10_ch2_s2__006"
+        "math_10_ch2_s2_002",
+        "math_10_ch2_s2_006"
       ],
       "tags": [
         "和定积最大",
@@ -193,9 +193,9 @@
         "例1"
       ],
       "related_nodes": [
-        "math_10_ch2_s2__002",
-        "math_10_ch2_s2__006",
-        "math_10_ch2_s2__011"
+        "math_10_ch2_s2_002",
+        "math_10_ch2_s2_006",
+        "math_10_ch2_s2_011"
       ],
       "tags": [
         "直接求最值",
@@ -220,9 +220,9 @@
         "例3"
       ],
       "related_nodes": [
-        "math_10_ch2_s2__006",
-        "math_10_ch2_s2__007",
-        "math_10_ch2_s2__010"
+        "math_10_ch2_s2_006",
+        "math_10_ch2_s2_007",
+        "math_10_ch2_s2_010"
       ],
       "tags": [
         "实际应用",
@@ -248,8 +248,8 @@
         "例4"
       ],
       "related_nodes": [
-        "math_10_ch2_s2__006",
-        "math_10_ch2_s2__009"
+        "math_10_ch2_s2_006",
+        "math_10_ch2_s2_009"
       ],
       "tags": [
         "实际应用",
@@ -275,8 +275,8 @@
         "习题2.2 第5题"
       ],
       "related_nodes": [
-        "math_10_ch2_s2__008",
-        "math_10_ch2_s2__012"
+        "math_10_ch2_s2_008",
+        "math_10_ch2_s2_012"
       ],
       "tags": [
         "配凑",
@@ -302,8 +302,8 @@
         "练习第2(2)题"
       ],
       "related_nodes": [
-        "math_10_ch2_s2__002",
-        "math_10_ch2_s2__003"
+        "math_10_ch2_s2_002",
+        "math_10_ch2_s2_003"
       ],
       "tags": [
         "均值不等式链",

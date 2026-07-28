@@ -13,7 +13,11 @@
     "source_section": "math_10_ch3_s4",
     "source_ref": "引言段、例1分析、例2分析",
     "related_nodes": [
-      "math_10_ch3_s4_002"
+      "math_10_ch3_s4_002",
+      "math_10_ch3_s4_005",
+      "math_10_ch3_s4_006",
+      "math_10_ch3_s4_011",
+      "math_10_ch3_s4_014"
     ],
     "examples": [
       {
@@ -122,7 +126,9 @@
     ],
     "source_section": "math_10_ch3_s4",
     "source_ref": "练习1",
-    "related_nodes": [],
+    "related_nodes": [
+      "math_10_ch3_s4_001"
+    ],
     "examples": [
       {
         "title": "练习1",
@@ -144,7 +150,10 @@
     ],
     "source_section": "math_10_ch3_s4",
     "source_ref": "练习2",
-    "related_nodes": [],
+    "related_nodes": [
+      "math_10_ch3_s4_001",
+      "math_10_ch3_s4_005"
+    ],
     "examples": [
       {
         "title": "练习2",
@@ -263,7 +272,9 @@
     ],
     "source_section": "math_10_ch3_s4",
     "source_ref": "习题3.4拓广探索5（弹簧伸长量-拉力数据表）",
-    "related_nodes": [],
+    "related_nodes": [
+      "math_10_ch3_s4_001"
+    ],
     "examples": [
       {
         "title": "习题3.4拓广探索5",
@@ -340,6 +351,10 @@
         "type": "cross_ref",
         "target": "math_10_ch3_s4_006"
       }
+    ],
+    "related_nodes": [
+      "math_10_ch3_s4_001",
+      "math_10_ch3_s4_006"
     ]
   }
 ]

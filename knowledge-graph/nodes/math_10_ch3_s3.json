@@ -173,7 +173,7 @@
       ],
       "relations": [
         "applies: math_10_ch3_s3_002",
-        "cross_ref: math_10_ch3_s2_018"
+        "cross_ref: math_10_ch3_s2_001"
       ]
     },
     {
@@ -259,7 +259,7 @@
       ],
       "relations": [
         "derives_from: math_10_ch3_s3_013",
-        "cross_ref: math_10_ch2_s2"
+        "cross_ref: math_10_ch2_s2_002"
       ]
     },
     {
