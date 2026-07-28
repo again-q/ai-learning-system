@@ -1,0 +1,395 @@
+[
+  {
+    "knowledge_id": "math_10_ch2_s3_001",
+    "basic": {
+      "name": "一元二次不等式的定义",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    "concept": {
+      "source_text": "只含有一个未知数，并且未知数的最高次数是2的不等式，称为一元二次不等式。一般形式：ax²+bx+c>0 或 ax²+bx+c<0，其中a, b, c均为常数，a≠0。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": [
+        "math_10_ch2_s3_003"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s3_002",
+    "basic": {
+      "name": "二次函数的零点",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    "concept": {
+      "source_text": "对于二次函数y=ax²+bx+c，使ax²+bx+c=0的实数x叫做二次函数y=ax²+bx+c的零点。二次函数的零点即相应一元二次方程的实数根。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": [
+        "math_10_ch2_s3_001",
+        "math_10_ch2_s3_003"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s3_003",
+    "basic": {
+      "name": "二次函数、一元二次方程、一元二次不等式的关系",
+      "type": "proposition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    "concept": {
+      "source_text": "以二次函数y=ax²+bx+c(a>0)为纽带：① 二次函数的零点是相应方程ax²+bx+c=0的根；② 二次函数的图象（抛物线）位于x轴上方的部分对应不等式ax²+bx+c>0的解集，位于x轴下方的部分对应不等式ax²+bx+c<0的解集；③ 零点将x轴分成三段，据此可直接观察出不等式的解集区间。这是求解一元二次不等式的核心思想——从函数观点看方程和不等式。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch2_s3_001",
+        "math_10_ch2_s3_002"
+      ],
+      "related": [
+        "math_10_ch2_s3_004",
+        "math_10_ch2_s3_005",
+        "math_10_ch2_s3_006",
+        "math_10_ch2_s3_008"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s3_004",
+    "basic": {
+      "name": "Δ>0时一元二次不等式的解集",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s3_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    "concept": {
+      "source_text": "对于a>0，Δ>0的情形：方程ax²+bx+c=0有两个不相等的实数根x₁,x₂(x₁<x₂)；ax²+bx+c>0的解集为{x|x<x₁或x>x₂}；ax²+bx+c<0的解集为{x|x₁<x<x₂}。函数图象与x轴有两个交点，在两根之外函数值>0，在两根之间函数值<0。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch2_s3_003"
+      ],
+      "related": [
+        "math_10_ch2_s3_008"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s3_005",
+    "basic": {
+      "name": "Δ=0时一元二次不等式的解集",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s3_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    "concept": {
+      "source_text": "对于a>0，Δ=0的情形：方程ax²+bx+c=0有两个相等的实数根x₁=x₂=-b/(2a)；ax²+bx+c>0的解集为{x|x≠-b/(2a)}；ax²+bx+c<0的解集为∅。函数图象与x轴相切（只有一个交点），在x≠-b/(2a)的函数值均>0。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch2_s3_003"
+      ],
+      "related": [
+        "math_10_ch2_s3_008"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s3_006",
+    "basic": {
+      "name": "Δ<0时一元二次不等式的解集",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s3_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    "concept": {
+      "source_text": "对于a>0，Δ<0的情形：方程ax²+bx+c=0没有实数根；ax²+bx+c>0的解集为R（全体实数）；ax²+bx+c<0的解集为∅。函数图象与x轴无交点，全部位于x轴上方。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch2_s3_003"
+      ],
+      "related": [
+        "math_10_ch2_s3_008"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s3_007",
+    "basic": {
+      "name": "二次项系数化为正数",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s3_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    "concept": {
+      "source_text": "对于二次项系数是负数（a<0）的不等式，可以先把二次项系数化成正数，再求解。方法是：不等式两边同乘-1，同时改变不等号方向。例：-x²+2x-3>0 可化为 x²-2x+3<0。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch2_s3_001",
+        "math_10_ch2_s3_003"
+      ],
+      "related": [
+        "math_10_ch2_s3_008"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s3_008",
+    "basic": {
+      "name": "一元二次不等式的求解步骤（框图）",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s3_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    "concept": {
+      "source_text": "求解ax²+bx+c>0(a>0)的步骤：① 化为ax²+bx+c>0(a>0)的形式；② 计算Δ=b²-4ac；③ 根据Δ符号判断：Δ>0→方程有两不等实根x₁,x₂→解集{x|x<x₁或x>x₂}；Δ=0→方程有两等根x₁=x₂=-b/(2a)→解集{x|x≠-b/(2a)}；Δ<0→方程无实根→解集R。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch2_s3_003",
+        "math_10_ch2_s3_004",
+        "math_10_ch2_s3_005",
+        "math_10_ch2_s3_006",
+        "math_10_ch2_s3_007"
+      ],
+      "related": [
+        "math_10_ch2_s3_009"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s3_009",
+    "basic": {
+      "name": "用一元二次不等式解决实际问题",
+      "type": "example",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s3_008",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    "concept": {
+      "source_text": "利用一元二次不等式解决实际问题的步骤：① 审题，理解题意，找出不等关系；② 设未知数（注意变量的实际意义和取值范围）；③ 根据不等关系列出一元二次不等式；④ 求解不等式得到解集；⑤ 结合实际意义确定答案。典型应用包括：产品产量与利润（例4：摩托车生产-20x²+2200x>60000）、刹车距离与车速（例5：s=v/20+v²/180>39.5）、面积与周长限定（问题：用24m栅栏围面积>20m²的矩形）等。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch2_s3_008"
+      ],
+      "related": [
+        "math_10_ch2_s3_003"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s3_010",
+    "basic": {
+      "name": "类比思想：从一次到二次的推广",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s3_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    "concept": {
+      "source_text": "类比是一次函数→二次函数的发现引路人。初中从一次函数的角度看一元一次方程、一元一次不等式，发现了三者的内在联系。本节将这一思想推广到二次函数：以二次函数为纽带，将一元二次方程、一元二次不等式联系起来，利用函数的零点求解不等式。这种类比推广是数学发现的重要方法。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": [
+        "math_10_ch2_s3_003",
+        "math_10_ch2_s3_002",
+        "math_10_ch2_s3_008"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 1,
+      "exam_frequency": 1
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s3_011",
+    "basic": {
+      "name": "数形结合与分类讨论思想",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册"
+    },
+    "tree": {
+      "parent_id": "math_10_ch2_s3_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    "concept": {
+      "source_text": "本节蕴含两大核心数学思想：①数形结合——通过二次函数图象（抛物线）直观地看出不等式的解集区间，将代数问题转化为几何问题；②分类讨论——根据判别式Δ的符号（>0、=0、<0）将求解过程分为三种情形，每种情形对应不同的解集形式。这体现了处理二次问题时系统化、程序化的思维模式。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": [
+        "math_10_ch2_s3_003",
+        "math_10_ch2_s3_004",
+        "math_10_ch2_s3_005",
+        "math_10_ch2_s3_006",
+        "math_10_ch2_s3_008"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 1,
+      "exam_frequency": 1
+    }
+  }
+]
