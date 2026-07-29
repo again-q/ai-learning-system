@@ -6,7 +6,8 @@
       "type": "definition",
       "subject": "数学",
       "stage": "高中",
-      "grade": "必修第一册"
+      "grade": "必修第一册",
+      "level": "knowledge"
     },
     "tree": {
       "parent_id": null,
@@ -39,7 +40,8 @@
       "type": "definition",
       "subject": "数学",
       "stage": "高中",
-      "grade": "必修第一册"
+      "grade": "必修第一册",
+      "level": "knowledge"
     },
     "tree": {
       "parent_id": null,
@@ -62,8 +64,8 @@
       ]
     },
     "importance": {
-      "curriculum_weight": 3,
-      "exam_frequency": 3
+      "curriculum_weight": 4,
+      "exam_frequency": 4
     }
   },
   {
@@ -73,7 +75,8 @@
       "type": "property",
       "subject": "数学",
       "stage": "高中",
-      "grade": "必修第一册"
+      "grade": "必修第一册",
+      "level": "knowledge"
     },
     "tree": {
       "parent_id": null,
@@ -101,8 +104,8 @@
       ]
     },
     "importance": {
-      "curriculum_weight": 3,
-      "exam_frequency": 3
+      "curriculum_weight": 5,
+      "exam_frequency": 5
     }
   },
   {
@@ -112,7 +115,8 @@
       "type": "property",
       "subject": "数学",
       "stage": "高中",
-      "grade": "必修第一册"
+      "grade": "必修第一册",
+      "level": "knowledge"
     },
     "tree": {
       "parent_id": "math_10_ch2_s3_003",
@@ -136,8 +140,8 @@
       ]
     },
     "importance": {
-      "curriculum_weight": 3,
-      "exam_frequency": 3
+      "curriculum_weight": 4,
+      "exam_frequency": 4
     }
   },
   {
@@ -147,7 +151,8 @@
       "type": "property",
       "subject": "数学",
       "stage": "高中",
-      "grade": "必修第一册"
+      "grade": "必修第一册",
+      "level": "knowledge"
     },
     "tree": {
       "parent_id": "math_10_ch2_s3_003",
@@ -172,7 +177,7 @@
     },
     "importance": {
       "curriculum_weight": 3,
-      "exam_frequency": 2
+      "exam_frequency": 3
     }
   },
   {
@@ -182,7 +187,8 @@
       "type": "property",
       "subject": "数学",
       "stage": "高中",
-      "grade": "必修第一册"
+      "grade": "必修第一册",
+      "level": "knowledge"
     },
     "tree": {
       "parent_id": "math_10_ch2_s3_003",
@@ -206,7 +212,7 @@
       ]
     },
     "importance": {
-      "curriculum_weight": 2,
+      "curriculum_weight": 3,
       "exam_frequency": 2
     }
   },
@@ -217,7 +223,8 @@
       "type": "method",
       "subject": "数学",
       "stage": "高中",
-      "grade": "必修第一册"
+      "grade": "必修第一册",
+      "level": "knowledge"
     },
     "tree": {
       "parent_id": "math_10_ch2_s3_001",
@@ -242,7 +249,7 @@
       ]
     },
     "importance": {
-      "curriculum_weight": 2,
+      "curriculum_weight": 3,
       "exam_frequency": 3
     }
   },
@@ -253,7 +260,8 @@
       "type": "method",
       "subject": "数学",
       "stage": "高中",
-      "grade": "必修第一册"
+      "grade": "必修第一册",
+      "level": "knowledge"
     },
     "tree": {
       "parent_id": "math_10_ch2_s3_003",
@@ -281,8 +289,8 @@
       ]
     },
     "importance": {
-      "curriculum_weight": 3,
-      "exam_frequency": 3
+      "curriculum_weight": 5,
+      "exam_frequency": 5
     }
   },
   {
@@ -292,7 +300,8 @@
       "type": "example",
       "subject": "数学",
       "stage": "高中",
-      "grade": "必修第一册"
+      "grade": "必修第一册",
+      "level": "knowledge"
     },
     "tree": {
       "parent_id": "math_10_ch2_s3_008",
@@ -316,7 +325,7 @@
       ]
     },
     "importance": {
-      "curriculum_weight": 2,
+      "curriculum_weight": 3,
       "exam_frequency": 3
     }
   },
@@ -327,7 +336,8 @@
       "type": "method",
       "subject": "数学",
       "stage": "高中",
-      "grade": "必修第一册"
+      "grade": "必修第一册",
+      "level": "knowledge"
     },
     "tree": {
       "parent_id": "math_10_ch2_s3_003",
@@ -362,7 +372,8 @@
       "type": "method",
       "subject": "数学",
       "stage": "高中",
-      "grade": "必修第一册"
+      "grade": "必修第一册",
+      "level": "knowledge"
     },
     "tree": {
       "parent_id": "math_10_ch2_s3_003",

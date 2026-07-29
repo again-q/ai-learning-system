@@ -1,0 +1,2927 @@
+{
+  "sections": [],
+  "nodes": [
+    {
+      "knowledge_id": "math_10_ch1_s1_001",
+      "name": "集合",
+      "type": "definition",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s1_002",
+      "name": "元素",
+      "type": "definition",
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s1_003",
+      "name": "确定性",
+      "type": "property",
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s1_004",
+      "name": "互异性",
+      "type": "property",
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s1_005",
+      "name": "集合相等",
+      "type": "property",
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s1_006",
+      "name": "集合与元素的字母表示",
+      "type": "notation",
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s1_007",
+      "name": "属于与不属于",
+      "type": "notation",
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s1_008",
+      "name": "常用数集",
+      "type": "notation",
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s1_009",
+      "name": "列举法",
+      "type": "method",
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s1_010",
+      "name": "描述法",
+      "type": "method",
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s1_011",
+      "name": "无序性",
+      "type": "property",
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_001",
+      "name": "子集",
+      "type": "definition",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.2 集合间的基本关系"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_003",
+      "name": "Venn图",
+      "type": "method",
+      "parent_id": "math_10_ch1_s2_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.2 集合间的基本关系"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_004",
+      "name": "集合相等",
+      "type": "definition",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.2 集合间的基本关系"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_006",
+      "name": "真子集",
+      "type": "definition",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.2 集合间的基本关系"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_008",
+      "name": "空集",
+      "type": "definition",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.2 集合间的基本关系"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_010",
+      "name": "空集是任何集合的子集",
+      "type": "property",
+      "parent_id": "math_10_ch1_s2_008",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.2 集合间的基本关系"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_011",
+      "name": "子集的自反性",
+      "type": "property",
+      "parent_id": "math_10_ch1_s2_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.2 集合间的基本关系"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_012",
+      "name": "子集的传递性",
+      "type": "property",
+      "parent_id": "math_10_ch1_s2_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.2 集合间的基本关系"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_013",
+      "name": "属于关系与包含关系的区别",
+      "type": "property",
+      "parent_id": "math_10_ch1_s2_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.2 集合间的基本关系"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s2_014",
+      "name": "列举所有子集的方法",
+      "type": "method",
+      "parent_id": "math_10_ch1_s2_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.2 集合间的基本关系"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s3_001",
+      "name": "并集的概念与定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch1_s3_002",
+      "name": "交集的概念与定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch1_s3_003",
+      "name": "全集的概念",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch1_s3_004",
+      "name": "补集的概念与定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch1_s3_005",
+      "name": "Venn 图在集合运算中的应用",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch1_s3_006",
+      "name": "集合运算的基本性质",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch1_s3_007",
+      "name": "求集合的并集与交集的方法",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch1_s3_008",
+      "name": "求集合补集的方法",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch1_s3_009",
+      "name": "用集合运算表示直线的位置关系",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch1_s3_010",
+      "name": "「或」与「且」在集合运算中的逻辑辨析",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_001",
+      "name": "命题",
+      "type": "definition",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_002",
+      "name": "真命题与假命题",
+      "type": "property",
+      "parent_id": "math_10_ch1_s4_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_003",
+      "name": "命题的「若p则q」形式",
+      "type": "notation",
+      "parent_id": "math_10_ch1_s4_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_004",
+      "name": "逻辑蕴含符号 p⇒q 与 p⇏q",
+      "type": "notation",
+      "parent_id": "math_10_ch1_s4_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_005",
+      "name": "充分条件",
+      "type": "definition",
+      "parent_id": "math_10_ch1_s4_004",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_006",
+      "name": "必要条件",
+      "type": "definition",
+      "parent_id": "math_10_ch1_s4_004",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_007",
+      "name": "充分条件与必要条件的否定",
+      "type": "property",
+      "parent_id": "math_10_ch1_s4_004",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_008",
+      "name": "逆命题",
+      "type": "definition",
+      "parent_id": "math_10_ch1_s4_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_009",
+      "name": "充要条件（充分必要条件）",
+      "type": "definition",
+      "parent_id": "math_10_ch1_s4_004",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_010",
+      "name": "充要条件的证明方法",
+      "type": "method",
+      "parent_id": "math_10_ch1_s4_009",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_011",
+      "name": "充要条件与等价定义",
+      "type": "property",
+      "parent_id": "math_10_ch1_s4_009",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_012",
+      "name": "判定定理是充分条件",
+      "type": "property",
+      "parent_id": "math_10_ch1_s4_005",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_013",
+      "name": "性质定理是必要条件",
+      "type": "property",
+      "parent_id": "math_10_ch1_s4_006",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s4_014",
+      "name": "四种条件关系的判断",
+      "type": "method",
+      "parent_id": "math_10_ch1_s4_009",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_001",
+      "name": "量词",
+      "type": "definition",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_002",
+      "name": "全称量词",
+      "type": "definition",
+      "parent_id": "math_10_ch1_s5_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_003",
+      "name": "全称量词命题",
+      "type": "definition",
+      "parent_id": "math_10_ch1_s5_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_004",
+      "name": "全称量词命题的符号表示",
+      "type": "notation",
+      "parent_id": "math_10_ch1_s5_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_005",
+      "name": "全称量词命题的真假判定",
+      "type": "method",
+      "parent_id": "math_10_ch1_s5_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_006",
+      "name": "存在量词",
+      "type": "definition",
+      "parent_id": "math_10_ch1_s5_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_007",
+      "name": "存在量词命题",
+      "type": "definition",
+      "parent_id": "math_10_ch1_s5_006",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_008",
+      "name": "存在量词命题的符号表示",
+      "type": "notation",
+      "parent_id": "math_10_ch1_s5_007",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_009",
+      "name": "存在量词命题的真假判定",
+      "type": "method",
+      "parent_id": "math_10_ch1_s5_007",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_010",
+      "name": "命题的否定",
+      "type": "definition",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_011",
+      "name": "全称量词命题的否定",
+      "type": "method",
+      "parent_id": "math_10_ch1_s5_010",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_012",
+      "name": "存在量词命题的否定",
+      "type": "method",
+      "parent_id": "math_10_ch1_s5_010",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_013",
+      "name": "举反例",
+      "type": "method",
+      "parent_id": "math_10_ch1_s5_005",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s1_001",
+      "name": "不等式的概念",
+      "type": "definition",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.1 等式性质与不等式性质"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s1_002",
+      "name": "用不等式（组）表示不等关系",
+      "type": "example",
+      "parent_id": "math_10_ch2_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.1 等式性质与不等式性质"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s1_003",
+      "name": "实数大小比较的基本事实",
+      "type": "property",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.1 等式性质与不等式性质"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s1_004",
+      "name": "作差法比较代数式的大小",
+      "type": "method",
+      "parent_id": "math_10_ch2_s1_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.1 等式性质与不等式性质"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s1_005",
+      "name": "a²+b²≥2ab（基本不等式的雏形）",
+      "type": "property",
+      "parent_id": "math_10_ch2_s1_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.1 等式性质与不等式性质"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s1_006",
+      "name": "不等式的性质1（对称性）",
+      "type": "property",
+      "parent_id": "math_10_ch2_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.1 等式性质与不等式性质"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s1_007",
+      "name": "不等式的性质2（传递性）",
+      "type": "property",
+      "parent_id": "math_10_ch2_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.1 等式性质与不等式性质"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s1_008",
+      "name": "不等式的性质3（加法保序性）",
+      "type": "property",
+      "parent_id": "math_10_ch2_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.1 等式性质与不等式性质"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s1_011",
+      "name": "不等式的性质6（同向正数可乘性）",
+      "type": "property",
+      "parent_id": "math_10_ch2_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.1 等式性质与不等式性质"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s1_012",
+      "name": "不等式的性质7（正数乘方保序性）",
+      "type": "property",
+      "parent_id": "math_10_ch2_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.1 等式性质与不等式性质"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s1_013",
+      "name": "移项法则",
+      "type": "property",
+      "parent_id": "math_10_ch2_s1_008",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.1 等式性质与不等式性质"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s1_014",
+      "name": "类比法研究不等式的性质",
+      "type": "method",
+      "parent_id": "math_10_ch2_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.1 等式性质与不等式性质"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s2_001",
+      "name": "重要不等式：a²+b² ≥ 2ab",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch2_s2_002",
+      "name": "基本不等式定义",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch2_s2_003",
+      "name": "算术平均数与几何平均数",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch2_s2_004",
+      "name": "基本不等式的分析法证明",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch2_s2_005",
+      "name": "基本不等式的几何解释",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch2_s2_006",
+      "name": "积定和最小原理",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch2_s2_007",
+      "name": "和定积最大原理",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch2_s2_008",
+      "name": "直接型最值问题",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch2_s2_009",
+      "name": "实际应用：矩形面积与周长最值",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch2_s2_010",
+      "name": "实际应用：容积型造价最值",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch2_s2_011",
+      "name": "配凑技巧（拆项法）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch2_s2_012",
+      "name": "均值不等式链（拓展）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch2_s3_001",
+      "name": "一元二次不等式的定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s3_002",
+      "name": "二次函数的零点",
+      "type": "definition",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s3_003",
+      "name": "二次函数、一元二次方程、一元二次不等式的关系",
+      "type": "property",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s3_004",
+      "name": "Δ>0时一元二次不等式的解集",
+      "type": "property",
+      "parent_id": "math_10_ch2_s3_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s3_005",
+      "name": "Δ=0时一元二次不等式的解集",
+      "type": "property",
+      "parent_id": "math_10_ch2_s3_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s3_006",
+      "name": "Δ<0时一元二次不等式的解集",
+      "type": "property",
+      "parent_id": "math_10_ch2_s3_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s3_007",
+      "name": "二次项系数化为正数",
+      "type": "method",
+      "parent_id": "math_10_ch2_s3_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s3_008",
+      "name": "一元二次不等式的求解步骤（框图）",
+      "type": "method",
+      "parent_id": "math_10_ch2_s3_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s3_009",
+      "name": "用一元二次不等式解决实际问题",
+      "type": "example",
+      "parent_id": "math_10_ch2_s3_008",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s3_010",
+      "name": "类比思想：从一次到二次的推广",
+      "type": "method",
+      "parent_id": "math_10_ch2_s3_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s3_011",
+      "name": "数形结合与分类讨论思想",
+      "type": "method",
+      "parent_id": "math_10_ch2_s3_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_001",
+      "name": "函数概念的引入——从实际问题抽象",
+      "type": "definition",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_002",
+      "name": "函数的定义（三要素与符号表示）",
+      "type": "definition",
+      "parent_id": "math_10_ch3_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_003",
+      "name": "定义域——自变量的取值范围",
+      "type": "definition",
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_004",
+      "name": "值域——函数值的集合",
+      "type": "definition",
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_005",
+      "name": "求函数值——代入法",
+      "type": "method",
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_006",
+      "name": "函数相等（同一函数）的判定",
+      "type": "method",
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_007",
+      "name": "区间表示法",
+      "type": "definition",
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_008",
+      "name": "常见基本函数的定义域与值域",
+      "type": "definition",
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_009",
+      "name": "函数的三种表示法",
+      "type": "definition",
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_010",
+      "name": "分段函数",
+      "type": "definition",
+      "parent_id": "math_10_ch3_s1_009",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_011",
+      "name": "取大/取小函数（max/min函数）",
+      "type": "definition",
+      "parent_id": "math_10_ch3_s1_010",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_012",
+      "name": "分段函数的实际应用——个税计算",
+      "type": "example",
+      "parent_id": "math_10_ch3_s1_010",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_013",
+      "name": "函数表示法的选择与图象应用分析",
+      "type": "method",
+      "parent_id": "math_10_ch3_s1_009",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_014",
+      "name": "函数图象的判定依据（垂线检验法）",
+      "type": "method",
+      "parent_id": "math_10_ch3_s1_009",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s1_015",
+      "name": "构建函数模型描述变量关系",
+      "type": "example",
+      "parent_id": "math_10_ch3_s1_002",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.1 函数的概念及其表示"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_001",
+      "name": "函数的基本性质概述",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_002",
+      "name": "函数的单调性",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_003",
+      "name": "单调递增的严格定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_004",
+      "name": "单调递减的严格定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_005",
+      "name": "增函数与减函数",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_006",
+      "name": "单调区间",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_007",
+      "name": "单调性的证明方法（作差法）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_008",
+      "name": "一次函数的单调性",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_009",
+      "name": "反比例函数的单调性（玻意耳定律）",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_010",
+      "name": "函数的最大值定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_011",
+      "name": "函数的最小值定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_012",
+      "name": "二次函数求最值（公式法）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_013",
+      "name": "闭区间上利用单调性求最值",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_014",
+      "name": "偶函数的概念",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_015",
+      "name": "奇函数的概念",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_016",
+      "name": "函数奇偶性的判断方法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s2_017",
+      "name": "奇偶性的图象特征",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_001",
+      "name": "幂函数概述",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_002",
+      "name": "幂函数的定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_003",
+      "name": "五个基本幂函数",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_004",
+      "name": "幂函数图象过公共点(1, 1)",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_005",
+      "name": "幂函数的奇偶性规律",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_006",
+      "name": "幂函数在(0,+∞)上的单调性规律",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_007",
+      "name": "y=x^(-1)在第一象限的渐近线性质",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_008",
+      "name": "指数α对幂函数性质的影响",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_009",
+      "name": "幂函数的研究方法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_010",
+      "name": "幂函数单调性的定义法证明（含分子有理化）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_011",
+      "name": "证明f(x)=√x是增函数的完整过程",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_012",
+      "name": "利用幂函数性质比较大小",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_013",
+      "name": "函数y=x+1/x的图象与性质探究",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_014",
+      "name": "函数y=x+1/x的不等式性质（基本不等式应用）",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s3_015",
+      "name": "研究新函数的路径范式",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_001",
+      "name": "函数模型应用的一般过程",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_002",
+      "name": "分段函数在实际问题中的应用",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_003",
+      "name": "个人所得税计算的分段函数模型",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_004",
+      "name": "行程问题中的分段函数模型",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_005",
+      "name": "二次函数模型 y=ax² 的确定与应用",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_006",
+      "name": "二次函数最值问题（定周长矩形面积最大化）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_007",
+      "name": "线性成本-利润模型",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_008",
+      "name": "分段计费模型（阶梯水价）",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_009",
+      "name": "往返行程问题的分段建模",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_010",
+      "name": "函数图象的几何意义与读图能力",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_011",
+      "name": "数据拟合与函数逼近",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_012",
+      "name": "图象分析与经济决策",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_013",
+      "name": "函数复合与分步建模",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_014",
+      "name": "蓄水池造价优化问题",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s1_001",
+      "name": "n次方根的定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s1_002",
+      "name": "n次方根的存在性与符号规律",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s1_003",
+      "name": "根式的定义与基本恒等式",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s1_004",
+      "name": "√[n]{aⁿ} 的化简规则",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s1_005",
+      "name": "根式化简与求值（运用 √[n]{aⁿ} 规则）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s1_006",
+      "name": "分数指数幂的定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s1_007",
+      "name": "分数指数幂的求值",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s1_008",
+      "name": "根式与分数指数幂的互化计算",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s1_009",
+      "name": "指数幂综合运算（多底数乘除混合）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s1_010",
+      "name": "有理数指数幂的运算性质",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s1_011",
+      "name": "无理数指数幂的意义（逼近思想）",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s1_012",
+      "name": "实数指数幂的运算性质",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s1_013",
+      "name": "逼近思想（用有理数逼近无理数）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s1_014",
+      "name": "数学新概念引入的相容性原则",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s2_01",
+      "name": "指数增长与指数衰减的概念",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s2_02",
+      "name": "指数函数的定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s2_03",
+      "name": "指数增长/衰减的数学模型",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s2_04",
+      "name": "指数函数的图象",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s2_05",
+      "name": "指数函数的性质",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s2_06",
+      "name": "比较指数函数值的大小",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s2_07",
+      "name": "指数函数解析式的确定",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s2_08",
+      "name": "指数增长模型的实际应用",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s2_09",
+      "name": "线性增长与指数增长的对比",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s2_10",
+      "name": "放射性物质的半衰期",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s2_11",
+      "name": "指数函数的单调性判断与应用",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s2_12",
+      "name": "复利模型与指数函数",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_001",
+      "name": "对数的定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_002",
+      "name": "常用对数与自然对数",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_003",
+      "name": "指数与对数的互化关系",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_004",
+      "name": "对数的基本性质（特殊值与存在条件）",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_005",
+      "name": "指数式与对数式的互化方法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_006",
+      "name": "利用定义求对数的值",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_007",
+      "name": "积的对数——log_a(MN) = log_a M + log_a N",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_008",
+      "name": "商的对数——log_a(M/N) = log_a M - log_a N",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_009",
+      "name": "幂的对数——log_a Mⁿ = n log_a M",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_010",
+      "name": "对数换底公式",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_011",
+      "name": "换底公式的常用技巧与恒等变形",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_012",
+      "name": "对数运算性质的综合运用",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_013",
+      "name": "对数的实际应用——地震能量与震级",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_014",
+      "name": "对数的实际应用——增长率与倍数问题",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_015",
+      "name": "对数恒等式 a^{log_a N} = N（隐性知识点）",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_016",
+      "name": "对数运算的条件限制与易错点（隐性）",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_017",
+      "name": "对数化归思想——运算降级（隐性思想方法）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s3_018",
+      "name": "对数的发明历史（阅读与思考）",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s4_001",
+      "name": "对数函数的定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s4_002",
+      "name": "对数型函数定义域的求法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s4_003",
+      "name": "对数函数的图象及其对称性",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s4_004",
+      "name": "对数函数的图象和性质",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s4_005",
+      "name": "利用对数函数单调性比较对数大小",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s4_006",
+      "name": "反函数的概念（指数函数与对数函数互为反函数）",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s4_007",
+      "name": "指数函数与一次函数的增长差异（指数爆炸）",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s4_008",
+      "name": "对数函数与一次函数的增长差异（对数增长平缓）",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s4_009",
+      "name": "三种增长模型的对比：直线上升、对数增长与指数爆炸",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s4_010",
+      "name": "对数函数的实际应用模型",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s4_011",
+      "name": "互为反函数的函数图象关于直线 y = x 对称",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_kc01",
+      "name": "函数的零点",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_kc02",
+      "name": "函数零点存在定理",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_kc03",
+      "name": "二分法",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_kc04",
+      "name": "精确度与近似解",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_kc05",
+      "name": "马尔萨斯人口增长模型",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_kc06",
+      "name": "指数衰减模型与碳14测年",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_kc07",
+      "name": "常数函数增长模型",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_kc08",
+      "name": "线性增长模型",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_kc09",
+      "name": "指数爆炸增长与函数增长比较",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_kc10",
+      "name": "对数增长模型",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_ms01",
+      "name": "判断函数零点存在性与个数的方法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_ms02",
+      "name": "二分法求方程近似解的一般步骤",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_ms03",
+      "name": "用函数模型解决实际问题的基本过程",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_ms04",
+      "name": "函数模型选择与验证的方法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_case01",
+      "name": "例1：判断方程 ln x+2x-6=0 的实数解的个数",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_case02",
+      "name": "例2：用二分法求方程 2^x+3x=7 的近似解",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_case03",
+      "name": "例3：马尔萨斯人口增长模型的应用",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_case04",
+      "name": "例4：碳14测年推断良渚水坝建造年代",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_case05",
+      "name": "例5：三种投资方案比较（增长模型对比）",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_case06",
+      "name": "例6：三种奖励模型的选择与验证",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_his01",
+      "name": "中外历史上的方程求解",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch4_s5_co01",
+      "name": "本节核心逻辑链：从零点到二分法到函数建模",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s1_001",
+      "name": "任意角的概念",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s1_002",
+      "name": "象限角",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s1_003",
+      "name": "终边相同角的集合表示",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s1_004",
+      "name": "角度制",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s1_005",
+      "name": "弧度制",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s1_006",
+      "name": "角度与弧度的换算",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s1_007",
+      "name": "扇形弧长与面积公式（弧度制）",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s1_008",
+      "name": "象限角判定与终边相同角找法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s1_009",
+      "name": "给定终边位置写出角的集合",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s1_010",
+      "name": "角度与弧度互化方法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s1_011",
+      "name": "角的概念推广的思想",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s1_012",
+      "name": "弧度制的核心思想：比值度量",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s1_013",
+      "name": "弧度制的优势与历史",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s2_001",
+      "name": "三角函数的单位圆定义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s2_002",
+      "name": "三角函数的定义域",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s2_003",
+      "name": "公式一：终边相同角的三角函数值相等",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s2_004",
+      "name": "同角三角函数的基本关系",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s2_005",
+      "name": "任意角三角函数的终边坐标定义（推广）",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s2_006",
+      "name": "利用定义求任意角的三角函数值",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s2_007",
+      "name": "三角函数值在各象限的符号判断",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s2_008",
+      "name": "利用公式一化简求任意角的三角函数值",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s2_009",
+      "name": "利用同角关系求值（知一求二，需讨论象限）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s2_010",
+      "name": "利用同角关系化简与证明三角恒等式",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s2_011",
+      "name": "数形结合建立三角函数定义",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s2_012",
+      "name": "从特殊到一般与函数对应思想",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s2_013",
+      "name": "三角函数的周期性起源",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s2_014",
+      "name": "三角学与天文学的发展史",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s3_001",
+      "name": "诱导公式",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s3_002",
+      "name": "公式二：π+α 的诱导公式",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s3_003",
+      "name": "公式三：-α 的诱导公式",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s3_004",
+      "name": "公式四：π-α 的诱导公式",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s3_005",
+      "name": "公式五：π/2-α 的诱导公式",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s3_006",
+      "name": "公式六：π/2+α 的诱导公式",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s3_007",
+      "name": "任意角三角函数化为锐角三角函数的方法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s3_008",
+      "name": "利用诱导公式化简三角函数式",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s3_009",
+      "name": "诱导公式的对称性本质",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s3_010",
+      "name": "正弦与余弦的相互转化",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s3_011",
+      "name": "利用单位圆对称性推导诱导公式",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s3_012",
+      "name": "利用角度和关系应用诱导公式",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s3_013",
+      "name": "诱导公式的快速记忆规律",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_001",
+      "name": "正弦曲线",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_002",
+      "name": "正弦函数图象的几何作法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_003",
+      "name": "五点法画正弦函数图象",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_004",
+      "name": "正弦函数图象的周期性平移扩展",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_005",
+      "name": "余弦曲线",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_006",
+      "name": "通过正弦图象平移得到余弦图象",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_007",
+      "name": "五点法画余弦函数图象",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_008",
+      "name": "利用图象变换作正弦/余弦型函数图象",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_009",
+      "name": "周期函数",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_010",
+      "name": "最小正周期",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_011",
+      "name": "正弦函数和余弦函数的周期性",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_012",
+      "name": "求三角函数周期的方法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_013",
+      "name": "函数 y=A sin(ωx+φ) 与 y=A cos(ωx+φ) 的周期公式",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_014",
+      "name": "正弦函数和余弦函数的奇偶性",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_015",
+      "name": "正弦函数的单调性",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_016",
+      "name": "余弦函数的单调性",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_017",
+      "name": "正弦函数的最大值和最小值",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_018",
+      "name": "余弦函数的最大值和最小值",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_019",
+      "name": "利用三角函数的单调性比较同名三角函数值大小",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_020",
+      "name": "求复合三角函数的单调区间（换元法）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_021",
+      "name": "正切函数的周期性",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_022",
+      "name": "正切函数的奇偶性",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_023",
+      "name": "正切曲线",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_024",
+      "name": "正切函数图象的几何作法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_025",
+      "name": "正切函数的单调性",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_026",
+      "name": "正切函数的值域",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_027",
+      "name": "数形结合研究三角函数的思想方法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_028",
+      "name": "利用单位圆对称性研究三角函数性质",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s4_029",
+      "name": "周期函数的研究策略——把握一个周期概况整体",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_001",
+      "name": "三角恒等变换",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_002",
+      "name": "圆的旋转对称性",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_003",
+      "name": "两角差的余弦公式 C(α−β)",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_004",
+      "name": "两角和的余弦公式 C(α+β)",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_005",
+      "name": "两角和的正弦公式 S(α+β)",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_006",
+      "name": "两角差的正弦公式 S(α−β)",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_007",
+      "name": "两角和的正切公式 T(α+β)",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_008",
+      "name": "两角差的正切公式 T(α−β)",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_009",
+      "name": "和角公式与差角公式",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_010",
+      "name": "二倍角的正弦公式 S(2α)",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_011",
+      "name": "二倍角的余弦公式 C(2α)",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_012",
+      "name": "二倍角的正切公式 T(2α)",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_013",
+      "name": "倍角公式",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_014",
+      "name": "半角公式（平方形式与根号形式）",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_015",
+      "name": "积化和差公式",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_016",
+      "name": "和差化积公式",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_017",
+      "name": "辅助角公式（合一变形）",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_018",
+      "name": "C(α−β) 的几何推导方法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_019",
+      "name": "从 C(α−β) 到全部和(差)角公式的推导链",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_020",
+      "name": "从和角公式到倍角公式的推导",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_021",
+      "name": "从倍角公式到半角公式的推导（换元法）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_022",
+      "name": "积化和差与和差化积的推导方法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_023",
+      "name": "辅助角化简法的步骤",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_024",
+      "name": "公式的正用与逆用",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_025",
+      "name": "公式体系的推导链关系",
+      "type": "property",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_026",
+      "name": "“倍”的相对性与换元思想",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_027",
+      "name": "化归思想在三角恒等变换中的核心地位",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_028",
+      "name": "半角公式的符号判定方法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_029",
+      "name": "asin x + bcos x 型函数的最值与周期求解策略",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s5_030",
+      "name": "扇形内接矩形面积最值问题的建模与求解",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s6_001",
+      "name": "函数 y = A sin(ωx + φ) 的定义与参数意义",
+      "type": "definition",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s6_002",
+      "name": "匀速圆周运动的数学模型（简车模型）",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s6_003",
+      "name": "φ 对图象的影响——相位变换（左右平移）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s6_004",
+      "name": "ω 对图象的影响——周期变换（横坐标伸缩）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s6_005",
+      "name": "A 对图象的影响——振幅变换（纵坐标伸缩）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s6_006",
+      "name": "y = A sin(ωx + φ) 图象变换的完整流程",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s6_007",
+      "name": "五点法作 y = A sin(ωx + φ) 的图象",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s6_008",
+      "name": "摩天轮问题的三角建模与求解",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s6_009",
+      "name": "参数 A, ω, φ 的几何意义与物理意义对照",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s6_010",
+      "name": "从特殊到一般、控制变量的研究思路",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s6_011",
+      "name": "数形结合：用单位圆运动理解参数对图象的影响",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s6_012",
+      "name": "周期运动问题的三角建模框架",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s6_013",
+      "name": "图象变换的逆向运用：由图象求解析式",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s6_014",
+      "name": "不同变换顺序的等价性与灵活性",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s7_001",
+      "name": "简谐运动的三角函数模型",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s7_002",
+      "name": "弹簧振子问题——从实验数据到函数解析式",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s7_003",
+      "name": "从数据/图象确定三角函数解析式参数的方法",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s7_004",
+      "name": "交变电流问题——从图象到函数解析式",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s7_005",
+      "name": "含垂直偏移的三角函数模型 y = A sin(ωx + φ) + b",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s7_006",
+      "name": "温度变化曲线——半周期确定参数",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s7_007",
+      "name": "潮汐与港口水深——三角函数模型的综合应用",
+      "type": "example",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s7_008",
+      "name": "解三角方程确定可行时间区间",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s7_009",
+      "name": "二分法求函数交点（实际决策问题）",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s7_010",
+      "name": "三角函数建模的一般步骤",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s7_011",
+      "name": "声音中的三角函数——纯音、基音与谐音",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch5_s7_012",
+      "name": "人体节律的周期模型与实际应用",
+      "type": "method",
+      "parent_id": null,
+      "path": []
+    }
+  ]
+}

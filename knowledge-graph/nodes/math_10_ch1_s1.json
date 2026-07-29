@@ -1,90 +1,393 @@
 [
   {
     "knowledge_id": "math_10_ch1_s1_001",
-    "basic": { "name": "集合", "type": "definition", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": null, "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.1 集合的概念"] },
-    "concept": { "source_text": "把一些元素组成的总体叫做集合（set）（简称为集）", "level": "knowledge" },
-    "relations": { "reference": [], "related": ["math_10_ch1_s1_002"] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "basic": {
+      "name": "集合",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    "concept": {
+      "source_text": "把一些元素组成的总体叫做集合（set）（简称为集）",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": [
+        "math_10_ch1_s1_002"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s1_002",
-    "basic": { "name": "元素", "type": "definition", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s1_001", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.1 集合的概念"] },
-    "concept": { "source_text": "我们把研究对象统称为元素（element）", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s1_001"], "related": [] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "basic": {
+      "name": "元素",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    "concept": {
+      "source_text": "我们把研究对象统称为元素（element）",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s1_001"
+      ],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s1_003",
-    "basic": { "name": "确定性", "type": "property", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s1_001", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.1 集合的概念"] },
-    "concept": { "source_text": "给定的集合，它的元素必须是确定的。也就是说，给定一个集合，那么一个元素在或不在这个集合中就确定了", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s1_001"], "related": ["math_10_ch1_s1_004"] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "basic": {
+      "name": "确定性",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    "concept": {
+      "source_text": "给定的集合，它的元素必须是确定的。也就是说，给定一个集合，那么一个元素在或不在这个集合中就确定了",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s1_001"
+      ],
+      "related": [
+        "math_10_ch1_s1_004"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s1_004",
-    "basic": { "name": "互异性", "type": "property", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s1_001", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.1 集合的概念"] },
-    "concept": { "source_text": "一个给定集合中的元素是互不相同的。也就是说，集合中的元素是不重复出现的", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s1_001", "math_10_ch1_s1_003"], "related": [] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "basic": {
+      "name": "互异性",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    "concept": {
+      "source_text": "一个给定集合中的元素是互不相同的。也就是说，集合中的元素是不重复出现的",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s1_001",
+        "math_10_ch1_s1_003"
+      ],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s1_005",
-    "basic": { "name": "集合相等", "type": "property", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s1_001", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.1 集合的概念"] },
-    "concept": { "source_text": "只要构成两个集合的元素是一样的，我们就称这两个集合是相等的", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s1_001", "math_10_ch1_s1_002"], "related": [] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 2 }
+    "basic": {
+      "name": "集合相等",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    "concept": {
+      "source_text": "只要构成两个集合的元素是一样的，我们就称这两个集合是相等的",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s1_001",
+        "math_10_ch1_s1_002"
+      ],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s1_006",
-    "basic": { "name": "集合与元素的字母表示", "type": "notation", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s1_001", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.1 集合的概念"] },
-    "concept": { "source_text": "我们通常用大写拉丁字母 A, B, C, … 表示集合，用小写拉丁字母 a, b, c, … 表示集合中的元素", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s1_001", "math_10_ch1_s1_002"], "related": ["math_10_ch1_s1_007"] },
-    "importance": { "curriculum_weight": 2, "exam_frequency": 1 }
+    "basic": {
+      "name": "集合与元素的字母表示",
+      "type": "notation",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    "concept": {
+      "source_text": "我们通常用大写拉丁字母 A, B, C, … 表示集合，用小写拉丁字母 a, b, c, … 表示集合中的元素",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s1_001",
+        "math_10_ch1_s1_002"
+      ],
+      "related": [
+        "math_10_ch1_s1_007"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 1
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s1_007",
-    "basic": { "name": "属于与不属于", "type": "notation", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s1_001", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.1 集合的概念"] },
-    "concept": { "source_text": "如果 a 是集合 A 的元素，就说 a 属于（belong to）集合 A，记作 a ∈ A；如果 a 不是集合 A 中的元素，就说 a 不属于（not belong to）集合 A，记作 a ∉ A", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s1_001", "math_10_ch1_s1_002"], "related": [] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "basic": {
+      "name": "属于与不属于",
+      "type": "notation",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    "concept": {
+      "source_text": "如果 a 是集合 A 的元素，就说 a 属于（belong to）集合 A，记作 a ∈ A；如果 a 不是集合 A 中的元素，就说 a 不属于（not belong to）集合 A，记作 a ∉ A",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s1_001",
+        "math_10_ch1_s1_002"
+      ],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s1_008",
-    "basic": { "name": "常用数集", "type": "notation", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s1_001", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.1 集合的概念"] },
-    "concept": { "source_text": "常用数集及其符号表示：非负整数集（自然数集）记作N；正整数集记作N*或N₊；整数集记作Z；有理数集记作Q；实数集记作R", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s1_001"], "related": [] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "basic": {
+      "name": "常用数集",
+      "type": "notation",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    "concept": {
+      "source_text": "常用数集及其符号表示：非负整数集（自然数集）记作N；正整数集记作N*或N₊；整数集记作Z；有理数集记作Q；实数集记作R",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s1_001"
+      ],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s1_009",
-    "basic": { "name": "列举法", "type": "method", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s1_001", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.1 集合的概念"] },
-    "concept": { "source_text": "把集合的所有元素一一列举出来，并用花括号\"{}\"括起来表示集合的方法叫做列举法", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s1_001", "math_10_ch1_s1_002"], "related": ["math_10_ch1_s1_010"] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "basic": {
+      "name": "列举法",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    "concept": {
+      "source_text": "把集合的所有元素一一列举出来，并用花括号\"{}\"括起来表示集合的方法叫做列举法",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s1_001",
+        "math_10_ch1_s1_002"
+      ],
+      "related": [
+        "math_10_ch1_s1_010"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s1_010",
-    "basic": { "name": "描述法", "type": "method", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s1_001", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.1 集合的概念"] },
-    "concept": { "source_text": "用集合所含元素的共同特征表示集合的方法称为描述法，具体做法是在花括号内先写上表示这个集合元素的一般符号及取值（或变化）范围，再画一条竖线，在竖线后写出这个集合中元素所具有的共同特征", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s1_001", "math_10_ch1_s1_002"], "related": ["math_10_ch1_s1_009"] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "basic": {
+      "name": "描述法",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    "concept": {
+      "source_text": "用集合所含元素的共同特征表示集合的方法称为描述法，具体做法是在花括号内先写上表示这个集合元素的一般符号及取值（或变化）范围，再画一条竖线，在竖线后写出这个集合中元素所具有的共同特征",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s1_001",
+        "math_10_ch1_s1_002"
+      ],
+      "related": [
+        "math_10_ch1_s1_009"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s1_011",
-    "basic": { "name": "无序性", "type": "property", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s1_001", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.1 集合的概念"] },
-    "concept": { "source_text": "集合中的元素是没有顺序的，如集合{1,2}与{2,1}是同一个集合", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s1_001", "math_10_ch1_s1_003", "math_10_ch1_s1_004", "math_10_ch1_s1_005"], "related": [] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 2 }
+    "basic": {
+      "name": "无序性",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s1_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.1 集合的概念"
+      ]
+    },
+    "concept": {
+      "source_text": "集合中的元素是没有顺序的，如集合{1,2}与{2,1}是同一个集合",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s1_001",
+        "math_10_ch1_s1_003",
+        "math_10_ch1_s1_004",
+        "math_10_ch1_s1_005"
+      ],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
   }
 ]

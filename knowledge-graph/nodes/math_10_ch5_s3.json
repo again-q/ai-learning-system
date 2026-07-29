@@ -1,266 +1,413 @@
-{
-  "section_id": "math_10_ch5_s3",
-  "section_title": "5.3 诱导公式",
-  "chapter": "第五章 三角函数",
-  "nodes": [
-    {
-      "id": "math_10_ch5_s3_001",
+[
+  {
+    "knowledge_id": "math_10_ch5_s3_001",
+    "basic": {
+      "name": "诱导公式",
       "type": "definition",
-      "title": "诱导公式",
-      "description": "公式一~公式六统称为诱导公式（induction formula）。公式一（同角三角函数基本关系，来自§5.2）以及公式二~公式六（来自§5.3）共同构成了三角函数值在不同角度关系下相互转化的完整体系。诱导公式的本质是圆的对称性在三角函数上的代数体现——圆关于原点、x轴、y轴、直线y=x的对称性分别对应不同的诱导公式。诱导公式的作用：①求任意角的三角函数值；②化简三角函数式；③实现正弦与余弦的互化。",
-      "keywords": [
-        "诱导公式",
-        "induction formula",
-        "公式一~公式六",
-        "圆的对称性",
-        "三角函数值转化"
-      ],
-      "references": [
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "公式一~公式六统称为诱导公式（induction formula）。公式一（同角三角函数基本关系，来自§5.2）以及公式二~公式六（来自§5.3）共同构成了三角函数值在不同角度关系下相互转化的完整体系。诱导公式的本质是圆的对称性在三角函数上的代数体现——圆关于原点、x轴、y轴、直线y=x的对称性分别对应不同的诱导公式。诱导公式的作用：①求任意角的三角函数值；②化简三角函数式；③实现正弦与余弦的互化。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s3_002",
         "math_10_ch5_s3_003",
         "math_10_ch5_s3_004",
         "math_10_ch5_s3_005",
         "math_10_ch5_s3_006",
         "math_10_ch5_s3_009"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s3_002",
-      "type": "property",
-      "title": "公式二：π+α 的诱导公式",
-      "description": "角π+α与角α的三角函数值关系：sin(π+α) = -sinα，cos(π+α) = -cosα，tan(π+α) = tanα。推导方法：设单位圆上点P₁(x₁, y₁)对应角α，P₂是P₁关于原点的对称点，则P₂坐标为(-x₁, -y₁)，对应的角为π+α。由三角函数定义得上述关系。角π+α还可看作是角α的终边按逆时针方向旋转角π得到的。",
-      "keywords": [
-        "π+α诱导公式",
-        "原点对称",
-        "终边旋转",
-        "三角函数值"
       ],
-      "formula": "sin(π+α) = -sinα, cos(π+α) = -cosα, tan(π+α) = tanα",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s3_002",
+    "basic": {
+      "name": "公式二：π+α 的诱导公式",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "角π+α与角α的三角函数值关系：sin(π+α) = -sinα，cos(π+α) = -cosα，tan(π+α) = tanα。推导方法：设单位圆上点P₁(x₁, y₁)对应角α，P₂是P₁关于原点的对称点，则P₂坐标为(-x₁, -y₁)，对应的角为π+α。由三角函数定义得上述关系。角π+α还可看作是角α的终边按逆时针方向旋转角π得到的。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s3_001",
         "math_10_ch5_s3_011"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s3_003",
-      "type": "property",
-      "title": "公式三：-α 的诱导公式",
-      "description": "角-α与角α的三角函数值关系：sin(-α) = -sinα，cos(-α) = cosα，tan(-α) = -tanα。推导方法：设单位圆上点P₁(x₁, y₁)对应角α，P₃是P₁关于x轴的对称点，则P₃坐标为(x₁, -y₁)，对应的角为-α。特别注意cos(-α)=cosα表明余弦是偶函数，sin(-α)=-sinα表明正弦是奇函数。",
-      "keywords": [
-        "-α诱导公式",
-        "x轴对称",
-        "奇偶性",
-        "余弦偶函数",
-        "正弦奇函数"
       ],
-      "formula": "sin(-α) = -sinα, cos(-α) = cosα, tan(-α) = -tanα",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s3_003",
+    "basic": {
+      "name": "公式三：-α 的诱导公式",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "角-α与角α的三角函数值关系：sin(-α) = -sinα，cos(-α) = cosα，tan(-α) = -tanα。推导方法：设单位圆上点P₁(x₁, y₁)对应角α，P₃是P₁关于x轴的对称点，则P₃坐标为(x₁, -y₁)，对应的角为-α。特别注意cos(-α)=cosα表明余弦是偶函数，sin(-α)=-sinα表明正弦是奇函数。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s3_001",
         "math_10_ch5_s3_011"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s3_004",
-      "type": "property",
-      "title": "公式四：π-α 的诱导公式",
-      "description": "角π-α与角α的三角函数值关系：sin(π-α) = sinα，cos(π-α) = -cosα，tan(π-α) = -tanα。推导方法：设单位圆上点P₁(x₁, y₁)对应角α，P₄是P₁关于y轴的对称点，则P₄坐标为(-x₁, y₁)，对应的角为π-α。该公式常用于将钝角（90°~180°）的三角函数转化为锐角三角函数。",
-      "keywords": [
-        "π-α诱导公式",
-        "y轴对称",
-        "钝角化锐角",
-        "三角函数值"
       ],
-      "formula": "sin(π-α) = sinα, cos(π-α) = -cosα, tan(π-α) = -tanα",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s3_004",
+    "basic": {
+      "name": "公式四：π-α 的诱导公式",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "角π-α与角α的三角函数值关系：sin(π-α) = sinα，cos(π-α) = -cosα，tan(π-α) = -tanα。推导方法：设单位圆上点P₁(x₁, y₁)对应角α，P₄是P₁关于y轴的对称点，则P₄坐标为(-x₁, y₁)，对应的角为π-α。该公式常用于将钝角（90°~180°）的三角函数转化为锐角三角函数。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s3_001",
         "math_10_ch5_s3_011",
         "math_10_ch5_s3_007"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s3_005",
-      "type": "property",
-      "title": "公式五：π/2-α 的诱导公式",
-      "description": "角π/2-α与角α的三角函数值关系：sin(π/2-α) = cosα，cos(π/2-α) = sinα。推导方法：设单位圆上点P₁(x₁, y₁)对应角α，P₅是P₁关于直线y=x的对称点，则P₅坐标为(y₁, x₁)，对应的角为π/2-α。该公式的核心意义是实现正弦与余弦的相互转化（互余关系）。",
-      "keywords": [
-        "π/2-α诱导公式",
-        "y=x对称",
-        "互余关系",
-        "正余弦互化",
-        "sin→cos",
-        "cos→sin"
       ],
-      "formula": "sin(π/2-α) = cosα, cos(π/2-α) = sinα",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s3_005",
+    "basic": {
+      "name": "公式五：π/2-α 的诱导公式",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "角π/2-α与角α的三角函数值关系：sin(π/2-α) = cosα，cos(π/2-α) = sinα。推导方法：设单位圆上点P₁(x₁, y₁)对应角α，P₅是P₁关于直线y=x的对称点，则P₅坐标为(y₁, x₁)，对应的角为π/2-α。该公式的核心意义是实现正弦与余弦的相互转化（互余关系）。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s3_001",
         "math_10_ch5_s3_010",
         "math_10_ch5_s3_011"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s3_006",
-      "type": "property",
-      "title": "公式六：π/2+α 的诱导公式",
-      "description": "角π/2+α与角α的三角函数值关系：sin(π/2+α) = cosα，cos(π/2+α) = -sinα。推导方法：基于公式五，将P₅（对应π/2-α）再作关于y轴的对称得到，或从sin(π/2+α)=sin(π-(π/2-α))通过公式四和公式五推导。该公式也与公式五一起实现正弦与余弦的互化。",
-      "keywords": [
-        "π/2+α诱导公式",
-        "y轴对称",
-        "正余弦互化",
-        "公式五的延伸"
       ],
-      "formula": "sin(π/2+α) = cosα, cos(π/2+α) = -sinα",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s3_006",
+    "basic": {
+      "name": "公式六：π/2+α 的诱导公式",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "角π/2+α与角α的三角函数值关系：sin(π/2+α) = cosα，cos(π/2+α) = -sinα。推导方法：基于公式五，将P₅（对应π/2-α）再作关于y轴的对称得到，或从sin(π/2+α)=sin(π-(π/2-α))通过公式四和公式五推导。该公式也与公式五一起实现正弦与余弦的互化。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s3_001",
         "math_10_ch5_s3_005",
         "math_10_ch5_s3_010",
         "math_10_ch5_s3_011"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s3_007",
-      "type": "method",
-      "title": "任意角三角函数化为锐角三角函数的方法",
-      "description": "利用公式一~公式四，可以将任意角的三角函数转化为锐角三角函数，一般按以下步骤进行：①任意负角的三角函数 →（用公式三或公式一）→ ②任意正角的三角函数 →（用公式一）→ ③0~2π的角的三角函数 →（用公式二或公式四）→ ④锐角的三角函数。这条流程的核心思想是逐步缩小角的范围：先处理负角符号，再消去周期性，最后将大于π/2的角化为锐角。数学史上，数学家制作了锐角三角函数表，并通过此流程解决了任意角的三角函数求值问题。",
-      "keywords": [
-        "任意角化锐角",
-        "逐步转化",
-        "负角化正角",
-        "大角化小角",
-        "锐角三角函数",
-        "流程图"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s3_007",
+    "basic": {
+      "name": "任意角三角函数化为锐角三角函数的方法",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "利用公式一~公式四，可以将任意角的三角函数转化为锐角三角函数，一般按以下步骤进行：①任意负角的三角函数 →（用公式三或公式一）→ ②任意正角的三角函数 →（用公式一）→ ③0~2π的角的三角函数 →（用公式二或公式四）→ ④锐角的三角函数。这条流程的核心思想是逐步缩小角的范围：先处理负角符号，再消去周期性，最后将大于π/2的角化为锐角。数学史上，数学家制作了锐角三角函数表，并通过此流程解决了任意角的三角函数求值问题。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s3_001",
         "math_10_ch5_s3_002",
         "math_10_ch5_s3_003",
         "math_10_ch5_s3_004"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s3_008",
-      "type": "method",
-      "title": "利用诱导公式化简三角函数式",
-      "description": "化简三角函数式的核心策略：①对每一个角度分别使用诱导公式化简，逐项处理负角、大于360°（2π）的角、钝角等；②注意符号处理，特别是当诱导公式中带有负号时（如cos(π+α)=-cosα，多步化简时负号容易遗漏）；③化简过程中常需结合同角三角函数关系（如tanα=sinα/cosα）进一步简化；④最终结果应化为最简形式。教材例2和例4是典型化简题，使用公式二~公式四逐步化简分子和分母。",
-      "keywords": [
-        "三角函数化简",
-        "逐项化简",
-        "负号处理",
-        "同角关系",
-        "例2",
-        "例4"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s3_008",
+    "basic": {
+      "name": "利用诱导公式化简三角函数式",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "化简三角函数式的核心策略：①对每一个角度分别使用诱导公式化简，逐项处理负角、大于360°（2π）的角、钝角等；②注意符号处理，特别是当诱导公式中带有负号时（如cos(π+α)=-cosα，多步化简时负号容易遗漏）；③化简过程中常需结合同角三角函数关系（如tanα=sinα/cosα）进一步简化；④最终结果应化为最简形式。教材例2和例4是典型化简题，使用公式二~公式四逐步化简分子和分母。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s3_001",
         "math_10_ch5_s3_002",
         "math_10_ch5_s3_003",
         "math_10_ch5_s3_004"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s3_009",
-      "type": "method",
-      "title": "诱导公式的对称性本质",
-      "description": "诱导公式的深层本质是单位圆的对称性在三角函数上的代数表现。具体对应关系：①关于原点的对称性 → 公式二（π+α）；②关于x轴的对称性 → 公式三（-α）；③关于y轴的对称性 → 公式四（π-α）；④关于直线y=x的对称性 → 公式五（π/2-α）；⑤公式六（π/2+α）是公式五与y轴对称的组合。理解这一本质有助于：①从几何角度理解公式的由来而非死记硬背；②推导其他特殊位置的诱导关系（如3π/2±α）；③形成「对称→终边关系→三角函数值关系」的推理链条。教材明确指出「圆的最重要的性质是对称性，而对称性也是函数的重要性质」。",
-      "keywords": [
-        "对称性",
-        "单位圆对称",
-        "原点对称",
-        "x轴对称",
-        "y轴对称",
-        "y=x对称",
-        "几何本质",
-        "数学思想"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s3_009",
+    "basic": {
+      "name": "诱导公式的对称性本质",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "诱导公式的深层本质是单位圆的对称性在三角函数上的代数表现。具体对应关系：①关于原点的对称性 → 公式二（π+α）；②关于x轴的对称性 → 公式三（-α）；③关于y轴的对称性 → 公式四（π-α）；④关于直线y=x的对称性 → 公式五（π/2-α）；⑤公式六（π/2+α）是公式五与y轴对称的组合。理解这一本质有助于：①从几何角度理解公式的由来而非死记硬背；②推导其他特殊位置的诱导关系（如3π/2±α）；③形成「对称→终边关系→三角函数值关系」的推理链条。教材明确指出「圆的最重要的性质是对称性，而对称性也是函数的重要性质」。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s3_002",
         "math_10_ch5_s3_003",
         "math_10_ch5_s3_004",
         "math_10_ch5_s3_005",
         "math_10_ch5_s3_006",
         "math_10_ch5_s3_011"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s3_010",
-      "type": "property",
-      "title": "正弦与余弦的相互转化",
-      "description": "利用公式五（π/2-α）和公式六（π/2+α），可以实现正弦函数与余弦函数的相互转化：sin(π/2±α)=cosα，cos(π/2±α)=∓sinα。这一转化关系有两层意义：①将已知角的余弦值转化为另一角的正弦值，或将正弦值转化为余弦值（如例5中利用53°-α与37°+α互余的关系）；②在化简和证明中将异名三角函数化为同名三角函数，简化运算。公式五/六与其他公式（公式二~四）结合使用，可以处理更复杂的角度关系（如3π/2±α）。",
-      "keywords": [
-        "正余弦互化",
-        "sin↔cos",
-        "公式五",
-        "公式六",
-        "互余",
-        "同名转化",
-        "3π/2±α"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 1
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s3_010",
+    "basic": {
+      "name": "正弦与余弦的相互转化",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "利用公式五（π/2-α）和公式六（π/2+α），可以实现正弦函数与余弦函数的相互转化：sin(π/2±α)=cosα，cos(π/2±α)=∓sinα。这一转化关系有两层意义：①将已知角的余弦值转化为另一角的正弦值，或将正弦值转化为余弦值（如例5中利用53°-α与37°+α互余的关系）；②在化简和证明中将异名三角函数化为同名三角函数，简化运算。公式五/六与其他公式（公式二~四）结合使用，可以处理更复杂的角度关系（如3π/2±α）。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s3_005",
         "math_10_ch5_s3_006",
         "math_10_ch5_s3_012"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s3_011",
-      "type": "method",
-      "title": "利用单位圆对称性推导诱导公式",
-      "description": "所有诱导公式的推导遵循统一路径：①确定对称位置点关于原点、x轴、y轴或直线y=x的对称关系 → ②由对称关系得到对称点的坐标关系 → ③根据三角函数定义（sin=y, cos=x, tan=y/x）写出三角函数值关系 → ④从几何终边对应关系读出角度关系。教材中的探究1~3完整展示了这一方法。例3进一步展示了将3π/2-α拆分为π+(π/2-α)后应用公式二和公式五的复合推导技巧。这一方法可推广到任意特殊位置的终边关系。",
-      "keywords": [
-        "单位圆对称性",
-        "点对称",
-        "坐标关系",
-        "推导方法",
-        "探究1",
-        "探究2",
-        "探究3",
-        "例3"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s3_011",
+    "basic": {
+      "name": "利用单位圆对称性推导诱导公式",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "所有诱导公式的推导遵循统一路径：①确定对称位置点关于原点、x轴、y轴或直线y=x的对称关系 → ②由对称关系得到对称点的坐标关系 → ③根据三角函数定义（sin=y, cos=x, tan=y/x）写出三角函数值关系 → ④从几何终边对应关系读出角度关系。教材中的探究1~3完整展示了这一方法。例3进一步展示了将3π/2-α拆分为π+(π/2-α)后应用公式二和公式五的复合推导技巧。这一方法可推广到任意特殊位置的终边关系。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s3_001",
         "math_10_ch5_s3_009"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s3_012",
-      "type": "method",
-      "title": "利用角度和关系应用诱导公式",
-      "description": "当目标角与已知角之间存在特殊和差关系（和为π/2、π或其他特殊值）时，可借助诱导公式实现代换。典型模式如例5：已知sin(53°-α)=1/5，求sin(37°+α)。关键观察(53°-α)+(37°+α)=90°，因此sin(37°+α)=sin[90°-(53°-α)]=cos(53°-α)，将问题转化为已知角的余弦值。求解时需要根据已知角的范围确定符号。此方法扩展到三角形内角关系（习题7），利用A+B+C=π得到cos(A+B)=-cosC、sin(A+B)=sinC、sin(A/2)=cos(C/2)等恒等式。",
-      "keywords": [
-        "角度和关系",
-        "互余代换",
-        "互补代换",
-        "三角形内角",
-        "例5",
-        "习题7",
-        "sin→cos转化"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 1
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s3_012",
+    "basic": {
+      "name": "利用角度和关系应用诱导公式",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "当目标角与已知角之间存在特殊和差关系（和为π/2、π或其他特殊值）时，可借助诱导公式实现代换。典型模式如例5：已知sin(53°-α)=1/5，求sin(37°+α)。关键观察(53°-α)+(37°+α)=90°，因此sin(37°+α)=sin[90°-(53°-α)]=cos(53°-α)，将问题转化为已知角的余弦值。求解时需要根据已知角的范围确定符号。此方法扩展到三角形内角关系（习题7），利用A+B+C=π得到cos(A+B)=-cosC、sin(A+B)=sinC、sin(A/2)=cos(C/2)等恒等式。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s3_001",
         "math_10_ch5_s3_005",
         "math_10_ch5_s3_010"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s3_013",
-      "type": "method",
-      "title": "诱导公式的快速记忆规律",
-      "description": "所有诱导公式可归纳为一句口诀：「奇变偶不变，符号看象限」。含义：①「奇变偶不变」——若将角度写成k·π/2±α（k∈Z）的形式，当k为奇数时，三角函数名变为互余函数（sin↔cos）；当k为偶数时，函数名不变。②「符号看象限」——将α视为锐角，判断原角（k·π/2±α）所在象限，根据原函数在该象限的符号确定最终结果的符号。例如sin(π-α)：k=2（偶数）→ 函数名不变仍为sin；π-α在第二象限，sin为正 → sin(π-α)=sinα。又如cos(π/2+α)：k=1（奇数）→ sin↔cos；π/2+α在第二象限，cos为负 → cos(π/2+α)=-sinα。这一规律对公式二~六以及任意k·π/2±α形式的诱导公式均有效。注意：若角度为kπ±α（k∈Z），则k·π/2中k为偶数，函数名不变，仅考虑符号。",
-      "keywords": [
-        "奇变偶不变",
-        "符号看象限",
-        "记忆口诀",
-        "k·π/2±α",
-        "函数名变化",
-        "象限符号",
-        "快速判断"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s3_013",
+    "basic": {
+      "name": "诱导公式的快速记忆规律",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "所有诱导公式可归纳为一句口诀：「奇变偶不变，符号看象限」。含义：①「奇变偶不变」——若将角度写成k·π/2±α（k∈Z）的形式，当k为奇数时，三角函数名变为互余函数（sin↔cos）；当k为偶数时，函数名不变。②「符号看象限」——将α视为锐角，判断原角（k·π/2±α）所在象限，根据原函数在该象限的符号确定最终结果的符号。例如sin(π-α)：k=2（偶数）→ 函数名不变仍为sin；π-α在第二象限，sin为正 → sin(π-α)=sinα。又如cos(π/2+α)：k=1（奇数）→ sin↔cos；π/2+α在第二象限，cos为负 → cos(π/2+α)=-sinα。这一规律对公式二~六以及任意k·π/2±α形式的诱导公式均有效。注意：若角度为kπ±α（k∈Z），则k·π/2中k为偶数，函数名不变，仅考虑符号。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s3_002",
         "math_10_ch5_s3_003",
         "math_10_ch5_s3_004",
         "math_10_ch5_s3_005",
         "math_10_ch5_s3_006"
-      ]
+      ],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
     }
-  ]
-}
+  }
+]

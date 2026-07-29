@@ -1,260 +1,272 @@
-{
-  "section_id": "math_10_ch1_s3",
-  "section_title": "集合的基本运算",
-  "chapter": "第一章 集合与常用逻辑用语",
-  "book": "人教A版数学必修第一册",
-  "toc_path": "1.3",
-  "node_count": 10,
-  "nodes": [
-    {
-      "node_id": "math_10_ch1_s3_001",
-      "sub_section": "并集",
-      "knowledge_type": "concept_definition",
-      "title": "并集的概念与定义",
-      "summary": "并集 A ∪ B 是由所有属于集合 A 或属于集合 B 的元素组成的集合，核心逻辑词是「或「（element-wise OR），公共元素在并集中只出现一次。",
-      "content": "一般地，由所有属于集合 A 或属于集合 B 的元素组成的集合，称为集合 A 与 B 的并集（union set），记作 A ∪ B（读作「A 并 B」），即\nA ∪ B = {x | x ∈ A, 或 x ∈ B}.\n\n教材从类比实数加法运算引入：A={1,3,5}, B={2,4,6}, C={1,2,3,4,5,6}，C由所有属于A或属于B的元素组成。第二个例子：有理数集与无理数集的并集是实数集。\n\n注意：求两个集合的并集时，公共元素在并集中只能出现一次（如例1中元素5和8各出现一次）。",
-      "key_points": [
-        "并集的定义基于逻辑「或「：元素属于 A 或属于 B 至少一个即可",
-        "记法 A ∪ B，符号 ∪ 形似 U（union 首字母）",
-        "公共元素在并集中不重复出现——集合元素互异性",
-        "并集是集合运算中最基本的运算之一，类比实数加法"
-      ],
-      "relations": [
-        {"target_id": "math_10_ch1_s1_???", "relation_type": "prerequisite", "description": "并集建立在集合的概念（1.1节）基础之上"},
-        {"target_id": "math_10_ch1_s3_002", "relation_type": "closely_related", "description": "并集与交集是集合运算的两个基本操作，由「或「与「且「的逻辑关系区分"},
-        {"target_id": "math_10_ch1_s3_006", "relation_type": "leads_to", "description": "并集的定义直接导出并集的基本性质"}
-      ],
-      "examples": [
-        "例1：A={4,5,6,8}, B={3,5,7,8}, A∪B={3,4,5,6,7,8}（公共元素5,8只出现一次）",
-        "例2：A={x|-1<x<2}, B={x|1<x<3}, A∪B={x|-1<x<3}（用数轴表示）"
-      ],
-      "keywords": ["并集", "union", "∪", "或", "集合运算"],
-      "difficulty": 1
+[
+  {
+    "knowledge_id": "math_10_ch1_s3_001",
+    "basic": {
+      "name": "并集的概念与定义",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
     },
-    {
-      "node_id": "math_10_ch1_s3_002",
-      "sub_section": "交集",
-      "knowledge_type": "concept_definition",
-      "title": "交集的概念与定义",
-      "summary": "交集 A ∩ B 是由所有属于集合 A 且属于集合 B 的元素组成的集合，核心逻辑词是「且「（element-wise AND），刻画两个集合的公共部分。",
-      "content": "一般地，由所有属于集合 A 且属于集合 B 的元素组成的集合，称为集合 A 与 B 的交集（intersection set），记作 A ∩ B（读作「A 交 B」），即\nA ∩ B = {x | x ∈ A, 且 x ∈ B}.\n\n教材从观察引入：A={2,4,6,8,10}, B={3,5,8,12}, C={8}，C由既属于A又属于B的元素组成。第二个例子为实际情境：高一女同学与高一全体同学的交集是高一年级女同学。\n\n交集与并集的核心区别在于逻辑词：「且「要求同时满足，「或「只要求至少满足一个。",
-      "key_points": [
-        "交集的定义基于逻辑「且「：元素必须同时属于 A 和 B",
-        "记法 A ∩ B，符号 ∩ 形似门拱（交集取公共部分）",
-        "当两个集合没有公共元素时，交集为空集",
-        "交集与并集互为对偶运算"
-      ],
-      "relations": [
-        {"target_id": "math_10_ch1_s3_001", "relation_type": "closely_related", "description": "交集与并集对应逻辑「且「与「或「，是集合论的两种基本运算"},
-        {"target_id": "math_10_ch1_s3_006", "relation_type": "leads_to", "description": "交集的定义直接导出交集的基本性质"},
-        {"target_id": "math_10_ch1_s3_009", "relation_type": "applied_in", "description": "交集用于表示直线的交点或位置关系"}
-      ],
-      "examples": [
-        "例3：A={参加百米赛跑的同学}, B={参加跳高比赛的同学}, A∩B={既参加百米赛跑又参加跳高比赛的同学}",
-        "例4：直线 l₁, l₂ 相交于一点 P → L₁∩L₂={点P}"
-      ],
-      "keywords": ["交集", "intersection", "∩", "且", "集合运算"],
-      "difficulty": 1
+    "tree": {
+      "parent_id": null,
+      "path": []
     },
-    {
-      "node_id": "math_10_ch1_s3_003",
-      "sub_section": "补集",
-      "knowledge_type": "concept_definition",
-      "title": "全集的概念",
-      "summary": "全集 U 是含有所研究问题中涉及的所有元素的集合，它是一个相对概念——研究范围不同则全集不同。全集为补集运算提供了参照范围。",
-      "content": "一般地，如果一个集合含有所研究问题中涉及的所有元素，那么就称这个集合为全集（universe set），通常记作 U。\n\n教材通过数的研究范围拓展引入：自然数→正分数→有理数→实数，同一个方程在不同范围内可能有不同解。\n\n例如：方程 (x-2)(x²-3)=0，在有理数范围内只有解2，在实数范围内有三个解。这说明研究范围（全集）不同，结果可能不同。\n\n全集是相对概念，通常也把给定的集合作为全集。全集的选取取决于研究问题的实际需要。",
-      "key_points": [
-        "全集是研究问题涉及的所有元素构成的集合",
-        "全集是一个相对概念，由研究范围决定",
-        "不同全集下同一问题的结果可能不同（如上例方程解集）",
-        "全集记作 U，是补集运算的参照系"
-      ],
-      "relations": [
-        {"target_id": "math_10_ch1_s3_004", "relation_type": "prerequisite", "description": "全集是定义补集的前提条件"},
-        {"target_id": "math_10_ch1_s1_???", "relation_type": "prerequisite", "description": "全集是集合概念的特殊情形（一个大集合包罗所有元素）"}
-      ],
-      "examples": [
-        "例5：U={x|x是小于9的正整数} = {1,2,3,4,5,6,7,8}",
-        "例6：U={x|x是三角形}（三角形的全体作为全集）",
-        "补充：方程 (x-2)(x²-3)=0 在有理数全集和实数全集下的不同结果"
-      ],
-      "keywords": ["全集", "universe set", "U", "研究范围", "参照系"],
-      "difficulty": 2
+    "concept": {
+      "source_text": "一般地，由所有属于集合 A 或属于集合 B 的元素组成的集合，称为集合 A 与 B 的并集（union set），记作 A ∪ B（读作「A 并 B」），即\nA ∪ B = {x | x ∈ A, 或 x ∈ B}.\n\n教材从类比实数加法运算引入：A={1,3,5}, B={2,4,6}, C={1,2,3,4,5,6}，C由所有属于A或属于B的元素组成。第二个例子：有理数集与无理数集的并集是实数集。\n\n注意：求两个集合的并集时，公共元素在并集中只能出现一次（如例1中元素5和8各出现一次）。",
+      "level": "knowledge"
     },
-    {
-      "node_id": "math_10_ch1_s3_004",
-      "sub_section": "补集",
-      "knowledge_type": "concept_definition",
-      "title": "补集的概念与定义",
-      "summary": "补集 ∁_U A 是由全集 U 中不属于集合 A 的所有元素组成的集合，记为 ∁_U A = {x | x ∈ U, 且 x ∉ A}。补集依赖于全集的选择。",
-      "content": "对于一个集合 A，由全集 U 中不属于集合 A 的所有元素组成的集合称为集合 A 相对于全集 U 的补集（complementary set），简称为集合 A 的补集，记作 ∁_U A，即\n∁_U A = {x | x ∈ U, 且 x ∉ A}.\n\n补集是相对于某个全集而言的——离开了全集谈补集没有意义。符号 ∁_U A 中下标 U 明确指出了全集。\n\n从集合运算的角度，补集可以理解为「减法「：从全集 U 中去掉 A 的元素得到。这与并集（「加法「）、交集（「乘法「）构成了集合运算的完整体系。",
-      "key_points": [
-        "补集依赖于全集 U，下标 U 不能省略",
-        "补集定义中的核心逻辑：x ∈ U 且 x ∉ A",
-        "补集可以理解为 U 减去 A，即 U \\ A",
-        "补集的性质：A ∩ (∁_U A) = ∅, A ∪ (∁_U A) = U",
-        "同一集合在不同全集下的补集不同"
-      ],
-      "relations": [
-        {"target_id": "math_10_ch1_s3_003", "relation_type": "depends_on", "description": "补集必须基于全集 U 定义"},
-        {"target_id": "math_10_ch1_s3_001", "relation_type": "closely_related", "description": "并集与补集满足 De Morgan 定律的对偶关系（后续学习）"}
-      ],
-      "examples": [
-        "例5：U={1,2,3,4,5,6,7,8}, A={1,2,3}, B={3,4,5,6}, ∁_U A={4,5,6,7,8}, ∁_U B={1,2,7,8}",
-        "例6：U={x|x是三角形}, A={x|x是锐角三角形}, B={x|x是钝角三角形}, ∁_U(A∪B)={x|x是直角三角形}"
-      ],
-      "keywords": ["补集", "complement", "∁_U A", "全集", "相对补集"],
-      "difficulty": 2
+    "relations": {
+      "reference": [],
+      "related": []
     },
-    {
-      "node_id": "math_10_ch1_s3_005",
-      "sub_section": "并集 / 交集 / 补集",
-      "knowledge_type": "graph_property",
-      "title": "Venn 图在集合运算中的应用",
-      "summary": "Venn 图用平面上封闭曲线的内部代表集合，能直观展示并集（两圆覆盖区域）、交集（两圆重叠区域）和补集（圆外阴影区域）的运算结果。",
-      "content": "Venn 图是集合的直观表示工具，用平面上封闭曲线的内部代表集合。\n\n三种基本运算的 Venn 图表示：\n1. **并集 A ∪ B**：两个圆覆盖的所有区域（含重叠部分）\n2. **交集 A ∩ B**：两个圆重叠的公共区域\n3. **补集 ∁_U A**：矩形（代表全集 U）中圆 A 外部的区域\n\n教材中给出了三个 Venn 图：\n- 图 1.3-1：并集的 Venn 图（两圆 + 覆盖阴影）\n- 图 1.3-3：交集的 Venn 图（两圆重叠部分阴影）\n- 图 1.3-4：补集的 Venn 图（矩形中圆外阴影）\n\nVenn 图不仅能表示单一运算，还能表示复合运算（如练习3中 (∁_U A)∩(∁_U B) 和 (∁_U A)∪(∁_U B) 的阴影区域）。",
-      "key_points": [
-        "Venn 图的封闭曲线代表集合，矩形常代表全集",
-        "并集 = 两圆覆盖的全部区域（重叠部分只算一次）",
-        "交集 = 两圆重叠的公共区域",
-        "补集 = 矩形中圆外区域",
-        "Venn 图是理解集合运算的重要直观工具"
-      ],
-      "relations": [
-        {"target_id": "math_10_ch1_s3_001", "relation_type": "visualizes", "description": "Venn 图直观展示并集的覆盖范围"},
-        {"target_id": "math_10_ch1_s3_002", "relation_type": "visualizes", "description": "Venn 图直观展示交集的公共部分"},
-        {"target_id": "math_10_ch1_s3_004", "relation_type": "visualizes", "description": "Venn 图直观展示补集中圆外区域"}
-      ],
-      "examples": [
-        "图1.3-1（并集Venn图）",
-        "图1.3-3（交集Venn图）",
-        "图1.3-4（补集Venn图）",
-        "练习3：用阴影表示 (∁_U A)∩(∁_U B) 和 (∁_U A)∪(∁_U B)"
-      ],
-      "keywords": ["Venn图", "文氏图", "封闭曲线", "直观表示", "集合图示"],
-      "difficulty": 1
-    },
-    {
-      "node_id": "math_10_ch1_s3_006",
-      "sub_section": "并集 / 交集",
-      "knowledge_type": "theorem_property",
-      "title": "集合运算的基本性质",
-      "summary": "并集与交集的基本性质包括：A∪A=A, A∪∅=A, A∩A=A, A∩∅=∅。这四组性质由并集和交集的定义直接导出，与实数的运算性质形成类比。",
-      "content": "教材以「思考「形式呈现的集合运算基本性质：\n\n**并集性质**：\n(1) A ∪ A = A（同一集合的并集等于自身）\n(2) A ∪ ∅ = A（空集与任何集合的并集等于该集合本身）\n\n**交集性质**：\n(1) A ∩ A = A（同一集合的交集等于自身）\n(2) A ∩ ∅ = ∅（空集与任何集合的交集等于空集）\n\n这些性质可以通过 Venn 图直观验证，也可以从定义出发逻辑推证。它们与实数运算的类比：∪ 类比加法（但 A∪A=A 不同于 a+a=2a），∩ 类比乘法（A∩A=A 不同于 a×a=a²），这种差异恰恰体现了集合运算与算术运算的不同。",
-      "key_points": [
-        "A ∪ A = A 和 A ∩ A = A（幂等律：不同于算术运算）",
-        "A ∪ ∅ = A（∅ 是并集的单位元，类比 0 是加法的单位元）",
-        "A ∩ ∅ = ∅（∅ 是交集的零元，类比 0 是乘法的零元）",
-        "这些性质可通过 Venn 图直观理解",
-        "集合运算与实数运算的类比与区别——理解抽象代数结构的入口"
-      ],
-      "relations": [
-        {"target_id": "math_10_ch1_s3_001", "relation_type": "derived_from", "description": "并集性质由并集定义直接导出"},
-        {"target_id": "math_10_ch1_s3_002", "relation_type": "derived_from", "description": "交集性质由交集定义直接导出"},
-        {"target_id": "math_10_ch1_s3_005", "relation_type": "visualizes", "description": "Venn 图可直观验证这些性质"}
-      ],
-      "examples": [
-        "思考题：A ∪ A = A 成立吗？A ∪ ∅ = A 成立吗？",
-        "思考题：A ∩ A = A 成立吗？A ∩ ∅ = ∅ 成立吗？"
-      ],
-      "keywords": ["集合运算性质", "幂等律", "单位元", "零元", "A∪A=A", "A∩∅=∅"],
-      "difficulty": 2
-    },
-    {
-      "node_id": "math_10_ch1_s3_007",
-      "sub_section": "并集 / 交集",
-      "knowledge_type": "method_technique",
-      "title": "求集合的并集与交集的方法",
-      "summary": "求并集与交集有两种主要方法：直接列举法（有限集通过合并/取公共元素）和数轴法（区间型集合借助数轴直观判断）。数轴法是处理区间集合的经典工具。",
-      "content": "**方法一：直接列举法**\n适用于有限集或可列举的集合。\n- 求并集：将两个集合的所有元素合并，重复元素只保留一个。\n- 求交集：找出同时属于两个集合的元素。\n\n**方法二：数轴法**\n适用于区间型集合（实数集的子集）。\n- 在数轴上标出两个集合的范围\n- 求并集：取两段覆盖的所有范围（数轴上被任一区间覆盖的部分）\n- 求交集：取两段重叠的共同范围（数轴上被两个区间同时覆盖的部分）\n\n教材例2示范了用数轴求区间集合的并集：A={x|-1<x<2}, B={x|1<x<3}, A∪B={x|-1<x<3}。\n\n数轴法特别适合处理连续区间，能直观解决不等式解集的并交运算。",
-      "key_points": [
-        "列举法适用于有限集：合并去重（并集）或取公共元素（交集）",
-        "数轴法适用于区间型集合：直观显示覆盖范围（并集）和重叠范围（交集）",
-        "数轴画图时注意开区间（空心点）和闭区间（实心点）的标注",
-        "两种方法互为补充：列举法精确，数轴法直观"
-      ],
-      "relations": [
-        {"target_id": "math_10_ch1_s3_001", "relation_type": "applies_to", "description": "求并集的方法基于并集的定义"},
-        {"target_id": "math_10_ch1_s3_002", "relation_type": "applies_to", "description": "求交集的方法基于交集的定义"},
-        {"target_id": "math_10_ch1_s3_005", "relation_type": "alternative_to", "description": "数轴法是区间型集合的直观工具，与Venn图互补"}
-      ],
-      "examples": [
-        "例1：A={4,5,6,8}, B={3,5,7,8}，列举法求 A∪B={3,4,5,6,7,8}",
-        "例2：A={x|-1<x<2}, B={x|1<x<3}，数轴法求 A∪B={x|-1<x<3}"
-      ],
-      "keywords": ["列举法", "数轴法", "区间并集", "区间交集", "集合求法"],
-      "difficulty": 2
-    },
-    {
-      "node_id": "math_10_ch1_s3_008",
-      "sub_section": "补集",
-      "knowledge_type": "method_technique",
-      "title": "求集合补集的方法",
-      "summary": "求补集 ≡ 先确定全集 U，再从 U 中排除 A 的所有元素。关键在于明确全集范围，且补集运算结果依赖全集选择。",
-      "content": "**步骤**：\n1. 明确全集 U 的范围\n2. 列出全集 U 的所有元素（或描述其特征）\n3. 从 U 中去掉集合 A 的所有元素\n4. 剩余元素组成的集合即为 ∁_U A\n\n**注意事项**：\n- 补集依赖全集的选择——同一集合在不同全集下补集不同\n- 当全集为实数集等无限集时，补集通常用描述法表示\n- 补集运算常与并集、交集结合形成复合运算（如 ∁_U(A∪B)）\n\n教材例6示范了复合运算：先求 A∪B（锐角或钝角三角形），再求补集（直角三角形）。",
-      "key_points": [
-        "第一步永远是明确全集 U",
-        "有限集的补集用列举法直接写出",
-        "无限集的补集用描述法表示",
-        "复合补集运算（如 ∁_U(A∪B)）需先计算括号内的并集，再取补"
-      ],
-      "relations": [
-        {"target_id": "math_10_ch1_s3_003", "relation_type": "depends_on", "description": "求补集前必须确定全集"},
-        {"target_id": "math_10_ch1_s3_004", "relation_type": "applies_to", "description": "补集的计算方法基于补集的定义"}
-      ],
-      "examples": [
-        "例5：U={1,2,3,4,5,6,7,8}, A={1,2,3} → ∁_U A={4,5,6,7,8}（列举法）",
-        "例6：U={x|x是三角形}, A∪B={x|x是锐角或钝角三角形} → ∁_U(A∪B)={x|x是直角三角形}（描述法）"
-      ],
-      "keywords": ["补集求法", "排除法", "全集中排除", "复合补集运算"],
-      "difficulty": 3
-    },
-    {
-      "node_id": "math_10_ch1_s3_009",
-      "sub_section": "交集",
-      "knowledge_type": "application_example",
-      "title": "用集合运算表示直线的位置关系",
-      "summary": "利用交集运算可以表达平面内两条直线的三种位置关系：相交（交集为单点集）、平行（交集为空集）、重合（交集等于自身）。这是集合语言描述几何关系的经典案例。",
-      "content": "教材例4展示如何用集合运算表示平面内直线 l₁, l₂ 的位置关系。\n\n设直线 l₁ 上点的集合为 L₁，直线 l₂ 上点的集合为 L₂：\n\n(1) **相交于一点 P**：L₁ ∩ L₂ = {点 P}\n    两直线有一个公共点，交集为单元素集。\n\n(2) **平行**：L₁ ∩ L₂ = ∅\n    两直线没有公共点，交集为空集。\n\n(3) **重合**：L₁ ∩ L₂ = L₁ = L₂\n    两直线完全重合，交集等于每个集合自身。\n\n这个例子展示了集合运算的强大表达力——用简单的交集运算就能刻画几何中三种不同的位置关系。",
-      "key_points": [
-        "用集合运算表示几何关系是数学抽象的重要体现",
-        "直线相交→交集为单个元素（交点坐标）",
-        "直线平行→交集为空集",
-        "直线重合→交集等于集合自身",
-        "同一个交集运算，结果的不同含义对应不同的几何关系"
-      ],
-      "relations": [
-        {"target_id": "math_10_ch1_s3_002", "relation_type": "applies_to", "description": "该应用是交集概念在几何中的具体运用"},
-        {"target_id": "math_10_ch1_s3_007", "relation_type": "complements", "description": "扩展了求交集的应用场景——不仅限于数字集合"}
-      ],
-      "examples": [
-        "例4：直线相交→L₁∩L₂={点P}；平行→L₁∩L₂=∅；重合→L₁∩L₂=L₁=L₂"
-      ],
-      "keywords": ["直线位置关系", "相交", "平行", "重合", "集合表示几何"],
-      "difficulty": 2
-    },
-    {
-      "node_id": "math_10_ch1_s3_010",
-      "sub_section": "并集 / 交集 / 补集",
-      "knowledge_type": "comparison_summary",
-      "title": "「或」与「且」在集合运算中的逻辑辨析",
-      "summary": "集合运算的核心逻辑区别在于「或「（并集）与「且「（交集）的逻辑含义：x ∈ A∪B 要求 x 至少属于 A 或 B 之一，x ∈ A∩B 要求 x 同时属于 A 和 B。补集中的「不属于「则对应逻辑否定。",
-      "content": "三种基本集合运算对应的逻辑关系：\n\n**1. 并集（∪）→ 逻辑「或「（OR）**\n- x ∈ A∪B ⇔ x ∈ A 或 x ∈ B（至少满足一个）\n- 只要元素属于 A 或属于 B 中的至少一个，就进入并集\n\n**2. 交集（∩）→ 逻辑「且「（AND）**\n- x ∈ A∩B ⇔ x ∈ A 且 x ∈ B（两个都必须满足）\n- 元素必须同时属于 A 和 B 才能进入交集\n\n**3. 补集（∁）→ 逻辑「非「（NOT）**\n- x ∈ ∁_U A ⇔ x ∈ U 且 x ∉ A\n\n**对比表**：\n| 运算 | 逻辑对应 | 满足条件 |\n|------|---------|--------|\n| A∪B | OR | 属于A或B至少一个 |\n| A∩B | AND | 同时属于A和B |\n| ∁_U A | NOT | 属于U但不属于A |\n\n这种对应关系是布尔代数的基础，也是后续学习逻辑用语（1.4节）的预备知识。",
-      "key_points": [
-        "∪ 对应逻辑「或「（inclusive OR）——至少选一个",
-        "∩ 对应逻辑「且「（AND）——两个都要选",
-        "∁ 对应逻辑否定（NOT）",
-        "分清「或「与「且「是避免集合运算错误的關鍵",
-        "这种对应为后续学习充分条件、必要条件等逻辑概念打下基础"
-      ],
-      "relations": [
-        {"target_id": "math_10_ch1_s3_001", "relation_type": "deepens", "description": "从逻辑层面深化并集概念的理解"},
-        {"target_id": "math_10_ch1_s3_002", "relation_type": "deepens", "description": "从逻辑层面深化交集概念的理解"},
-        {"target_id": "math_10_ch1_s3_004", "relation_type": "deepens", "description": "从逻辑层面深化补集概念的理解"},
-        {"target_id": "math_10_ch1_s4_???", "relation_type": "prerequisite", "description": "集合运算的逻辑基础是1.4节充分条件与必要条件的预备知识"}
-      ],
-      "keywords": ["逻辑或", "逻辑且", "逻辑非", "布尔代数", "或与且的区别"],
-      "difficulty": 3
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
     }
-  ]
-}
+  },
+  {
+    "knowledge_id": "math_10_ch1_s3_002",
+    "basic": {
+      "name": "交集的概念与定义",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "一般地，由所有属于集合 A 且属于集合 B 的元素组成的集合，称为集合 A 与 B 的交集（intersection set），记作 A ∩ B（读作「A 交 B」），即\nA ∩ B = {x | x ∈ A, 且 x ∈ B}.\n\n教材从观察引入：A={2,4,6,8,10}, B={3,5,8,12}, C={8}，C由既属于A又属于B的元素组成。第二个例子为实际情境：高一女同学与高一全体同学的交集是高一年级女同学。\n\n交集与并集的核心区别在于逻辑词：「且「要求同时满足，「或「只要求至少满足一个。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch1_s3_003",
+    "basic": {
+      "name": "全集的概念",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "一般地，如果一个集合含有所研究问题中涉及的所有元素，那么就称这个集合为全集（universe set），通常记作 U。\n\n教材通过数的研究范围拓展引入：自然数→正分数→有理数→实数，同一个方程在不同范围内可能有不同解。\n\n例如：方程 (x-2)(x²-3)=0，在有理数范围内只有解2，在实数范围内有三个解。这说明研究范围（全集）不同，结果可能不同。\n\n全集是相对概念，通常也把给定的集合作为全集。全集的选取取决于研究问题的实际需要。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch1_s3_004",
+    "basic": {
+      "name": "补集的概念与定义",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "对于一个集合 A，由全集 U 中不属于集合 A 的所有元素组成的集合称为集合 A 相对于全集 U 的补集（complementary set），简称为集合 A 的补集，记作 ∁_U A，即\n∁_U A = {x | x ∈ U, 且 x ∉ A}.\n\n补集是相对于某个全集而言的——离开了全集谈补集没有意义。符号 ∁_U A 中下标 U 明确指出了全集。\n\n从集合运算的角度，补集可以理解为「减法「：从全集 U 中去掉 A 的元素得到。这与并集（「加法「）、交集（「乘法「）构成了集合运算的完整体系。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch1_s3_005",
+    "basic": {
+      "name": "Venn 图在集合运算中的应用",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "Venn 图是集合的直观表示工具，用平面上封闭曲线的内部代表集合。\n\n三种基本运算的 Venn 图表示：\n1. **并集 A ∪ B**：两个圆覆盖的所有区域（含重叠部分）\n2. **交集 A ∩ B**：两个圆重叠的公共区域\n3. **补集 ∁_U A**：矩形（代表全集 U）中圆 A 外部的区域\n\n教材中给出了三个 Venn 图：\n- 图 1.3-1：并集的 Venn 图（两圆 + 覆盖阴影）\n- 图 1.3-3：交集的 Venn 图（两圆重叠部分阴影）\n- 图 1.3-4：补集的 Venn 图（矩形中圆外阴影）\n\nVenn 图不仅能表示单一运算，还能表示复合运算（如练习3中 (∁_U A)∩(∁_U B) 和 (∁_U A)∪(∁_U B) 的阴影区域）。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch1_s3_006",
+    "basic": {
+      "name": "集合运算的基本性质",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "教材以「思考「形式呈现的集合运算基本性质：\n\n**并集性质**：\n(1) A ∪ A = A（同一集合的并集等于自身）\n(2) A ∪ ∅ = A（空集与任何集合的并集等于该集合本身）\n\n**交集性质**：\n(1) A ∩ A = A（同一集合的交集等于自身）\n(2) A ∩ ∅ = ∅（空集与任何集合的交集等于空集）\n\n这些性质可以通过 Venn 图直观验证，也可以从定义出发逻辑推证。它们与实数运算的类比：∪ 类比加法（但 A∪A=A 不同于 a+a=2a），∩ 类比乘法（A∩A=A 不同于 a×a=a²），这种差异恰恰体现了集合运算与算术运算的不同。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch1_s3_007",
+    "basic": {
+      "name": "求集合的并集与交集的方法",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "**方法一：直接列举法**\n适用于有限集或可列举的集合。\n- 求并集：将两个集合的所有元素合并，重复元素只保留一个。\n- 求交集：找出同时属于两个集合的元素。\n\n**方法二：数轴法**\n适用于区间型集合（实数集的子集）。\n- 在数轴上标出两个集合的范围\n- 求并集：取两段覆盖的所有范围（数轴上被任一区间覆盖的部分）\n- 求交集：取两段重叠的共同范围（数轴上被两个区间同时覆盖的部分）\n\n教材例2示范了用数轴求区间集合的并集：A={x|-1<x<2}, B={x|1<x<3}, A∪B={x|-1<x<3}。\n\n数轴法特别适合处理连续区间，能直观解决不等式解集的并交运算。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch1_s3_008",
+    "basic": {
+      "name": "求集合补集的方法",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "**步骤**：\n1. 明确全集 U 的范围\n2. 列出全集 U 的所有元素（或描述其特征）\n3. 从 U 中去掉集合 A 的所有元素\n4. 剩余元素组成的集合即为 ∁_U A\n\n**注意事项**：\n- 补集依赖全集的选择——同一集合在不同全集下补集不同\n- 当全集为实数集等无限集时，补集通常用描述法表示\n- 补集运算常与并集、交集结合形成复合运算（如 ∁_U(A∪B)）\n\n教材例6示范了复合运算：先求 A∪B（锐角或钝角三角形），再求补集（直角三角形）。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch1_s3_009",
+    "basic": {
+      "name": "用集合运算表示直线的位置关系",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "教材例4展示如何用集合运算表示平面内直线 l₁, l₂ 的位置关系。\n\n设直线 l₁ 上点的集合为 L₁，直线 l₂ 上点的集合为 L₂：\n\n(1) **相交于一点 P**：L₁ ∩ L₂ = {点 P}\n    两直线有一个公共点，交集为单元素集。\n\n(2) **平行**：L₁ ∩ L₂ = ∅\n    两直线没有公共点，交集为空集。\n\n(3) **重合**：L₁ ∩ L₂ = L₁ = L₂\n    两直线完全重合，交集等于每个集合自身。\n\n这个例子展示了集合运算的强大表达力——用简单的交集运算就能刻画几何中三种不同的位置关系。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch1_s3_010",
+    "basic": {
+      "name": "「或」与「且」在集合运算中的逻辑辨析",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "三种基本集合运算对应的逻辑关系：\n\n**1. 并集（∪）→ 逻辑「或「（OR）**\n- x ∈ A∪B ⇔ x ∈ A 或 x ∈ B（至少满足一个）\n- 只要元素属于 A 或属于 B 中的至少一个，就进入并集\n\n**2. 交集（∩）→ 逻辑「且「（AND）**\n- x ∈ A∩B ⇔ x ∈ A 且 x ∈ B（两个都必须满足）\n- 元素必须同时属于 A 和 B 才能进入交集\n\n**3. 补集（∁）→ 逻辑「非「（NOT）**\n- x ∈ ∁_U A ⇔ x ∈ U 且 x ∉ A\n\n**对比表**：\n| 运算 | 逻辑对应 | 满足条件 |\n|------|---------|--------|\n| A∪B | OR | 属于A或B至少一个 |\n| A∩B | AND | 同时属于A和B |\n| ∁_U A | NOT | 属于U但不属于A |\n\n这种对应关系是布尔代数的基础，也是后续学习逻辑用语（1.4节）的预备知识。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  }
+]
