@@ -7,3 +7,4 @@ output/raw/ocr_page*.json
 output/_failed.log
 output/_test_1.3.log
 output/_needs_review.log
+doc/.gate/
