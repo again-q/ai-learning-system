@@ -1,393 +1,398 @@
-{
-  "section_id": "math_10_ch4_s2",
-  "section_title": "指数函数",
-  "chapter": "第四章 指数函数与对数函数",
-  "book": "人教A版数学必修第一册",
-  "pages": [
-    117,
-    127
-  ],
-  "knowledge_nodes": [
-    {
-      "node_id": "math_10_ch4_s2_01",
-      "title": "指数增长与指数衰减的概念",
+[
+  {
+    "knowledge_id": "math_10_ch4_s2_01",
+    "basic": {
+      "name": "指数增长与指数衰减的概念",
       "type": "definition",
-      "level": 1,
-      "difficulty": "basic",
-      "content": "增长率为常数的变化方式称为指数增长，衰减率为常数的变化方式称为指数衰减。其核心特征是：相邻两期的比值（倍率）为常数，而非差值（增加量）为常数。",
-      "keywords": [
-        "指数增长",
-        "指数衰减",
-        "增长率",
-        "衰减率",
-        "常数倍率"
-      ],
-      "prerequisites": [
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "增长率为常数的变化方式称为指数增长，衰减率为常数的变化方式称为指数衰减。其核心特征是：相邻两期的比值（倍率）为常数，而非差值（增加量）为常数。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch4_s1_01"
       ],
-      "related_nodes": [
+      "related": [
         "math_10_ch4_s2_02",
         "math_10_ch4_s2_03"
-      ],
-      "examples": [
-        {
-          "scenario": "B地景区游客人次变化",
-          "description": "年增长率约为0.11（常数），游客人次近似于指数增长，模型为 y = 1.11^x"
-        },
-        {
-          "scenario": "碳14衰减",
-          "description": "年衰减率为常数，每5730年衰减为原来的一半（半衰期），模型为 y = ((1/2)^(1/5730))^x"
-        }
       ]
     },
-    {
-      "node_id": "math_10_ch4_s2_02",
-      "title": "指数函数的定义",
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch4_s2_02",
+    "basic": {
+      "name": "指数函数的定义",
       "type": "definition",
-      "level": 1,
-      "difficulty": "basic",
-      "content": "一般地，函数 y = a^x（a > 0，且 a ≠ 1）叫做指数函数（exponential function），其中指数 x 是自变量，定义域是 R。底数 a 必须满足 a > 0 且 a ≠ 1：若 a = 1，则 y = 1 为常数函数，不具备指数变化的特性；若 a ≤ 0，则当 x 取某些有理数或无理数时无意义。",
-      "keywords": [
-        "指数函数",
-        "定义域",
-        "底数",
-        "自变量"
-      ],
-      "prerequisites": [
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "一般地，函数 y = a^x（a > 0，且 a ≠ 1）叫做指数函数（exponential function），其中指数 x 是自变量，定义域是 R。底数 a 必须满足 a > 0 且 a ≠ 1：若 a = 1，则 y = 1 为常数函数，不具备指数变化的特性；若 a ≤ 0，则当 x 取某些有理数或无理数时无意义。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch4_s1_01",
         "math_10_ch4_s2_01"
       ],
-      "related_nodes": [
+      "related": [
         "math_10_ch4_s2_01",
         "math_10_ch4_s2_04",
         "math_10_ch4_s2_05"
-      ],
-      "examples": [
-        {
-          "scenario": "判断是否为指数函数",
-          "description": "y = 2^x 是指数函数；y = x^2 是幂函数，不是指数函数；y = (-2)^x 因底数为负，不是指数函数"
-        }
       ]
     },
-    {
-      "node_id": "math_10_ch4_s2_03",
-      "title": "指数增长/衰减的数学模型",
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch4_s2_03",
+    "basic": {
+      "name": "指数增长/衰减的数学模型",
       "type": "example",
-      "level": 2,
-      "difficulty": "intermediate",
-      "content": "指数增长模型：设原有量为 N，每次的增长率为 p，经过 x 次增长，增长到的量为 y = N(1+p)^x（x ∈ N）。一般形式为 y = k·a^x（k ∈ R 且 k ≠ 0；a > 0 且 a ≠ 1）。指数衰减模型：半衰期为 h 的物质，初始质量 Q₀，经过时间 t 后所剩质量 Q(t) = Q₀(1/2)^(t/h)。函数值增长为原来两倍所用的时间称为倍增期。",
-      "keywords": [
-        "指数增长模型",
-        "指数衰减模型",
-        "半衰期公式",
-        "倍增期",
-        "y = k·a^x"
-      ],
-      "prerequisites": [
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "指数增长模型：设原有量为 N，每次的增长率为 p，经过 x 次增长，增长到的量为 y = N(1+p)^x（x ∈ N）。一般形式为 y = k·a^x（k ∈ R 且 k ≠ 0；a > 0 且 a ≠ 1）。指数衰减模型：半衰期为 h 的物质，初始质量 Q₀，经过时间 t 后所剩质量 Q(t) = Q₀(1/2)^(t/h)。函数值增长为原来两倍所用的时间称为倍增期。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch4_s2_01",
         "math_10_ch4_s2_02"
       ],
-      "related_nodes": [
+      "related": [
         "math_10_ch4_s2_01",
         "math_10_ch4_s2_08"
-      ],
-      "examples": [
-        {
-          "scenario": "碳14含量计算",
-          "description": "死亡 x 年后碳14含量 h(x) = ((1/2)^(1/5730))^x = (1/2)^(x/5730)，死亡10000年后衰减为约30%"
-        },
-        {
-          "scenario": "一般半衰期公式",
-          "description": "某物质半衰期为 h，初始质量 Q₀，经时间 t 后剩余 Q(t) = Q₀(1/2)^(t/h)"
-        }
       ]
     },
-    {
-      "node_id": "math_10_ch4_s2_04",
-      "title": "指数函数的图象",
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch4_s2_04",
+    "basic": {
+      "name": "指数函数的图象",
       "type": "property",
-      "level": 1,
-      "difficulty": "basic",
-      "content": "指数函数 y = a^x 的图象按底数 a 的取值分为两类：① a > 1 时，图象从左到右上升（经过点(0,1)）；② 0 < a < 1 时，图象从左到右下降（经过点(0,1)）。底数互为倒数的两个指数函数的图象关于 y 轴对称：y = (1/a)^x = a^(-x)，点(x,y)与(-x,y)关于y轴对称。图象都位于 x 轴上方，向左/向右无限延伸时分别趋近于 x 轴但不与 x 轴相交。",
-      "keywords": [
-        "指数函数图象",
-        "关于y轴对称",
-        "底数倒数",
-        "y = 2^x",
-        "y = (1/2)^x"
-      ],
-      "prerequisites": [
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "指数函数 y = a^x 的图象按底数 a 的取值分为两类：① a > 1 时，图象从左到右上升（经过点(0,1)）；② 0 < a < 1 时，图象从左到右下降（经过点(0,1)）。底数互为倒数的两个指数函数的图象关于 y 轴对称：y = (1/a)^x = a^(-x)，点(x,y)与(-x,y)关于y轴对称。图象都位于 x 轴上方，向左/向右无限延伸时分别趋近于 x 轴但不与 x 轴相交。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch4_s2_02"
       ],
-      "related_nodes": [
+      "related": [
         "math_10_ch4_s2_02",
         "math_10_ch4_s2_05",
         "math_10_ch4_s3_01"
-      ],
-      "examples": [
-        {
-          "scenario": "对称性应用",
-          "description": "利用 y = 2^x 的图象关于y轴对称，画出 y = (1/2)^x 的图象"
-        }
       ]
     },
-    {
-      "node_id": "math_10_ch4_s2_05",
-      "title": "指数函数的性质",
+    "importance": {
+      "curriculum_weight": 5,
+      "exam_frequency": 5
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch4_s2_05",
+    "basic": {
+      "name": "指数函数的性质",
       "type": "property",
-      "level": 1,
-      "difficulty": "basic",
-      "content": "指数函数 y = a^x（a > 0，且 a ≠ 1）的性质：① 定义域：R；② 值域：(0, +∞)；③ 过定点 (0, 1)，即 x = 0 时 y = 1；④ 单调性：当 a > 1 时为增函数（R上单调递增），当 0 < a < 1 时为减函数（R上单调递减）。",
-      "keywords": [
-        "定义域",
-        "值域",
-        "过定点",
-        "单调性",
-        "增函数",
-        "减函数",
-        "(0,1)"
-      ],
-      "prerequisites": [
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "指数函数 y = a^x（a > 0，且 a ≠ 1）的性质：① 定义域：R；② 值域：(0, +∞)；③ 过定点 (0, 1)，即 x = 0 时 y = 1；④ 单调性：当 a > 1 时为增函数（R上单调递增），当 0 < a < 1 时为减函数（R上单调递减）。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch4_s2_02",
         "math_10_ch4_s2_04"
       ],
-      "related_nodes": [
+      "related": [
         "math_10_ch4_s2_04",
         "math_10_ch4_s2_06",
         "math_10_ch4_s2_07"
-      ],
-      "examples": []
-    },
-    {
-      "node_id": "math_10_ch4_s2_06",
-      "title": "比较指数函数值的大小",
-      "type": "method",
-      "level": 2,
-      "difficulty": "intermediate",
-      "content": "比较指数式大小的两类方法：① 同底比较——直接利用指数函数的单调性，自变量越大（小）则函数值越大（小）；② 不同底比较——引入中间量（常用 1，即 a^0 = 1）作为桥梁，将两个指数式分别与中间量比较后再得出结论。",
-      "keywords": [
-        "指数比较",
-        "单调性应用",
-        "中间量",
-        "同底比较",
-        "不同底比较"
-      ],
-      "prerequisites": [
-        "math_10_ch4_s2_05"
-      ],
-      "related_nodes": [
-        "math_10_ch4_s2_05",
-        "math_10_ch4_s2_07"
-      ],
-      "examples": [
-        {
-          "scenario": "同底比较（底数>1）",
-          "description": "1.7^2.5 与 1.7^3：y=1.7^x 是增函数，2.5<3，故 1.7^2.5 < 1.7^3"
-        },
-        {
-          "scenario": "同底比较（0<底数<1）",
-          "description": "0.8^(-√2) 与 0.8^(-√3)：y=0.8^x 是减函数，-√2 > -√3，故 0.8^(-√2) < 0.8^(-√3)"
-        },
-        {
-          "scenario": "不同底比较（中间量法）",
-          "description": "1.7^0.3 > 1.7^0 = 1，0.9^3.1 < 0.9^0 = 1，故 1.7^0.3 > 0.9^3.1"
-        }
       ]
     },
-    {
-      "node_id": "math_10_ch4_s2_07",
-      "title": "指数函数解析式的确定",
+    "importance": {
+      "curriculum_weight": 5,
+      "exam_frequency": 5
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch4_s2_06",
+    "basic": {
+      "name": "比较指数函数值的大小",
       "type": "method",
-      "level": 2,
-      "difficulty": "intermediate",
-      "content": "已知指数函数 f(x) = a^x 在某点的函数值，可代入该点坐标建立关于 a 的方程，解出底数 a 的值，从而确定函数解析式。常用技巧包括开方、指数式与根式互化。",
-      "keywords": [
-        "解析式",
-        "待定系数法",
-        "解指数方程",
-        "底数求解"
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "比较指数式大小的两类方法：① 同底比较——直接利用指数函数的单调性，自变量越大（小）则函数值越大（小）；② 不同底比较——引入中间量（常用 1，即 a^0 = 1）作为桥梁，将两个指数式分别与中间量比较后再得出结论。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch4_s2_05"
       ],
-      "prerequisites": [
+      "related": [
+        "math_10_ch4_s2_05",
+        "math_10_ch4_s2_07"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch4_s2_07",
+    "basic": {
+      "name": "指数函数解析式的确定",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "已知指数函数 f(x) = a^x 在某点的函数值，可代入该点坐标建立关于 a 的方程，解出底数 a 的值，从而确定函数解析式。常用技巧包括开方、指数式与根式互化。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch4_s2_02",
         "math_10_ch4_s1_01"
       ],
-      "related_nodes": [
+      "related": [
         "math_10_ch4_s2_02",
         "math_10_ch4_s2_05"
-      ],
-      "examples": [
-        {
-          "scenario": "例1：已知 f(3)=π 求指数函数",
-          "description": "设 f(x)=a^x，由 a^3=π 得 a=π^(1/3)，故 f(x)=π^(x/3)，则 f(0)=1，f(1)=³√π，f(-3)=1/π"
-        }
       ]
     },
-    {
-      "node_id": "math_10_ch4_s2_08",
-      "title": "指数增长模型的实际应用",
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch4_s2_08",
+    "basic": {
+      "name": "指数增长模型的实际应用",
       "type": "example",
-      "level": 3,
-      "difficulty": "advanced",
-      "content": "指数函数在实际问题中广泛应用：① 人口增长模型（倍增期约20年，每经一个倍增期人口翻一番）；② 经济收入模型（线性增长 vs 指数增长的对比分析——初期线性占优，长期指数反超）；③ 放射性衰变与年代测定（碳14断代法）；④ 复利计算（本利和 y = a(1+r)^x）；⑤ 细胞增殖与蓝藻增长。关键能力：识别问题中的指数变化特征（倍率常数），建立合适的指数函数模型，利用模型进行计算和预测。",
-      "keywords": [
-        "实际应用",
-        "人口增长",
-        "碳14断代",
-        "复利",
-        "线性vs指数",
-        "模型建立"
-      ],
-      "prerequisites": [
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "指数函数在实际问题中广泛应用：① 人口增长模型（倍增期约20年，每经一个倍增期人口翻一番）；② 经济收入模型（线性增长 vs 指数增长的对比分析——初期线性占优，长期指数反超）；③ 放射性衰变与年代测定（碳14断代法）；④ 复利计算（本利和 y = a(1+r)^x）；⑤ 细胞增殖与蓝藻增长。关键能力：识别问题中的指数变化特征（倍率常数），建立合适的指数函数模型，利用模型进行计算和预测。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch4_s2_03",
         "math_10_ch4_s2_05",
         "math_10_ch4_s2_06"
       ],
-      "related_nodes": [
+      "related": [
         "math_10_ch4_s2_03",
         "math_10_ch4_s2_09"
-      ],
-      "examples": [
-        {
-          "scenario": "旅游收入对比（例2-1）",
-          "description": "A地线性收入 f(x)=1150(10x+600)，B地指数收入 g(x)=1000×278×1.11^x。约10.22年后B地收入反超A地，到2015年B地收入比A地多约34.7亿元"
-        },
-        {
-          "scenario": "人口倍增期（例4）",
-          "description": "城市人口从10万到20万约需20年（倍增期），从80万人开始再过20年约增长到160万人"
-        },
-        {
-          "scenario": "蓝藻指数增长",
-          "description": "每天增长率6.25%，30天后为原来的 (1+0.0625)^30 ≈ 6.02 倍"
-        }
       ]
     },
-    {
-      "node_id": "math_10_ch4_s2_09",
-      "title": "线性增长与指数增长的对比",
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch4_s2_09",
+    "basic": {
+      "name": "线性增长与指数增长的对比",
       "type": "method",
-      "level": 2,
-      "difficulty": "intermediate",
-      "content": "线性增长的特点是年增加量为常数（等差变化），图象呈直线；指数增长的特点是年增长率为常数（等比变化），图象呈越来越陡的上升曲线。在线性vs指数的对比中：初期线性可能优于指数，但经过足够长时间后指数增长将远远超过线性增长（指数爆炸）。判断一个问题属于哪种增长模型的关键是：观察相邻两期的差值是否为常数（线性），还是比值/倍率是否为常数（指数）。",
-      "keywords": [
-        "线性增长",
-        "指数增长",
-        "等差",
-        "等比",
-        "指数爆炸",
-        "增长模型对比"
-      ],
-      "prerequisites": [
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "线性增长的特点是年增加量为常数（等差变化），图象呈直线；指数增长的特点是年增长率为常数（等比变化），图象呈越来越陡的上升曲线。在线性vs指数的对比中：初期线性可能优于指数，但经过足够长时间后指数增长将远远超过线性增长（指数爆炸）。判断一个问题属于哪种增长模型的关键是：观察相邻两期的差值是否为常数（线性），还是比值/倍率是否为常数（指数）。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch4_s2_01",
         "math_10_ch3_s1_01"
       ],
-      "related_nodes": [
+      "related": [
         "math_10_ch4_s2_01",
         "math_10_ch4_s2_08"
-      ],
-      "examples": [
-        {
-          "scenario": "A地 vs B地景区（问题1）",
-          "description": "A地游客人次年增加量约10万次（线性），B地年增长率约0.11（指数）"
-        }
       ]
     },
-    {
-      "node_id": "math_10_ch4_s2_10",
-      "title": "放射性物质的半衰期",
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch4_s2_10",
+    "basic": {
+      "name": "放射性物质的半衰期",
       "type": "definition",
-      "level": 2,
-      "difficulty": "intermediate",
-      "content": "半衰期是放射性物质质量衰减为原来一半所用的时间。连续两个半衰期后质量衰减为原来的 1/4，而非 0（不是「全衰期」）。半衰期公式 Q(t) = Q₀(1/2)^(t/h) 是指数衰减模型的重要应用。常见放射性物质：碳14（5730年）、铀235、锶90、碘131、铯137、镭226等。碳14断代法利用该原理测定生物死亡年代。",
-      "keywords": [
-        "半衰期",
-        "碳14",
-        "放射性物质",
-        "年代测定",
-        "全衰期误区"
-      ],
-      "prerequisites": [
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "半衰期是放射性物质质量衰减为原来一半所用的时间。连续两个半衰期后质量衰减为原来的 1/4，而非 0（不是「全衰期」）。半衰期公式 Q(t) = Q₀(1/2)^(t/h) 是指数衰减模型的重要应用。常见放射性物质：碳14（5730年）、铀235、锶90、碘131、铯137、镭226等。碳14断代法利用该原理测定生物死亡年代。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch4_s2_03",
         "math_10_ch4_s2_01"
       ],
-      "related_nodes": [
+      "related": [
         "math_10_ch4_s2_03",
         "math_10_ch4_s2_08"
-      ],
-      "examples": [
-        {
-          "scenario": "碳14检测极限",
-          "description": "若碳14含量不足死亡前千分之一则检测不到。经过9个半衰期后含量为 (1/2)^9 = 1/512 ≈ 0.00195，仍大于千分之一，可检测到"
-        }
       ]
     },
-    {
-      "node_id": "math_10_ch4_s2_11",
-      "title": "指数函数的单调性判断与应用",
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch4_s2_11",
+    "basic": {
+      "name": "指数函数的单调性判断与应用",
       "type": "method",
-      "level": 2,
-      "difficulty": "intermediate",
-      "content": "由指数函数 y = a^x 的单调性可推导底数与函数值的关系：若 a^m < a^n，则当 a > 1 时 m < n，当 0 < a < 1 时 m > n。反之亦成立。该性质可用于比较指数大小、解简单指数不等式、以及由函数值的大小关系反推自变量的大小关系。",
-      "keywords": [
-        "单调性逆用",
-        "指数不等式",
-        "底数分类讨论",
-        "比较大小"
-      ],
-      "prerequisites": [
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "由指数函数 y = a^x 的单调性可推导底数与函数值的关系：若 a^m < a^n，则当 a > 1 时 m < n，当 0 < a < 1 时 m > n。反之亦成立。该性质可用于比较指数大小、解简单指数不等式、以及由函数值的大小关系反推自变量的大小关系。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch4_s2_05",
         "math_10_ch4_s2_06"
       ],
-      "related_nodes": [
+      "related": [
         "math_10_ch4_s2_05",
         "math_10_ch4_s2_06"
-      ],
-      "examples": [
-        {
-          "scenario": "由函数值大小反推自变量（习题3）",
-          "description": "2^m < 2^n ⇒ m < n（a=2>1）；0.2^m < 0.2^n ⇒ m > n（a=0.2<1）"
-        }
       ]
     },
-    {
-      "node_id": "math_10_ch4_s2_12",
-      "title": "复利模型与指数函数",
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch4_s2_12",
+    "basic": {
+      "name": "复利模型与指数函数",
       "type": "example",
-      "level": 2,
-      "difficulty": "intermediate",
-      "content": "复利是一种计算利息的方法：每期将前一期的利息和本金加在一起作为新本金，再计算下一期利息。本利和 y = a(1+r)^x，其中 a 为本金，r 为每期利率，x 为存期数。该模型本质上是指数增长模型 y = N(1+p)^x 在金融领域的具体应用。",
-      "keywords": [
-        "复利",
-        "本利和",
-        "金融模型",
-        "指数增长应用"
-      ],
-      "prerequisites": [
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "复利是一种计算利息的方法：每期将前一期的利息和本金加在一起作为新本金，再计算下一期利息。本利和 y = a(1+r)^x，其中 a 为本金，r 为每期利率，x 为存期数。该模型本质上是指数增长模型 y = N(1+p)^x 在金融领域的具体应用。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch4_s2_03"
       ],
-      "related_nodes": [
+      "related": [
         "math_10_ch4_s2_03",
         "math_10_ch4_s2_08"
-      ],
-      "examples": [
-        {
-          "scenario": "复利计算",
-          "description": "本金1000元，每期利率2.25%，5期后本利和 y = 1000 × (1+0.0225)^5"
-        }
       ]
-    }
-  ],
-  "latent_knowledge": [
-    {
-      "topic": "指数函数与幂函数的区别",
-      "description": "指数函数 y = a^x 的自变量在指数位置，底数为常数；幂函数 y = x^α 的自变量在底数位置，指数为常数。两者图象形态和性质截然不同，学生容易混淆。"
     },
-    {
-      "topic": "底数 a 对指数函数图象位置的影响",
-      "description": "在 a > 1 范围内，a 越大，第一象限内图象越靠近 y 轴，第二象限内越靠近 x 轴；在 0 < a < 1 范围内，a 越小（越接近0），图象越靠近 y 轴。底数 a 的大小决定了图象的「陡峭」程度。"
-    },
-    {
-      "topic": "指数函数图象无限趋近于 x 轴（不与 x 轴相交）",
-      "description": "这是值域为 (0, +∞) 的几何体现——图象在 x 轴上方，向左或向右无限延伸时趋近于 x 轴但永不触及，体现了「极限」思想的初步渗透。"
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
     }
-  ]
-}
+  }
+]

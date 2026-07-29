@@ -1,135 +1,524 @@
 [
   {
     "knowledge_id": "math_10_ch1_s4_001",
-    "basic": { "name": "命题", "type": "definition", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": null, "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.4 充分条件与必要条件"] },
-    "concept": { "source_text": "用语言、符号或式子表达的，可以判断真假的陈述句叫做命题", "level": "knowledge" },
-    "relations": { "reference": [], "related": ["math_10_ch1_s4_002", "math_10_ch1_s4_003"] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "basic": {
+      "name": "命题",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    "concept": {
+      "source_text": "用语言、符号或式子表达的，可以判断真假的陈述句叫做命题",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": [
+        "math_10_ch1_s4_002",
+        "math_10_ch1_s4_003"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s4_002",
-    "basic": { "name": "真命题与假命题", "type": "property", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s4_001", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.4 充分条件与必要条件"] },
-    "concept": { "source_text": "判断为真的语句是真命题，判断为假的语句是假命题", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s4_001"], "related": ["math_10_ch1_s4_003"] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "basic": {
+      "name": "真命题与假命题",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s4_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    "concept": {
+      "source_text": "判断为真的语句是真命题，判断为假的语句是假命题",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s4_001"
+      ],
+      "related": [
+        "math_10_ch1_s4_003"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s4_003",
-    "basic": { "name": "命题的「若p则q」形式", "type": "notation", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s4_001", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.4 充分条件与必要条件"] },
-    "concept": { "source_text": "中学数学中的许多命题可以写成'若p，则q'或'如果p，那么q'等形式。其中p称为命题的条件，q称为命题的结论", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s4_001"], "related": ["math_10_ch1_s4_004", "math_10_ch1_s4_005", "math_10_ch1_s4_006"] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "basic": {
+      "name": "命题的「若p则q」形式",
+      "type": "notation",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s4_001",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    "concept": {
+      "source_text": "中学数学中的许多命题可以写成'若p，则q'或'如果p，那么q'等形式。其中p称为命题的条件，q称为命题的结论",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s4_001"
+      ],
+      "related": [
+        "math_10_ch1_s4_004",
+        "math_10_ch1_s4_005",
+        "math_10_ch1_s4_006"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s4_004",
-    "basic": { "name": "逻辑蕴含符号 p⇒q 与 p⇏q", "type": "notation", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s4_003", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.4 充分条件与必要条件"] },
-    "concept": { "source_text": "'若p，则q'为真命题时，由p可以推出q，记作p⇒q；'若p，则q'为假命题时，由条件p不能推出结论q，记作p⇏q", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s4_003"], "related": ["math_10_ch1_s4_005", "math_10_ch1_s4_006", "math_10_ch1_s4_007"] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "basic": {
+      "name": "逻辑蕴含符号 p⇒q 与 p⇏q",
+      "type": "notation",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s4_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    "concept": {
+      "source_text": "'若p，则q'为真命题时，由p可以推出q，记作p⇒q；'若p，则q'为假命题时，由条件p不能推出结论q，记作p⇏q",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s4_003"
+      ],
+      "related": [
+        "math_10_ch1_s4_005",
+        "math_10_ch1_s4_006",
+        "math_10_ch1_s4_007"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s4_005",
-    "basic": { "name": "充分条件", "type": "definition", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s4_004", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.4 充分条件与必要条件"] },
-    "concept": { "source_text": "如果'若p，则q'为真命题，即p⇒q，那么p是q的充分条件（sufficient condition）", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s4_004", "math_10_ch1_s4_003"], "related": ["math_10_ch1_s4_006", "math_10_ch1_s4_007"] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "basic": {
+      "name": "充分条件",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s4_004",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    "concept": {
+      "source_text": "如果'若p，则q'为真命题，即p⇒q，那么p是q的充分条件（sufficient condition）",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s4_004",
+        "math_10_ch1_s4_003"
+      ],
+      "related": [
+        "math_10_ch1_s4_006",
+        "math_10_ch1_s4_007"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s4_006",
-    "basic": { "name": "必要条件", "type": "definition", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s4_004", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.4 充分条件与必要条件"] },
-    "concept": { "source_text": "如果'若p，则q'为真命题，即p⇒q，那么q是p的必要条件（necessary condition）", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s4_004", "math_10_ch1_s4_003"], "related": ["math_10_ch1_s4_005", "math_10_ch1_s4_007"] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "basic": {
+      "name": "必要条件",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s4_004",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    "concept": {
+      "source_text": "如果'若p，则q'为真命题，即p⇒q，那么q是p的必要条件（necessary condition）",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s4_004",
+        "math_10_ch1_s4_003"
+      ],
+      "related": [
+        "math_10_ch1_s4_005",
+        "math_10_ch1_s4_007"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s4_007",
-    "basic": { "name": "充分条件与必要条件的否定", "type": "property", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s4_004", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.4 充分条件与必要条件"] },
-    "concept": { "source_text": "如果'若p，则q'为假命题，即p⇏q，那么p不是q的充分条件，q不是p的必要条件", "level": "knowledge" },
-    "relations": { "reference": ["math_10_ch1_s4_004", "math_10_ch1_s4_005", "math_10_ch1_s4_006"], "related": [] },
-    "importance": { "curriculum_weight": 2, "exam_frequency": 2 }
+    "basic": {
+      "name": "充分条件与必要条件的否定",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s4_004",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
+    "concept": {
+      "source_text": "如果'若p，则q'为假命题，即p⇏q，那么p不是q的充分条件，q不是p的必要条件",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
+        "math_10_ch1_s4_004",
+        "math_10_ch1_s4_005",
+        "math_10_ch1_s4_006"
+      ],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s4_008",
-    "basic": { "name": "逆命题", "type": "definition", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s4_003", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.4 充分条件与必要条件"] },
+    "basic": {
+      "name": "逆命题",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s4_003",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
     "concept": {
       "source_text": "将命题'若p，则q'中的条件p和结论q互换，就得到一个新的命题'若q，则p'，称这个命题为原命题的逆命题",
       "level": "knowledge"
     },
-    "relations": { "reference": ["math_10_ch1_s4_003"], "related": ["math_10_ch1_s4_009"] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 3 }
+    "relations": {
+      "reference": [
+        "math_10_ch1_s4_003"
+      ],
+      "related": [
+        "math_10_ch1_s4_009"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s4_009",
-    "basic": { "name": "充要条件（充分必要条件）", "type": "definition", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s4_004", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.4 充分条件与必要条件"] },
+    "basic": {
+      "name": "充要条件（充分必要条件）",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s4_004",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
     "concept": {
       "source_text": "如果'若p，则q'和它的逆命题'若q，则p'均是真命题，即既有p⇒q，又有q⇒p，就记作p⇔q。此时p既是q的充分条件也是q的必要条件，称p是q的充分必要条件，简称为充要条件（sufficient and necessary condition）。p与q互为充要条件",
       "level": "knowledge"
     },
-    "relations": { "reference": ["math_10_ch1_s4_004", "math_10_ch1_s4_008"], "related": ["math_10_ch1_s4_005", "math_10_ch1_s4_006", "math_10_ch1_s4_010", "math_10_ch1_s4_011", "math_10_ch1_s4_014"] },
-    "importance": { "curriculum_weight": 5, "exam_frequency": 5 }
+    "relations": {
+      "reference": [
+        "math_10_ch1_s4_004",
+        "math_10_ch1_s4_008"
+      ],
+      "related": [
+        "math_10_ch1_s4_005",
+        "math_10_ch1_s4_006",
+        "math_10_ch1_s4_010",
+        "math_10_ch1_s4_011",
+        "math_10_ch1_s4_014"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 5,
+      "exam_frequency": 5
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s4_010",
-    "basic": { "name": "充要条件的证明方法", "type": "method", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s4_009", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.4 充分条件与必要条件"] },
+    "basic": {
+      "name": "充要条件的证明方法",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s4_009",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
     "concept": {
       "source_text": "证明p是q的充要条件时，需分别证明充分性（p⇒q）和必要性（q⇒p）两方面。充分性：由条件p推出结论q；必要性：由结论q推出条件p",
-      "level": "method"
+      "level": "knowledge"
     },
-    "relations": { "reference": ["math_10_ch1_s4_009"], "related": ["math_10_ch1_s4_014"] },
-    "importance": { "curriculum_weight": 5, "exam_frequency": 5 }
+    "relations": {
+      "reference": [
+        "math_10_ch1_s4_009"
+      ],
+      "related": [
+        "math_10_ch1_s4_014"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 5,
+      "exam_frequency": 5
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s4_011",
-    "basic": { "name": "充要条件与等价定义", "type": "property", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s4_009", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.4 充分条件与必要条件"] },
+    "basic": {
+      "name": "充要条件与等价定义",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s4_009",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
     "concept": {
       "source_text": "充要条件可以用于构造几何图形的不同定义形式（等价定义）。多个充要条件从不同角度刻画同一概念，这些定义相互等价。例如平行四边形的充要条件：两组对边分别平行、两组对边分别相等、对角线互相平分等均可作为平行四边形的定义",
-      "level": "comprehension"
+      "level": "knowledge"
     },
-    "relations": { "reference": ["math_10_ch1_s4_009"], "related": ["math_10_ch1_s4_012", "math_10_ch1_s4_013"] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 2 }
+    "relations": {
+      "reference": [
+        "math_10_ch1_s4_009"
+      ],
+      "related": [
+        "math_10_ch1_s4_012",
+        "math_10_ch1_s4_013"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 2
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s4_012",
-    "basic": { "name": "判定定理是充分条件", "type": "property", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s4_005", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.4 充分条件与必要条件"] },
+    "basic": {
+      "name": "判定定理是充分条件",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s4_005",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
     "concept": {
       "source_text": "几何中的判定定理给出了结论成立的充分条件。例如相似三角形的判定定理（三边成比例、两边成比例且夹角相等、两角分别相等）分别给出了'两个三角形相似'的充分条件",
-      "level": "comprehension"
+      "level": "knowledge"
     },
-    "relations": { "reference": ["math_10_ch1_s4_005", "math_10_ch1_s4_009"], "related": ["math_10_ch1_s4_013"] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 2 }
+    "relations": {
+      "reference": [
+        "math_10_ch1_s4_005",
+        "math_10_ch1_s4_009"
+      ],
+      "related": [
+        "math_10_ch1_s4_013"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 2
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s4_013",
-    "basic": { "name": "性质定理是必要条件", "type": "property", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s4_006", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.4 充分条件与必要条件"] },
+    "basic": {
+      "name": "性质定理是必要条件",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s4_006",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
     "concept": {
       "source_text": "几何中的性质定理给出了结论成立的必要条件，即如果结论不满足性质定理的条件，则一定不成立。例如相似三角形的性质定理（对应线段比相等、对应角相等、周长比等于相似比、面积比等于相似比平方）分别给出了'两个三角形相似'的必要条件",
-      "level": "comprehension"
+      "level": "knowledge"
     },
-    "relations": { "reference": ["math_10_ch1_s4_006", "math_10_ch1_s4_009"], "related": ["math_10_ch1_s4_012"] },
-    "importance": { "curriculum_weight": 3, "exam_frequency": 2 }
+    "relations": {
+      "reference": [
+        "math_10_ch1_s4_006",
+        "math_10_ch1_s4_009"
+      ],
+      "related": [
+        "math_10_ch1_s4_012"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 2
+    }
   },
   {
     "knowledge_id": "math_10_ch1_s4_014",
-    "basic": { "name": "四种条件关系的判断", "type": "method", "subject": "数学", "stage": "高中", "grade": "必修第一册" },
-    "tree": { "parent_id": "math_10_ch1_s4_009", "path": ["数学", "必修第一册", "第一章 集合与常用逻辑用语", "1.4 充分条件与必要条件"] },
+    "basic": {
+      "name": "四种条件关系的判断",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": "math_10_ch1_s4_009",
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.4 充分条件与必要条件"
+      ]
+    },
     "concept": {
       "source_text": "判断条件p与结论q的关系：①充分不必要条件——p⇒q且q⇏p；②必要不充分条件——p⇏q且q⇒p；③充要条件——p⇔q；④既不充分也不必要条件——p⇏q且q⇏p。也可用集合观点：若A⊆B则p是q的充分条件；若B⊆A则p是q的必要条件；若A=B则p是q的充要条件",
-      "level": "method"
+      "level": "knowledge"
     },
-    "relations": { "reference": ["math_10_ch1_s4_009", "math_10_ch1_s4_010"], "related": ["math_10_ch1_s4_005", "math_10_ch1_s4_006", "math_10_ch1_s4_011"] },
-    "importance": { "curriculum_weight": 5, "exam_frequency": 5 }
+    "relations": {
+      "reference": [
+        "math_10_ch1_s4_009",
+        "math_10_ch1_s4_010"
+      ],
+      "related": [
+        "math_10_ch1_s4_005",
+        "math_10_ch1_s4_006",
+        "math_10_ch1_s4_011"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 5,
+      "exam_frequency": 5
+    }
   }
 ]

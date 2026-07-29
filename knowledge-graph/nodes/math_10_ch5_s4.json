@@ -1,570 +1,900 @@
-{
-  "section_id": "math_10_ch5_s4",
-  "section_title": "5.4 三角函数的图象与性质",
-  "chapter": "第五章 三角函数",
-  "nodes": [
-    {
-      "id": "math_10_ch5_s4_001",
+[
+  {
+    "knowledge_id": "math_10_ch5_s4_001",
+    "basic": {
+      "name": "正弦曲线",
       "type": "definition",
-      "title": "正弦曲线",
-      "description": "正弦函数 y=sin x (x∈R) 的图象叫做正弦曲线（sine curve）。它是一条“波浪起伏”的连续光滑曲线，由 y=sin x 在 [0,2π] 上的一个波段通过向左、向右平移（每次移动 2π 个单位长度）得到。正弦曲线关于原点对称（奇函数），且具有周期性。",
-      "keywords": [
-        "正弦曲线",
-        "sine curve",
-        "波浪形",
-        "连续光滑",
-        "周期性"
-      ],
-      "references": [
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "正弦函数 y=sin x (x∈R) 的图象叫做正弦曲线（sine curve）。它是一条“波浪起伏”的连续光滑曲线，由 y=sin x 在 [0,2π] 上的一个波段通过向左、向右平移（每次移动 2π 个单位长度）得到。正弦曲线关于原点对称（奇函数），且具有周期性。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_002",
         "math_10_ch5_s4_003",
         "math_10_ch5_s4_004"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_002",
-      "type": "method",
-      "title": "正弦函数图象的几何作法",
-      "description": "利用单位圆上点的纵坐标等于正弦函数值的原理，通过以下步骤画 y=sin x, x∈[0,2π] 的图象：①在直角坐标系中画单位圆，将 x 轴上[0,2π]等分；②对每个等分点 x₀，在单位圆上找到对应角 x₀ 的终边与单位圆的交点 B，点 B 的纵坐标 y₀=sin x₀；③以 x₀ 为横坐标、y₀ 为纵坐标在直角坐标系中描点 T(x₀, sin x₀)；④用光滑曲线连接各点。这一作法的本质是将单位圆上的“旋转运动”在直角坐标系中展开为“平铺的函数图象”。",
-      "keywords": [
-        "几何作图",
-        "单位圆",
-        "等分",
-        "投影",
-        "描点",
-        "光滑曲线"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_002",
+    "basic": {
+      "name": "正弦函数图象的几何作法",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "利用单位圆上点的纵坐标等于正弦函数值的原理，通过以下步骤画 y=sin x, x∈[0,2π] 的图象：①在直角坐标系中画单位圆，将 x 轴上[0,2π]等分；②对每个等分点 x₀，在单位圆上找到对应角 x₀ 的终边与单位圆的交点 B，点 B 的纵坐标 y₀=sin x₀；③以 x₀ 为横坐标、y₀ 为纵坐标在直角坐标系中描点 T(x₀, sin x₀)；④用光滑曲线连接各点。这一作法的本质是将单位圆上的“旋转运动”在直角坐标系中展开为“平铺的函数图象”。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_001",
         "math_10_ch5_s4_003",
         "math_10_ch5_s2_001"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_003",
-      "type": "method",
-      "title": "五点法画正弦函数图象",
-      "description": "画 y=sin x, x∈[0,2π] 的简图时，先找出五个关键点：(0,0)、(π/2,1)、(π,0)、(3π/2,-1)、(2π,0)，再用光滑曲线连接。这五个点分别对应图象的起点、最高点、中心点、最低点、终点，基本确定了图象的形状。五点法是当精确度要求不高时的实用近似作图方法，也是后续研究三角函数图象变换的基础。",
-      "keywords": [
-        "五点法",
-        "关键点",
-        "简图",
-        "近似作图",
-        "(0,0)",
-        "(π/2,1)",
-        "(π,0)",
-        "(3π/2,-1)",
-        "(2π,0)"
       ],
-      "formula": "关键点: (0,0), (π/2,1), (π,0), (3π/2,-1), (2π,0)",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 1
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_003",
+    "basic": {
+      "name": "五点法画正弦函数图象",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "画 y=sin x, x∈[0,2π] 的简图时，先找出五个关键点：(0,0)、(π/2,1)、(π,0)、(3π/2,-1)、(2π,0)，再用光滑曲线连接。这五个点分别对应图象的起点、最高点、中心点、最低点、终点，基本确定了图象的形状。五点法是当精确度要求不高时的实用近似作图方法，也是后续研究三角函数图象变换的基础。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_001",
         "math_10_ch5_s4_002"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_004",
-      "type": "property",
-      "title": "正弦函数图象的周期性平移扩展",
-      "description": "由诱导公式 sin(x+2kπ)=sin x (k∈Z) 可知，函数 y=sin x, x∈[2kπ, 2(k+1)π] 的图象与 y=sin x, x∈[0,2π] 的图象形状完全一致。因此将 [0,2π] 上的图象不断向左、向右平移（每次移动 2π 个单位长度），就得到正弦函数 y=sin x, x∈R 的完整图象（正弦曲线）。这一性质使研究只需聚焦于一个周期区间。",
-      "keywords": [
-        "平移",
-        "扩展",
-        "完整图象",
-        "sin(x+2kπ)=sin x",
-        "一个周期"
       ],
-      "formula": "sin(x+2kπ)=sin x, k∈Z",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 5,
+      "exam_frequency": 5
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_004",
+    "basic": {
+      "name": "正弦函数图象的周期性平移扩展",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "由诱导公式 sin(x+2kπ)=sin x (k∈Z) 可知，函数 y=sin x, x∈[2kπ, 2(k+1)π] 的图象与 y=sin x, x∈[0,2π] 的图象形状完全一致。因此将 [0,2π] 上的图象不断向左、向右平移（每次移动 2π 个单位长度），就得到正弦函数 y=sin x, x∈R 的完整图象（正弦曲线）。这一性质使研究只需聚焦于一个周期区间。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_001",
         "math_10_ch5_s4_003"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_005",
-      "type": "definition",
-      "title": "余弦曲线",
-      "description": "余弦函数 y=cos x, x∈R 的图象叫做余弦曲线（cosine curve）。它与正弦曲线具有完全相同的形状，也是一条“波浪起伏”的连续光滑曲线。余弦曲线关于 y 轴对称（偶函数）。",
-      "keywords": [
-        "余弦曲线",
-        "cosine curve",
-        "相同形状",
-        "连续光滑",
-        "偶函数"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 2
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_005",
+    "basic": {
+      "name": "余弦曲线",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "余弦函数 y=cos x, x∈R 的图象叫做余弦曲线（cosine curve）。它与正弦曲线具有完全相同的形状，也是一条“波浪起伏”的连续光滑曲线。余弦曲线关于 y 轴对称（偶函数）。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_006",
         "math_10_ch5_s4_002",
         "math_10_ch5_s4_001"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_006",
-      "type": "method",
-      "title": "通过正弦图象平移得到余弦图象",
-      "description": "由诱导公式 cos x = sin(x+π/2) 可知，余弦函数 y=cos x 的图象可以通过将正弦函数 y=sin x 的图象向左平移 π/2 个单位长度得到。因此正弦曲线和余弦曲线形状相同，仅在 x 轴方向相差 π/2 相位。这一关系揭示了正弦与余弦作为“相位差 π/2”的同族函数。",
-      "keywords": [
-        "左平移",
-        "π/2",
-        "相位差",
-        "cos x = sin(x+π/2)",
-        "图象变换"
       ],
-      "formula": "cos x = sin(x+π/2)",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_006",
+    "basic": {
+      "name": "通过正弦图象平移得到余弦图象",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "由诱导公式 cos x = sin(x+π/2) 可知，余弦函数 y=cos x 的图象可以通过将正弦函数 y=sin x 的图象向左平移 π/2 个单位长度得到。因此正弦曲线和余弦曲线形状相同，仅在 x 轴方向相差 π/2 相位。这一关系揭示了正弦与余弦作为“相位差 π/2”的同族函数。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_005",
         "math_10_ch5_s4_001",
         "math_10_ch5_s3_005",
         "math_10_ch5_s3_006"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_007",
-      "type": "method",
-      "title": "五点法画余弦函数图象",
-      "description": "画 y=cos x, x∈[-π,π] 的简图时，五个关键点为：(-π,-1)、(-π/2,0)、(0,1)、(π/2,0)、(π,-1)。在 x∈[0,2π] 上，五个关键点为：(0,1)、(π/2,0)、(π,-1)、(3π/2,0)、(2π,1)。用光滑曲线连接即可得到简图。余弦的关键点特点是起点在最高点位置 ((0,1))，终点的纵坐标也为 1。",
-      "keywords": [
-        "五点法",
-        "余弦",
-        "关键点",
-        "(-π,-1)",
-        "(-π/2,0)",
-        "(0,1)",
-        "(π/2,0)",
-        "(π,-1)"
       ],
-      "formula": "关键点([0,2π]): (0,1), (π/2,0), (π,-1), (3π/2,0), (2π,1)",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_007",
+    "basic": {
+      "name": "五点法画余弦函数图象",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "画 y=cos x, x∈[-π,π] 的简图时，五个关键点为：(-π,-1)、(-π/2,0)、(0,1)、(π/2,0)、(π,-1)。在 x∈[0,2π] 上，五个关键点为：(0,1)、(π/2,0)、(π,-1)、(3π/2,0)、(2π,1)。用光滑曲线连接即可得到简图。余弦的关键点特点是起点在最高点位置 ((0,1))，终点的纵坐标也为 1。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_005",
         "math_10_ch5_s4_006"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_008",
-      "type": "method",
-      "title": "利用图象变换作正弦/余弦型函数图象",
-      "description": "利用已知的正弦/余弦函数图象，通过平移、伸缩、对称等变换可快速得到相关函数的图象。典型例子：①y=1+sin x：将 y=sin x 图象向上平移1个单位（y 坐标+1），五个关键点变为(0,1),(π/2,2),(π,1),(3π/2,0),(2π,1)；②y=-cos x：将 y=cos x 图象作关于 x 轴的对称变换（y 坐标取相反数），关键点变为(0,-1),(π/2,0),(π,1),(3π/2,0),(2π,-1)。这一方法是后续学习 y=A sin(ωx+φ) 的图象变换的基础。",
-      "keywords": [
-        "图象变换",
-        "平移",
-        "对称",
-        "y=1+sin x",
-        "y=-cos x",
-        "变换作图"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_008",
+    "basic": {
+      "name": "利用图象变换作正弦/余弦型函数图象",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "利用已知的正弦/余弦函数图象，通过平移、伸缩、对称等变换可快速得到相关函数的图象。典型例子：①y=1+sin x：将 y=sin x 图象向上平移1个单位（y 坐标+1），五个关键点变为(0,1),(π/2,2),(π,1),(3π/2,0),(2π,1)；②y=-cos x：将 y=cos x 图象作关于 x 轴的对称变换（y 坐标取相反数），关键点变为(0,-1),(π/2,0),(π,1),(3π/2,0),(2π,-1)。这一方法是后续学习 y=A sin(ωx+φ) 的图象变换的基础。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_003",
         "math_10_ch5_s4_007"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_009",
-      "type": "definition",
-      "title": "周期函数",
-      "description": "设函数 f(x) 的定义域为 D，如果存在一个非零常数 T，使得对每一个 x∈D 都有 x+T∈D，且 f(x+T)=f(x)，那么函数 f(x) 就叫做周期函数（periodic function）。非零常数 T 叫做这个函数的周期。周期函数的周期不止一个：若 T 是周期，则 2T, 3T, …, -T, -2T, … 也都是它的周期。",
-      "keywords": [
-        "周期函数",
-        "periodic function",
-        "非零常数",
-        "f(x+T)=f(x)",
-        "定义域"
       ],
-      "formula": "f(x+T)=f(x), T≠0",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_009",
+    "basic": {
+      "name": "周期函数",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "设函数 f(x) 的定义域为 D，如果存在一个非零常数 T，使得对每一个 x∈D 都有 x+T∈D，且 f(x+T)=f(x)，那么函数 f(x) 就叫做周期函数（periodic function）。非零常数 T 叫做这个函数的周期。周期函数的周期不止一个：若 T 是周期，则 2T, 3T, …, -T, -2T, … 也都是它的周期。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_010",
         "math_10_ch5_s2_001",
         "math_10_ch3_s2_001"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_010",
-      "type": "definition",
-      "title": "最小正周期",
-      "description": "如果在周期函数 f(x) 的所有周期中存在一个最小的正数，那么这个最小正数就叫做 f(x) 的最小正周期（minimal positive period）。正弦函数和余弦函数的最小正周期都是 2π。正切函数的最小正周期是 π。注意：并非所有周期函数都有最小正周期（如常函数 f(x)=c 的任何正数都是其周期，不存在最小正周期）。本书中如不加特别说明,“周期”一般指最小正周期。",
-      "keywords": [
-        "最小正周期",
-        "minimal positive period",
-        "2π",
-        "π",
-        "常函数"
       ],
-      "formula": "最小正周期 T_min > 0 且是最小的周期值",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 5,
+      "exam_frequency": 5
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_010",
+    "basic": {
+      "name": "最小正周期",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "如果在周期函数 f(x) 的所有周期中存在一个最小的正数，那么这个最小正数就叫做 f(x) 的最小正周期（minimal positive period）。正弦函数和余弦函数的最小正周期都是 2π。正切函数的最小正周期是 π。注意：并非所有周期函数都有最小正周期（如常函数 f(x)=c 的任何正数都是其周期，不存在最小正周期）。本书中如不加特别说明,“周期”一般指最小正周期。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_009",
         "math_10_ch5_s4_011",
         "math_10_ch5_s4_012"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_011",
-      "type": "property",
-      "title": "正弦函数和余弦函数的周期性",
-      "description": "由诱导公式 sin(x+2kπ)=sin x 和 cos(x+2kπ)=cos x (k∈Z) 可知，正弦函数和余弦函数都是周期函数，2kπ (k∈Z 且 k≠0) 都是它们的周期，最小正周期均为 2π。这意味着自变量每增加 2π，函数值重复出现，体现了三角函数的“周而复始”本质。",
-      "keywords": [
-        "正弦周期",
-        "余弦周期",
-        "2π",
-        "sin(x+2π)=sin x",
-        "cos(x+2π)=cos x",
-        "周而复始"
       ],
-      "formula": "sin(x+2π)=sin x, cos(x+2π)=cos x, T_min=2π",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_011",
+    "basic": {
+      "name": "正弦函数和余弦函数的周期性",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "由诱导公式 sin(x+2kπ)=sin x 和 cos(x+2kπ)=cos x (k∈Z) 可知，正弦函数和余弦函数都是周期函数，2kπ (k∈Z 且 k≠0) 都是它们的周期，最小正周期均为 2π。这意味着自变量每增加 2π，函数值重复出现，体现了三角函数的“周而复始”本质。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_009",
         "math_10_ch5_s4_010",
         "math_10_ch5_s2_004"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_012",
-      "type": "method",
-      "title": "求三角函数周期的方法",
-      "description": "求三角函数周期的基本方法是利用周期函数定义 f(x+T)=f(x)，通过代数变形找出 T。具体步骤：设 z=ωx+φ，利用 y=sin z 或 y=cos z 的周期为 2π（或 y=tan z 周期为 π）建立等式，解出自变量增量 T。例：①y=3sin x → T=2π（系数不影响周期）；②y=cos 2x → 令 z=2x, cos(z+2π)=cos z → cos(2x+2π)=cos 2x → cos 2(x+π)=cos 2x → T=π；③y=2sin(½x-π/6) → T=4π。关键结论：自变量的系数 ω 改变周期，振幅 A 不影响周期。",
-      "keywords": [
-        "求周期",
-        "代数变形",
-        "换元法",
-        "cos 2x",
-        "周期π",
-        "自变量系数"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_012",
+    "basic": {
+      "name": "求三角函数周期的方法",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "求三角函数周期的基本方法是利用周期函数定义 f(x+T)=f(x)，通过代数变形找出 T。具体步骤：设 z=ωx+φ，利用 y=sin z 或 y=cos z 的周期为 2π（或 y=tan z 周期为 π）建立等式，解出自变量增量 T。例：①y=3sin x → T=2π（系数不影响周期）；②y=cos 2x → 令 z=2x, cos(z+2π)=cos z → cos(2x+2π)=cos 2x → cos 2(x+π)=cos 2x → T=π；③y=2sin(½x-π/6) → T=4π。关键结论：自变量的系数 ω 改变周期，振幅 A 不影响周期。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_009",
         "math_10_ch5_s4_011",
         "math_10_ch5_s4_013"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_013",
-      "type": "property",
-      "title": "函数 y=A sin(ωx+φ) 与 y=A cos(ωx+φ) 的周期公式",
-      "description": "函数 y=A sin(ωx+φ) 和 y=A cos(ωx+φ)（A≠0, ω>0）的周期 T=2π/ω。推导：令 z=ωx+φ，则 y=A sin z 周期为 2π，由 z+2π=ω(x+2π/ω)+φ 得自变量 x 增加 2π/ω 时函数值重复出现，该增量为最小正增量。此公式说明周期仅与自变量的系数 ω 有关，与振幅 A 和初相 φ 无关。该结论可推广到一般周期函数：若 y=f(x) 周期为 T，则 y=f(ωx) (ω>0) 的周期为 T/ω。",
-      "keywords": [
-        "周期公式",
-        "T=2π/ω",
-        "y=Asin(ωx+φ)",
-        "y=Acos(ωx+φ)",
-        "仅与ω有关"
       ],
-      "formula": "T = 2π/ω (ω>0)",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_013",
+    "basic": {
+      "name": "函数 y=A sin(ωx+φ) 与 y=A cos(ωx+φ) 的周期公式",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "函数 y=A sin(ωx+φ) 和 y=A cos(ωx+φ)（A≠0, ω>0）的周期 T=2π/ω。推导：令 z=ωx+φ，则 y=A sin z 周期为 2π，由 z+2π=ω(x+2π/ω)+φ 得自变量 x 增加 2π/ω 时函数值重复出现，该增量为最小正增量。此公式说明周期仅与自变量的系数 ω 有关，与振幅 A 和初相 φ 无关。该结论可推广到一般周期函数：若 y=f(x) 周期为 T，则 y=f(ωx) (ω>0) 的周期为 T/ω。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_011",
         "math_10_ch5_s4_012",
         "math_10_ch5_s4_010"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_014",
-      "type": "property",
-      "title": "正弦函数和余弦函数的奇偶性",
-      "description": "由诱导公式 sin(-x)=-sin x 和 cos(-x)=cos x 可知：正弦函数是奇函数（图象关于原点对称），余弦函数是偶函数（图象关于 y 轴对称）。利用奇偶性可以简化研究：只需研究 x≥0 部分的性质，再通过对称性得到 x<0 部分。正弦曲线关于原点对称，余弦曲线关于 y 轴对称。",
-      "keywords": [
-        "奇函数",
-        "偶函数",
-        "sin(-x)=-sin x",
-        "cos(-x)=cos x",
-        "原点对称",
-        "y轴对称"
       ],
-      "formula": "sin(-x)=-sin x (奇), cos(-x)=cos x (偶)",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 5,
+      "exam_frequency": 5
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_014",
+    "basic": {
+      "name": "正弦函数和余弦函数的奇偶性",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "由诱导公式 sin(-x)=-sin x 和 cos(-x)=cos x 可知：正弦函数是奇函数（图象关于原点对称），余弦函数是偶函数（图象关于 y 轴对称）。利用奇偶性可以简化研究：只需研究 x≥0 部分的性质，再通过对称性得到 x<0 部分。正弦曲线关于原点对称，余弦曲线关于 y 轴对称。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_001",
         "math_10_ch5_s4_005",
         "math_10_ch5_s3_003",
         "math_10_ch3_s2_012"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_015",
-      "type": "property",
-      "title": "正弦函数的单调性",
-      "description": "正弦函数在每一个闭区间 [-π/2+2kπ, π/2+2kπ] (k∈Z) 上单调递增，值从 -1 增大到 1；在每一个闭区间 [π/2+2kπ, 3π/2+2kπ] (k∈Z) 上单调递减，值从 1 减小到 -1。观察图象可知：在一个周期 [-π/2, 3π/2] 内，x 从 -π/2 增至 π/2 时曲线上升，从 π/2 增至 3π/2 时曲线下降。利用周期性扩展到整个定义域。",
-      "keywords": [
-        "正弦单调递增",
-        "正弦单调递减",
-        "[-π/2+2kπ, π/2+2kπ]",
-        "[π/2+2kπ, 3π/2+2kπ]",
-        "增减区间"
       ],
-      "formula": "增区间: [-π/2+2kπ, π/2+2kπ]; 减区间: [π/2+2kπ, 3π/2+2kπ] (k∈Z)",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_015",
+    "basic": {
+      "name": "正弦函数的单调性",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "正弦函数在每一个闭区间 [-π/2+2kπ, π/2+2kπ] (k∈Z) 上单调递增，值从 -1 增大到 1；在每一个闭区间 [π/2+2kπ, 3π/2+2kπ] (k∈Z) 上单调递减，值从 1 减小到 -1。观察图象可知：在一个周期 [-π/2, 3π/2] 内，x 从 -π/2 增至 π/2 时曲线上升，从 π/2 增至 3π/2 时曲线下降。利用周期性扩展到整个定义域。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_001",
         "math_10_ch5_s4_011"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_016",
-      "type": "property",
-      "title": "余弦函数的单调性",
-      "description": "余弦函数在每一个闭区间 [-π+2kπ, 2kπ] (k∈Z) 上单调递增，值从 -1 增大到 1；在每一个闭区间 [2kπ, π+2kπ] (k∈Z) 上单调递减，值从 1 减小到 -1。观察图象可知：在一个周期 [-π, π] 内，x 从 -π 增至 0 时曲线上升，从 0 增至 π 时曲线下降。与正弦不同，余弦在 0 处取得最大值而非中转点。",
-      "keywords": [
-        "余弦单调递增",
-        "余弦单调递减",
-        "[-π+2kπ, 2kπ]",
-        "[2kπ, π+2kπ]",
-        "增减区间"
       ],
-      "formula": "增区间: [-π+2kπ, 2kπ]; 减区间: [2kπ, π+2kπ] (k∈Z)",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 5,
+      "exam_frequency": 5
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_016",
+    "basic": {
+      "name": "余弦函数的单调性",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "余弦函数在每一个闭区间 [-π+2kπ, 2kπ] (k∈Z) 上单调递增，值从 -1 增大到 1；在每一个闭区间 [2kπ, π+2kπ] (k∈Z) 上单调递减，值从 1 减小到 -1。观察图象可知：在一个周期 [-π, π] 内，x 从 -π 增至 0 时曲线上升，从 0 增至 π 时曲线下降。与正弦不同，余弦在 0 处取得最大值而非中转点。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_005",
         "math_10_ch5_s4_011"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_017",
-      "type": "property",
-      "title": "正弦函数的最大值和最小值",
-      "description": "正弦函数 y=sin x 的最大值为 1，最小值为 -1。当且仅当 x=π/2+2kπ (k∈Z) 时取得最大值 1；当且仅当 x=-π/2+2kπ (k∈Z) 时取得最小值 -1。这是单调性和周期性的直接推论：在递增区间的右端点（π/2+2kπ）达到最大值，在递减区间的右端点（-π/2+2kπ）达到最小值。",
-      "keywords": [
-        "正弦最大值",
-        "正弦最小值",
-        "x=π/2+2kπ",
-        "x=-π/2+2kπ",
-        "最大值1",
-        "最小值-1"
       ],
-      "formula": "max=1 (x=π/2+2kπ), min=-1 (x=-π/2+2kπ), k∈Z",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_017",
+    "basic": {
+      "name": "正弦函数的最大值和最小值",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "正弦函数 y=sin x 的最大值为 1，最小值为 -1。当且仅当 x=π/2+2kπ (k∈Z) 时取得最大值 1；当且仅当 x=-π/2+2kπ (k∈Z) 时取得最小值 -1。这是单调性和周期性的直接推论：在递增区间的右端点（π/2+2kπ）达到最大值，在递减区间的右端点（-π/2+2kπ）达到最小值。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_015",
         "math_10_ch5_s4_001"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_018",
-      "type": "property",
-      "title": "余弦函数的最大值和最小值",
-      "description": "余弦函数 y=cos x 的最大值为 1，最小值为 -1。当且仅当 x=2kπ (k∈Z) 时取得最大值 1；当且仅当 x=(2k+1)π (k∈Z) 时取得最小值 -1。注意余弦最大值在 x=0（及周期整数倍）处取得，这是它与正弦（最大值在 π/2）的主要区别。",
-      "keywords": [
-        "余弦最大值",
-        "余弦最小值",
-        "x=2kπ",
-        "x=(2k+1)π",
-        "最大值1",
-        "最小值-1"
       ],
-      "formula": "max=1 (x=2kπ), min=-1 (x=(2k+1)π), k∈Z",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_018",
+    "basic": {
+      "name": "余弦函数的最大值和最小值",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "余弦函数 y=cos x 的最大值为 1，最小值为 -1。当且仅当 x=2kπ (k∈Z) 时取得最大值 1；当且仅当 x=(2k+1)π (k∈Z) 时取得最小值 -1。注意余弦最大值在 x=0（及周期整数倍）处取得，这是它与正弦（最大值在 π/2）的主要区别。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_016",
         "math_10_ch5_s4_005"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_019",
-      "type": "method",
-      "title": "利用三角函数的单调性比较同名三角函数值大小",
-      "description": "比较两个同名三角函数值的大小（如 sin α 与 sin β、cos α 与 cos β），方法是：①先用诱导公式将角化为同一单调区间内；②利用三角函数的单调性比较大小。例1：比较 sin(-π/18) 与 sin(-π/10)，因 -π/2<-π/10<-π/18<0 且正弦在 [-π/2,0] 递增，故 sin(-π/18)>sin(-π/10)。例2：比较 cos(-3π/5) 与 cos(-4π/5)，先用偶函数性质 cos(-θ)=cos θ 转化为 cos(3π/5) 与 cos(4π/5)，再因 0<4π/5<3π/5<π 且余弦在 [0,π] 递减，故 cos(-4π/5)>cos(-3π/5)。",
-      "keywords": [
-        "比较大小",
-        "同名",
-        "单调性",
-        "诱导公式",
-        "化到同一区间",
-        "sin比较",
-        "cos比较"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_019",
+    "basic": {
+      "name": "利用三角函数的单调性比较同名三角函数值大小",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "比较两个同名三角函数值的大小（如 sin α 与 sin β、cos α 与 cos β），方法是：①先用诱导公式将角化为同一单调区间内；②利用三角函数的单调性比较大小。例1：比较 sin(-π/18) 与 sin(-π/10)，因 -π/2<-π/10<-π/18<0 且正弦在 [-π/2,0] 递增，故 sin(-π/18)>sin(-π/10)。例2：比较 cos(-3π/5) 与 cos(-4π/5)，先用偶函数性质 cos(-θ)=cos θ 转化为 cos(3π/5) 与 cos(4π/5)，再因 0<4π/5<3π/5<π 且余弦在 [0,π] 递减，故 cos(-4π/5)>cos(-3π/5)。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_015",
         "math_10_ch5_s4_016",
         "math_10_ch5_s3_003",
         "math_10_ch5_s3_004"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_020",
-      "type": "method",
-      "title": "求复合三角函数的单调区间（换元法）",
-      "description": "求 y=A sin(ωx+φ) 或 y=A cos(ωx+φ) 单调区间的一般方法：令 z=ωx+φ，利用 y=sin z 或 y=cos z 的单调区间，建立关于 x 的不等式求解。例：求 y=sin(½x+π/3) 在 [-2π,2π] 上的增区间：令 z=½x+π/3，z∈[-2π/3,4π/3]，正弦在 [-π/2,π/2] 递增，解 -π/2≤½x+π/3≤π/2 得 -5π/3≤x≤π/3。注意：当 ω<0 时，需先利用奇偶性（或诱导公式）将 ω 化为正数，因为 z=ωx+φ 关于 x 的变化方向与 x 相反时会改变单调方向。",
-      "keywords": [
-        "复合三角函数",
-        "单调区间",
-        "换元法",
-        "z=ωx+φ",
-        "不等式求解",
-        "ω<0处理"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_020",
+    "basic": {
+      "name": "求复合三角函数的单调区间（换元法）",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "求 y=A sin(ωx+φ) 或 y=A cos(ωx+φ) 单调区间的一般方法：令 z=ωx+φ，利用 y=sin z 或 y=cos z 的单调区间，建立关于 x 的不等式求解。例：求 y=sin(½x+π/3) 在 [-2π,2π] 上的增区间：令 z=½x+π/3，z∈[-2π/3,4π/3]，正弦在 [-π/2,π/2] 递增，解 -π/2≤½x+π/3≤π/2 得 -5π/3≤x≤π/3。注意：当 ω<0 时，需先利用奇偶性（或诱导公式）将 ω 化为正数，因为 z=ωx+φ 关于 x 的变化方向与 x 相反时会改变单调方向。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_015",
         "math_10_ch5_s4_016",
         "math_10_ch5_s4_013"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_021",
-      "type": "property",
-      "title": "正切函数的周期性",
-      "description": "由诱导公式 tan(x+π)=tan x (x∈R 且 x≠π/2+kπ, k∈Z) 可知，正切函数是周期函数，周期为 π，最小正周期也是 π。注意正切函数的周期比正弦/余弦的周期（2π）短一半，这是正切与正/余弦的核心差异之一。一般地，函数 y=A tan(ωx+φ) (ω>0) 的周期为 T=π/ω。",
-      "keywords": [
-        "正切周期",
-        "T=π",
-        "tan(x+π)=tan x",
-        "周期比正弦短",
-        "T=π/ω"
       ],
-      "formula": "tan(x+π)=tan x, T_min=π",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 5,
+      "exam_frequency": 5
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_021",
+    "basic": {
+      "name": "正切函数的周期性",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "由诱导公式 tan(x+π)=tan x (x∈R 且 x≠π/2+kπ, k∈Z) 可知，正切函数是周期函数，周期为 π，最小正周期也是 π。注意正切函数的周期比正弦/余弦的周期（2π）短一半，这是正切与正/余弦的核心差异之一。一般地，函数 y=A tan(ωx+φ) (ω>0) 的周期为 T=π/ω。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_009",
         "math_10_ch5_s4_010",
         "math_10_ch5_s4_023"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_022",
-      "type": "property",
-      "title": "正切函数的奇偶性",
-      "description": "由诱导公式 tan(-x)=-tan x (x∈R 且 x≠π/2+kπ) 可知，正切函数是奇函数，其图象关于原点对称。利用这一性质，只需研究正切函数在 x≥0 部分的图象与性质，再通过原点对称得到 x<0 部分。",
-      "keywords": [
-        "正切奇函数",
-        "tan(-x)=-tan x",
-        "原点对称",
-        "奇偶性"
       ],
-      "formula": "tan(-x)=-tan x (奇函数)",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_022",
+    "basic": {
+      "name": "正切函数的奇偶性",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "由诱导公式 tan(-x)=-tan x (x∈R 且 x≠π/2+kπ) 可知，正切函数是奇函数，其图象关于原点对称。利用这一性质，只需研究正切函数在 x≥0 部分的图象与性质，再通过原点对称得到 x<0 部分。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_021",
         "math_10_ch5_s4_025",
         "math_10_ch5_s3_003"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_023",
-      "type": "definition",
-      "title": "正切曲线",
-      "description": "正切函数 y=tan x (x∈R, x≠π/2+kπ, k∈Z) 的图象叫做正切曲线（tangent curve）。正切曲线是由被与 y 轴平行的一系列直线 x=π/2+kπ (k∈Z) 所隔开的无穷多支形状相同的曲线组成。这些直线是正切曲线的渐近线——当 x 趋近于 π/2+kπ 时，tan x 趋近于无穷大。正切曲线在每个区间 (-π/2+kπ, π/2+kπ) 上从左向右呈不断上升趋势。",
-      "keywords": [
-        "正切曲线",
-        "tangent curve",
-        "渐近线",
-        "x=π/2+kπ",
-        "无穷多支",
-        "隔开的曲线"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_023",
+    "basic": {
+      "name": "正切曲线",
+      "type": "definition",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "正切函数 y=tan x (x∈R, x≠π/2+kπ, k∈Z) 的图象叫做正切曲线（tangent curve）。正切曲线是由被与 y 轴平行的一系列直线 x=π/2+kπ (k∈Z) 所隔开的无穷多支形状相同的曲线组成。这些直线是正切曲线的渐近线——当 x 趋近于 π/2+kπ 时，tan x 趋近于无穷大。正切曲线在每个区间 (-π/2+kπ, π/2+kπ) 上从左向右呈不断上升趋势。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_021",
         "math_10_ch5_s4_022",
         "math_10_ch5_s4_024"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_024",
-      "type": "method",
-      "title": "正切函数图象的几何作法",
-      "description": "利用正切线（单位圆上过 A(1,0) 的切线与角终边的交点 T 到 A 的有向线段长度）画正切函数图象：①在 (0,π/2) 上取一系列 x 值；②在单位圆中画出对应角 x 的终边，过 A(1,0) 作 x 轴垂线与终边交于点 T，则 AT 的长度即为 tan x；③以 x 为横坐标、AT 长度为纵坐标描点，用光滑曲线连接。当 x→π/2⁻ 时，AT→+∞，图象向右上方无限逼近直线 x=π/2。再利用奇偶性得到 (-π/2,0] 上的图象，最后利用周期性（π）向左、右平移得到完整正切曲线。",
-      "keywords": [
-        "正切线",
-        "单位圆",
-        "几何作图",
-        "AT长度",
-        "渐近线逼近",
-        "奇偶性扩展",
-        "周期性平移"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_024",
+    "basic": {
+      "name": "正切函数图象的几何作法",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "利用正切线（单位圆上过 A(1,0) 的切线与角终边的交点 T 到 A 的有向线段长度）画正切函数图象：①在 (0,π/2) 上取一系列 x 值；②在单位圆中画出对应角 x 的终边，过 A(1,0) 作 x 轴垂线与终边交于点 T，则 AT 的长度即为 tan x；③以 x 为横坐标、AT 长度为纵坐标描点，用光滑曲线连接。当 x→π/2⁻ 时，AT→+∞，图象向右上方无限逼近直线 x=π/2。再利用奇偶性得到 (-π/2,0] 上的图象，最后利用周期性（π）向左、右平移得到完整正切曲线。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_023",
         "math_10_ch5_s4_021",
         "math_10_ch5_s4_022"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_025",
-      "type": "property",
-      "title": "正切函数的单调性",
-      "description": "正切函数在每一个区间 (-π/2+kπ, π/2+kπ) (k∈Z) 上都单调递增。观察正切曲线可知：在每个开区间内，曲线从左向右呈上升趋势。注意：正切函数在整个定义域上不是单调函数，因为它在不同的“支”之间不连续（被渐近线隔断），但在每个连续的区间内都是递增的。正切没有递减区间。",
-      "keywords": [
-        "正切递增",
-        "(-π/2+kπ, π/2+kπ)",
-        "处处递增",
-        "非整体单调",
-        "被渐近线隔断"
       ],
-      "formula": "增区间: (-π/2+kπ, π/2+kπ), k∈Z",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 1
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_025",
+    "basic": {
+      "name": "正切函数的单调性",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "正切函数在每一个区间 (-π/2+kπ, π/2+kπ) (k∈Z) 上都单调递增。观察正切曲线可知：在每个开区间内，曲线从左向右呈上升趋势。注意：正切函数在整个定义域上不是单调函数，因为它在不同的“支”之间不连续（被渐近线隔断），但在每个连续的区间内都是递增的。正切没有递减区间。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_023",
         "math_10_ch5_s4_021"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_026",
-      "type": "property",
-      "title": "正切函数的值域",
-      "description": "正切函数的值域是实数集 R。当 x∈(-π/2, π/2) 时，tan x 在 (-∞,+∞) 内可取到任意实数值。这是因为当 x→π/2⁻ 时 tan x→+∞，当 x→-π/2⁺ 时 tan x→-∞，且函数在该区间内连续递增。正切函数没有最大值也没有最小值。值域为 R 是正切函数与正弦/余弦（值域[-1,1]）的重要区别。",
-      "keywords": [
-        "正切值域",
-        "R",
-        "全体实数",
-        "无最大最小值",
-        "(-∞,+∞)",
-        "值域区别"
       ],
-      "formula": "值域: (-∞, +∞)",
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 4,
+      "exam_frequency": 4
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_026",
+    "basic": {
+      "name": "正切函数的值域",
+      "type": "property",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "正切函数的值域是实数集 R。当 x∈(-π/2, π/2) 时，tan x 在 (-∞,+∞) 内可取到任意实数值。这是因为当 x→π/2⁻ 时 tan x→+∞，当 x→-π/2⁺ 时 tan x→-∞，且函数在该区间内连续递增。正切函数没有最大值也没有最小值。值域为 R 是正切函数与正弦/余弦（值域[-1,1]）的重要区别。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_023",
         "math_10_ch5_s4_025"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_027",
-      "type": "method",
-      "title": "数形结合研究三角函数的思想方法",
-      "description": "本节贯穿了“先画图象、再通过图象观察获得性质”的研究思路——这是研究函数的一般方法。具体路径：先画几何图象（单位圆投影/正切线）→ 观察图象特征 → 发现周期性、奇偶性、单调性、最值等性质 → 用代数（诱导公式）验证 → 将性质扩展推广。这种“直观几何→代数验证→推广”的研究路径，不仅是三角函数，也是整个函数研究的基本范式。数形结合的思想在本节体现为：单位圆的对称性→三角函数的奇偶性，单位圆的旋转→三角函数的周期性，曲线升降→单调性。",
-      "keywords": [
-        "数形结合",
-        "研究方法",
-        "图象观察",
-        "代数验证",
-        "几何直观",
-        "研究范式",
-        "函数研究一般方法"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 3,
+      "exam_frequency": 3
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_027",
+    "basic": {
+      "name": "数形结合研究三角函数的思想方法",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "本节贯穿了“先画图象、再通过图象观察获得性质”的研究思路——这是研究函数的一般方法。具体路径：先画几何图象（单位圆投影/正切线）→ 观察图象特征 → 发现周期性、奇偶性、单调性、最值等性质 → 用代数（诱导公式）验证 → 将性质扩展推广。这种“直观几何→代数验证→推广”的研究路径，不仅是三角函数，也是整个函数研究的基本范式。数形结合的思想在本节体现为：单位圆的对称性→三角函数的奇偶性，单位圆的旋转→三角函数的周期性，曲线升降→单调性。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_002",
         "math_10_ch5_s4_009",
         "math_10_ch5_s4_014",
         "math_10_ch5_s4_015",
         "math_10_ch5_s4_024"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_028",
-      "type": "method",
-      "title": "利用单位圆对称性研究三角函数性质",
-      "description": "单位圆是研究三角函数性质的核心工具——“单位圆上点的坐标就是三角函数值”。角 x 的终边与单位圆交点 P(cos x, sin x) 的运动规律直接对应三角函数的性质：①周期性：自变量每增加 2π（终边旋转一周），P 点坐标重复出现；②奇偶性：角 x 与 -x 的 P 点关于 u 轴对称 → cos(-x)=cos x（偶），sin(-x)=-sin x（奇）；③单调性：角 x 在不同区间时 P 点坐标的变化趋势对应正弦/余弦的增减；④最值：P 点横坐标达到 ±1 时对应余弦最值，纵坐标达到 ±1 时对应正弦最值。这一方法从几何角度完整地揭示了三角函数性质的来源。",
-      "keywords": [
-        "单位圆",
-        "P(cos x, sin x)",
-        "旋转运动",
-        "几何解释",
-        "对称性",
-        "坐标变化趋势",
-        "探究与发现"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 1,
+      "exam_frequency": 1
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_028",
+    "basic": {
+      "name": "利用单位圆对称性研究三角函数性质",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "单位圆是研究三角函数性质的核心工具——“单位圆上点的坐标就是三角函数值”。角 x 的终边与单位圆交点 P(cos x, sin x) 的运动规律直接对应三角函数的性质：①周期性：自变量每增加 2π（终边旋转一周），P 点坐标重复出现；②奇偶性：角 x 与 -x 的 P 点关于 u 轴对称 → cos(-x)=cos x（偶），sin(-x)=-sin x（奇）；③单调性：角 x 在不同区间时 P 点坐标的变化趋势对应正弦/余弦的增减；④最值：P 点横坐标达到 ±1 时对应余弦最值，纵坐标达到 ±1 时对应正弦最值。这一方法从几何角度完整地揭示了三角函数性质的来源。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_001",
         "math_10_ch5_s4_005",
         "math_10_ch5_s4_009",
         "math_10_ch5_s4_014",
         "math_10_ch5_s4_017",
         "math_10_ch5_s2_001"
-      ]
-    },
-    {
-      "id": "math_10_ch5_s4_029",
-      "type": "method",
-      "title": "周期函数的研究策略——把握一个周期概况整体",
-      "description": "对于周期函数，只要把握了它在一个周期内的情况，就把握了整个函数的情况。这一策略在本节多处体现：①先研究 y=sin x 在 [0,2π] 上的图象，再平移得到 R 上的正弦曲线；②先在 [-π/2,3π/2] 上讨论正弦的单调性，再扩展为带 2kπ 的统一区间形式；③先研究正切在 (0,π/2) 上的图象，再通过奇偶性和周期性得到完整图象。这种“化无限为有限”的思想是研究周期现象的基本策略，也是从特殊到一般的归纳方法。",
-      "keywords": [
-        "周期策略",
-        "一个周期",
-        "化无限为有限",
-        "先局部后整体",
-        "先特殊后一般",
-        "研究方法"
       ],
-      "references": [
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 1,
+      "exam_frequency": 1
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s4_029",
+    "basic": {
+      "name": "周期函数的研究策略——把握一个周期概况整体",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": []
+    },
+    "concept": {
+      "source_text": "对于周期函数，只要把握了它在一个周期内的情况，就把握了整个函数的情况。这一策略在本节多处体现：①先研究 y=sin x 在 [0,2π] 上的图象，再平移得到 R 上的正弦曲线；②先在 [-π/2,3π/2] 上讨论正弦的单调性，再扩展为带 2kπ 的统一区间形式；③先研究正切在 (0,π/2) 上的图象，再通过奇偶性和周期性得到完整图象。这种“化无限为有限”的思想是研究周期现象的基本策略，也是从特殊到一般的归纳方法。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [
         "math_10_ch5_s4_004",
         "math_10_ch5_s4_011",
         "math_10_ch5_s4_015",
         "math_10_ch5_s4_024"
-      ]
+      ],
+      "related": []
+    },
+    "importance": {
+      "curriculum_weight": 1,
+      "exam_frequency": 1
     }
-  ]
-}
+  }
+]
