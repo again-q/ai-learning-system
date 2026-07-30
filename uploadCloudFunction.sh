@@ -19,10 +19,5 @@ echo ""
 echo "→ 部署 manageKnowledge ..."
 ${installPath} cloud functions deploy --e "$ENV_ID" --n manageKnowledge --r --project "${projectPath}"
 
-# quickstartFunctions — 示例函数
-echo ""
-echo "→ 部署 quickstartFunctions ..."
-${installPath} cloud functions deploy --e "$ENV_ID" --n quickstartFunctions --r --project "${projectPath}"
-
 echo ""
 echo "✅ 全部部署完成"
