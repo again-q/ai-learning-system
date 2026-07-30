@@ -420,5 +420,40 @@
       "curriculum_weight": 2,
       "exam_frequency": 2
     }
+  },
+  {
+    "knowledge_id": "math_10_ch3_s4_015",
+    "basic": {
+      "name": "中外历史上的方程求解（阅读与思考）",
+      "type": "reading",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "思想方法层"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.4 函数的应用（一）"
+      ]
+    },
+    "concept": {
+      "source_text": "方程求解是人类数学史上最古老的问题之一。古巴比伦人用配方法解二次方程，中国古代九章算术用盈不足术求解线性方程，古希腊数学家丢番图研究不定方程，阿拉伯数学家花拉子密系统地总结了一元二次方程的解法。后来三次、四次方程被意大利数学家破解，而五次及以上方程被阿贝尔证明没有根式解。",
+      "level": "思想方法层"
+    },
+    "relations": {
+      "reference": [],
+      "related": [
+        "math_10_ch3_s3_001",
+        "math_10_ch3_s2_001"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 1,
+      "exam_frequency": 1
+    }
   }
 ]

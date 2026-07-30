@@ -2922,6 +2922,66 @@
       "type": "method",
       "parent_id": null,
       "path": []
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_014",
+      "name": "集合中元素的个数（阅读与思考）",
+      "type": "reading",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch2_s3_013",
+      "name": "函数概念的发展历程（阅读与思考）",
+      "type": "reading",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch3_s4_015",
+      "name": "中外历史上的方程求解（阅读与思考）",
+      "type": "reading",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第三章 函数的概念与性质",
+        "3.4 函数的应用（一）"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch5_s7_013",
+      "name": "三角学与天文学（阅读与思考）",
+      "type": "reading",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第五章 三角函数",
+        "5.7 三角函数的应用"
+      ]
+    },
+    {
+      "knowledge_id": "math_10_ch1_s5_015",
+      "name": "容斥原理（集合中元素的个数）",
+      "type": "method",
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
     }
   ]
 }

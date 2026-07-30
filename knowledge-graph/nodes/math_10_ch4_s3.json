@@ -538,11 +538,11 @@
     "knowledge_id": "math_10_ch4_s3_018",
     "basic": {
       "name": "对数的发明历史（阅读与思考）",
-      "type": "definition",
+      "type": "reading",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册",
-      "level": "knowledge"
+      "level": "思想方法层"
     },
     "tree": {
       "parent_id": null,

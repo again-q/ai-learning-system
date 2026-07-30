@@ -475,5 +475,74 @@
       "curriculum_weight": 3,
       "exam_frequency": 3
     }
+  },
+  {
+    "knowledge_id": "math_10_ch1_s5_014",
+    "basic": {
+      "name": "集合中元素的个数（阅读与思考）",
+      "type": "reading",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "思想方法层"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    "concept": {
+      "source_text": "集合中元素的个数是集合理论的基本问题之一。康托尔用一一对应的方法比较无穷集合的大小，发现自然数集与有理数集等势，但实数集比自然数集多。这一发现揭示了无穷的层次性，是集合论发展的重要里程碑。",
+      "level": "思想方法层"
+    },
+    "relations": {
+      "reference": [],
+      "related": [
+        "math_10_ch1_s1_001"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 1,
+      "exam_frequency": 1
+    }
+  },
+  {
+    "knowledge_id": "math_10_ch1_s5_015",
+    "basic": {
+      "name": "容斥原理（集合中元素的个数）",
+      "type": "method",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "knowledge"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第一章 集合与常用逻辑用语",
+        "1.5 全称量词与存在量词"
+      ]
+    },
+    "concept": {
+      "source_text": "容斥原理用于计算集合中元素的个数。两个集合的容斥：|A∪B| = |A| + |B| - |A∩B|。三个集合的容斥：|A∪B∪C| = |A| + |B| + |C| - |A∩B| - |A∩C| - |B∩C| + |A∩B∩C|。容斥原理的核心思想是「先加后减，多退少补」，是处理计数问题的重要方法。",
+      "level": "knowledge"
+    },
+    "relations": {
+      "reference": [],
+      "related": [
+        "math_10_ch1_s2_006",
+        "math_10_ch1_s5_014"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 2,
+      "exam_frequency": 2
+    }
   }
 ]
