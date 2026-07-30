@@ -372,5 +372,40 @@
       "curriculum_weight": 1,
       "exam_frequency": 1
     }
+  },
+  {
+    "knowledge_id": "math_10_ch5_s7_013",
+    "basic": {
+      "name": "三角学与天文学（阅读与思考）",
+      "type": "reading",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "思想方法层"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第五章 三角函数",
+        "5.7 三角函数的应用"
+      ]
+    },
+    "concept": {
+      "source_text": "三角学的诞生与发展与天文学密不可分。古希腊天文学家喜帕恰斯为天文计算制作了最早的弦表，印度数学家引入正弦函数，阿拉伯学者将其完善。文艺复兴时期，三角学从天文学中独立出来成为数学分支。欧拉用单位圆定义三角函数，使三角学从几何走向解析。这种从实际需求推动数学发展的过程，是数学思想方法的典型范例。",
+      "level": "思想方法层"
+    },
+    "relations": {
+      "reference": [],
+      "related": [
+        "math_10_ch5_s1_001",
+        "math_10_ch5_s2_001"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 1,
+      "exam_frequency": 1
+    }
   }
 ]

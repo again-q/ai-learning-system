@@ -402,5 +402,39 @@
       "curriculum_weight": 1,
       "exam_frequency": 1
     }
+  },
+  {
+    "knowledge_id": "math_10_ch2_s3_013",
+    "basic": {
+      "name": "函数概念的发展历程（阅读与思考）",
+      "type": "reading",
+      "subject": "数学",
+      "stage": "高中",
+      "grade": "必修第一册",
+      "level": "思想方法层"
+    },
+    "tree": {
+      "parent_id": null,
+      "path": [
+        "数学",
+        "必修第一册",
+        "第二章 一元二次函数、方程和不等式",
+        "2.3 二次函数与一元二次方程、不等式"
+      ]
+    },
+    "concept": {
+      "source_text": "函数概念经历了漫长的发展历程。从笛卡儿的变量依赖关系、牛顿-莱布尼茨的流量概念，到欧拉的解析式定义、狄利克雷的对应关系定义，再到现代集合论框架下的映射定义。每一次扩展都推动了数学的进步，也体现了数学抽象化的过程。",
+      "level": "思想方法层"
+    },
+    "relations": {
+      "reference": [],
+      "related": [
+        "math_10_ch3_s1_001"
+      ]
+    },
+    "importance": {
+      "curriculum_weight": 1,
+      "exam_frequency": 1
+    }
   }
 ]
