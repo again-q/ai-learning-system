@@ -8,3 +8,8 @@ output/_failed.log
 output/_test_1.3.log
 output/_needs_review.log
 doc/.gate/
+
+# 本地密钥,禁止提交
+.env
+.env.*
+!.env.example
