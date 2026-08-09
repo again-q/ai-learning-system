@@ -76,17 +76,38 @@
 
 索引：`userId+createdAt` 降序
 
-### 3.3 mastery_logs
+### 3.3 mastery_logs 集合（诊断报告 + embedding，供 RAG）
 
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | _id | String | 自动 | |
-| userId | String | 是 | |
-| questionId | String | 是 | |
-| knowledgeNodeId | String | 否 | |
+| userId | String | 是 | openid |
+| questionId | String | 是 | 关联 questions._id |
+| knowledgeNodeId | String | 否 | 知识点 ID |
 | algorithm | String | 是 | "score_poc" |
-| snapshot | Object | 是 | {isCorrect,difficultyLevel,difficultyValue,processScore,pathQuality,transferQuality} |
+| report | Object | 是 | **完整诊断报告**（整报告入库） |
+| reportText | String | 是 | 报告文本化（embedding 源文本） |
+| embedding | Array | 是 | text-embedding-v4 向量 |
 | createdAt | Date | 是 | |
+
+**report 结构（完整诊断报告）**：
+```
+{
+  questionText, options, questionType,
+  studentAnswer, correctAnswer, isCorrect,
+  questionCategory, difficultyLevel, difficultyValue,
+  processScore, pathQuality, transferQuality,
+  knowledgeNodeId, nodeStatus,
+  errorAttribution, evidence: [], actionAdvice: null
+}
+```
+
+**reportText 拼接规则**（embedding 源）：
+```
+`题目：${questionText} | 作答：${studentAnswer} | 判定：${isCorrect?'对':'错'} | 题型：${questionCategory} | 难度：${difficultyLevel} | 知识点：${knowledgeNodeId}`
+```
+
+索引：`userId+createdAt`（降序）、`knowledgeNodeId`
 
 ### 3.4 knowledge_progress（P0 预建）
 

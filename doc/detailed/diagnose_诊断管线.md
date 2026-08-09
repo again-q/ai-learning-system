@@ -13,10 +13,11 @@
 
 ## 1. 功能描述
 
-- **诊断管线编排**：接收 batchId → 读照片 → Qwen 视觉转录 → DeepSeek 诊断判定 → clamp 钳制 → 写三集合 → 更新批次状态 → 组装报告
+- **诊断管线编排**：接收 batchId → 读照片 → **RAG 检索历史（相似题 top-5）** → Qwen 视觉转录 → DeepSeek 诊断判定（注入历史参考）→ clamp 钳制 → **生成完整报告 → embedding 入库** → 更新批次状态 → 返回报告
 - **参考实现**：`scripts/poc/full-pipeline-test.js`（POC 已验证全链路）
 - **状态流转**：batch.status：pending → analyzing → completed/failed
 - **并行策略**：批次内多张照片并行调 Qwen（减少总耗时）
+- **RAG 闭环**：每次诊断的报告 → text-embedding-v4 → mastery_logs 入库 → 下次诊断检索命中（自增强闭环，决策 E3）
 
 ## 2. 业务规则
 
@@ -159,8 +160,10 @@ async function handleDiagnose(batchId, userId) {
             continue;
         }
 
-        // DeepSeek 诊断（含 rubric 判定）
-        const rawDiagnosis = await deepseekJudge(vr.visionReport);
+        // DeepSeek 诊断（含 rubric 判定 + RAG 历史参考注入）
+        const historyHits = await searchHistory(item.questionText, userId);
+        const ragContext = buildRagContext(historyHits);
+        const rawDiagnosis = await deepseekJudge(vr.visionReport, ragContext);
 
         // 提取题目列表（一图多题）
         const questionItems = parseQuestionsFromVision(vr.visionReport, rawDiagnosis);
@@ -193,19 +196,34 @@ async function handleDiagnose(batchId, userId) {
             };
             const q = await insertQuestion(questionData);
 
-            // 写 mastery_logs（最小写入）
+            // 写 mastery_logs（完整报告 + embedding，供 RAG 检索）
+            const report = {
+                questionText: item.questionText, options: item.options,
+                questionType: item.questionType,
+                studentAnswer: item.studentAnswer,
+                correctAnswer: rawDiagnosis.correctAnswer,
+                isCorrect: rawDiagnosis.isCorrect,
+                questionCategory: rawDiagnosis.questionCategory,
+                difficultyLevel: rawDiagnosis.difficultyLevel,
+                difficultyValue: clamped.D,
+                processScore: clamped.P,
+                pathQuality: clamped.eta,
+                transferQuality: clamped.r,
+                knowledgeNodeId: item.knowledgeNodeId || null,
+                nodeStatus: item.knowledgeNodeId ? 'mapped' : 'unmapped',
+                errorAttribution: rawDiagnosis.errorAttribution || null,
+                evidence: [], actionAdvice: null
+            };
+            const reportText = buildReportText(report);
+            const embedding = await embedText(reportText);
+
             await db.collection('mastery_logs').add({data: {
                 userId, questionId: q._id,
                 knowledgeNodeId: item.knowledgeNodeId || null,
                 algorithm: 'score_poc',
-                snapshot: {
-                    isCorrect: rawDiagnosis.isCorrect,
-                    difficultyLevel: rawDiagnosis.difficultyLevel,
-                    difficultyValue: clamped.D,
-                    processScore: clamped.P,
-                    pathQuality: clamped.eta,
-                    transferQuality: clamped.r
-                },
+                report,
+                reportText,
+                embedding,
                 createdAt: new Date()
             }});
 
@@ -273,10 +291,13 @@ async function handleDiagnose(batchId, userId) {
 |------|------|------|
 | getBatchImages(batchId) | 内部 | 读 batches + 云存储 |
 | qwenVision(fileId) | 内部 | Qwen 视觉客户端 |
-| deepseekJudge(report) | 内部 | DeepSeek 诊断客户端 |
+| deepseekJudge(report, ragContext) | 内部 | DeepSeek 诊断客户端（注入 RAG 历史） |
 | clamp(raw, type) | clamp 模块 | 参数钳制 |
 | insertQuestion(data) | databaseSchema | 题目写入 |
-| parseQuestionsFromVision() | 内部 | 一图多题拆分 |
+| searchHistory(text, userId) | rag 模块 | RAG 检索（top-5 历史相似题） |
+| buildRagContext(hits) | rag 模块 | 注入段构建 |
+| embedText(text) | rag 模块 | 报告向量化 |
+| buildReportText(report) | rag 模块 | 报告文本化 |
 
 ## 9. 性能要求
 
@@ -300,7 +321,7 @@ async function handleDiagnose(batchId, userId) {
 
 ## 12. 依赖关系
 
-- 依赖：photoUpload（batchId）、clamp（钳制）、databaseSchema（写入）
+- 依赖：photoUpload（batchId）、clamp（钳制）、databaseSchema（写入）、**rag（检索 + embedding）**
 - 被依赖：dispute（单题重诊需要重新调 judge 判定）
 
 ---

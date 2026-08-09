@@ -17,6 +17,7 @@
 | `doc/detailed/diagnose_诊断管线.md` | ✅ | 1.5 人天 |
 | `doc/detailed/dispute_异议重诊.md` | ✅ | 0.5 人天 |
 | `doc/detailed/graphService_图谱查询.md` | ✅ | 0.5 人天 |
+| `doc/detailed/rag_向量检索.md` | ✅ | 1.0 人天 |
 
 ## 小程序端（全部完成 ✅）
 
