@@ -1,0 +1,89 @@
+<view class="page">
+  <!-- 顶栏 -->
+  <view class="nav-bar">
+    <view class="nav-back" bindtap="goBack">
+      <text class="nav-back-icon">‹</text>
+      <text>返回</text>
+    </view>
+    <text class="nav-title">诊断报告</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 加载态 -->
+  <view class="loading" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">报告生成中...</text>
+  </view>
+
+  <!-- 报告内容 -->
+  <view class="content" wx:else>
+    <!-- 汇总 -->
+    <view class="summary reveal">
+      <view class="summary-item">
+        <text class="summary-num">{{questions.length - failedCount}}</text>
+        <text class="summary-label">成功诊断</text>
+      </view>
+      <view class="summary-item">
+        <text class="summary-num">{{failedCount}}</text>
+        <text class="summary-label">待重传</text>
+      </view>
+    </view>
+
+    <!-- 逐题卡片 -->
+    <view class="question-card reveal reveal-1" wx:for="{{questions}}" wx:key="questionId">
+      <view class="card-header">
+        <text class="q-number">第 {{index + 1}} 题</text>
+        <text class="q-status {{item.isCorrect === true ? 'correct' : 'wrong'}}">{{item.statusText}}</text>
+      </view>
+
+      <text class="q-text" wx:if="{{item.questionText}}">{{item.questionText}}</text>
+
+      <view class="q-tags">
+        <text class="tag" wx:if="{{item.questionCategory}}">{{item.questionCategory}}</text>
+        <text class="tag" wx:if="{{item.difficultyLevel}}">{{item.difficultyLevel}} 难度</text>
+        <text class="tag" wx:if="{{item.questionType}}">{{item.questionType}}</text>
+      </view>
+
+      <view class="q-detail" wx:if="{{item.isCorrect === false}}">
+        <text class="detail-label">正确答案：</text>
+        <text class="detail-value">{{item.correctAnswer || '—'}}</text>
+      </view>
+      <view class="q-detail" wx:if="{{item.pathQuality !== null && item.pathQuality !== undefined}}">
+        <text class="detail-label">过程质量：</text>
+        <text class="detail-value">{{item.pathQuality}}</text>
+      </view>
+      <view class="q-detail" wx:if="{{item.errorAttribution}}">
+        <text class="detail-label">归因：</text>
+        <text class="detail-value">{{item.errorAttribution}}</text>
+      </view>
+
+      <!-- 失败题 -->
+      <view class="q-failed" wx:if="{{item.isCorrect === null && !item.questionText}}">
+        <text>这张照片识别失败</text>
+        <text class="failed-link" bindtap="retryUpload">重新上传</text>
+      </view>
+
+      <!-- 异议入口 -->
+      <view class="dispute-btn" bindtap="openDispute" data-index="{{index}}">
+        <text>我觉得不对</text>
+      </view>
+    </view>
+
+    <view class="empty" wx:if="{{questions.length === 0}}">
+      <text>本批次无有效题目</text>
+    </view>
+  </view>
+
+  <!-- 异议弹层 -->
+  <view class="mask" wx:if="{{disputingId}}" bindtap="closeDispute">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-title">修正信息</view>
+      <text class="sheet-label">你的作答</text>
+      <textarea class="sheet-input" value="{{disputeAnswer}}" bindinput="onDisputeAnswer" placeholder="输入你实际写的答案（如 a≥4）" auto-height />
+      <text class="sheet-label">补充说明（可选）</text>
+      <input class="sheet-input single" value="{{disputeNote}}" bindinput="onDisputeNote" placeholder="例如：我是≥不是>" />
+      <button class="sheet-submit" bindtap="submitDispute">提交并重新诊断</button>
+      <view class="sheet-cancel" bindtap="closeDispute">取消</view>
+    </view>
+  </view>
+</view>

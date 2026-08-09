@@ -275,6 +275,32 @@ page {
   letter-spacing: 2rpx;
 }
 
+/* 拍照诊断入口（P0 最小闭环）— 设计语言 v1.1 */
+.photo-btn {
+  margin-top: 24rpx;
+  background: var(--accent-bg, rgba(0, 122, 255, 0.06));
+  border: 2rpx solid rgba(0, 122, 255, 0.2);
+  border-radius: 24rpx;
+  padding: 28rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  transition: all 0.25s var(--ease-out);
+}
+.photo-btn:active {
+  transform: scale(0.98);
+  background: rgba(0, 122, 255, 0.1);
+}
+.photo-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--accent);
+}
+.photo-sub {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
 /* ============================================
  * 入场动画（压缩版，避免加载感慢）
  * ============================================ */

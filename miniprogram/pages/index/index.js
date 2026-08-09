@@ -117,5 +117,9 @@ Page({
 
   goStudy() {
     wx.switchTab({ url: '/pages/study/study' });
+  },
+
+  goPhoto() {
+    wx.navigateTo({ url: '/pages/photo/photo' });
   }
 });
