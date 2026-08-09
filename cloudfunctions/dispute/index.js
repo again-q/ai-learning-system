@@ -100,14 +100,31 @@ exports.main = async (event) => {
       createdAt: db.serverDate(),
     };
 
-    // 2. 单题重诊（判定失败则保留原结果并返回提示，不破坏已有数据——CR-003 容错对称）
+    // 2. 单题重诊（判定失败则保留原判定，但仍落库修正内容——CR-003 容错对称）
     let raw;
+    let keptOriginal = false;
     try {
       raw = await judgeQuestion(question, corrections);
     } catch (e) {
       console.warn('[dispute] re-judge failed, keep original:', e.message);
+      keptOriginal = true;
+      // 判定失败：仍把学生的修正内容落库（revision），只不更新判定字段
+      await db.collection('questions').doc(questionId).update({
+        data: {
+          studentAnswer: corrections.studentAnswer || question.studentAnswer || '',
+          revisions: _.push([{
+            field: 'studentAnswer',
+            originalValue: question.studentAnswer || '',
+            revisedValue: corrections.studentAnswer || question.studentAnswer || '',
+            source: 'student_revision',
+            note: corrections.note || '',
+            createdAt: db.serverDate(),
+          }]),
+        },
+      });
       return success({
         questionId,
+        keptOriginal,
         newDiagnosis: {
           isCorrect: question.isCorrect,
           correctAnswer: question.correctAnswer || '',
@@ -115,7 +132,6 @@ exports.main = async (event) => {
           difficultyValue: question.difficultyValue || 0.5,
           processScore: question.processScore || 0.5,
           pathQuality: question.pathQuality || null,
-          keptOriginal: true,
         },
       });
     }
@@ -190,6 +206,7 @@ exports.main = async (event) => {
 
     return success({
       questionId,
+      keptOriginal,
       newDiagnosis: {
         isCorrect: raw.isCorrect,
         correctAnswer: raw.correctAnswer || '',

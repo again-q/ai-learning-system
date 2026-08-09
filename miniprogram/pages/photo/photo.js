@@ -53,13 +53,20 @@ Page({
       return;
     }
 
+    // 登录守卫（CR-002 加固：未登录不允许上传，避免照片落入公共目录）
+    const user = app.globalData.userInfo;
+    if (!user || !user._openid) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      setTimeout(() => wx.navigateTo({ url: '/pages/login/login' }), 800);
+      return;
+    }
+
     this.setData({ submitting: true, progressText: '上传中...' });
     wx.showLoading({ title: '上传中...', mask: true });
 
     try {
       // 1. 逐张上传到云存储（路径含 userId，实现照片隔离——CR-002 修复）
-      const user = app.globalData.userInfo || {};
-      const uid = user._openid || 'anonymous';
+      const uid = user._openid;
       const fileIds = [];
       for (const file of this.data.images) {
         const ext = file.split('.').pop() || 'jpg';
