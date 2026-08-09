@@ -83,9 +83,15 @@ Page({
       const data = res.result;
       if (data.code !== 0) throw new Error(data.message);
 
-      // 刷新该题
+      // 刷新该题（keptOriginal=判定失败保留原结果时，仅提示不覆盖判定）
       const questions = [...this.data.questions];
       const nd = data.data.newDiagnosis;
+      if (data.data.keptOriginal) {
+        wx.showToast({ title: '判定失败，已保留原结果', icon: 'none' });
+        this.setData({ disputingId: null });
+        wx.hideLoading();
+        return;
+      }
       questions[disputeIndex] = {
         ...questions[disputeIndex],
         isCorrect: nd.isCorrect,
