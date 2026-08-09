@@ -1,0 +1,63 @@
+{
+  "project": "AI 学习助手 — 拍照诊断最小闭环",
+  "version": "1.0",
+  "generatedAt": "2026-08-08",
+  "techStack": {
+    "backend": [
+      {
+        "name": "CloudBase 云函数",
+        "version": "Node.js 16+",
+        "category": "serverless-runtime",
+        "purpose": "后端运行时：photoUpload / diagnose / graphService 三个云函数",
+        "rationale": "与现有小程序云开发一致、零运维、按量付费；云托管过重，MVP 不需要",
+        "officialUrl": "https://docs.cloudbase.net/"
+      },
+      {
+        "name": "wx-server-sdk",
+        "version": "latest",
+        "category": "sdk",
+        "purpose": "云函数访问云存储与数据库",
+        "rationale": "CloudBase 官方 SDK，与现有云函数一致",
+        "officialUrl": "https://docs.cloudbase.net/"
+      },
+      {
+        "name": "Qwen3.7Plus",
+        "version": "qwen3.7-plus",
+        "category": "ai-vision",
+        "purpose": "图像理解：题目转录 + 做题痕迹散文（决策 017）",
+        "rationale": "POC 实测：散文转录稳定、enable_thinking:false 提速 5.6x；OCR 专精模型无痕迹语义能力（实测完败）",
+        "officialUrl": "https://help.aliyun.com/zh/model-studio/qwen3-7-plus"
+      },
+      {
+        "name": "DeepSeek",
+        "version": "deepseek-chat",
+        "category": "ai-inference",
+        "purpose": "诊断推理：按 rubric 输出判定参数（决策 020/021）",
+        "rationale": "POC 实测：rubric 治漂移，D 档位 12/12 稳定；生产可切 CloudBase TokenHub",
+        "officialUrl": "https://platform.deepseek.com/"
+      }
+    ],
+    "miniapp": [
+      {
+        "name": "微信原生小程序",
+        "version": "基础库最新稳定",
+        "category": "framework",
+        "purpose": "小程序端：拍照诊断 + 知识图谱浏览",
+        "rationale": "与现有 miniprogram/ 骨架一致，无需引入 Taro/uni-app",
+        "officialUrl": "https://developers.weixin.qq.com/miniprogram/dev/framework/"
+      },
+      {
+        "name": "wx.cloud",
+        "version": "latest",
+        "category": "cloud-sdk",
+        "purpose": "小程序端调用云函数（上传/诊断/报告/图谱）",
+        "rationale": "云开发原生能力，key 不落前端",
+        "officialUrl": "https://developers.weixin.qq.com/miniprogram/dev/wxcloud/"
+      }
+    ]
+  },
+  "summary": {
+    "primaryLanguage": "JavaScript",
+    "totalComponents": 7
+  }
+}
