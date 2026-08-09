@@ -1,0 +1,9 @@
+{
+  "name": "diagnose",
+  "version": "1.0.0",
+  "description": "诊断管线：RAG检索→视觉转录→诊断判定→钳制→完整报告+embedding入库",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

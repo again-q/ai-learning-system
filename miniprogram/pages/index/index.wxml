@@ -57,5 +57,10 @@
     <view class="start-btn" bindtap="goStudy">
       <text class="start-text">开始学习</text>
     </view>
+    <!-- 拍照诊断入口（P0 最小闭环） -->
+    <view class="photo-btn" bindtap="goPhoto">
+      <text class="photo-text">📷 拍照诊断</text>
+      <text class="photo-sub">拍下做题照片，AI 分析每道题</text>
+    </view>
   </view>
 </view>
