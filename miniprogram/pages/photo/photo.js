@@ -83,12 +83,13 @@ Page({
       const batchData = batchRes.result;
       if (batchData.code !== 0) throw new Error(batchData.message);
 
-      // 3. 触发诊断
+      // 3. 触发诊断（timeout 对齐后端 120s——P1-④：默认 60s 会在 9 张场景先报错）
       this.setData({ progressText: 'AI 分析中（预计 30-60s）...' });
       wx.showLoading({ title: 'AI 分析中...', mask: true });
       const diagRes = await wx.cloud.callFunction({
         name: 'diagnose',
         data: { batchId: batchData.data.batchId },
+        timeout: 120000,
       });
       const diagData = diagRes.result;
       if (diagData.code !== 0) throw new Error(diagData.message);

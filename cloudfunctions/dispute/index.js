@@ -153,7 +153,7 @@ exports.main = async (event) => {
       },
     });
 
-    // 4. 追加 mastery_logs（新条目 + RAG 闭环：reportText + embedding）
+    // 4. 组装完整报告 + RAG 闭环（reportText + embedding）
     const report = {
       questionText: question.questionText || '',
       questionType: question.questionType || '',
@@ -190,19 +190,24 @@ exports.main = async (event) => {
     } catch (e) {
       console.warn('[dispute] embed failed:', e.message);
     }
-    await db.collection('mastery_logs').add({
-      data: {
-        _openid: openid,
-        userId: openid,
-        questionId,
-        knowledgeNodeId: question.knowledgeNodeId || null,
-        algorithm: 'score_poc',
-        report,
-        reportText,
-        embedding,
-        createdAt: db.serverDate(),
-      },
-    });
+    // 5. 追加 mastery_logs（add 失败降级，不报 500——P0-③：判定已更新，记录失败不回滚）
+    try {
+      await db.collection('mastery_logs').add({
+        data: {
+          _openid: openid,
+          userId: openid,
+          questionId,
+          knowledgeNodeId: question.knowledgeNodeId || null,
+          algorithm: 'score_poc',
+          report,
+          reportText,
+          embedding,
+          createdAt: db.serverDate(),
+        },
+      });
+    } catch (e) {
+      console.warn('[dispute] mastery_logs add failed (判定已更新，记录降级):', e.message);
+    }
 
     return success({
       questionId,
