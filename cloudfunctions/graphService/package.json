@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "知识图谱查询 + 诊断报告查询",
   "main": "index.js",
+  "engines": { "node": ">=16.15.0" },
   "dependencies": {
     "wx-server-sdk": "latest"
   }

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "拍照批次接收：上传照片到云存储并登记批次",
   "main": "index.js",
+  "engines": { "node": ">=16.15.0" },
   "dependencies": {
     "wx-server-sdk": "latest"
   }

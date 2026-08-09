@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "报告异议：学生修正关键信息后单题重诊",
   "main": "index.js",
+  "engines": { "node": ">=16.15.0" },
   "dependencies": {
     "wx-server-sdk": "latest"
   }
