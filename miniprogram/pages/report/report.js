@@ -27,6 +27,7 @@ Page({
       const questions = (data.data.questions || []).map((q) => ({
         ...q,
         statusText: q.isCorrect === true ? '正确' : q.isCorrect === false ? '错误' : '待确认',
+        statusClass: q.isCorrect === true ? 'correct' : q.isCorrect === false ? 'wrong' : 'pending', // P1-⑥：三态
       }));
       this.setData({
         questions,

@@ -37,7 +37,7 @@ exports.main = async (event) => {
       if (!batchRes || !batchRes.data) return fail(404, '批次不存在');
       if (batchRes.data.userId !== openid) return fail(403, '无权查看');
 
-      const qRes = await db.collection('questions').where({ batchId, userId: openid }).get();
+      const qRes = await db.collection('questions').where({ batchId, userId: openid }).orderBy('createdAt', 'asc').get();
       const questions = qRes.data.map((q) => ({
         questionId: q._id,
         questionText: q.questionText,

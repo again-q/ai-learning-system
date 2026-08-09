@@ -33,7 +33,7 @@
     <view class="question-card reveal reveal-1" wx:for="{{questions}}" wx:key="questionId">
       <view class="card-header">
         <text class="q-number">第 {{index + 1}} 题</text>
-        <text class="q-status {{item.isCorrect === true ? 'correct' : 'wrong'}}">{{item.statusText}}</text>
+        <text class="q-status {{item.statusClass}}">{{item.statusText}}</text>
       </view>
 
       <text class="q-text" wx:if="{{item.questionText}}">{{item.questionText}}</text>
