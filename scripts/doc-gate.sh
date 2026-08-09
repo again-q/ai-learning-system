@@ -220,7 +220,8 @@ do_pass() {
     # 清除阻断记录（如果有）
     rm -f "$GATE_DIR/${stage}.blocked"
 
-    echo "$(date '+%Y-%m-%d %H:%M:%S')" > "$gate_file"
+    echo "ACK:YES" > "$gate_file"
+    echo "$(date '+%Y-%m-%d %H:%M:%S')" >> "$gate_file"
     echo "  ✅ [$stage] 阶段通过，已标记完成"
     echo ""
     echo "  下一阶段: $(next_stage_hint $stage)"
