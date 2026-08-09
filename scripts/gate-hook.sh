@@ -54,8 +54,8 @@ elif [ "$TOOL_NAME" = "bash" ]; then
         SHOULD_CHECK=true
     elif echo "$BASH_COMMAND" | grep -qE '\\bmv\\b'; then
         SHOULD_CHECK=true
-    # v3: 拦截对 doc/.gate/ 的操作（防 AI 自建门禁标记）
-    elif echo "$BASH_COMMAND" | grep -qE 'gate'; then
+    # v3: 拦截对 doc/.gate/ 的操作（防 AI 自建门禁标记）——只拦截写类 gate 命令
+    elif echo "$BASH_COMMAND" | grep -qE '(pass|allow-write|unpass|confirm-understanding)'; then
         SHOULD_CHECK=true
     fi
 fi
