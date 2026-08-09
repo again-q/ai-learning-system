@@ -57,11 +57,13 @@ Page({
     wx.showLoading({ title: '上传中...', mask: true });
 
     try {
-      // 1. 逐张上传到云存储
+      // 1. 逐张上传到云存储（路径含 userId，实现照片隔离——CR-002 修复）
+      const user = app.globalData.userInfo || {};
+      const uid = user._openid || 'anonymous';
       const fileIds = [];
       for (const file of this.data.images) {
         const ext = file.split('.').pop() || 'jpg';
-        const cloudPath = `photos/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+        const cloudPath = `photos/${uid}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
         const up = await wx.cloud.uploadFile({ cloudPath, filePath: file });
         fileIds.push(up.fileID);
       }

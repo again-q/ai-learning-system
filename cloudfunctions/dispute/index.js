@@ -100,8 +100,25 @@ exports.main = async (event) => {
       createdAt: db.serverDate(),
     };
 
-    // 2. 单题重诊
-    const raw = await judgeQuestion(question, corrections);
+    // 2. 单题重诊（判定失败则保留原结果并返回提示，不破坏已有数据——CR-003 容错对称）
+    let raw;
+    try {
+      raw = await judgeQuestion(question, corrections);
+    } catch (e) {
+      console.warn('[dispute] re-judge failed, keep original:', e.message);
+      return success({
+        questionId,
+        newDiagnosis: {
+          isCorrect: question.isCorrect,
+          correctAnswer: question.correctAnswer || '',
+          difficultyLevel: question.difficultyLevel || 'L4',
+          difficultyValue: question.difficultyValue || 0.5,
+          processScore: question.processScore || 0.5,
+          pathQuality: question.pathQuality || null,
+          keptOriginal: true,
+        },
+      });
+    }
     const clamped = clampParams(raw, question.questionType || '解答');
 
     // 3. 更新 questions 当前值 + revisions
