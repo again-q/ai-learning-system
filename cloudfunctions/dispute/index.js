@@ -70,6 +70,7 @@ async function judgeQuestion(question, corrections) {
   }, DS_API_KEY);
   const raw = data.choices[0].message.content;
   const start = raw.indexOf('{');
+  if (start < 0) throw new Error('判定输出格式异常');
   return JSON.parse(raw.slice(start, raw.lastIndexOf('}') + 1)).questions[0];
 }
 
@@ -119,7 +120,7 @@ exports.main = async (event) => {
       },
     });
 
-    // 4. 追加 mastery_logs（新条目，不覆盖旧记录）
+    // 4. 追加 mastery_logs（新条目 + RAG 闭环：reportText + embedding）
     const report = {
       questionText: question.questionText || '',
       questionType: question.questionType || '',
@@ -138,6 +139,24 @@ exports.main = async (event) => {
       evidence: [],
       actionAdvice: null,
     };
+    const reportText = `题目：${report.questionText} | 作答：${report.studentAnswer} | 判定：${report.isCorrect ? '对' : '错'} | 题型：${report.questionCategory} | 难度：${report.difficultyLevel} | 知识点：${report.knowledgeNodeId || ''}`;
+    let embedding = [];
+    try {
+      const QWEN_API_KEY = process.env.QWEN_API_KEY;
+      const QWEN_BASE_URL = process.env.QWEN_BASE_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1';
+      const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || 'text-embedding-v4';
+      const resp = await fetch(`${QWEN_BASE_URL}/embeddings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${QWEN_API_KEY}` },
+        body: JSON.stringify({ model: EMBEDDING_MODEL, input: reportText }),
+      });
+      if (resp.ok) {
+        const d = await resp.json();
+        embedding = d.data[0].embedding;
+      }
+    } catch (e) {
+      console.warn('[dispute] embed failed:', e.message);
+    }
     await db.collection('mastery_logs').add({
       data: {
         _openid: openid,
@@ -146,8 +165,8 @@ exports.main = async (event) => {
         knowledgeNodeId: question.knowledgeNodeId || null,
         algorithm: 'score_poc',
         report,
-        reportText: '',
-        embedding: [],
+        reportText,
+        embedding,
         createdAt: db.serverDate(),
       },
     });

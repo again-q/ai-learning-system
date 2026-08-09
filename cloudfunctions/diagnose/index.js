@@ -95,8 +95,8 @@ async function qwenVision(fileId) {
 async function deepseekJudge(visionReport, ragContext) {
   const ragSection = ragContext ? `\n\n【历史参考（相似题以往判定，仅供参考不强制）】\n${ragContext}` : '';
   const userMsg = `输入是视觉转录（可能含转录误差）。按 rubric 对每题输出：
-{"questions":[{"index":1,"questionCategory":"回忆类|单元内应用|跨单元应用|无法归类","level":"L1~L11","D":0~1,"isCorrect":true|false,"correctAnswer":"","P":0|0.3|0.5|1.0,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgePoints":[""]}]}
-约束：D 落在 level 区间内；eta 只在解答题；isCorrect 严格数学核验（发现转录可疑处按数学逻辑判定并注明）；只输出 JSON`;
+{"questions":[{"index":1,"questionText":"题目文本","questionType":"选择|填空|解答|其他","questionCategory":"回忆类|单元内应用|跨单元应用|无法归类","level":"L1~L11","D":0~1,"isCorrect":true|false,"correctAnswer":"","P":0|0.3|0.5|1.0,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgePoints":[""]}]}
+约束：questionText 完整转录题干（含选项内容）；D 落在 level 区间内；eta 只在解答题；isCorrect 严格数学核验（发现转录可疑处按数学逻辑判定并注明）；只输出 JSON`;
   const data = await postJSON(`${DS_BASE_URL}/chat/completions`, {
     model: DS_MODEL,
     temperature: 0.2,
@@ -197,38 +197,19 @@ exports.main = async (event) => {
 
     const { batchId } = event;
 
-    // 幂等检查（DI-REG-01：仅 pending 可诊断）
+    // 幂等检查（DI-REG-01：仅 pending 可诊断）+ 归属校验
     const batchRes = await db.collection('batches').doc(batchId).get().catch(() => null);
     if (!batchRes || !batchRes.data) return fail(40003, '批次不存在');
+    if (batchRes.data.userId !== openid) return fail(403, '无权操作他人批次');
     if (batchRes.data.status !== 'pending') return fail(40003, '批次已诊断，请勿重复提交');
 
     await db.collection('batches').doc(batchId).update({ data: { status: 'analyzing' } });
 
-    // 读取该批次的照片
-    const qRes = await db.collection('questions')
-      .where({ batchId, userId: openid })
-      .get();
+    // 读取批次照片（fileIds 存于批次记录）
+    const imageFileIds = (batchRes.data.fileIds || []).slice(0, 9);
 
     let totalQuestions = 0, failedCount = 0;
     const results = [];
-
-    // 并行视觉转录（每张照片）
-    const images = qRes.data.length > 0
-      ? qRes.data.map((q) => ({ imageFileId: q.imageFileId, _id: q._id }))
-      : [{ imageFileId: null, _id: null }]; // 无预登记时按批次读照片（简化：依赖 photoUpload 已存 questions 占位）
-
-    // 注：photoUpload 只存批次，题目识别在 diagnose 内做。
-    // 这里从云存储目录读文件列表（简化处理：从 batches 记录读 imageCount，逐个调用）
-    const imageFileIds = [];
-    const fileList = await cloud.getTempFileURL({ fileList: [] }).catch(() => ({ fileList: [] }));
-    // 由于 CloudBase 无法直接按前缀列文件，photoUpload 已返回 fileIds 存于批次记录
-    if (batchRes.data.fileIds) {
-      imageFileIds.push(...batchRes.data.fileIds);
-    }
-    // 若 fileIds 未存（旧批次），降级：从 questions 占位读取
-    if (imageFileIds.length === 0) {
-      imageFileIds.push(...images.filter((i) => i.imageFileId).map((i) => i.imageFileId));
-    }
 
     const visionTasks = imageFileIds.map(async (fileId) => {
       try {
@@ -242,17 +223,31 @@ exports.main = async (event) => {
 
     for (const vr of visionResults) {
       if (!vr.success) {
+        // 单张失败：写 questions 占位（C2：标记失败 + 前端展示原图引导重传）
         failedCount++;
-        results.push({ fileId: vr.fileId, status: 'failed', error: vr.error });
+        const qIns = await db.collection('questions').add({
+          data: {
+            _openid: openid,
+            userId: openid,
+            batchId,
+            imageFileId: vr.fileId,
+            isCorrect: null,
+            questionText: '',
+            nodeStatus: 'unmapped',
+            source: 'photo',
+            traceReport: null,
+            revisions: [],
+            createdAt: db.serverDate(),
+          },
+        });
+        results.push({ questionId: qIns._id, fileId: vr.fileId, status: 'failed', error: vr.error });
         continue;
       }
 
-      // 诊断（含 RAG 历史注入）
-      const rawDiagnosis = await deepseekJudge(vr.report, '');
-      // RAG：按题目逐个检索（简化：用整份转录文本检索一次）
+      // 先 RAG 检索历史，再一次性判定（避免双重调用）
       const historyHits = await searchHistory(vr.report.slice(0, 500), openid);
       const ragContext = buildRagContext(historyHits);
-      const finalDiagnosis = ragContext ? await deepseekJudge(vr.report, ragContext) : rawDiagnosis;
+      const finalDiagnosis = await deepseekJudge(vr.report, ragContext);
 
       const items = parseQuestionsFromVision(vr.report, finalDiagnosis);
       for (const item of items) {
@@ -345,6 +340,14 @@ exports.main = async (event) => {
     return success({ batchId, status: 'completed', totalQuestions, failedCount, questions: results });
   } catch (e) {
     console.error('[diagnose] error:', e);
+    // 失败时回滚批次状态为 pending（可重试，避免僵尸批次）
+    try {
+      if (event && event.batchId) {
+        await db.collection('batches').doc(event.batchId).update({
+          data: { status: 'pending' },
+        }).catch(() => {});
+      }
+    } catch (_) { /* 回滚失败不阻塞响应 */ }
     return fail(500, '诊断失败，请重试');
   }
 };

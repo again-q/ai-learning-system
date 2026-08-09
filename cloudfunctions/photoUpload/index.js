@@ -12,32 +12,25 @@ exports.main = async (event) => {
     const openid = wxContext.OPENID;
     if (!openid) return fail(401, '未登录');
 
-    const { files } = event;
+    const { fileIds } = event;
 
     // 边界校验（BR-001：一批最多 9 张）
-    if (!files || files.length === 0) return fail(40002, '请选择照片');
-    if (files.length > 9) return fail(40001, '最多9张照片');
+    if (!fileIds || fileIds.length === 0) return fail(40002, '请选择照片');
+    if (fileIds.length > 9) return fail(40001, '最多9张照片');
 
-    // 逐张上传到云存储（文件名校验）
-    const fileIds = [];
-    for (const file of files) {
-      const name = (file.name || '').toLowerCase();
-      if (!/\.(jpg|jpeg|png|webp)$/i.test(name)) {
-        return fail(40004, `不支持的文件格式: ${name || '未知'}`);
+    // 校验 fileID 格式（cloud:// 前缀）
+    for (const id of fileIds) {
+      if (typeof id !== 'string' || !id.startsWith('cloud://')) {
+        return fail(40004, `无效的文件标识: ${id}`);
       }
-      const cloudPath = `photos/${openid}/${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
-      const upRes = await cloud.uploadFile({
-        cloudPath,
-        fileContent: file.content || file.fileContent || file,
-      });
-      fileIds.push(upRes.fileID);
     }
 
-    // 登记批次（batches 集合）
+    // 登记批次（batches 集合）——fileIds 随批次存储，供 diagnose 读取
     const batch = {
       _openid: openid,
       userId: openid,
       imageCount: fileIds.length,
+      fileIds,
       status: 'pending',
       createdAt: db.serverDate(),
     };
