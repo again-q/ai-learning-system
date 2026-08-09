@@ -66,10 +66,10 @@ Page({
         fileIds.push(up.fileID);
       }
 
-      // 2. 登记批次（photoUpload 云函数）
+      // 2. 登记批次（photoUpload 云函数——只登记 fileIds，不重复上传）
       const batchRes = await wx.cloud.callFunction({
         name: 'photoUpload',
-        data: { files: fileIds.map((id) => ({ name: id.split('/').pop(), fileID: id })) },
+        data: { fileIds },
       });
       const batchData = batchRes.result;
       if (batchData.code !== 0) throw new Error(batchData.message);
