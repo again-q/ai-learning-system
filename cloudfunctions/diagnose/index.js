@@ -221,26 +221,34 @@ function buildReportText(report) {
   return `题目：${report.questionText || ''} | 作答：${report.studentAnswer || ''} | 判定：${report.isCorrect ? '对' : '错'} | 题型：${report.questionCategory || ''} | 难度：${report.difficultyLevel || ''} | 知识点：${report.knowledgeNodeId || ''}`;
 }
 
-// ============ 视觉转录 → 题目拆分 ============
-// 以 DeepSeek 输出的 JSON 为准；解析失败返回 null（调用方按失败题处理，P0-①）
-function parseQuestionsFromVision(visionReport, rawDiagnosisJson) {
-  try {
-    const start = rawDiagnosisJson.indexOf('{');
-    const judged = JSON.parse(rawDiagnosisJson.slice(start, rawDiagnosisJson.lastIndexOf('}') + 1)).questions || [];
-    if (!judged.length) return null;
-    return judged.map((j, i) => ({
-      index: j.index || i + 1,
-      questionText: j.questionText || '',
-      questionType: j.questionType || '其他', // 缺省非解答，避免 η 误判（P1-⑦）
-      rawDiagnosis: j,
-    }));
-  } catch (e) {
-    console.warn('[diagnose] judge JSON 解析失败:', e.message);
-    return null; // 调用方按失败题处理
+// ============ 主入口 ============
+
+// ============ 拆题（从 vision Markdown 转录拆出每题） ============
+function splitQuestions(report) {
+  // 只取「题目转录」段（做题痕迹段不参与拆题）
+  const transcript = (report.split('# 做题痕迹观察')[0] || report);
+  const lines = transcript.split('\n');
+  const items = [];
+  let cur = null;
+  for (const line of lines) {
+    const m = line.match(/^\s*(\d+)[.、]\s*(.*)$/);
+    if (m && m[2] && m[2].length > 2) {
+      if (cur) items.push(cur);
+      cur = { text: line.trim(), type: guessType(line) };
+    } else if (cur && line.trim()) {
+      cur.text += '\n' + line.trim();
+    }
   }
+  if (cur) items.push(cur);
+  return items;
 }
 
-// ============ 主入口 ============
+function guessType(line) {
+  if (/^[A-D][.、]/.test(line) || /\(\s*\)/.test(line) && /^[A-D]/.test(line)) return '选择';
+  if (/[。；；]$/.test(line)) return '填空';
+  return '其他';
+}
+
 exports.main = async (event) => {
   try {
     const wxContext = cloud.getWXContext();
@@ -249,7 +257,7 @@ exports.main = async (event) => {
 
     const { batchId } = event;
 
-    // 幂等检查（DI-REG-01：仅 pending 可诊断）+ 归属校验
+    // 幂等检查 + 归属校验
     const batchRes = await db.collection('batches').doc(batchId).get().catch(() => null);
     if (!batchRes || !batchRes.data) return fail(40003, '批次不存在');
     if (batchRes.data.userId !== openid) return fail(403, '无权操作他人批次');
@@ -257,9 +265,8 @@ exports.main = async (event) => {
 
     await db.collection('batches').doc(batchId).update({ data: { status: 'analyzing' } });
 
-    // 清理该批次旧数据（P0-②：上次失败回滚 pending 后可能残留部分 questions/mastery_logs）
+    // 清理旧数据（失败重试残留）
     try {
-      // P1-1：remove 单次有上限，循环删直到清空；先取 ID 再删 mastery_logs（questions 删后 ID 就没了）
       const oldQs = await db.collection('questions').where({ batchId, userId: openid }).limit(1000).get();
       const oldQIds = oldQs.data.map((q) => q._id);
       if (oldQIds.length > 0) {
@@ -272,24 +279,24 @@ exports.main = async (event) => {
       }
       let deleted = 1;
       while (deleted > 0) {
-        const batchRes2 = await db.collection('questions').where({ batchId, userId: openid }).remove();
-        deleted = batchRes2.stats ? batchRes2.stats.removed : 0;
+        const b2 = await db.collection('questions').where({ batchId, userId: openid }).remove();
+        deleted = b2.stats ? b2.stats.removed : 0;
         if (deleted === 0) break;
       }
     } catch (e) {
       console.warn('[diagnose] cleanup old batch data failed:', e.message);
     }
 
-    // 读取批次照片（fileIds 存于批次记录）——二次校验归属（P1-A 双保险）
+    // 读取批次照片（归属二次校验）
     const allFileIds = (batchRes.data.fileIds || []).slice(0, 9);
     const photoFileIds = allFileIds
       .filter((id) => typeof id === 'string' && id.includes(`/photos/${openid}/`));
-    // SF-1：被过滤掉的（越权/脏数据）计入失败，避免空报告零提示
     const filteredCount = allFileIds.length - photoFileIds.length;
 
     let totalQuestions = 0, failedCount = 0;
-    const results = [];
+    const questions = [];
 
+    // ① 并行视觉转录
     const visionTasks = photoFileIds.map(async (fileId) => {
       try {
         const report = await qwenVision(fileId);
@@ -300,179 +307,65 @@ exports.main = async (event) => {
     });
     const visionResults = await Promise.all(visionTasks);
 
+    // ② 逐张拆题 → 建 pending 题记录（判定字段 null，由 judgeOne 逐题补）
     for (const vr of visionResults) {
       if (!vr.success) {
-        // 单张失败：写 questions 占位（C2：标记失败 + 前端展示原图引导重传）
         failedCount++;
         const qIns = await db.collection('questions').add({
           data: {
-            _openid: openid,
-            userId: openid,
-            batchId,
-            imageFileId: vr.fileId,
-            isCorrect: null,
-            questionText: '',
-            nodeStatus: 'unmapped',
-            source: 'photo',
-            traceReport: null,
-            revisions: [],
-            createdAt: db.serverDate(),
+            _openid: openid, userId: openid, batchId, imageFileId: vr.fileId,
+            questionText: '', questionType: '其他', isCorrect: null,
+            nodeStatus: 'unmapped', source: 'photo', traceReport: null,
+            revisions: [], createdAt: db.serverDate(),
           },
         });
-        results.push({ questionId: qIns._id, fileId: vr.fileId, status: 'failed', error: vr.error });
+        questions.push({ questionId: qIns._id, status: 'failed' });
         continue;
       }
 
-      // 先 RAG 检索历史，再一次性判定（避免双重调用）
-      const historyHits = await searchHistory(vr.report.slice(0, 500), openid);
-      const ragContext = buildRagContext(historyHits);
-      let finalDiagnosis;
-      try {
-        finalDiagnosis = await deepseekJudge(vr.report, ragContext);
-      } catch (e) {
-        // judge 失败与 vision 失败同路：写占位 + failedCount++（P0-①）
-        console.warn('[diagnose] judge failed:', e.message);
+      const items = splitQuestions(vr.report);
+      if (!items.length) {
+        // 转录了但拆不出题 → 失败占位
         failedCount++;
         const qIns = await db.collection('questions').add({
           data: {
-            _openid: openid,
-            userId: openid,
-            batchId,
-            imageFileId: vr.fileId,
-            isCorrect: null,
-            questionText: '',
-            nodeStatus: 'unmapped',
-            source: 'photo',
-            traceReport: vr.report,
-            revisions: [],
-            createdAt: db.serverDate(),
+            _openid: openid, userId: openid, batchId, imageFileId: vr.fileId,
+            questionText: '', questionType: '其他', isCorrect: null,
+            nodeStatus: 'unmapped', source: 'photo', traceReport: vr.report,
+            revisions: [], createdAt: db.serverDate(),
           },
         });
-        results.push({ questionId: qIns._id, fileId: vr.fileId, status: 'failed', error: '判定失败' });
+        questions.push({ questionId: qIns._id, status: 'failed' });
         continue;
       }
 
-      const items = parseQuestionsFromVision(vr.report, finalDiagnosis);
-      if (!items) {
-        // 判定 JSON 解析失败 → 同样按失败题处理（P0-①）
-        console.warn('[diagnose] judge JSON 不可解析，按失败处理');
-        failedCount++;
-        const qIns = await db.collection('questions').add({
-          data: {
-            _openid: openid,
-            userId: openid,
-            batchId,
-            imageFileId: vr.fileId,
-            isCorrect: null,
-            questionText: '',
-            nodeStatus: 'unmapped',
-            source: 'photo',
-            traceReport: vr.report,
-            revisions: [],
-            createdAt: db.serverDate(),
-          },
-        });
-        results.push({ questionId: qIns._id, fileId: vr.fileId, status: 'failed', error: '判定结果无法解析' });
-        continue;
-      }
       for (const item of items) {
         totalQuestions++;
-        const raw = item.rawDiagnosis || {};
-        const questionType = item.questionType || '其他'; // 缺省非解答，避免 η 误判（P1-⑦）
-        const clamped = clampParams(raw, questionType);
-
-        const questionData = {
-          _openid: openid,
-          userId: openid,
-          batchId,
-          imageFileId: vr.fileId,
-          questionText: item.questionText || raw.questionText || '',
-          questionType,
-          isCorrect: raw.isCorrect === undefined ? null : raw.isCorrect,
-          correctAnswer: raw.correctAnswer || '',
-          questionCategory: raw.questionCategory || '无法归类',
-          difficultyLevel: raw.level || 'L4',
-          difficultyValue: clamped.D,
-          processScore: clamped.P,
-          pathQuality: clamped.eta,
-          transferQuality: clamped.r,
-          knowledgeNodeId: null,
-          nodeStatus: 'unmapped',
-          errorAttribution: raw.errorAttribution || null,
-          traceReport: vr.report,
-          source: 'photo',
-          revisions: [],
-          createdAt: db.serverDate(),
-        };
-        const qIns = await db.collection('questions').add({ data: questionData });
-
-        // 完整报告 + embedding 入库（RAG 自增强闭环）
-        const report = {
-          questionText: questionData.questionText,
-          questionType,
-          studentAnswer: raw.studentAnswer || '',
-          correctAnswer: questionData.correctAnswer,
-          isCorrect: questionData.isCorrect,
-          questionCategory: questionData.questionCategory,
-          difficultyLevel: questionData.difficultyLevel,
-          difficultyValue: clamped.D,
-          processScore: clamped.P,
-          pathQuality: clamped.eta,
-          transferQuality: clamped.r,
-          knowledgeNodeId: null,
-          nodeStatus: 'unmapped',
-          errorAttribution: questionData.errorAttribution,
-          evidence: [],
-          actionAdvice: null,
-        };
-        const reportText = buildReportText(report);
-        let embedding = [];
-        try {
-          embedding = await embedText(reportText);
-        } catch (e) {
-          console.warn('[RAG] embed failed:', e.message);
-        }
-        await db.collection('mastery_logs').add({
+        const qIns = await db.collection('questions').add({
           data: {
-            _openid: openid,
-            userId: openid,
-            questionId: qIns._id,
-            knowledgeNodeId: null,
-            algorithm: 'score_poc',
-            report,
-            reportText,
-            embedding,
-            createdAt: db.serverDate(),
+            _openid: openid, userId: openid, batchId, imageFileId: vr.fileId,
+            questionText: item.text, questionType: item.type || '其他',
+            isCorrect: null, nodeStatus: 'unmapped', source: 'photo',
+            traceReport: vr.report, revisions: [], createdAt: db.serverDate(),
           },
         });
-
-        results.push({
-          questionId: qIns._id,
-          status: 'completed',
-          isCorrect: questionData.isCorrect,
-          difficultyLevel: questionData.difficultyLevel,
-          difficultyValue: clamped.D,
-          processScore: clamped.P,
-          pathQuality: clamped.eta,
-        });
+        questions.push({ questionId: qIns._id, status: 'pending' });
       }
     }
 
+    // ③ 完成拆分阶段（判定由 judgeOne 逐题做）
     await db.collection('batches').doc(batchId).update({
       data: { status: 'completed', totalQuestions, failedCount: failedCount + filteredCount, completedAt: db.serverDate() },
     });
 
-    return success({ batchId, status: 'completed', totalQuestions, failedCount: failedCount + filteredCount, questions: results });
+    return success({ batchId, status: 'ready', totalQuestions, failedCount: failedCount + filteredCount, questions });
   } catch (e) {
     console.error('[diagnose] error:', e);
-    // 失败时回滚批次状态为 pending（可重试，避免僵尸批次）
     try {
       if (event && event.batchId) {
-        await db.collection('batches').doc(event.batchId).update({
-          data: { status: 'pending' },
-        }).catch(() => {});
+        await db.collection('batches').doc(event.batchId).update({ data: { status: 'pending' } }).catch(() => {});
       }
-    } catch (_) { /* 回滚失败不阻塞响应 */ }
-    return fail(500, '诊断失败，请重试');
+    } catch (_) {}
+    return fail(500, '分析失败，请重试');
   }
 };
