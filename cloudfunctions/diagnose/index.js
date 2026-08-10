@@ -31,7 +31,7 @@ async function aiSplitQuestions(report) {
       { role: 'system', content: '你是题目拆分助手。把视觉转录中的题目逐题拆出，保持每题的完整题干和选项。只输出 JSON。' },
       { role: 'user', content: `把以下转录拆成独立题目（一题一个对象，含完整题干+选项+题号）。输出：{"questions":[{"index":1,"text":"完整题目文本"}]}\n\n===== 转录 =====\n${report.slice(0, 6000)}` },
     ],
-    max_tokens: 4000,
+    max_tokens: 8000, // 8 题完整题干较长，4000 会截断 JSON
   };
   const resp = await fetch(`${DS_BASE_URL}/chat/completions`, {
     method: 'POST',
@@ -41,9 +41,11 @@ async function aiSplitQuestions(report) {
   if (!resp.ok) throw new Error('拆题失败 HTTP ' + resp.status);
   const data = await resp.json();
   const content = data.choices[0].message.content || '';
-  const idx = content.indexOf('{"questions"');
+  const idx = content.indexOf('"questions"'); // 兼容 {\n  "questions" 与 ```json 包裹
   if (idx < 0) throw new Error('拆题输出无 questions');
-  const parsed = JSON.parse(content.slice(idx, content.lastIndexOf('}') + 1));
+  const start = content.lastIndexOf('{', idx);
+  if (start < 0) throw new Error('拆题 JSON 起点定位失败');
+  const parsed = JSON.parse(content.slice(start, content.lastIndexOf('}') + 1));
   return (parsed.questions || [])
     .map((q) => ({ text: q.text || '', type: guessType(q.text || '') }))
     .filter((q) => q.text.length > 5);
