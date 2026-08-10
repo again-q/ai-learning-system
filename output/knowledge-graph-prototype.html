@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>知识图谱可视化 · 原型 v4</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --ink: #1d1d1f;
+    --ink2: #6e6e73;
+    --ink3: #a1a1a6;
+    --accent: #007aff;
+    --accent-soft: rgba(0,122,255,0.08);
+    --track: #e5e5ea;
+    --green: #34c759;
+    --orange: #ff9500;
+    --red: #ff3b30;
+    --gray: #c7c7cc;
+    --shadow: 0 8px 30px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    background: var(--bg); color: var(--ink);
+    min-height: 100vh; display: flex; justify-content: center;
+  }
+  .phone { width: 100%; max-width: 420px; min-height: 100vh; position: relative; padding-bottom: 130px; }
+
+  /* ===== 顶部导航 ===== */
+  .nav {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(245,245,247,0.85);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav .back {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: var(--accent); cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .nav .back:active { transform: scale(0.9); }
+  .nav .title { font-size: 17px; font-weight: 600; }
+  .nav .right { display: flex; align-items: center; gap: 8px; }
+
+  /* ===== 面包屑 ===== */
+  .crumb { padding: 4px 20px 0; font-size: 12px; color: var(--ink3); display: flex; gap: 4px; flex-wrap: wrap; }
+  .crumb span { cursor: pointer; padding: 2px 1px; }
+  .crumb .cur { color: var(--ink2); font-weight: 600; }
+  .crumb .sep { opacity: 0.5; cursor: default; }
+
+  /* ===== 图谱画布 ===== */
+  .graph-stage {
+    position: relative;
+    height: 460px; margin: 8px 12px 0;
+    border-radius: 32px;
+    background: linear-gradient(180deg, #ffffff 0%, #fafafc 100%);
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .graph-stage svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  .node {
+    position: absolute; transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; user-select: none; opacity: 0;
+    animation: nodeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    will-change: transform;
+  }
+  @keyframes nodeIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+
+  /* ---- 中心节点：大 · 蓝渐变实心 ---- */
+  .node.center .dot {
+    width: 120px; height: 120px; border-radius: 50%;
+    background: linear-gradient(135deg, #6cc3ff 0%, #007aff 58%, #004ecb 100%);
+    box-shadow: 0 12px 34px rgba(0,122,255,0.28), 0 3px 10px rgba(0,122,255,0.15);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative; color: #fff;
+    transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .node.center:active .dot { transform: scale(0.95); }
+  .node.center .nm { font-size: 15px; font-weight: 700; max-width: 104px; text-align: center; line-height: 1.3; }
+  .node.center .tp { font-size: 9px; font-weight: 600; opacity: 0.85; margin-top: 3px; letter-spacing: 1px; }
+  /* 演化模式：当前节点更小，居中偏下 */
+  .node.center.small .dot { width: 104px; height: 104px; }
+  .node.center.small .nm { font-size: 13px; max-width: 92px; }
+  .node.center .mv {
+    font-size: 11px; font-weight: 700; margin-top: 6px;
+    background: rgba(255,255,255,0.22); border: 1px solid rgba(255,255,255,0.4);
+    padding: 1px 10px; border-radius: 999px; backdrop-filter: blur(4px);
+  }
+
+  /* ---- 卫星/祖先/儿子节点：小 · 白底渐变环 ---- */
+  .node.kid .dot, .node.anc .dot {
+    width: 56px; height: 56px; border-radius: 50%;
+    position: relative; background: var(--card);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .node.kid:active .dot, .node.anc:active .dot { transform: scale(0.93); }
+  .node.kid .ring, .node.anc .ring {
+    position: absolute; inset: -4px; border-radius: 50%;
+    background: var(--ring-grad, var(--track));
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+  }
+  .node.kid .nm, .node.anc .nm {
+    font-size: 10px; font-weight: 600; color: var(--ink);
+    max-width: 68px; text-align: center; line-height: 1.25;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    padding: 0 3px;
+  }
+  .node.kid .nm.out, .node.anc .nm.out { display: none; }
+  .node .label {
+    margin-top: 7px; font-size: 10px; font-weight: 500; color: var(--ink2);
+    max-width: 100px; text-align: center; line-height: 1.3;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  /* 祖先节点：更小更淡 */
+  .node.anc .dot { width: 48px; height: 48px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .node.anc .nm { font-size: 9px; max-width: 60px; }
+  .node.anc .ring { inset: -3px; -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px)); mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px)); }
+  .node.anc .label { font-size: 10px; max-width: 150px; color: var(--ink); font-weight: 500; }
+  .node.anc .label .up { color: var(--accent); font-weight: 700; font-size: 11px; }
+
+  .edge { opacity: 0; }
+  .edge.show { animation: edgeIn 0.5s ease forwards; }
+  @keyframes edgeIn { to { opacity: 1; } }
+
+  /* 叶子节点空态提示 */
+  .leaf-hint {
+    position: absolute; transform: translateX(-50%);
+    font-size: 12px; color: var(--ink3); font-weight: 500;
+    background: var(--bg); padding: 6px 16px; border-radius: 999px;
+    opacity: 0; animation: badgeIn 0.5s ease 0.4s forwards;
+  }
+
+  /* ---- 画布角标 ---- */
+  .up-badge, .mode-badge {
+    position: absolute; z-index: 6;
+    background: #fff; color: var(--accent);
+    font-size: 12px; font-weight: 600;
+    padding: 7px 14px 7px 10px; border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(0,122,255,0.22), 0 1px 4px rgba(0,0,0,0.08);
+    display: flex; align-items: center; gap: 4px;
+    border: 1px solid rgba(0,122,255,0.15);
+    cursor: pointer; white-space: nowrap;
+  }
+  .up-badge { top: 12px; left: 12px; animation: badgeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both; }
+  .mode-badge { top: 12px; right: 12px; }
+  .mode-badge.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .up-badge:active, .mode-badge:active { transform: scale(0.94); }
+  /* 演化模式一键回退（左下角） */
+  .evo-return-badge {
+    position: absolute; bottom: 12px; left: 12px; z-index: 6;
+    background: #fff; color: var(--ink2);
+    font-size: 12px; font-weight: 600;
+    padding: 8px 16px 8px 12px; border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06);
+    display: flex; align-items: center; gap: 5px;
+    border: 1px solid var(--track);
+    cursor: pointer; white-space: nowrap;
+    animation: badgeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s both;
+  }
+  .evo-return-badge:active { transform: scale(0.94); }
+  .evo-return-badge .ico { color: var(--accent); font-size: 14px; }
+  @keyframes badgeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== 底部信息卡 ===== */
+  .info-card {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 420px; z-index: 15;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-radius: 28px 28px 0 0;
+    box-shadow: 0 -8px 30px rgba(0,0,0,0.08);
+    padding: 12px 20px calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+  .info-card .grabber { width: 40px; height: 4px; border-radius: 999px; background: var(--track); margin: 0 auto 12px; }
+  .info-top { display: flex; align-items: center; gap: 14px; }
+  .mastery-ring {
+    width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .mastery-ring::after { content: ''; position: absolute; inset: 5px; border-radius: 50%; background: #fff; }
+  .mastery-ring b { position: relative; z-index: 1; font-size: 14px; font-weight: 700; }
+  .info-meta { flex: 1; min-width: 0; }
+  .info-meta h3 { font-size: 16px; font-weight: 700; }
+  .info-meta .path { font-size: 10px; color: var(--ink3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .info-meta .status { font-size: 11px; font-weight: 600; margin-top: 4px; }
+  .st-high { color: var(--green); } .st-mid { color: var(--orange); }
+  .st-low { color: var(--red); } .st-zero { color: var(--gray); }
+  .info-desc { font-size: 12px; color: var(--ink2); line-height: 1.55; margin-top: 10px; }
+  .info-chips { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .chip { font-size: 10px; font-weight: 600; color: var(--ink2); background: var(--bg); padding: 4px 10px; border-radius: 999px; }
+  .chip.primary { color: var(--accent); background: var(--accent-soft); }
+  .chip.hot { color: #ff3b30; background: rgba(255,59,48,0.08); }
+  .chip.key { color: #ff9500; background: rgba(255,149,0,0.1); }
+
+  /* ===== 图例 ===== */
+  .legend { display: flex; gap: 12px; padding: 8px 20px 0; font-size: 10px; color: var(--ink3); align-items: center; flex-wrap: wrap; }
+  .legend .sw { width: 14px; height: 14px; border-radius: 50%; display: inline-block; vertical-align: -3px; margin-right: 3px; border: 3px solid; }
+
+  .toast {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
+    background: rgba(29,29,31,0.9); color: #fff; font-size: 13px;
+    padding: 12px 22px; border-radius: 14px; z-index: 50; opacity: 0;
+    transition: opacity 0.25s, transform 0.25s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="nav">
+    <div class="back" onclick="goBack()">‹</div>
+    <div class="title">知识图谱</div>
+    <div class="right">
+      <div class="subject" style="font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:5px 12px;border-radius:999px;">数学</div>
+    </div>
+  </div>
+
+  <div class="crumb" id="crumb"></div>
+
+  <div class="legend">
+    <span><span class="sw" style="border-color:var(--green)"></span>已掌握</span>
+    <span><span class="sw" style="border-color:var(--orange)"></span>学习中</span>
+    <span><span class="sw" style="border-color:var(--red)"></span>薄弱</span>
+    <span><span class="sw" style="border-color:var(--gray)"></span>未学</span>
+    <span style="margin-left:auto;color:var(--accent)">演化</span>
+  </div>
+
+  <div class="graph-stage" id="stage">
+    <svg id="edges" width="100%" height="100%"></svg>
+    <div id="nodes"></div>
+    <div class="mode-badge" id="modeBadge">⟲ 演化</div>
+    <div class="evo-return-badge" id="evoReturn" style="display:none"><span class="ico">⤺</span>回起点</div>
+  </div>
+
+  <div class="info-card" id="infoCard">
+    <div class="grabber"></div>
+    <div class="info-top">
+      <div class="mastery-ring" id="ring"><b id="ringVal">0</b></div>
+      <div class="info-meta">
+        <h3 id="curName">—</h3>
+        <div class="path" id="curPath">—</div>
+        <div class="status" id="curStatus">—</div>
+      </div>
+    </div>
+    <div class="info-desc" id="curDesc">—</div>
+    <div class="info-chips" id="curChips">
+      <span class="chip primary" id="curType">—</span>
+      <span class="chip" id="curCount">—</span>
+      <span class="chip" id="curTip">—</span>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">—</div>
+</div>
+
+<script>
+/* ============ 数据（真实 schema，按教材小节组织；mastery 为演示值） ============ */
+const TYPE_LABEL = { definition: '概念', property: '性质', method: '方法', notation: '记号', example: '例子', reading: '阅读', section: '小节', chapter: '章' };
+const TYPE_DESC = {
+  definition: '概念定义，理解该名词的确切含义。',
+  property: '性质规律，掌握其成立条件与推论。',
+  method: '操作方法，能按步骤熟练使用。',
+  notation: '符号记法，认得清、写得对。',
+  example: '典型例子，用于锚定概念。',
+  reading: '阅读与思考，联系生活情境。',
+  section: '教材小节，点击进入查看本小节的完整知识点。',
+  chapter: '教材章节，点击进入查看各小节。'
+};
+
+function gradOf(m) {
+  if (m >= 75) return ['#a5e8b8', '#34c759'];
+  if (m >= 50) return ['#ffd6a0', '#ff9500'];
+  if (m > 0)  return ['#ffb3ae', '#ff3b30'];
+  return ['#e5e5ea', '#c7c7cc'];
+}
+
+const CHAPTER = {
+  name: '第一章 集合与常用逻辑用语',
+  type: 'chapter',
+  path: ['数学', '必修第一册', '第一章'],
+  desc: '高中数学起点章：集合语言、逻辑用语，是后续一切推理的基础。',
+  children: [
+    {
+      name: '1.1 集合的概念', type: 'section',
+      path: ['数学','必修第一册','第一章','1.1 集合的概念'],
+      desc: '集合的概念、元素、集合的表示方法。',
+      children: [
+        { name: '集合', type: 'definition', mastery: 82, desc: '把一些确定的对象组成的整体叫做集合。',
+          children: [
+            { name: '元素', type: 'definition', mastery: 90, desc: '集合中的每个对象叫做元素。' },
+            { name: '确定性', type: 'property', mastery: 76, desc: '集合的元素必须是确定的。' },
+            { name: '互异性', type: 'property', mastery: 88, desc: '同一集合中元素互不相同。' },
+            { name: '集合相等', type: 'property', mastery: 64, desc: '两集合元素完全相同则相等。' },
+            { name: '字母表示', type: 'notation', mastery: 55, desc: '大写表示集合、小写表示元素。' },
+            { name: '属于与不属于', type: 'notation', mastery: 70, desc: '∈ / ∉ 符号的使用与判断。' },
+            { name: '常用数集', type: 'notation', mastery: 92, desc: 'N、N*、Z、Q、R 等数集符号。' },
+            { name: '列举法', type: 'method', mastery: 45, desc: '把元素一一列出写在大括号里。' },
+            { name: '描述法', type: 'method', mastery: 38, desc: '用共同特征描述集合 {x|条件}。' },
+            { name: '无序性', type: 'property', mastery: 80, desc: '集合中元素无先后顺序。' }
+          ] }
+      ]
+    },
+    {
+      name: '1.2 集合间的基本关系', type: 'section',
+      path: ['数学','必修第一册','第一章','1.2 集合间的基本关系'],
+      desc: '子集、真子集、空集与集合相等的关系。',
+      children: [
+        { name: '子集', type: 'definition', mastery: 75, desc: '集合 A 中所有元素都属于 B，则 A⊆B。',
+          children: [
+            { name: 'Venn图', type: 'notation', mastery: 68, desc: '用图形表示集合关系。' },
+            { name: '自反性', type: 'property', mastery: 60, desc: '任何集合都是它本身的子集。' },
+            { name: '传递性', type: 'property', mastery: 52, desc: 'A⊆B 且 B⊆C ⇒ A⊆C。' },
+            { name: '∈ 与 ⊆ 的区别', type: 'property', mastery: 33, desc: '元素与集合、集合与集合的关系。' },
+            { name: '列举所有子集', type: 'method', mastery: 28, desc: 'n 个元素集合有 2ⁿ 个子集。' }
+          ] },
+        { name: '集合相等', type: 'definition', mastery: 64, desc: '互为子集则相等。' },
+        { name: '真子集', type: 'definition', mastery: 58, desc: 'A⊆B 且 A≠B，记 A⫋B。' },
+        { name: '空集', type: 'definition', mastery: 71, desc: '不含任何元素的集合，记 ∅。',
+          children: [
+            { name: '空集是任何集合的子集', type: 'property', mastery: 66, desc: '∅⊆A 恒成立。' }
+          ] }
+      ]
+    },
+    {
+      name: '1.4 充分条件与必要条件', type: 'section',
+      path: ['数学','必修第一册','第一章','1.4 充分条件与必要条件'],
+      desc: '命题与充要条件，逻辑推理的开端。',
+      children: [
+        { name: '命题', type: 'definition', mastery: 61, desc: '可以判断真假的陈述句。',
+          children: [
+            { name: '真命题与假命题', type: 'definition', mastery: 57, desc: '判断真假的标准。' },
+            { name: '「若p则q」形式', type: 'notation', mastery: 49, desc: '命题的标准书写形式。' }
+          ] },
+        { name: '充分条件', type: 'definition', mastery: 42, desc: 'p⇒q 则 p 是 q 的充分条件。' },
+        { name: '必要条件', type: 'definition', mastery: 40, desc: 'p⇒q 则 q 是 p 的必要条件。' },
+        { name: '充要条件', type: 'definition', mastery: 35, desc: 'p⇔q，互为充要。',
+          children: [
+            { name: '充要条件的证明方法', type: 'method', mastery: 30, desc: '分充分性（p⇒q）与必要性（q⇒p）两方面证明。' },
+            { name: '充要条件与等价定义', type: 'property', mastery: 28, desc: '多个充要条件从不同角度刻画同一概念。' }
+          ] },
+        { name: '判定定理是充分条件', type: 'property', mastery: 33, desc: '几何判定定理给出结论成立的充分条件。' },
+        { name: '性质定理是必要条件', type: 'property', mastery: 31, desc: '性质定理给出结论成立的必要条件。' },
+        { name: '四种条件关系的判断', type: 'method', mastery: 25, desc: '充分不必要 / 必要不充分 / 充要 / 既不充分也不必要。' }
+      ]
+    },
+    {
+      name: '1.5 全称量词与存在量词', type: 'section',
+      path: ['数学','必修第一册','第一章','1.5 全称量词与存在量词'],
+      desc: '∀ 全称量词、∃ 存在量词及命题的否定。',
+      children: [
+        { name: '量词', type: 'definition', mastery: 53, desc: '∀ 与 ∃ 的含义。',
+          children: [
+            { name: '全称量词', type: 'definition', mastery: 55, desc: '∀x∈M，p(x) 恒成立。' },
+            { name: '存在量词', type: 'definition', mastery: 47, desc: '∃x∈M，p(x) 成立。' }
+          ] },
+        { name: '命题的否定', type: 'method', mastery: 39, desc: '否定词的变换规则。',
+          children: [
+            { name: '全称命题的否定', type: 'method', mastery: 36, desc: '∀ 变 ∃，结论取反。' },
+            { name: '存在命题的否定', type: 'method', mastery: 41, desc: '∃ 变 ∀，结论取反。' }
+          ] },
+        { name: '集合中元素的个数', type: 'reading', mastery: 0, desc: '阅读与思考：集合中元素的个数问题。' },
+        { name: '容斥原理', type: 'method', mastery: 0, desc: '|A∪B| = |A|+|B|-|A∩B|。' }
+      ]
+    }
+  ]
+};
+
+/* 注入父引用（祖先链回溯用） */
+(function linkParents(node, parent) {
+  node._parent = parent || null;
+  (node.children || []).forEach(c => linkParents(c, node));
+})(CHAPTER, null);
+
+/* ============ 状态 ============ */
+let stack = [];      /* 结构模式链：章→节→知识点… */
+let evoStack = [];   /* 演化模式链：进入演化后点父走过的路径 */
+let current = CHAPTER;
+let animating = false;
+let mode = 'radial'; /* 'radial' | 'evo' */
+let evoReturn = null; /* 进入演化模式前的节点快照 {current, stack} */
+
+const stage = document.getElementById('stage');
+const nodesBox = document.getElementById('nodes');
+const svg = document.getElementById('edges');
+const modeBadge = document.getElementById('modeBadge');
+
+function mStatus(m) { return m >= 75 ? '已掌握' : m >= 50 ? '学习中' : m > 0 ? '薄弱' : '未学'; }
+function mStCls(m) { return m >= 75 ? 'st-high' : m >= 50 ? 'st-mid' : m > 0 ? 'st-low' : 'st-zero'; }
+function mColor(m) { return m >= 75 ? '#34c759' : m >= 50 ? '#ff9500' : m > 0 ? '#ff3b30' : '#c7c7cc'; }
+function masteryOf(n) { return n.mastery || 0; }
+function hasKids(n) { return n.children && n.children.length > 0; }
+
+/* ============ 前置依赖映射（模拟 relations.reference，name → 前置节点名列表） ============ */
+const REFS = {
+  '集合': [],
+  '元素': ['集合'],
+  '确定性': ['集合'],
+  '互异性': ['集合', '确定性'],
+  '集合相等': ['集合', '元素'],
+  '字母表示': ['集合', '元素'],
+  '属于与不属于': ['集合', '元素'],
+  '常用数集': ['集合'],
+  '列举法': ['集合', '元素'],
+  '描述法': ['集合', '元素'],
+  '无序性': ['集合', '确定性', '互异性'],
+  '子集': ['集合', '元素', '属于与不属于'],
+  'Venn图': ['集合', '子集'],
+  '真子集': ['子集', '属于与不属于'],
+  '空集': ['集合', '元素'],
+  '空集是任何集合的子集': ['空集', '子集'],
+  '列举所有子集的方法': ['子集', '空集'],
+  '∈ 与 ⊆ 的区别': ['子集', '属于与不属于'],
+  '自反性': ['子集'],
+  '传递性': ['子集'],
+  '命题': [],
+  '真命题与假命题': ['命题'],
+  '「若p则q」形式': ['命题'],
+  '充分条件': ['命题'],
+  '必要条件': ['命题'],
+  '充要条件': ['命题', '充分条件', '必要条件'],
+  '充要条件的证明方法': ['充要条件'],
+  '充要条件与等价定义': ['充要条件'],
+  '判定定理是充分条件': ['充分条件', '充要条件'],
+  '性质定理是必要条件': ['必要条件', '充要条件'],
+  '四种条件关系的判断': ['充要条件', '判定定理是充分条件'],
+  '量词': [],
+  '全称量词': ['量词'],
+  '存在量词': ['量词'],
+  '命题的否定': ['命题'],
+  '全称命题的否定': ['命题的否定', '全称量词'],
+  '存在命题的否定': ['命题的否定', '存在量词'],
+  '集合中元素的个数': ['集合'],
+  '容斥原理': ['集合', '子集'],
+  '第一章 集合与常用逻辑用语': [],
+  '1.1 集合的概念': ['第一章 集合与常用逻辑用语'],
+  '1.2 集合间的基本关系': ['1.1 集合的概念'],
+  '1.4 充分条件与必要条件': ['1.1 集合的概念'],
+  '1.5 全称量词与存在量词': ['1.4 充分条件与必要条件']
+};
+
+/* 教材原文 + 考频标记（模拟 concept.source_text / importance，name → 信息） */
+const SRC = {
+  '集合':        { src: '把一些元素组成的总体叫做集合（set）（简称为集）', w: 4, f: 4 },
+  '元素':        { src: '我们把研究对象统称为元素（element）', w: 3, f: 3 },
+  '确定性':      { src: '给定的集合，它的元素必须是确定的。给定一个集合，那么一个元素在或不在这个集合中就确定了', w: 3, f: 3 },
+  '互异性':      { src: '一个给定集合中的元素是互不相同的，也就是说，集合中的元素是不重复出现的', w: 3, f: 3 },
+  '集合相等':    { src: '只要构成两个集合的元素是一样的，我们就称这两个集合是相等的', w: 2, f: 2 },
+  '字母表示':    { src: '我们通常用大写拉丁字母 A, B, C, … 表示集合，用小写拉丁字母 a, b, c, … 表示集合中的元素', w: 2, f: 1 },
+  '属于与不属于': { src: '如果 a 是集合 A 的元素，就说 a 属于集合 A，记作 a ∈ A；如果 a 不是集合 A 中的元素，就说 a 不属于集合 A，记作 a ∉ A', w: 3, f: 3 },
+  '常用数集':    { src: '常用数集及其符号表示：非负整数集（自然数集）记作 N；正整数集记作 N* 或 N₊；整数集记作 Z；有理数集记作 Q；实数集记作 R', w: 3, f: 3 },
+  '列举法':      { src: '把集合的所有元素一一列举出来，并用花括号"{}"括起来表示集合的方法叫做列举法', w: 3, f: 3 },
+  '描述法':      { src: '用集合所含元素的共同特征表示集合的方法称为描述法：花括号内先写元素的一般符号及取值范围，再画一条竖线，竖线后写出元素的共同特征', w: 4, f: 4 },
+  '无序性':      { src: '集合中的元素是没有顺序的，如集合 {1,2} 与 {2,1} 是同一个集合', w: 2, f: 2 },
+  '子集':        { src: '如果集合 A 中任意一个元素都是集合 B 中的元素，就称集合 A 为集合 B 的子集，记作 A⊆B（读作 A 包含于 B）', w: 4, f: 4 },
+  'Venn图':      { src: '在数学中，我们经常用平面上封闭曲线的内部代表集合，这种图称为 Venn 图', w: 2, f: 2 },
+  '真子集':      { src: '如果集合 A⊆B，但存在元素 x∈B 且 x∉A，就称集合 A 是集合 B 的真子集，记作 A⊊B', w: 3, f: 3 },
+  '空集':        { src: '一般地，我们把不含任何元素的集合叫做空集（empty set），记为 ∅', w: 3, f: 3 },
+  '空集是任何集合的子集': { src: '并规定：空集是任何集合的子集', w: 3, f: 2 },
+  '量词':        { src: '对变量取值范围进行限定的短语称为量词，它使含有变量的陈述句成为命题', w: 2, f: 1 },
+  '全称量词':    { src: '短语"所有的""任意一个"在逻辑中通常叫做全称量词，并用符号 "∀" 表示', w: 3, f: 3 },
+  '存在量词':    { src: '短语"存在一个""至少有一个"在逻辑中通常叫做存在量词，并用符号 "∃" 表示', w: 3, f: 3 },
+  '命题的否定':  { src: '对一个命题进行否定得到新命题，一个命题和它的否定不能同时为真，也不能同时为假', w: 2, f: 2 }
+};
+
+/* 当前节点的前置依赖节点们（relations.reference → 节点对象） */
+function refsOf(n) {
+  return (REFS[n.name] || []).map(x => findAny(x)).filter(Boolean);
+}
+
+/* ============ 渲染 ============ */
+function renderCrumb() {
+  /* 两条独立链：结构模式用 stack，演化模式用 evoStack */
+  const chain = mode === 'evo' ? evoStack : stack;
+  const crumbs = chain.map(v => v.name);
+  crumbs.push(current.name);
+  const html = crumbs.map((seg, i) =>
+    i === crumbs.length - 1
+      ? `<span class="cur">${seg}</span>`
+      : `<span onclick="${mode === 'evo' ? 'jumpEvo' : 'jumpTo'}(${i})">${seg}</span><span class="sep">›</span>`
+  ).join('');
+  document.getElementById('crumb').innerHTML = html;
+}
+
+/* 演化链跳回：crumb 第 i 项对应 evoStack[i]（i === evoStack.length 即当前，无操作） */
+function jumpEvo(i) {
+  if (animating) return;
+  if (i >= evoStack.length) return;
+  current = evoStack[i];
+  evoStack = evoStack.slice(0, i);
+  render();
+}
+
+function jumpTo(i) {
+  if (animating) return;
+  while (stack.length > i) stack.pop();
+  current = stack.length ? stack[stack.length - 1] : CHAPTER;
+  render();
+}
+
+function renderInfo() {
+  const m = masteryOf(current);
+  document.getElementById('curName').textContent = current.name;
+  document.getElementById('curPath').textContent = (current.path || []).join(' / ');
+  const st = document.getElementById('curStatus');
+  const hasM = current.type !== 'chapter' && current.type !== 'section';
+  st.textContent = hasM ? '掌握度 ' + m + '% · ' + mStatus(m) : '（' + (current.children || []).length + ' 个下级）';
+  st.className = 'status ' + (hasM ? mStCls(m) : 'st-zero');
+  const ring = document.getElementById('ring');
+  const c = mColor(m);
+  const [c1, c2] = gradOf(m);
+  ring.style.background = hasM
+    ? `conic-gradient(${c1} 0%, ${c2} ${m}%, var(--track) ${m}%)`
+    : `conic-gradient(#d8d8dc 0%, #a1a1a6 100%)`;
+  document.getElementById('ringVal').textContent = hasM ? m : '—';
+  document.getElementById('ringVal').style.color = c;
+  /* 教材原文优先（concept.source_text），无则用描述 */
+  const meta = SRC[current.name] || null;
+  document.getElementById('curDesc').textContent =
+    (meta && meta.src) ? meta.src : (current.desc || '暂无描述。');
+  document.getElementById('curType').textContent = TYPE_LABEL[current.type] || '知识点';
+  const cnt = (current.children || []).length;
+  document.getElementById('curCount').textContent = cnt ? `${cnt} 个下级` : '最细知识点';
+  /* 考频/权重徽标（importance） */
+  let extra = '';
+  if (meta) {
+    if (meta.f >= 4) extra += '<span class="chip hot">🔥 高频考点</span>';
+    if (meta.w >= 4) extra += '<span class="chip key">⭐ 核心必考</span>';
+  }
+  const box = document.getElementById('curChips');
+  if (box) box.querySelectorAll('.chip.hot, .chip.key').forEach(e => e.remove());
+  if (extra && box) box.insertAdjacentHTML('afterbegin', extra);
+  document.getElementById('curTip').textContent =
+    mode === 'evo'
+      ? (stack.length ? '点「‹ 返回上级」回到上一层' : '演化模式：点前置节点继续向上追溯')
+      : (stack.length ? '点「‹ 返回上级」回到上一层' : '点卫星节点进入下级');
+}
+
+function smallNodeHTML(cls, x, y, node, delay) {
+  const km = masteryOf(node);
+  const [c1, c2] = gradOf(km);
+  const isUnlearned = km === 0;
+  const isAnc = cls === 'anc';
+  return `
+    <div class="node ${cls}" data-node="${escapeHtml(node.name)}" style="left:${x}px;top:${y}px;animation-delay:${delay}s">
+      <div class="dot">
+        <div class="ring" style="${isUnlearned
+          ? 'background:var(--track)'
+          : `--ring-grad:conic-gradient(${c1} 0%, ${c2} ${km}%, transparent ${km}%)`}"></div>
+      </div>
+      <div class="label">${node.name}${isAnc ? ' <span class="up">↑</span>' : ''}</div>
+    </div>`;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/"/g, '&quot;');
+}
+
+/* ---- 辐射模式：中心 + 最近一级儿子（环绕）；叶子节点只显示中心 ---- */
+function renderRadial() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  const cx = w / 2, cy = h / 2 - 6;
+  const kids = current.children || [];
+  const n = kids.length;
+
+  /* 叶子：只展示中心节点 + 空态提示 */
+  if (n === 0) {
+    svg.innerHTML = '';
+    let html = centerHTML(cx, cy, 0.05);
+    html += `<div class="leaf-hint" style="left:${cx}px;top:${cy + 86}px">最细知识点 · 无下级</div>`;
+    nodesBox.innerHTML = html;
+    bindEvents();
+    return;
+  }
+
+  const R = Math.min(w * 0.38, 158);
+  const cR = 71, kR = 28;
+
+  const EDGES = kids.map((k, i) => {
+    const ang = (i / n) * Math.PI * 2 - Math.PI / 2;
+    const x = cx + R * Math.cos(ang), y = cy + R * Math.sin(ang);
+    const dx = x - cx, dy = y - cy, dist = Math.hypot(dx, dy);
+    const ux = dx / dist, uy = dy / dist;
+    return { x1: cx + ux * cR, y1: cy + uy * cR, x2: x - ux * kR, y2: y - uy * kR, delay: 0.1 + i * 0.04 };
+  });
+  svg.innerHTML = EDGES.map((e) =>
+    `<line class="edge" x1="${e.x1}" y1="${e.y1}" x2="${e.x2}" y2="${e.y2}" stroke="#007aff" stroke-width="1.4" opacity="0.22" style="animation-delay:${e.delay}s"/>`
+  ).join('');
+
+  let html = centerHTML(cx, cy, 0.05);
+  kids.forEach((k, i) => {
+    const ang = (i / n) * Math.PI * 2 - Math.PI / 2;
+    const x = cx + R * Math.cos(ang), y = cy + R * Math.sin(ang);
+    html += smallNodeHTML('kid', x, y, k, 0.12 + i * 0.04);
+  });
+  nodesBox.innerHTML = html;
+  bindEvents();
+}
+
+/* ---- 演化模式：只显示最近一级祖先（父）+ 当前节点 ---- */
+/* ---- 演化模式：前置依赖链（relations.reference）+ 当前节点 ---- */
+function renderEvo() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  const cx = w / 2;
+  const pres = refsOf(current);          /* 前置节点们 */
+  const n = pres.length;
+
+  const centerY = Math.min(h - 96, 330);
+  const cR = 52;
+  const preY = 150;
+
+  /* 前置节点水平排列 */
+  const per = n > 0 ? Math.min(86, (w - 70) / n) : 86;
+  const totalW = (n - 1) * per;
+  const x0 = cx - totalW / 2;
+
+  const EDGES = [];
+  pres.forEach((p, i) => {
+    const x = x0 + i * per;
+    EDGES.push({ x1: x, y1: preY + 27, x2: cx, y2: centerY - cR, delay: 0.1 + i * 0.05 });
+  });
+  svg.innerHTML = EDGES.map((e) =>
+    `<line class="edge" x1="${e.x1}" y1="${e.y1}" x2="${e.x2}" y2="${e.y2}" stroke="#007aff" stroke-width="1.3" opacity="0.2" style="animation-delay:${e.delay}s"/>`
+  ).join('');
+
+  let html = '';
+  pres.forEach((p, i) => {
+    html += smallNodeHTML('anc', x0 + i * per, preY, p, 0.06 + i * 0.06);
+  });
+  html += centerHTML(cx, centerY, 0.1 + n * 0.04, true);
+  nodesBox.innerHTML = html;
+  bindEvents();
+}
+
+function centerHTML(cx, cy, delay, small) {
+  const isTop = current === CHAPTER;
+  const m = masteryOf(current);
+  return `
+    <div class="node center ${small ? 'small' : ''}" id="center" style="left:${cx}px;top:${cy}px;animation-delay:${delay}s">
+      <div class="dot">
+        <div class="nm">${current.name}</div>
+        <div class="tp">${TYPE_LABEL[current.type] || '知识点'}</div>
+        ${isTop || current.type === 'section' ? '' : `<div class="mv">${m}%</div>`}
+      </div>
+    </div>`;
+}
+
+function render() {
+  if (mode === 'evo') renderEvo(); else renderRadial();
+
+  /* 返回徽标：结构模式按 stack 深度；演化模式始终显示（退回演化链/退出演化） */
+  const upBadge = document.getElementById('upBadge');
+  const showUp = mode === 'evo' || stack.length > 0;
+  if (showUp && !upBadge) {
+    nodesBox.insertAdjacentHTML('beforebegin',
+      `<div class="up-badge" id="upBadge"><span style="font-size:15px;line-height:1">‹</span>返回上级</div>`);
+  } else if (!showUp && upBadge) {
+    upBadge.remove();
+  }
+  if (upBadge) upBadge.onclick = (e) => { e.stopPropagation(); goBack(); };
+
+  modeBadge.classList.toggle('active', mode === 'evo');
+  modeBadge.innerHTML = mode === 'evo' ? '◉ 演化中' : '⟲ 演化';
+
+  /* 一键回退：演化模式下且已从起点演化过才显示 */
+  const er = document.getElementById('evoReturn');
+  if (er) {
+    const evolved = mode === 'evo' && evoReturn && evoReturn.current !== current;
+    er.style.display = evolved ? 'flex' : 'none';
+  }
+
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.edge').forEach(e => e.classList.add('show'));
+  });
+
+  renderCrumb();
+  renderInfo();
+}
+
+function bindEvents() {
+  document.querySelectorAll('.node.kid, .node.anc').forEach(el => {
+    el.addEventListener('click', () => {
+      if (animating) return;
+      const name = el.dataset.node;
+      const kid = mode === 'evo' ? findAny(name) : (findNode(current, name) || findAny(name));
+      if (!kid) { toast('未找到节点'); return; }
+      enter(kid);
+    });
+  });
+  const center = document.getElementById('center');
+  if (center) center.addEventListener('click', () => {
+    if (animating) return;
+    if (stack.length) goBack(); else toast('这是第一章 · 顶层');
+  });
+}
+
+function findNode(node, name) {
+  if (node.name === name) return node;
+  for (const c of node.children || []) {
+    const r = findNode(c, name);
+    if (r) return r;
+  }
+  return null;
+}
+function findAny(name) {
+  let hit = null;
+  (function walk(n) {
+    if (n.name === name) { hit = n; return; }
+    (n.children || []).forEach(walk);
+  })(CHAPTER);
+  return hit;
+}
+
+/* ============ 导航 ============ */
+function enter(kid) {
+  animating = true;
+  const c = document.getElementById('center');
+  if (c) {
+    c.style.transition = 'transform 0.28s ease, opacity 0.28s';
+    c.style.opacity = '0';
+    c.style.transform = 'translate(-50%,-50%) scale(0.55)';
+  }
+  setTimeout(() => {
+    /* 两条独立链：演化模式推进演化链，结构模式推进结构链 */
+    if (mode === 'evo') evoStack.push(current);
+    else stack.push(current);
+    current = kid;
+    render();
+    animating = false;
+  }, 300);
+}
+
+function goBack() {
+  if (animating) return;
+
+  /* 演化模式：退回演化链；退到起点则退出演化回结构视图 */
+  if (mode === 'evo') {
+    if (evoStack.length) {
+      animating = true;
+      setTimeout(() => {
+        current = evoStack.pop();
+        render();
+        animating = false;
+      }, 200);
+      return;
+    }
+    mode = 'radial';
+    evoStack = [];
+    evoReturn = null;
+    toast('已退出演化模式');
+    render();
+    return;
+  }
+
+  if (!stack.length) { toast('原型演示：返回上一页'); return; }
+  animating = true;
+  const c = document.getElementById('center');
+  if (c) {
+    c.style.transition = 'transform 0.28s ease, opacity 0.28s';
+    c.style.opacity = '0';
+    c.style.transform = 'translate(-50%,-50%) scale(1.4)';
+  }
+  setTimeout(() => {
+    current = stack.pop();
+    render();
+    animating = false;
+  }, 300);
+}
+
+/* ============ 模式切换 ============ */
+modeBadge.addEventListener('click', () => {
+  if (animating) return;
+  if (mode === 'radial') {
+    /* 进入演化：记录快照，重置演化链 */
+    evoReturn = { current, stack: stack.slice() };
+    evoStack = [];
+    mode = 'evo';
+    toast('演化模式：点父节点继续向上追溯');
+  } else {
+    mode = 'radial';
+    evoStack = [];
+    evoReturn = null;
+    toast('已切回层级模式');
+  }
+  render();
+});
+
+document.getElementById('evoReturn').addEventListener('click', () => {
+  if (animating) return;
+  if (!evoReturn) return;
+  stack = evoReturn.stack.slice();
+  current = evoReturn.current;
+  mode = 'radial';
+  evoStack = [];
+  evoReturn = null;
+  toast(`已回到「${current.name}」`);
+  render();
+});
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 1400);
+}
+
+render();
+</script>
+</body>
+</html>

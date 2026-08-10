@@ -30,8 +30,6 @@ function mStatus(m) { return m >= 75 ? '已掌握' : m >= 50 ? '学习中' : m >
 Page({
   data: {
     loading: true,
-    isTab: false,          // tab 页不显示返回按钮
-    infoExpanded: false,   // 详情展开/收起
     mode: 'radial',        // radial | evo
     nodes: [],
     crumb: [],
@@ -49,8 +47,6 @@ Page({
 
   onLoad() {
     this._dpr = sys.pixelRatio || 2;
-    // tab 页（页面栈长度 1）不显示返回按钮
-    this.setData({ isTab: getCurrentPages().length === 1 });
   },
 
   onReady() {
@@ -416,11 +412,7 @@ Page({
     this.render();
   },
 
-  onBackTap() {
-    // tab 页无返回栈
-    if (getCurrentPages().length <= 1) return;
-    wx.navigateBack();
-  }
+  onBackTap() { wx.navigateBack(); }
 });
 
 let nodesCount = 0;

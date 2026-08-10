@@ -14,7 +14,7 @@ const NODES_DIR = path.join(__dirname, '../knowledge-graph/nodes');
 
 function collectNodes(dir) {
   const nodes = [];
-  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.json') && f !== 'knowledge_index.json');
   for (const file of files) {
     const data = JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8'));
     // 兼容两种结构：数组或 {nodes: [...]}
@@ -26,11 +26,13 @@ function collectNodes(dir) {
         type: (n.basic && n.basic.type) || n.type || 'definition',
         subject: (n.basic && n.basic.subject) || '数学',
         stage: (n.basic && n.basic.stage) || '',
+        grade: (n.basic && n.basic.grade) || '',
         level: (n.basic && n.basic.level) || 1,
         parentId: (n.tree && n.tree.parent_id) || n.parentId || null,
         path: (n.tree && n.tree.path) || n.path || '',
         concept: n.concept || null,
         importance: n.importance || null,
+        relations: n.relations || null,
       });
     }
   }
