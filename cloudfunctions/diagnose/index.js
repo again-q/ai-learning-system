@@ -77,12 +77,16 @@ async function qwenVision(fileId) {
   const imageResp = await fetch(url);
   const buffer = Buffer.from(await imageResp.arrayBuffer());
   const base64 = buffer.toString('base64');
+  // P2-A：按文件后缀取 MIME（png/webp 不再硬编码 jpeg）
+  const ext = (fileId.split('.').pop() || 'jpg').toLowerCase();
+  const mimeMap = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' };
+  const mime = mimeMap[ext] || 'image/jpeg';
   const data = await postJSON(`${QWEN_BASE_URL}/chat/completions`, {
     model: QWEN_VL_MODEL,
     messages: [{
       role: 'user',
       content: [
-        { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64}` } },
+        { type: 'image_url', image_url: { url: `data:${mime};base64,${base64}` } },
         { type: 'text', text: VISION_PROMPT },
       ],
     }],
@@ -217,8 +221,9 @@ exports.main = async (event) => {
       console.warn('[diagnose] cleanup old batch data failed:', e.message);
     }
 
-    // 读取批次照片（fileIds 存于批次记录）
-    const photoFileIds = (batchRes.data.fileIds || []).slice(0, 9);
+    // 读取批次照片（fileIds 存于批次记录）——二次校验归属（P1-A 双保险）
+    const photoFileIds = (batchRes.data.fileIds || []).slice(0, 9)
+      .filter((id) => typeof id === 'string' && id.includes(`/photos/${openid}/`));
 
     let totalQuestions = 0, failedCount = 0;
     const results = [];

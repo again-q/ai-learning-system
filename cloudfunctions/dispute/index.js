@@ -71,7 +71,9 @@ async function judgeQuestion(question, corrections) {
   const raw = data.choices[0].message.content;
   const start = raw.indexOf('{');
   if (start < 0) throw new Error('判定输出格式异常');
-  return JSON.parse(raw.slice(start, raw.lastIndexOf('}') + 1)).questions[0];
+  const parsed = JSON.parse(raw.slice(start, raw.lastIndexOf('}') + 1));
+  if (!parsed.questions || !parsed.questions.length) throw new Error('判定输出为空'); // P2-C：空数组走 keptOriginal，不丢修正
+  return parsed.questions[0];
 }
 
 exports.main = async (event) => {
@@ -158,17 +160,17 @@ exports.main = async (event) => {
       questionText: question.questionText || '',
       questionType: question.questionType || '',
       studentAnswer: corrections.studentAnswer || question.studentAnswer || '',
-      correctAnswer: raw.correctAnswer || '',
+      correctAnswer: raw.correctAnswer || question.correctAnswer || '', // P2-B：与 questions 更新一致的缺省链
       isCorrect: raw.isCorrect,
-      questionCategory: raw.questionCategory || '无法归类',
-      difficultyLevel: raw.level || 'L4',
+      questionCategory: raw.questionCategory || question.questionCategory || '无法归类',
+      difficultyLevel: raw.level || question.difficultyLevel || 'L4',
       difficultyValue: clamped.D,
       processScore: clamped.P,
       pathQuality: clamped.eta,
       transferQuality: null,
       knowledgeNodeId: question.knowledgeNodeId || null,
       nodeStatus: question.nodeStatus || 'unmapped',
-      errorAttribution: raw.errorAttribution || null,
+      errorAttribution: raw.errorAttribution || question.errorAttribution || null,
       evidence: [],
       actionAdvice: null,
     };

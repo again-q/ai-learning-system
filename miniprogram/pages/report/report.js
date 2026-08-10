@@ -102,7 +102,8 @@ Page({
         processScore: nd.processScore,
         pathQuality: nd.pathQuality,
         studentAnswer: disputeAnswer,
-        statusText: nd.isCorrect ? '正确' : '错误',
+        statusText: nd.isCorrect === true ? '正确' : nd.isCorrect === false ? '错误' : '待确认', // P1-B：null 走待确认
+        statusClass: nd.isCorrect === true ? 'correct' : nd.isCorrect === false ? 'wrong' : 'pending', // P1-B：同步颜色
       };
       this.setData({ questions, disputingId: null });
       wx.hideLoading();
