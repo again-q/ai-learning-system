@@ -4,7 +4,11 @@ Page({
   data: {
     images: [],
     submitting: false,
+    analyzing: false,
     progressText: '',
+    totalQuestions: 0,
+    doneCount: 0,
+    progressPercent: 0,
   },
 
   onLoad() {},
@@ -84,7 +88,7 @@ Page({
       if (batchData.code !== 0) throw new Error(batchData.message);
 
       // 3. 拆分阶段：视觉转录 + 拆题 + 建题（不含判定，快）
-      this.setData({ progressText: 'AI 识别题目中...' });
+      this.setData({ analyzing: true, progressText: 'AI 识别题目中...', progressPercent: 5 });
       wx.showLoading({ title: '识别题目中...', mask: true });
       const diagRes = await wx.cloud.callFunction({
         name: 'diagnose',
@@ -98,13 +102,15 @@ Page({
       const total = pendingQ.length;
       wx.hideLoading();
 
-      // 4. 逐题判定（judgeOne，支持 1/N…N/N 实时进度）
+      // 4. 逐题判定（judgeOne，进度条 1/N…N/N）
       if (total === 0) {
         wx.showToast({ title: '未识别到题目，请重试', icon: 'none' });
+        this.setData({ analyzing: false });
         return;
       }
+      this.setData({ totalQuestions: total, progressText: 'AI 判定题目中...', progressPercent: 10 });
       let done = 0, failed = 0;
-      // 并发 2 个，避免 max 思考档串行太久（9 题约 3-5 分钟）
+      // 并发 2 个，high 档每题 ~60s，9 题约 4-5 分钟
       const queue = [...pendingQ];
       const worker = async () => {
         while (queue.length > 0) {
@@ -120,18 +126,26 @@ Page({
             console.error('[photo] judgeOne failed:', item.questionId, e);
           }
           done++;
-          this.setData({ progressText: `判定中 ${done}/${total}...` });
-          wx.showToast({ title: `${done}/${total} 题判定完成`, icon: 'none' });
+          const pct = 10 + Math.round((done / total) * 85);
+          this.setData({
+            doneCount: done,
+            progressPercent: pct,
+            progressText: done === total ? '生成报告中...' : 'AI 判定题目中...',
+          });
         }
       };
       await Promise.all([worker(), worker()]);
 
       // 5. 跳转报告页
+      this.setData({ analyzing: false, progressPercent: 100 });
       if (failed > 0) wx.showToast({ title: `${failed} 题判定失败，可在报告中重试`, icon: 'none' });
-      wx.navigateTo({ url: `/pages/report/report?batchId=${batchData.data.batchId}` });
+      setTimeout(() => {
+        wx.navigateTo({ url: `/pages/report/report?batchId=${batchData.data.batchId}` });
+      }, 300);
     } catch (e) {
       console.error('[photo] submit error:', e);
       wx.hideLoading();
+      this.setData({ analyzing: false });
       wx.showToast({ title: e.message || '提交失败，请重试', icon: 'none' });
     } finally {
       this.setData({ submitting: false });

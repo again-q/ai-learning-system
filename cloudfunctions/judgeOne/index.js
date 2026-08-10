@@ -9,7 +9,8 @@ const DS_API_KEY = process.env.DEEPSEEK_API_KEY;
 const QWEN_BASE_URL = process.env.QWEN_BASE_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1';
 const DS_BASE_URL = process.env.DS_BASE_URL || 'https://api.deepseek.com';
 const DS_MODEL = process.env.DS_MODEL || 'deepseek-v4-flash'; // 新模型名（chat/reasoner 已弃用）
-const DS_THINKING = process.env.DS_THINKING || 'enabled'; // 思考档：enabled=high 档（max 烧钱，disabled 会误判）
+const DS_THINKING = process.env.DS_THINKING || 'enabled';
+const DS_EFFORT = process.env.DS_EFFORT || 'high'; // reasoning_effort：low 会误判，max 烧钱，high 是准确底线
 const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || 'text-embedding-v4';
 const TOP_K = 5;
 const HISTORY_LIMIT = 200;
@@ -132,6 +133,7 @@ async function judgeQuestion(question, ragContext) {
   const data = await postJSON(`${DS_BASE_URL}/chat/completions`, {
     model: DS_MODEL,
     thinking: { type: DS_THINKING },
+    reasoning_effort: DS_EFFORT,
     messages: [
       { role: 'system', content: '你是严谨的数学诊断推理引擎。严格按完整版标尺判定单题。最后输出纯 JSON。' },
       { role: 'user', content: userMsg + '\n\n===== 完整版标尺 =====\n' + RUBRIC + ragSection + '\n\n===== 本题上下文 =====\n题目：' + question.questionText + '\n整图痕迹：' + (question.traceReport || '').slice(0, 1500) },
@@ -140,11 +142,16 @@ async function judgeQuestion(question, ragContext) {
   }, DS_API_KEY);
   const msg = data.choices[0].message;
   const content = msg.content || msg.reasoning_content || '';
-  const qIdx = content.indexOf('"index"');
-  if (qIdx < 0) throw new Error('判定输出格式异常');
-  const start = content.lastIndexOf('{', qIdx);
+  // 括号配平：从末尾 } 配平到真实 JSON 起点（跳过 prompt 示例/reasoning 复述）
   const end = content.lastIndexOf('}');
-  if (start < 0 || end < start) throw new Error('判定 JSON 提取失败');
+  if (end < 0) throw new Error('判定输出无 JSON');
+  let depth = 0, start = -1;
+  for (let i = end; i >= 0; i--) {
+    const ch = content[i];
+    if (ch === '}') depth++;
+    else if (ch === '{') { depth--; if (depth === 0) { start = i; break; } }
+  }
+  if (start < 0) throw new Error('判定 JSON 起点定位失败');
   return JSON.parse(content.slice(start, end + 1));
 }
 

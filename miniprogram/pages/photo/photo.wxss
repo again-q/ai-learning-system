@@ -163,3 +163,50 @@ page {
   font-size: 24rpx;
   color: var(--text-tertiary);
 }
+
+/* 分析进度条（设计语言 v1.1） */
+.progress-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fade-in 0.3s var(--ease-out);
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.progress-card {
+  width: 560rpx;
+  background: #ffffff;
+  border-radius: 32rpx;
+  padding: 48rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+  animation: sheet-up 0.3s var(--ease-out);
+}
+@keyframes sheet-up { from { transform: translateY(24rpx); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.progress-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.progress-track {
+  width: 100%;
+  height: 12rpx;
+  background: var(--bg-subtle);
+  border-radius: 999rpx;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999rpx;
+  transition: width 0.4s var(--ease-out);
+}
+.progress-num {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
