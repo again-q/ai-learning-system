@@ -18,10 +18,13 @@ exports.main = async (event) => {
     if (!fileIds || fileIds.length === 0) return fail(40002, '请选择照片');
     if (fileIds.length > 9) return fail(40001, '最多9张照片');
 
-    // 校验 fileID 格式（cloud:// 前缀）
+    // 校验 fileID 格式 + 归属（P1-A：必须含本人路径前缀，防越权读取他人照片）
     for (const id of fileIds) {
       if (typeof id !== 'string' || !id.startsWith('cloud://')) {
         return fail(40004, `无效的文件标识: ${id}`);
+      }
+      if (!id.includes(`/photos/${openid}/`)) {
+        return fail(40004, '文件标识不属于当前用户');
       }
     }
 
