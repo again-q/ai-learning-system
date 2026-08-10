@@ -231,6 +231,25 @@ exports.main = async (event) => {
       console.warn('[judgeOne] mastery_logs add failed:', e.message);
     }
 
+    // 更新批次进度；最后一题判完 → completed
+    try {
+      const batchRes = await db.collection('batches').doc(question.batchId).get();
+      if (batchRes.data) {
+        const done = (batchRes.data.progress && batchRes.data.progress.done || 0) + 1;
+        const total = batchRes.data.progress ? batchRes.data.progress.total : 0;
+        await db.collection('batches').doc(question.batchId).update({
+          data: { progress: { done, total } },
+        });
+        if (total > 0 && done >= total) {
+          await db.collection('batches').doc(question.batchId).update({
+            data: { status: 'completed', completedAt: db.serverDate() },
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('[judgeOne] batch progress update failed:', e.message);
+    }
+
     return success({
       questionId,
       newDiagnosis: {

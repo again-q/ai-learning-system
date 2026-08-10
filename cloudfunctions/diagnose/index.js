@@ -41,11 +41,11 @@ async function aiSplitQuestions(report) {
   if (!resp.ok) throw new Error('拆题失败 HTTP ' + resp.status);
   const data = await resp.json();
   const content = data.choices[0].message.content || '';
-  const idx = content.indexOf('"questions"'); // 兼容 {\n  "questions" 与 ```json 包裹
+  const idx = content.indexOf('"questions"');
   if (idx < 0) throw new Error('拆题输出无 questions');
-  const start = content.lastIndexOf('{', idx);
-  if (start < 0) throw new Error('拆题 JSON 起点定位失败');
-  const parsed = JSON.parse(content.slice(start, content.lastIndexOf('}') + 1));
+  const end = content.lastIndexOf('}');
+  if (end < 0 || end < idx) throw new Error('拆题 JSON 提取失败');
+  const parsed = JSON.parse(content.slice(idx - 1, end + 1)); // 从 "questions" 键所在对象起点截取
   return (parsed.questions || [])
     .map((q) => ({ text: q.text || '', type: guessType(q.text || '') }))
     .filter((q) => q.text.length > 5);
@@ -198,12 +198,12 @@ exports.main = async (event) => {
       }
     }
 
-    // ③ 拆分阶段完成（判定由 judgeOne 逐题做，前端 1/N 进度）
+    // ③ 拆分阶段完成：status=analyzing（判定中），由 judgeOne 逐题判定、最后一题完成才置 completed
     await db.collection('batches').doc(batchId).update({
-      data: { status: 'completed', totalQuestions, failedCount: failedCount + filteredCount, completedAt: db.serverDate() },
+      data: { status: 'analyzing', totalQuestions, failedCount: failedCount + filteredCount, progress: { done: 0, total: totalQuestions } },
     });
 
-    return success({ batchId, status: 'ready', totalQuestions, failedCount: failedCount + filteredCount, questions });
+    return success({ batchId, status: 'analyzing', totalQuestions, failedCount: failedCount + filteredCount, questions });
   } catch (e) {
     console.error('[diagnose] error:', e);
     try {
