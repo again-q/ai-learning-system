@@ -53,7 +53,7 @@ Page({
   goLayer(e) {
     const id = e.currentTarget.dataset.id;
     const pageMap = {
-      'knowledge': '/pages/knowledge-tree/knowledge-tree',
+      'knowledge': '/pages/knowledge-map/knowledge-map',
       'model': '/pages/model-cards/model-cards',
       'method': '/pages/method-list/method-list'
     };
