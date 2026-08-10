@@ -6,7 +6,7 @@ const _ = db.command;
 // 与 diagnose 共用配置
 const DS_API_KEY = process.env.DEEPSEEK_API_KEY;
 const DS_BASE_URL = process.env.DS_BASE_URL || 'https://api.deepseek.com';
-const DS_MODEL = process.env.DS_MODEL || 'deepseek-chat';
+const DS_MODEL = process.env.DS_MODEL || 'deepseek-reasoner'; // max 思考档（技术选型定：Flash max）
 
 const success = (data = null) => ({ code: 0, data, message: 'ok' });
 const fail = (code, msg) => ({ code, data: null, message: msg });
@@ -110,9 +110,11 @@ async function judgeQuestion(question, corrections) {
       { role: 'system', content: '你是严谨的数学诊断推理引擎。只输出 JSON。' },
       { role: 'user', content: userMsg + '\n\n===== rubric =====\n' + RUBRIC + '\n\n===== 题目上下文 =====\n' + context },
     ],
-    max_tokens: 1500,
+    max_tokens: 4000,
   }, DS_API_KEY);
-  const raw = data.choices[0].message.content;
+  // max 思考档：content 可能为空，回退 reasoning_content（dispute 单题，4000 token 通常够）
+  const msg = data.choices[0].message;
+  const raw = msg.content || msg.reasoning_content || '';
   const start = raw.indexOf('{');
   if (start < 0) throw new Error('判定输出格式异常');
   const parsed = JSON.parse(raw.slice(start, raw.lastIndexOf('}') + 1));
