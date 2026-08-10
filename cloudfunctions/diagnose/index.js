@@ -152,15 +152,16 @@ async function deepseekJudge(visionReport, ragContext) {
       { role: 'system', content: '你是严谨的数学诊断推理引擎。严格按 rubric 判定。最后必须输出纯 JSON。' },
       { role: 'user', content: userMsg + '\n\n===== rubric =====\n' + RUBRIC + ragSection + '\n\n===== vision 转录 =====\n' + visionReport },
     ],
-    max_tokens: 8000,
+    max_tokens: 16000, // 批量场景推理吃 token，给足预算
   }, DS_API_KEY);
   const msg = data.choices[0].message;
-  // max 思考档：content 可能为空（推理吃光 token），回退 reasoning_content 找 JSON
+  // max 思考档：content 可能为空（推理吃光 token），回退 reasoning_content；JSON 用 {"questions" 定位（不能用 lastIndexOf {，会命中数学括号）
   const content = msg.content || msg.reasoning_content || '';
-  if (!content.includes('{')) {
-    throw new Error('判定输出无 JSON 内容');
+  const qIdx = content.indexOf('{"questions"');
+  if (qIdx < 0) {
+    throw new Error('判定输出无 questions JSON');
   }
-  return content;
+  return content.slice(qIdx);
 }
 
 // ============ RAG（决策 E3：轻量自建） ============
