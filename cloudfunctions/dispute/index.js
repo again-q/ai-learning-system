@@ -143,7 +143,7 @@ exports.main = async (event) => {
     await db.collection('questions').doc(questionId).update({
       data: {
         studentAnswer: corrections.studentAnswer || question.studentAnswer || '',
-        isCorrect: raw.isCorrect,
+        isCorrect: raw.isCorrect === undefined ? null : raw.isCorrect, // SF-2：undefined 兜底
         correctAnswer: raw.correctAnswer || question.correctAnswer || '',
         questionCategory: raw.questionCategory || question.questionCategory || '无法归类',
         difficultyLevel: raw.level || question.difficultyLevel || 'L4',
@@ -161,7 +161,7 @@ exports.main = async (event) => {
       questionType: question.questionType || '',
       studentAnswer: corrections.studentAnswer || question.studentAnswer || '',
       correctAnswer: raw.correctAnswer || question.correctAnswer || '', // P2-B：与 questions 更新一致的缺省链
-      isCorrect: raw.isCorrect,
+      isCorrect: raw.isCorrect === undefined ? null : raw.isCorrect, // SF-2
       questionCategory: raw.questionCategory || question.questionCategory || '无法归类',
       difficultyLevel: raw.level || question.difficultyLevel || 'L4',
       difficultyValue: clamped.D,
@@ -170,7 +170,7 @@ exports.main = async (event) => {
       transferQuality: null,
       knowledgeNodeId: question.knowledgeNodeId || null,
       nodeStatus: question.nodeStatus || 'unmapped',
-      errorAttribution: raw.errorAttribution || question.errorAttribution || null,
+      errorAttribution: raw.errorAttribution || null, // SF-3：与 questions 更新处一致
       evidence: [],
       actionAdvice: null,
     };
@@ -215,7 +215,7 @@ exports.main = async (event) => {
       questionId,
       keptOriginal,
       newDiagnosis: {
-        isCorrect: raw.isCorrect,
+        isCorrect: raw.isCorrect === undefined ? null : raw.isCorrect, // SF-2
         correctAnswer: raw.correctAnswer || '',
         difficultyLevel: raw.level || 'L4',
         difficultyValue: clamped.D,
