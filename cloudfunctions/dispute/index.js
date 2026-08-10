@@ -31,11 +31,12 @@ const LR = {
 const P_BINS = [0, 0.3, 0.5, 1.0];
 
 function clampParams(raw, questionType) {
-  const [lo, hi] = LR[raw.difficultyLevel] || [0.01, 0.999];
-  const D = Math.min(hi, Math.max(lo, Number(raw.difficultyValue) || lo));
+  // P0 修复：字段名对齐 DeepSeek 输出（level/D/P/eta）
+  const [lo, hi] = LR[raw.level] || [0.01, 0.999];
+  const D = Math.min(hi, Math.max(lo, Number(raw.D) || lo));
   const isOpen = questionType === '解答';
-  const eta = isOpen ? raw.pathQuality : null;
-  let P = Number(raw.processScore);
+  const eta = isOpen ? (raw.eta === undefined ? null : raw.eta) : null;
+  let P = Number(raw.P);
   if (!P_BINS.includes(P)) {
     P = P_BINS.reduce((prev, curr) => (Math.abs(curr - P) < Math.abs(prev - P) ? curr : prev));
   }
@@ -137,7 +138,7 @@ exports.main = async (event) => {
         },
       });
     }
-    const clamped = clampParams(raw, question.questionType || '解答');
+    const clamped = clampParams(raw, question.questionType || '其他'); // P1-3：与 diagnose 缺省一致（非解答不评 η）
 
     // 3. 更新 questions 当前值 + revisions
     await db.collection('questions').doc(questionId).update({

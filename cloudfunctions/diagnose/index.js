@@ -48,12 +48,13 @@ const LR = {
 const P_BINS = [0, 0.3, 0.5, 1.0];
 
 function clampParams(raw, questionType) {
-  const [lo, hi] = LR[raw.difficultyLevel] || [0.01, 0.999];
-  const D = Math.min(hi, Math.max(lo, Number(raw.difficultyValue) || lo));
+  // P0 修复：字段名对齐 DeepSeek 输出（level/D/P/eta），此前读 difficultyLevel/difficultyValue 恒 undefined
+  const [lo, hi] = LR[raw.level] || [0.01, 0.999];
+  const D = Math.min(hi, Math.max(lo, Number(raw.D) || lo));
   const isOpen = questionType === '解答';
-  const eta = isOpen ? raw.pathQuality : null;
+  const eta = isOpen ? (raw.eta === undefined ? null : raw.eta) : null;
   const r = null;
-  let P = Number(raw.processScore);
+  let P = Number(raw.P);
   if (!P_BINS.includes(P)) {
     P = P_BINS.reduce((prev, curr) => (Math.abs(curr - P) < Math.abs(prev - P) ? curr : prev));
   }
@@ -208,14 +209,22 @@ exports.main = async (event) => {
 
     // 清理该批次旧数据（P0-②：上次失败回滚 pending 后可能残留部分 questions/mastery_logs）
     try {
-      const oldQs = await db.collection('questions').where({ batchId, userId: openid }).get();
-      if (oldQs.data.length > 0) {
-        const oldQIds = oldQs.data.map((q) => q._id);
-        await db.collection('questions').where({ batchId, userId: openid }).remove();
-        // mastery_logs 无 batchId，按 questionId 清理
-        if (oldQIds.length > 0) {
-          await db.collection('mastery_logs').where({ questionId: _.in(oldQIds) }).remove();
+      // P1-1：remove 单次有上限，循环删直到清空；先取 ID 再删 mastery_logs（questions 删后 ID 就没了）
+      const oldQs = await db.collection('questions').where({ batchId, userId: openid }).limit(1000).get();
+      const oldQIds = oldQs.data.map((q) => q._id);
+      if (oldQIds.length > 0) {
+        let d2 = 1;
+        while (d2 > 0) {
+          const r2 = await db.collection('mastery_logs').where({ questionId: _.in(oldQIds) }).remove();
+          d2 = r2.stats ? r2.stats.removed : 0;
+          if (d2 === 0) break;
         }
+      }
+      let deleted = 1;
+      while (deleted > 0) {
+        const batchRes2 = await db.collection('questions').where({ batchId, userId: openid }).remove();
+        deleted = batchRes2.stats ? batchRes2.stats.removed : 0;
+        if (deleted === 0) break;
       }
     } catch (e) {
       console.warn('[diagnose] cleanup old batch data failed:', e.message);
