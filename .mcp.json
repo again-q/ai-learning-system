@@ -1,8 +1,15 @@
 {
   "mcpServers": {
+    "cloudbase": {
+      "command": "npx",
+      "args": ["-y", "@cloudbase/cloudbase-mcp@latest"],
+      "env": {
+        "CLOUDBASE_MCP_CLOUD_MODE": "true"
+      }
+    },
     "wechat-devtools": {
       "command": "npx",
-      "args": ["-y", "wechat-devtools-mcp", "--projectPath=/Users/apple/Desktop/ai学习系统开发"],
+      "args": ["-y", "wechat-devtools-mcp", "--projectPath=/workspace"],
       "transport": "stdio"
     },
     "wechat-miniapp-engineering-mcp": {
