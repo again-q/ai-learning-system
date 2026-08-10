@@ -41,6 +41,17 @@
       bindtap="submit" disabled="{{images.length === 0 || submitting}}">
       {{submitting ? '分析中...' : '完成，开始分析'}}
     </button>
-    <text class="footer-hint" wx:if="{{images.length > 0 && !submitting}}">一次最多 9 张，分析约需 30-60 秒</text>
+    <text class="footer-hint" wx:if="{{images.length > 0 && !submitting}}">一次最多 9 张，分析约需 2-5 分钟</text>
+  </view>
+
+  <!-- 分析进度（拆题+逐题判定 1/N） -->
+  <view class="progress-mask" wx:if="{{analyzing}}">
+    <view class="progress-card">
+      <text class="progress-title">{{progressText}}</text>
+      <view class="progress-track">
+        <view class="progress-bar" style="width: {{progressPercent}}%"></view>
+      </view>
+      <text class="progress-num" wx:if="{{totalQuestions > 0}}">{{doneCount}}/{{totalQuestions}} 题判定完成</text>
+    </view>
   </view>
 </view>
