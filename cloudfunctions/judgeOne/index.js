@@ -8,7 +8,8 @@ const QWEN_API_KEY = process.env.QWEN_API_KEY;
 const DS_API_KEY = process.env.DEEPSEEK_API_KEY;
 const QWEN_BASE_URL = process.env.QWEN_BASE_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1';
 const DS_BASE_URL = process.env.DS_BASE_URL || 'https://api.deepseek.com';
-const DS_MODEL = process.env.DS_MODEL || 'deepseek-reasoner'; // max 思考档（技术选型定）
+const DS_MODEL = process.env.DS_MODEL || 'deepseek-v4-flash'; // 新模型名（chat/reasoner 已弃用）
+const DS_THINKING = process.env.DS_THINKING || 'enabled'; // 思考档：enabled=high 档（max 烧钱，disabled 会误判）
 const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || 'text-embedding-v4';
 const TOP_K = 5;
 const HISTORY_LIMIT = 200;
@@ -130,6 +131,7 @@ async function judgeQuestion(question, ragContext) {
 约束：D 落在 level 区间；最后输出纯 JSON`;
   const data = await postJSON(`${DS_BASE_URL}/chat/completions`, {
     model: DS_MODEL,
+    thinking: { type: DS_THINKING },
     messages: [
       { role: 'system', content: '你是严谨的数学诊断推理引擎。严格按完整版标尺判定单题。最后输出纯 JSON。' },
       { role: 'user', content: userMsg + '\n\n===== 完整版标尺 =====\n' + RUBRIC + ragSection + '\n\n===== 本题上下文 =====\n题目：' + question.questionText + '\n整图痕迹：' + (question.traceReport || '').slice(0, 1500) },
