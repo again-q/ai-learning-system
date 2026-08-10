@@ -222,8 +222,11 @@ exports.main = async (event) => {
     }
 
     // 读取批次照片（fileIds 存于批次记录）——二次校验归属（P1-A 双保险）
-    const photoFileIds = (batchRes.data.fileIds || []).slice(0, 9)
+    const allFileIds = (batchRes.data.fileIds || []).slice(0, 9);
+    const photoFileIds = allFileIds
       .filter((id) => typeof id === 'string' && id.includes(`/photos/${openid}/`));
+    // SF-1：被过滤掉的（越权/脏数据）计入失败，避免空报告零提示
+    const filteredCount = allFileIds.length - photoFileIds.length;
 
     let totalQuestions = 0, failedCount = 0;
     const results = [];
@@ -397,10 +400,10 @@ exports.main = async (event) => {
     }
 
     await db.collection('batches').doc(batchId).update({
-      data: { status: 'completed', totalQuestions, failedCount, completedAt: db.serverDate() },
+      data: { status: 'completed', totalQuestions, failedCount: failedCount + filteredCount, completedAt: db.serverDate() },
     });
 
-    return success({ batchId, status: 'completed', totalQuestions, failedCount, questions: results });
+    return success({ batchId, status: 'completed', totalQuestions, failedCount: failedCount + filteredCount, questions: results });
   } catch (e) {
     console.error('[diagnose] error:', e);
     // 失败时回滚批次状态为 pending（可重试，避免僵尸批次）
