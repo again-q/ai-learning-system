@@ -110,13 +110,14 @@ async function judgeQuestion(question, corrections) {
       { role: 'system', content: '你是严谨的数学诊断推理引擎。只输出 JSON。' },
       { role: 'user', content: userMsg + '\n\n===== rubric =====\n' + RUBRIC + '\n\n===== 题目上下文 =====\n' + context },
     ],
-    max_tokens: 4000,
+    max_tokens: 8000,
   }, DS_API_KEY);
-  // max 思考档：content 可能为空，回退 reasoning_content（dispute 单题，4000 token 通常够）
+  // max 思考档：content 可能为空，回退 reasoning_content；JSON 用 "questions" 定位
   const msg = data.choices[0].message;
   const raw = msg.content || msg.reasoning_content || '';
-  const start = raw.indexOf('{');
-  if (start < 0) throw new Error('判定输出格式异常');
+  const qIdx = raw.indexOf('"questions"');
+  if (qIdx < 0) throw new Error('判定输出格式异常');
+  const start = raw.lastIndexOf('{', qIdx); // 定位 questions 所属对象起点
   const parsed = JSON.parse(raw.slice(start, raw.lastIndexOf('}') + 1));
   if (!parsed.questions || !parsed.questions.length) throw new Error('判定输出为空'); // P2-C：空数组走 keptOriginal，不丢修正
   return parsed.questions[0];
