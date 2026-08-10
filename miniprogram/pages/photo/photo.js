@@ -83,9 +83,9 @@ Page({
       const batchData = batchRes.result;
       if (batchData.code !== 0) throw new Error(batchData.message);
 
-      // 3. 触发诊断（timeout 对齐后端 120s——P1-④：默认 60s 会在 9 张场景先报错）
-      this.setData({ progressText: 'AI 分析中（预计 30-60s）...' });
-      wx.showLoading({ title: 'AI 分析中...', mask: true });
+      // 3. 拆分阶段：视觉转录 + 拆题 + 建题（不含判定，快）
+      this.setData({ progressText: 'AI 识别题目中...' });
+      wx.showLoading({ title: '识别题目中...', mask: true });
       const diagRes = await wx.cloud.callFunction({
         name: 'diagnose',
         data: { batchId: batchData.data.batchId },
@@ -94,8 +94,40 @@ Page({
       const diagData = diagRes.result;
       if (diagData.code !== 0) throw new Error(diagData.message);
 
-      // 4. 跳转报告页
+      const pendingQ = (diagData.data.questions || []).filter((q) => q.status === 'pending');
+      const total = pendingQ.length;
       wx.hideLoading();
+
+      // 4. 逐题判定（judgeOne，支持 1/N…N/N 实时进度）
+      if (total === 0) {
+        wx.showToast({ title: '未识别到题目，请重试', icon: 'none' });
+        return;
+      }
+      let done = 0, failed = 0;
+      // 并发 2 个，避免 max 思考档串行太久（9 题约 3-5 分钟）
+      const queue = [...pendingQ];
+      const worker = async () => {
+        while (queue.length > 0) {
+          const item = queue.shift();
+          try {
+            await wx.cloud.callFunction({
+              name: 'judgeOne',
+              data: { questionId: item.questionId },
+              timeout: 120000,
+            });
+          } catch (e) {
+            failed++;
+            console.error('[photo] judgeOne failed:', item.questionId, e);
+          }
+          done++;
+          this.setData({ progressText: `判定中 ${done}/${total}...` });
+          wx.showToast({ title: `${done}/${total} 题判定完成`, icon: 'none' });
+        }
+      };
+      await Promise.all([worker(), worker()]);
+
+      // 5. 跳转报告页
+      if (failed > 0) wx.showToast({ title: `${failed} 题判定失败，可在报告中重试`, icon: 'none' });
       wx.navigateTo({ url: `/pages/report/report?batchId=${batchData.data.batchId}` });
     } catch (e) {
       console.error('[photo] submit error:', e);
