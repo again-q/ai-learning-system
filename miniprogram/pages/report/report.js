@@ -95,12 +95,14 @@ Page({
       }
       questions[disputeIndex] = {
         ...questions[disputeIndex],
-        isCorrect: nd.isCorrect,
+        isCorrect: nd.isCorrect === undefined ? null : nd.isCorrect,
         correctAnswer: nd.correctAnswer,
+        questionCategory: nd.questionCategory || questions[disputeIndex].questionCategory, // P2：异议后同步题型
         difficultyLevel: nd.difficultyLevel,
         difficultyValue: nd.difficultyValue,
         processScore: nd.processScore,
         pathQuality: nd.pathQuality,
+        errorAttribution: nd.errorAttribution || questions[disputeIndex].errorAttribution, // P2：同步归因
         studentAnswer: disputeAnswer,
         statusText: nd.isCorrect === true ? '正确' : nd.isCorrect === false ? '错误' : '待确认', // P1-B：null 走待确认
         statusClass: nd.isCorrect === true ? 'correct' : nd.isCorrect === false ? 'wrong' : 'pending', // P1-B：同步颜色

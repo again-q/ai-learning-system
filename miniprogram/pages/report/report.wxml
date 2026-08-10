@@ -63,8 +63,8 @@
         <text class="failed-link" bindtap="retryUpload">重新上传</text>
       </view>
 
-      <!-- 异议入口 -->
-      <view class="dispute-btn" bindtap="openDispute" data-index="{{index}}">
+      <!-- 异议入口（失败题不显示——P1-2） -->
+      <view class="dispute-btn" wx:if="{{!(item.isCorrect === null && !item.questionText)}}" bindtap="openDispute" data-index="{{index}}">
         <text>我觉得不对</text>
       </view>
     </view>
