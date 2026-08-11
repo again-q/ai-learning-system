@@ -39,7 +39,8 @@ Page({
     infoExpanded: false,   // 详情展开/收起
     showUp: false,
     showEvoReturn: false,
-    stageSize: { w: 375, h: 600 }
+    stageSize: { w: 375, h: 600 },
+    kidsExpanded: false   // 卫星超过 8 个时折叠（工作记忆 7±2）
   },
 
   _nodes: [], _byId: {}, _units: {}, _unitList: [],
@@ -117,6 +118,7 @@ Page({
   },
 
   enterUnit(unitName) {
+    this.setData({ kidsExpanded: false });
     this._stack.push({ node: this._current, kids: this._currentKids });
     const secs = Object.keys(this._units[unitName].secs).sort();
     this._current = { name: unitName, type: 'unit', synthetic: true, mastery: null, unitName };
@@ -132,6 +134,7 @@ Page({
   },
 
   enterSection(secName, unitName) {
+    this.setData({ kidsExpanded: false });
     this._stack.push({ node: this._current, kids: this._currentKids });
     const roots = this._units[unitName].secs[secName] || [];
     this._current = { name: secName, type: 'section', synthetic: true, mastery: null, secName, unitName };
@@ -148,6 +151,7 @@ Page({
   },
 
   enterNode(node) {
+    this.setData({ kidsExpanded: false });
     this._stack.push({ node: this._current, kids: this._currentKids });
     this._current = node;
     this._currentKids = this._childrenOf(node);
@@ -228,10 +232,13 @@ Page({
       nodes.push(this.nodeView('center', this._current, cx, centerY, rpx(200), true));
     } else {
       const kids = this._currentKids || [];
-      const n = kids.length;
+      const MAX_KIDS = 8; // 工作记忆上限 7±2
+      const expanded = this.data.kidsExpanded;
+      const showKids = kids.length > MAX_KIDS && !expanded ? kids.slice(0, MAX_KIDS) : kids;
+      const n = showKids.length;
       const R = Math.min(w * 0.36, rpx(280));
       const cR = rpx(60), kR = rpx(30);
-      kids.forEach((k, i) => {
+      showKids.forEach((k, i) => {
         const ang = (i / n) * Math.PI * 2 - Math.PI / 2;
         const x = cx + R * Math.cos(ang);
         const y = cy + R * Math.sin(ang);
@@ -243,6 +250,19 @@ Page({
           x2: x - ux * kR, y2: y - uy * kR
         });
       });
+      if (kids.length > MAX_KIDS && !expanded) {
+        const extra = kids.length - MAX_KIDS;
+        const ang = ((n) * Math.PI * 2) / Math.max(kids.length, 1) - Math.PI / 2 + Math.PI / Math.max(kids.length, 1);
+        const x = cx + R * Math.cos(ang);
+        const y = cy + R * Math.sin(ang);
+        nodes.push({
+          id: 'more', role: 'kid', name: '+' + extra + ' 更多', isCenter: false,
+          synthetic: true, hasMastery: false, showNameIn: false,
+          label: '+' + extra + ' 更多', typeLabel: '', mastery: null,
+          left: x, top: y, size: rpx(108), borderColor: '#a1a1a6',
+          masteryText: '', animDelay: nodesCount++ * 40
+        });
+      }
       nodes.push(this.nodeView('center', this._current, cx, cy, rpx(150), true));
     }
 
@@ -266,7 +286,7 @@ Page({
       synthetic: !!node.synthetic,
       hasMastery: node.mastery != null,
       showNameIn: !isCenter && !longName && !node.synthetic,
-      label: (!isCenter && longName && !node.synthetic) ? node.name : '',
+      label: (!isCenter && (longName || node.synthetic)) ? node.name : '',
       typeLabel: node.synthetic ? TYPE_LABEL[node.type] || '' : TYPE_LABEL[node.type] || '',
       mastery: node.mastery != null ? m : null,
       left: x, top: y, size,
@@ -349,6 +369,11 @@ Page({
       if (!node) return;
       this._evoStack.push(this._current);
       this._current = node;
+      this.render();
+      return;
+    }
+    if (id === 'more') {
+      this.setData({ kidsExpanded: true });
       this.render();
       return;
     }
