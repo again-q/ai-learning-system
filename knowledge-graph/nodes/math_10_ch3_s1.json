@@ -40,7 +40,7 @@
     "knowledge_id": "math_10_ch3_s1_002",
     "basic": {
       "name": "函数的定义（三要素与符号表示）",
-      "type": "definition",
+      "type": "notation",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册",
@@ -223,7 +223,7 @@
     "knowledge_id": "math_10_ch3_s1_007",
     "basic": {
       "name": "区间表示法",
-      "type": "definition",
+      "type": "notation",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册",
@@ -297,7 +297,7 @@
     "knowledge_id": "math_10_ch3_s1_009",
     "basic": {
       "name": "函数的三种表示法",
-      "type": "definition",
+      "type": "notation",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册",
@@ -408,8 +408,8 @@
   {
     "knowledge_id": "math_10_ch3_s1_012",
     "basic": {
-      "name": "分段函数的实际应用——个税计算",
-      "type": "example",
+      "name": "用分段函数建模计费类实际问题",
+      "type": "method",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册",
@@ -516,7 +516,7 @@
     "knowledge_id": "math_10_ch3_s1_015",
     "basic": {
       "name": "构建函数模型描述变量关系",
-      "type": "example",
+      "type": "method",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册",

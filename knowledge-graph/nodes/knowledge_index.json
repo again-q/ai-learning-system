@@ -1189,7 +1189,7 @@
     },
     {
       "knowledge_id": "math_10_ch3_s2_001",
-      "name": "函数的基本性质概述",
+      "name": "函数的基本性质",
       "type": "property",
       "parent_id": null,
       "path": []
@@ -1203,14 +1203,14 @@
     },
     {
       "knowledge_id": "math_10_ch3_s2_003",
-      "name": "单调递增的严格定义",
+      "name": "单调递增的定义",
       "type": "definition",
       "parent_id": null,
       "path": []
     },
     {
       "knowledge_id": "math_10_ch3_s2_004",
-      "name": "单调递减的严格定义",
+      "name": "单调递减的定义",
       "type": "definition",
       "parent_id": null,
       "path": []
@@ -1245,7 +1245,7 @@
     },
     {
       "knowledge_id": "math_10_ch3_s2_009",
-      "name": "反比例函数的单调性（玻意耳定律）",
+      "name": "反比例函数的单调性",
       "type": "example",
       "parent_id": null,
       "path": []
@@ -1308,7 +1308,7 @@
     },
     {
       "knowledge_id": "math_10_ch3_s3_001",
-      "name": "幂函数概述",
+      "name": "幂函数",
       "type": "property",
       "parent_id": null,
       "path": []
@@ -2042,13 +2042,6 @@
       "path": []
     },
     {
-      "knowledge_id": "math_10_ch4_s5_co01",
-      "name": "本节核心逻辑链：从零点到二分法到函数建模",
-      "type": "property",
-      "parent_id": null,
-      "path": []
-    },
-    {
       "knowledge_id": "math_10_ch5_s1_001",
       "name": "任意角的概念",
       "type": "definition",
@@ -2709,13 +2702,6 @@
     {
       "knowledge_id": "math_10_ch5_s5_026",
       "name": "“倍”的相对性与换元思想",
-      "type": "method",
-      "parent_id": null,
-      "path": []
-    },
-    {
-      "knowledge_id": "math_10_ch5_s5_027",
-      "name": "化归思想在三角恒等变换中的核心地位",
       "type": "method",
       "parent_id": null,
       "path": []

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知识图谱树状布局 · 方案示意</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "PingFang SC", sans-serif; background: #f5f5f7; padding: 20px; }
+  .title { text-align: center; font-size: 18px; font-weight: 700; color: #1d1d1f; margin-bottom: 6px; }
+  .sub { text-align: center; font-size: 13px; color: #6e6e73; margin-bottom: 24px; }
+  .row { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+  .card {
+    background: #fff; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    padding: 16px; width: 320px;
+  }
+  .card h3 { font-size: 14px; color: #1d1d1f; margin-bottom: 10px; text-align: center; }
+  .card .tag { display: inline-block; font-size: 11px; color: #007aff; background: rgba(0,122,255,.08); padding: 2px 8px; border-radius: 999px; margin-bottom: 10px; }
+  .stage { position: relative; width: 288px; height: 420px; background: linear-gradient(180deg,#fff,#fafafc); border-radius: 16px; border: 1px solid #eee; margin: 0 auto; overflow: hidden; }
+  /* 节点 */
+  .n { position: absolute; transform: translate(-50%,-50%); display: flex; flex-direction: column; align-items: center; }
+  .n .dot { width: 52px; height: 52px; border-radius: 50%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.1); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; border: 2px solid #e5e5ea; position: relative; }
+  .n .dot.g { border-color: #34c759; } .n .dot.o { border-color: #ff9500; } .n .dot.r { border-color: #ff3b30; }
+  .n .lbl { font-size: 9px; color: #6e6e73; margin-top: 4px; white-space: nowrap; }
+  .n.center .dot { width: 84px; height: 84px; background: linear-gradient(135deg,#6cc3ff,#007aff,#004ecb); color: #fff; font-size: 14px; font-weight: 700; border: none; box-shadow: 0 8px 24px rgba(0,122,255,.3); }
+  .n.center .lbl { color: #1d1d1f; font-weight: 600; }
+  .n.grp .dot { border-style: dashed; border-color: #a1a1a6; color: #6e6e73; font-size: 10px; }
+  svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .note { font-size: 11px; color: #a1a1a6; text-align: center; margin-top: 10px; line-height: 1.6; }
+</style>
+</head>
+<body>
+  <div class="title">知识图谱 · 树状布局方案对比</div>
+  <div class="sub">主节点顶部居中，子节点每行最多 4 个（数据用「第一章」的 5 个单元演示）</div>
+
+  <div class="row">
+    <!-- 方案 A：平滑曲线 -->
+    <div class="card">
+      <span class="tag">方案 A · 曲线连接（推荐）</span>
+      <div class="stage" id="stageA"></div>
+      <div class="note">贝塞尔曲线从主节点自然弯向子节点<br>视觉柔和、有"生长感"，无生硬直角</div>
+    </div>
+
+    <!-- 方案 B：直线 + 主干 -->
+    <div class="card">
+      <span class="tag">方案 B · 主干直线</span>
+      <div class="stage" id="stageB"></div>
+      <div class="note">一条主干线垂直下来，子节点直接挂在线上<br>极简，但子节点多了会显呆板</div>
+    </div>
+  </div>
+
+<script>
+const CENTER = { x: 144, y: 90 };
+const KIDS = [
+  { x: 144 - 108, y: 250 }, { x: 144 - 36, y: 250 }, { x: 144 + 36, y: 250 }, { x: 144 + 108, y: 250 },
+  { x: 144, y: 355 }
+];
+const NAMES = ['第一章 集合与常用逻辑用语','第三章 函数的概念与性质','第二章 一元二次函数、方程和不等式','第五章 三角函数','第四章 指数函数与对数函数'];
+const COLORS = ['g','o','r','g','o'];
+
+// 方案 A：贝塞尔曲线
+function drawA() {
+  const s = document.getElementById('stageA');
+  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 288 420');
+  svg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%';
+  KIDS.forEach((k,i) => {
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    const mx = (CENTER.x + k.x) / 2;
+    const d = `M ${CENTER.x} ${CENTER.y+42} C ${CENTER.x} ${CENTER.y+90}, ${mx} ${k.y-70}, ${k.x} ${k.y-26}`;
+    path.setAttribute('d', d);
+    path.setAttribute('stroke','#007aff');
+    path.setAttribute('stroke-width','1.8');
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke-linecap','round');
+    path.setAttribute('opacity','0.6');
+    svg.appendChild(path);
+  });
+  s.appendChild(svg);
+  // 主节点
+  s.appendChild(nodeHTML(CENTER.x, CENTER.y, '数学', true, 0));
+  // 子节点
+  KIDS.forEach((k,i) => s.appendChild(nodeHTML(k.x, k.y, NAMES[i].split(' ')[1] || NAMES[i], false, i)));
+}
+
+// 方案 B：主干直线
+function drawB() {
+  const s = document.getElementById('stageB');
+  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 288 420');
+  svg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%';
+  // 主干
+  const trunk = document.createElementNS('http://www.w3.org/2000/svg','line');
+  trunk.setAttribute('x1', CENTER.x); trunk.setAttribute('y1', CENTER.y+42);
+  trunk.setAttribute('x2', CENTER.x); trunk.setAttribute('y2', 355-26);
+  trunk.setAttribute('stroke','#007aff'); trunk.setAttribute('stroke-width','1.8'); trunk.setAttribute('opacity','0.5');
+  svg.appendChild(trunk);
+  // 分支
+  KIDS.forEach((k,i) => {
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    const fromY = i < 4 ? 250-26 : 355-26;
+    line.setAttribute('x1', CENTER.x); line.setAttribute('y1', fromY);
+    line.setAttribute('x2', k.x); line.setAttribute('y2', fromY);
+    line.setAttribute('stroke','#007aff'); line.setAttribute('stroke-width','1.8'); line.setAttribute('opacity','0.5');
+    svg.appendChild(line);
+  });
+  s.appendChild(svg);
+  s.appendChild(nodeHTML(CENTER.x, CENTER.y, '数学', true, 0));
+  KIDS.forEach((k,i) => s.appendChild(nodeHTML(k.x, k.y, NAMES[i].split(' ')[1] || NAMES[i], false, i)));
+}
+
+function nodeHTML(x, y, name, center, i) {
+  const d = document.createElement('div');
+  d.className = 'n' + (center ? ' center' : '');
+  d.style.cssText = `left:${x}px;top:${y}px`;
+  const color = center ? '' : COLORS[i] || '';
+  d.innerHTML = `<div class="dot ${color}">${center ? '数学' : name.length > 3 ? name.slice(0,3)+'…' : name}</div><div class="lbl">${center ? '数学' : name}</div>`;
+  return d;
+}
+
+drawA(); drawB();
+</script>
+</body>
+</html>

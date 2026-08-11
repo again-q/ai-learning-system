@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知识图谱 · 镜头移动（世界平移版）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #e8e8ed; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+    display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
+  }
+  .phone { width: 390px; height: 844px; background: #fff; border-radius: 44px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); overflow: hidden; position: relative; }
+  .topbar { height: 88px; padding-top: 44px; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); position: relative; z-index: 10; border-bottom: 0.5px solid #e5e5ea; }
+  .back { font-size: 17px; color: #007aff; padding: 8px 0 8px 16px; cursor: pointer; user-select: none; }
+  .crumb { display: flex; gap: 6px; align-items: center; font-size: 13px; color: #8e8e93; overflow: hidden; white-space: nowrap; }
+  .crumb b { color: #1c1c1e; font-weight: 600; }
+  .crumb span.sep { color: #c7c7cc; }
+  .crumb i { font-style: normal; cursor: pointer; }
+  .crumb i:hover { color: #007aff; }
+
+  #stage { position: relative; height: 600px; overflow: hidden; }
+
+  /* ===== 世界容器：整个图谱整体移动 ===== */
+  #world {
+    position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+    transform-origin: 0 0;
+    transition: transform 0.65s cubic-bezier(0.3, 0.9, 0.3, 1);
+  }
+  #world.noanim { transition: none; }
+  #world svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+  #world svg path { fill: none; stroke: url(#lineGrad); stroke-opacity: 0.5; stroke-width: 1.5; }
+  #world svg circle { fill: #0a84ff; opacity: 0.35; }
+
+  .node {
+    position: absolute; z-index: 2; transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer;
+  }
+  .node .dot {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03), 0 10px 28px rgba(0, 0, 0, 0.07);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; color: #1d1d1f; text-align: center; line-height: 1.25;
+    transition: box-shadow 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .node .label { font-size: 11px; color: #86868b; font-weight: 500; max-width: 130px; text-align: center; line-height: 1.3; }
+  .node:hover .dot { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03), 0 14px 34px rgba(0, 0, 0, 0.1); transform: scale(1.04); }
+  /* 类型色点（右上角，白描边） */
+  .node .type-dot {
+    position: absolute; top: -1px; right: -1px; width: 12px; height: 12px;
+    border-radius: 50%; border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  }
+  .node .type-dot.definition { background: #0a84ff; }
+  .node .type-dot.property { background: #bf5af2; }
+  .node .type-dot.method { background: #ff9f0a; }
+  .node .type-dot.notation { background: #34c759; }
+  .node:active { transform: translate(-50%, -50%) scale(0.92); } /* 点击微效 */
+  .node:active .dot { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  .node .tag { font-size: 8px; color: #8e8e93; letter-spacing: 1px; }
+  .node.center .dot {
+    width: 120px; height: 120px;
+    background: linear-gradient(160deg, #7dd3ff 0%, #0a84ff 55%, #0040dd 100%);
+    border: none; color: #fff; font-size: 15px; font-weight: 700;
+    box-shadow: 0 14px 36px rgba(10, 132, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    animation: focusPulse 2.4s ease-in-out infinite;
+    position: relative; overflow: hidden;
+  }
+  .node.center .dot::before {
+    content: ''; position: absolute; left: 12%; right: 12%; top: 4%; height: 42%;
+    border-radius: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.45), rgba(255,255,255,0));
+    pointer-events: none;
+  }
+  .node.center .label { display: none; }
+  @keyframes focusPulse {
+    0%, 100% { box-shadow: 0 12px 34px rgba(0,122,255,0.28), 0 0 0 0 rgba(0,122,255,0.18); }
+    50% { box-shadow: 0 12px 34px rgba(0,122,255,0.28), 0 0 0 16px rgba(0,122,255,0.06); }
+  }
+
+  /* ===== 镜头聚焦：被点节点滑到中心 + 自然变蓝变大 ===== */
+  .node.focusing .dot {
+    transition: width 0.65s cubic-bezier(0.3, 0.9, 0.3, 1), height 0.65s cubic-bezier(0.3, 0.9, 0.3, 1),
+                background 0.65s ease, color 0.4s ease, box-shadow 0.6s ease, font-size 0.5s ease;
+  }
+  .node.focusing.center .dot {
+    width: 120px; height: 120px;
+    background: linear-gradient(135deg, #6cc3ff 0%, #007aff 58%, #004ecb 100%);
+    border: none; color: #fff; font-size: 15px; box-shadow: 0 12px 34px rgba(0,122,255,0.28);
+  }
+
+  /* ===== 下一级节点：移动过程中慢慢浮现（从中心散开） ===== */
+  .node.reveal {
+    transition: transform 0.75s cubic-bezier(0.3, 0.9, 0.3, 1), opacity 0.75s ease;
+  }
+  .node.reveal.origin { transform: translate(0px, 0px) scale(0.45); opacity: 0; }
+
+  /* 旧层节点：干脆消失（纯淡出） */
+  .node.oldfade { transition: opacity 0.35s ease; opacity: 0 !important; }
+
+  .tip { position: absolute; left: 0; right: 0; bottom: 6px; text-align: center; font-size: 11px; color: #a0a0a5; z-index: 5; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="topbar">
+    <span class="back" id="backBtn">‹ 返回</span>
+    <div class="crumb" id="crumb"></div>
+  </div>
+  <div id="stage">
+    <div id="world">
+      <svg id="lines" width="100%" height="100%">
+        <defs>
+          <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0a84ff" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#0a84ff" stop-opacity="0.05"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div id="nodes"></div>
+    </div>
+    <div class="tip" id="tip"></div>
+  </div>
+</div>
+
+<script>
+const TYPE_CN = { definition:'概念', property:'性质', method:'方法', notation:'记号' };
+const TREE = {
+  '数学': [
+    { name:'第一章 集合与常用逻辑用语', kids:[
+      { name:'1.1 集合的概念', kids:[
+        { name:'元素', type:'definition' }, { name:'确定性', type:'property' },
+        { name:'互异性', type:'property' }, { name:'集合相等', type:'property' },
+        { name:'字母表示', type:'notation' }, { name:'属于/不属于', type:'notation' },
+        { name:'常用数集', type:'notation' }, { name:'列举法', type:'method' },
+        { name:'描述法', type:'method' }, { name:'无序性', type:'property' } ] },
+      { name:'1.2 集合间的基本关系', kids:[
+        { name:'子集', type:'definition' }, { name:'真子集', type:'definition' },
+        { name:'空集', type:'definition' }, { name:'包含关系', type:'property' },
+        { name:'Venn 图表示集合关系', type:'method' } ] },
+      { name:'1.3 集合的基本运算', kids:[
+        { name:'并集', type:'definition' }, { name:'交集', type:'definition' },
+        { name:'全集与补集', type:'definition' }, { name:'摩根定律', type:'property' } ] },
+      { name:'1.4 充分条件与必要条件', kids:[
+        { name:'充分条件', type:'definition' }, { name:'必要条件', type:'definition' },
+        { name:'充要条件', type:'definition' }, { name:'或与且的逻辑辨析', type:'method' },
+        { name:'全称量词与存在量词', type:'definition' }, { name:'命题的否定', type:'method' } ] },
+      { name:'1.5 全称量词与存在量词', kids:[
+        { name:'全称量词', type:'definition' }, { name:'存在量词', type:'definition' },
+        { name:'含量词命题的否定', type:'method' } ] } ] },
+    { name:'第二章 一元二次函数、方程和不等式', kids:[
+      { name:'2.1 等式性质与不等式性质', kids:[
+        { name:'不等式的性质', type:'property' }, { name:'作差法比较大小', type:'method' } ] },
+      { name:'2.2 基本不等式', kids:[
+        { name:'基本不等式', type:'definition' }, { name:'一正二定三相等', type:'method' },
+        { name:'用基本不等式求最值', type:'method' } ] },
+      { name:'2.3 二次函数与一元二次方程、不等式', kids:[
+        { name:'三个二次的关系', type:'property' }, { name:'解一元二次不等式', type:'method' },
+        { name:'含参一元二次不等式', type:'method' }, { name:'恒成立问题', type:'method' } ] } ] },
+    { name:'第三章 函数的概念与性质', kids:[
+      { name:'3.1 函数的概念及其表示', kids:[
+        { name:'函数的概念', type:'definition' }, { name:'函数的定义域', type:'definition' },
+        { name:'函数的值域', type:'definition' }, { name:'函数的表示法', type:'method' },
+        { name:'分段函数', type:'definition' }, { name:'求函数解析式', type:'method' } ] },
+      { name:'3.2 函数的基本性质', kids:[
+        { name:'单调性', type:'property' }, { name:'奇偶性', type:'property' },
+        { name:'最值', type:'property' }, { name:'周期性', type:'property' } ] },
+      { name:'3.3 幂函数', kids:[
+        { name:'幂函数的概念', type:'definition' }, { name:'幂函数的图象与性质', type:'property' } ] },
+      { name:'3.4 函数的应用（一）', kids:[
+        { name:'函数模型', type:'definition' }, { name:'分段函数建模', type:'method' } ] } ] },
+    { name:'第四章 指数函数与对数函数', kids:[
+      { name:'4.1 指数', kids:[
+        { name:'n次方根', type:'definition' }, { name:'分数指数幂', type:'definition' },
+        { name:'指数幂的运算', type:'method' } ] },
+      { name:'4.2 指数函数', kids:[
+        { name:'指数函数的概念', type:'definition' }, { name:'指数函数的图象与性质', type:'property' } ] },
+      { name:'4.3 对数', kids:[
+        { name:'对数的概念', type:'definition' }, { name:'对数的运算', type:'method' },
+        { name:'换底公式', type:'method' } ] },
+      { name:'4.4 对数函数', kids:[
+        { name:'对数函数的概念', type:'definition' }, { name:'对数函数的图象与性质', type:'property' } ] },
+      { name:'4.5 函数的应用（二）', kids:[
+        { name:'函数零点', type:'definition' }, { name:'零点存在定理', type:'property' },
+        { name:'二分法', type:'method' } ] } ] },
+    { name:'第五章 三角函数', kids:[
+      { name:'5.1 任意角和弧度制', kids:[
+        { name:'任意角', type:'definition' }, { name:'弧度制', type:'definition' } ] },
+      { name:'5.2 三角函数的概念', kids:[
+        { name:'三角函数定义', type:'definition' }, { name:'同角三角函数关系', type:'property' },
+        { name:'诱导公式', type:'property' } ] },
+      { name:'5.3 三角函数的图象与性质', kids:[
+        { name:'正弦余弦图象', type:'property' }, { name:'正切图象', type:'property' },
+        { name:'周期性与奇偶性', type:'property' }, { name:'单调性', type:'property' },
+        { name:'值域与最值', type:'property' } ] },
+      { name:'5.4 三角恒等变换', kids:[
+        { name:'两角和差公式', type:'property' }, { name:'二倍角公式', type:'property' },
+        { name:'辅助角公式', type:'method' } ] },
+      { name:'5.5 三角函数的应用', kids:[
+        { name:'三角函数模型', type:'definition' }, { name:'从数据确定解析式', type:'method' } ] } ] }
+  ]
+};
+
+const CENTER = { x: 195, y: 170 };
+const world = document.getElementById('world');
+const nodesBox = document.getElementById('nodes');
+const linesSvg = document.getElementById('lines');
+let current = { name: '数学', kids: TREE['数学'] };
+let stack = [];   /* 每个元素 { node, worldXY } */
+let busy = false;
+
+function layout(n) {
+  const w = 390, cx = w / 2, margin = 56;
+  const spread = w - 2 * margin;
+  const pos = [];
+  const single = (cnt, y) => {
+    for (let i = 0; i < cnt; i++) {
+      pos.push({ x: cnt === 1 ? cx : margin + i * (spread / (cnt - 1)), y });
+    }
+  };
+  if (n <= 5) {
+    single(n, 430);               // ≤5：单行均匀铺满（5 单元不再 4+1）
+  } else {
+    const rows = Math.ceil(n / 4);
+    for (let r = 0; r < rows; r++) {
+      const cnt = Math.min(4, n - r * 4);
+      single(cnt, r === 0 ? 380 : 455);  // 两行：每行独立居中均匀
+    }
+  }
+  return pos;
+}
+
+/* 当前中心节点的世界坐标 */
+function centerWorldXY() { return current.wx !== undefined ? { x: current.wx, y: current.wy } : CENTER; }
+
+/* 视口 → 世界坐标（把布局位置加到世界偏移上） */
+function toWorld(vx, vy) {
+  const cw = centerWorldXY();
+  return { x: vx + (cw.x - CENTER.x), y: vy + (cw.y - CENTER.y) };
+}
+
+function nodeEl(node, wx, wy, cls) {
+  const el = document.createElement('div');
+  el.className = 'node' + (cls ? ' ' + cls : '');
+  el.style.left = wx + 'px';
+  el.style.top = wy + 'px';
+  const tag = node.type ? `<div class="type-dot ${node.type}"></div>` : '';
+  el.innerHTML = `<div class="dot">${node.name}${tag}</div><div class="label">${node.name}</div>`;
+  el.dataset.name = node.name;
+  return el;
+}
+
+function drawLines() {
+  const kids = current.kids || [];
+  const pos = layout(kids);
+  const cw = centerWorldXY();
+  const wx = cw.x, wy = cw.y;
+  let svg = '';
+  kids.forEach((k, i) => {
+    const w = toWorld(pos[i].x, pos[i].y);
+    const mid = (wy + 60 + w.y - 32) / 2;
+    svg += `<path d="M ${wx} ${wy + 60} C ${wx} ${mid}, ${w.x} ${mid}, ${w.x} ${w.y - 32}" />`;
+  });
+  linesSvg.innerHTML = svg;
+}
+
+function renderCrumb() {
+  const html = ['<b>数学</b>'];
+  stack.forEach((s, i) => html.push(`<span class="sep">›</span><i data-i="${i + 1}">${s.node.name}</i>`));
+  document.getElementById('crumb').innerHTML = html.join('');
+  document.querySelectorAll('.crumb i').forEach(el => el.onclick = () => goTo(+el.dataset.i));
+  document.getElementById('backBtn').style.visibility = stack.length ? 'visible' : 'hidden';
+}
+
+/* 静态渲染当前层（首屏 / 返回重建） */
+function renderStatic() {
+  nodesBox.innerHTML = '';
+  nodesBox.appendChild(nodeEl(current, centerWorldXY().x, centerWorldXY().y, 'center'));
+  const kids = current.kids || [];
+  const pos = layout(kids);
+  kids.forEach((k, i) => {
+    const w = toWorld(pos[i].x, pos[i].y);
+    nodesBox.appendChild(nodeEl(k, w.x, w.y));
+  });
+  drawLines();
+  renderCrumb();
+  world.classList.add('noanim');
+  world.style.transform = `translate(${CENTER.x - centerWorldXY().x}px, ${CENTER.y - centerWorldXY().y}px)`;
+  void world.offsetWidth; /* reflow */
+  world.classList.remove('noanim');
+  document.getElementById('tip').textContent = stack.length ? '点击节点 → 整个世界移动聚焦' : '点击单元 → 世界移动聚焦';
+}
+
+/* 点击进入：世界整体平移 + 目标变蓝 + 子节点同时浮现 */
+function enter(node, el) {
+  if (busy) return;
+  busy = true;
+  const cw = centerWorldXY();
+  /* 目标节点视口位置（当前） → 世界坐标 */
+  const twx = parseFloat(el.style.left), twy = parseFloat(el.style.top);
+
+  /* 1) 世界整体平移：目标节点 → 视口中心 */
+  world.style.transform = `translate(${CENTER.x - twx}px, ${CENTER.y - twy}px)`;
+
+  /* 2) 被点节点：自然变蓝变大（与移动同步） */
+  el.classList.add('focusing', 'center');
+
+  /* 3) 下一级节点：渲染在世界内，移动过程中慢慢浮现（从中心散开） */
+  const kids = node.kids || [];
+  let shown = kids;
+  if (kids.length > 8) {
+    const groups = [];
+    ['definition','property','method','notation'].forEach(t => {
+      const items = kids.filter(k => k.type === t);
+      if (items.length) groups.push({ name: TYPE_CN[t] + ' ×' + items.length, type: t, grp: true, kids: items });
+    });
+    shown = groups;
+  }
+  const pos = layout(shown);
+  shown.forEach((k, i) => {
+    const w = toWorld(pos[i].x, pos[i].y);
+    const child = nodeEl(k, w.x, w.y, 'reveal origin');
+    nodesBox.appendChild(child);
+    setTimeout(() => child.classList.remove('origin'), 40); /* 与移动同步慢浮现 */
+  });
+  /* 旧层其他节点：淡出 */
+  nodesBox.querySelectorAll('.node').forEach((o, i) => {
+    if (o !== el && !o.classList.contains('reveal')) o.classList.add('oldfade');
+  });
+
+  setTimeout(() => {
+    /* 移动完成：清理旧节点，当前中心 = 目标 */
+    stack.push({ node: current, wx: cw.x, wy: cw.y });
+    current = { name: node.name, kids: shown, grp: node.grp, wx: twx, wy: twy };
+    nodesBox.querySelectorAll('.node').forEach(o => {
+      if (!o.classList.contains('reveal') && o !== el) o.remove();
+    });
+    el.classList.remove('focusing');
+    /* 线重绘（新子节点 + 新中心） */
+    drawLines();
+    renderCrumb();
+    document.getElementById('tip').textContent = current.grp ? '该组知识点' : '点击节点 → 世界移动聚焦';
+    busy = false;
+  }, 700);
+  setTimeout(() => { busy = false; }, 1100);
+}
+
+/* 返回：世界移动回上一级中心 */
+function goTo(level) {
+  if (busy) return;
+  if (level <= 0) {
+    stack = [];
+    current = { name: '数学', kids: TREE['数学'], wx: CENTER.x, wy: CENTER.y };
+    renderStatic();
+    return;
+  }
+  busy = true;
+  const back = stack[level - 1];           /* 返回到的层 */
+  const targetWX = back.node.wx !== undefined ? back.node.wx : (back.wx !== undefined ? back.wx : CENTER.x);
+  const targetWY = back.node.wy !== undefined ? back.node.wy : (back.wy !== undefined ? back.wy : CENTER.y);
+  /* 当前层淡出 + 世界移回目标中心 */
+  nodesBox.querySelectorAll('.node').forEach(el => el.classList.add('oldfade'));
+  world.style.transform = `translate(${CENTER.x - targetWX}px, ${CENTER.y - targetWY}px)`;
+  setTimeout(() => {
+    stack = stack.slice(0, level);
+    current = { name: back.node.name, kids: back.node.kids || [], grp: back.node.grp, wx: targetWX, wy: targetWY };
+    renderStatic();
+    busy = false;
+  }, 650);
+  setTimeout(() => { busy = false; }, 1000);
+}
+
+nodesBox.addEventListener('click', (e) => {
+  const el = e.target.closest('.node');
+  if (!el || el.classList.contains('center') || el.classList.contains('reveal')) return;
+  const kids = current.kids || [];
+  const target = kids.find(k => k.name === el.dataset.name);
+  if (!target) return;
+  if (target.kids && target.kids.length) enter(target, el);
+});
+
+document.getElementById('backBtn').addEventListener('click', () => {
+  if (!stack.length) return;
+  goTo(stack.length);
+});
+
+renderStatic();
+</script>
+</body>
+</html>

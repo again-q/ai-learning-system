@@ -37,16 +37,22 @@ function groupKids(kids) {
   return groups;
 }
 
+/* ========== 镜头移动常量（视口布局，390 基准，px） ========== */
+const PER_ROW = 4, KID_Y1 = 330, KID_Y2 = 430, CENTER_Y = 128;
+const KID_R = 31, CENTER_R = 62, ANC_R = 24;   // 半径（px，rpx 换算近似）
+const MOVE_MS = 700, REVEAL_MS = 750, FADE_MS = 350;
+
 Page({
   data: {
     loading: true,
-    isTab: false,          // tab 页不显示返回按钮
-    infoExpanded: false,   // 详情展开/收起
+    isTab: false,
+    infoExpanded: false,
     mode: 'radial',        // radial | evo
     nodes: [],
+    lines: [],
+    worldTransform: 'translate(0px, 0px)',
     crumb: [],
     info: null,
-    infoExpanded: false,   // 详情展开/收起
     showUp: false,
     showEvoReturn: false,
     stageSize: { w: 375, h: 600 },
@@ -58,27 +64,24 @@ Page({
   _nodes: [], _byId: {}, _units: {}, _unitList: [],
   _stack: [], _evoStack: [], _evoReturn: null,
   _current: null, _currentKids: [],
-  _canvas: null, _ctx: null, _dpr: 1,
+  _busy: false,
 
   onLoad() {
-    this._dpr = sys.pixelRatio || 2;
-    // tab 页（页面栈长度 1）不显示返回按钮
     this.setData({ isTab: getCurrentPages().length === 1 });
   },
 
   onReady() {
-    // 实测舞台尺寸，canvas 与节点共用同一坐标系（修正线位置偏移）
     const query = wx.createSelectorQuery().in(this);
     query.select('#graphStage').boundingClientRect((rect) => {
       if (!rect || !rect.width) return;
       this.setData({ stageSize: { w: rect.width, h: rect.height } });
-      this.initCanvas(() => { if (this._nodes.length) this.render(); });
+      if (this._nodes.length) this.renderStatic();
     }).exec();
   },
 
   onShow() {
     if (this._nodes.length === 0) this.loadAll();
-    else this.render();
+    else if (!this._busy) this.renderStatic();
   },
 
   loadAll() {
@@ -114,86 +117,276 @@ Page({
     this._unitList = Object.keys(this._units).sort();
   },
 
-  /* ---------- 结构模式导航（数学 → 单元 → 小节 → 知识点） ---------- */
+  /* ---------- 世界坐标制 ---------- */
+  cx() { return this.data.stageSize.w / 2; },
+
+  // 当前中心节点的世界坐标
+  centerWorld() {
+    return (this._current && this._current.wx != null)
+      ? { x: this._current.wx, y: this._current.wy }
+      : { x: this.cx(), y: CENTER_Y };
+  },
+
+  // 视口布局坐标 → 世界坐标
+  worldPos(vx, vy) {
+    const cw = this.centerWorld();
+    return { x: vx + (cw.x - this.cx()), y: vy + (cw.y - CENTER_Y) };
+  },
+
+  // 世界 transform（让世界坐标 (wx,wy) 对准视口中心）
+  worldTransformOf(wx, wy) {
+    return `translate(${Math.round(this.cx() - wx)}px, ${Math.round(CENTER_Y - wy)}px)`;
+  },
+
+  /* ---------- 布局 ---------- */
+  layoutOf(count) {
+    const w = this.data.stageSize.w, cx = this.cx();
+    const margin = rpx(70);
+    const spread = Math.max(0, w - 2 * margin);
+    const rowGap = PER_ROW > 1 ? spread / (PER_ROW - 1) : 0;
+    const pos = [];
+    for (let i = 0; i < count; i++) {
+      const row = Math.floor(i / PER_ROW);
+      const col = i % PER_ROW;
+      const rowCount = Math.min(PER_ROW, count - row * PER_ROW);
+      pos.push({
+        x: rowCount === 1 ? cx : margin + col * rowGap,
+        y: row === 0 ? KID_Y1 : KID_Y2
+      });
+    }
+    return pos;
+  },
+
+  /* ---------- 渲染（静态：无动画重建当前层） ---------- */
+  renderStatic() {
+    if (this._mode === 'evo') { this.renderEvoStatic(); return; }
+    const cw = this.centerWorld();
+    const kids = this._currentKids || [];
+    let showKids = kids, showGroups = null;
+
+    // 分组/分圈
+    if (this._current && this._current.grpType && kids.length > 8) {
+      const ringIndex = this.data.ringIndex;
+      const ringCount = Math.ceil(kids.length / 8);
+      showKids = kids.slice(ringIndex * 8, (ringIndex + 1) * 8);
+      this.setData({ ringCount, showRingNext: ringCount > 1 });
+    } else {
+      this.setData({ showRingNext: false });
+      if (kids.length > 8) { showGroups = groupKids(kids); showKids = []; }
+    }
+
+    const nodes = [this.nodeView('center', this._current, cw.x, cw.y, true)];
+    const pos = this.layoutOf(showKids.length);
+    showKids.forEach((k, i) => {
+      const wp = this.worldPos(pos[i].x, pos[i].y);
+      nodes.push(this.nodeView('kid', k, wp.x, wp.y, false, true)); // reveal 浮现
+    });
+    if (showGroups) {
+      const gpos = this.layoutOf(showGroups.length);
+      showGroups.forEach((g, i) => {
+        const wp = this.worldPos(gpos[i].x, gpos[i].y);
+        nodes.push(this.groupView(g, wp.x, wp.y, true));
+      });
+    }
+
+    const lines = this.buildLines(showKids, showGroups, cw);
+    this.setData({
+      nodes, lines,
+      worldTransform: this.worldTransformOf(cw.x, cw.y),
+      showEvoReturn: false
+    });
+    // 子节点浮现：30ms 后 settle（setTimeout，防 rAF 失焦卡住）
+    setTimeout(() => {
+      this.setData({ nodes: this.data.nodes.map(n => ({ ...n, origin: false })) });
+    }, 40);
+    this.renderInfo();
+  },
+
+  renderEvoStatic() {
+    const cw = this.centerWorld();
+    const pres = this.preReqsOf(this._current);
+    const w = this.data.stageSize.w, cx = this.cx();
+    const centerY = this.data.stageSize.h - 120;
+    const nodes = [this.nodeView('center', this._current, cw.x, cw.y, true)];
+    const lines = [];
+    const per = pres.length > 1 ? Math.min(rpx(160), (w - 80) / pres.length) : rpx(160);
+    const x0 = cx - ((pres.length - 1) * per) / 2;
+    pres.forEach((p, i) => {
+      const x = x0 + i * per;
+      const wp = this.worldPos(x, 130);
+      nodes.push(this.nodeView('anc', p, wp.x, wp.y, false, true));
+      lines.push({ x1: wp.x, y1: 130 + ANC_R, w: 2, h: centerY - 130 - CENTER_R - ANC_R, rot: 0 });
+    });
+    this.setData({
+      nodes, lines,
+      worldTransform: this.worldTransformOf(cw.x, cw.y),
+      showEvoReturn: this._evoReturn && this._evoReturn.node !== this._current
+    });
+    setTimeout(() => {
+      this.setData({ nodes: this.data.nodes.map(n => ({ ...n, origin: false })) });
+    }, 40);
+    this.renderInfo();
+  },
+
+  /* ---------- 镜头移动进入 ---------- */
+  enterInto(node, twx, twy) {
+    if (this._busy) return;
+    this._busy = true;
+
+    const kids = this.kidsForEnter(node);
+    let shown = kids;
+    if (kids.length > 8) {
+      const groups = groupKids(kids);
+      shown = groups;
+      this._pendingGroups = groups;
+    } else {
+      this._pendingGroups = null;
+    }
+    const targetId = node.id || ('grp-' + node.type);
+
+    // ① 世界整体平移（目标节点 → 视口中心）
+    this.setData({ worldTransform: this.worldTransformOf(twx, twy) });
+
+    // ② 被点节点：聚焦变蓝放大；③ 旧层其他节点淡出
+    const nodes = this.data.nodes.map((n) => {
+      if (n.id === targetId) {
+        return { ...n, focusing: true, isCenter: true, role: 'center' };
+      }
+      return { ...n, oldfade: true };
+    });
+    // ④ 新子节点：世界坐标渲染 + reveal origin（移动中慢慢浮现）
+    const pos = this.layoutOf(shown.length);
+    shown.forEach((k, i) => {
+      const wp = this.worldPos(pos[i].x, pos[i].y);
+      if (k.type && !k.synthetic) nodes.push(this.nodeView('kid', k, wp.x, wp.y, true));
+      else nodes.push(this.groupView(k, wp.x, wp.y, true));
+    });
+    this.setData({ nodes });
+    // 子节点 40ms 后浮现
+    setTimeout(() => {
+      this.setData({ nodes: this.data.nodes.map(n => ({ ...n, origin: false })) });
+    }, 40);
+
+    // 移动完成：结算
+    setTimeout(() => {
+      this._stack.push({ node: this._current, kids: this._currentKids });
+      const grpType = node.type && node.items ? node.type : null;
+      this._current = { ...node, wx: twx, wy: twy, grpType: grpType };
+      this._currentKids = this._pendingGroups || kids;
+      this.setData({ crumb: this.crumbFor(this._current), showUp: true });
+      this.renderStatic();
+      this._busy = false;
+    }, MOVE_MS + 40);
+
+    // 兜底：异常也释放
+    setTimeout(() => { this._busy = false; }, MOVE_MS + 700);
+  },
+
+  // 统一获取下一级节点（单元 → 小节 → 知识点 / 分组 → 组内）
+  kidsForEnter(node) {
+    if (node.items) return node.items.map((n) => ({ ...n, mastery: mockMastery(n.name) }));
+    if (node.unitName && !node.secName) {
+      const secs = Object.keys(this._units[node.unitName].secs).sort();
+      return secs.map((s, i) => ({
+        id: 'sec-' + i, name: s, type: 'section', synthetic: true,
+        mastery: null, secName: s, unitName: node.unitName
+      }));
+    }
+    if (node.secName) {
+      const roots = (this._units[node.unitName] && this._units[node.unitName].secs[node.secName]) || [];
+      return roots.map((n) => ({ ...n, mastery: mockMastery(n.name) }));
+    }
+    return this._childrenOf(node);
+  },
+
+  /* ---------- 返回（世界移回目标层中心） ---------- */
+  goToCrumb(idx) {
+    // idx = 面包屑序号（0=数学，k=第 k 层），back = stack[idx]
+    if (this._busy || idx < 0 || idx >= this._stack.length) return;
+    this._busy = true;
+    this.setData({ nodes: this.data.nodes.map(n => ({ ...n, oldfade: true })) });
+    const back = this._stack[idx];
+    if (back) {
+      const bx = back.node.wx != null ? back.node.wx : this.cx();
+      const by = back.node.wy != null ? back.node.wy : CENTER_Y;
+      this.setData({ worldTransform: this.worldTransformOf(bx, by) });
+    }
+    setTimeout(() => {
+      this._stack = this._stack.slice(0, idx);
+      this._current = back.node;
+      this._currentKids = back.kids;
+      this.setData({ crumb: this.crumbFor(this._current), showUp: this._current.name !== '数学' });
+      this.renderStatic();
+      this._busy = false;
+    }, MOVE_MS);
+    setTimeout(() => { this._busy = false; }, MOVE_MS + 700);
+  },
+
+  /* ---------- 导航状态 ---------- */
   enterSubject() {
     this._stack = [];
     this._mode = 'radial';
-    const center = { name: '数学', type: 'unit', synthetic: true, mastery: null };
-    const kids = this._unitList.map((u, i) => ({
+    this._current = { name: '数学', type: 'unit', synthetic: true, mastery: null };
+    this._currentKids = this._unitList.map((u, i) => ({
       id: 'unit-' + i, name: u, type: 'unit', synthetic: true,
       mastery: null, unitName: u
     }));
-    this._current = center;
-    this._currentKids = kids;
     this.setData({ crumb: [{ name: '数学', idx: 0 }], showUp: false, showEvoReturn: false });
-    this.render();
+    this.renderStatic();
   },
 
   enterUnit(unitName) {
-    this.setData({ kidsExpanded: false, ringIndex: 0 });
     this._stack.push({ node: this._current, kids: this._currentKids });
     const secs = Object.keys(this._units[unitName].secs).sort();
-    this._current = { name: unitName, type: 'unit', synthetic: true, mastery: null, unitName };
+    const node = { name: unitName, type: 'unit', synthetic: true, mastery: null, unitName };
+    this._current = node;
     this._currentKids = secs.map((s, i) => ({
       id: 'sec-' + i, name: s, type: 'section', synthetic: true,
       mastery: null, secName: s, unitName
     }));
-    this.setData({
-      crumb: [{ name: '数学', idx: 0 }, { name: unitName, idx: 1 }],
-      showUp: true
-    });
-    this.render();
+    this.setData({ crumb: this.crumbFor(this._current), showUp: true });
+    this.renderStatic();
   },
 
   enterSection(secName, unitName) {
-    this.setData({ kidsExpanded: false, ringIndex: 0 });
     this._stack.push({ node: this._current, kids: this._currentKids });
     const roots = this._units[unitName].secs[secName] || [];
-    this._current = { name: secName, type: 'section', synthetic: true, mastery: null, secName, unitName };
+    const node = { name: secName, type: 'section', synthetic: true, mastery: null, secName, unitName };
+    this._current = node;
     this._currentKids = roots.map((n) => ({ ...n, mastery: mockMastery(n.name) }));
-    this.setData({
-      crumb: [
-        { name: '数学', idx: 0 },
-        { name: unitName, idx: 1 },
-        { name: secName, idx: 2 }
-      ],
-      showUp: true
-    });
-    this.render();
+    this.setData({ crumb: this.crumbFor(this._current), showUp: true });
+    this.renderStatic();
   },
 
   enterGroup(g) {
-    this.setData({ kidsExpanded: false, ringIndex: 0 });
     this._stack.push({ node: this._current, kids: this._currentKids });
-    this._current = { name: g.label + ' x' + g.count, type: 'section', synthetic: true, mastery: null, grpType: g.type };
+    const node = { name: g.label + ' ×' + g.count, type: 'section', synthetic: true, mastery: null, grpType: g.type };
+    this._current = node;
     this._currentKids = g.items.map((n) => ({ ...n, mastery: mockMastery(n.name) }));
-    const crumb = [{ name: '数学', idx: 0 }];
-    const p = (g.items[0] && g.items[0].path) || [];
-    if (p[2]) crumb.push({ name: p[2], idx: 1 });
-    if (p[3]) crumb.push({ name: p[3], idx: 2 });
-    crumb.push({ name: this._current.name, idx: 3 });
-    this.setData({ crumb: crumb, showUp: true });
-    this.render();
+    this.setData({ crumb: this.crumbFor(this._current), showUp: true });
+    this.renderStatic();
   },
 
   enterNode(node) {
-    this.setData({ kidsExpanded: false, ringIndex: 0 });
     this._stack.push({ node: this._current, kids: this._currentKids });
     this._current = node;
     this._currentKids = this._childrenOf(node);
-    const p = node.path || [];
-    const crumb = [{ name: '数学', idx: 0 }];
-    if (p[2]) crumb.push({ name: p[2], idx: 1 });
-    if (p[3]) crumb.push({ name: p[3], idx: 2 });
-    crumb.push({ name: node.name, idx: 3 });
-    this.setData({ crumb, showUp: true });
-    this.render();
+    this.setData({ crumb: this.crumbFor(this._current), showUp: true });
+    this.renderStatic();
   },
 
   _childrenOf(node) {
     if (!node || node.synthetic) return [];
     return this._nodes.filter((n) => n.parentId === node.knowledgeId)
       .map((n) => ({ ...n, mastery: mockMastery(n.name) }));
+  },
+
+  crumbFor(n) {
+    const c = [{ name: '数学', idx: 0 }];
+    if (n.unitName) c.push({ name: n.unitName, idx: 1 });
+    if (n.secName) c.push({ name: n.secName, idx: 2 });
+    if (n.name && !n.synthetic) c.push({ name: n.name, idx: 3 });
+    return c;
   },
 
   /* ---------- 演化模式 ---------- */
@@ -203,7 +396,7 @@ Page({
     this._evoStack = [];
     this._mode = 'evo';
     this.setData({ mode: 'evo' });
-    this.render();
+    this.renderEvoStatic();
   },
 
   exitEvo() {
@@ -211,7 +404,7 @@ Page({
     this._evoStack = [];
     this._evoReturn = null;
     this.setData({ mode: 'radial' });
-    this.render();
+    this.renderStatic();
   },
 
   evoReturn() {
@@ -223,7 +416,7 @@ Page({
     this._evoStack = [];
     this._evoReturn = null;
     this.setData({ mode: 'radial' });
-    this.render();
+    this.renderStatic();
     wx.showToast({ title: '已回到「' + this._current.name + '」', icon: 'none' });
   },
 
@@ -235,89 +428,8 @@ Page({
       .map((n) => ({ ...n, mastery: mockMastery(n.name) }));
   },
 
-  /* ---------- 渲染 ---------- */
-  render() {
-    nodesCount = 0;
-    const { w, h } = this.data.stageSize;
-    const cx = w / 2, cy = h / 2 - 6;
-
-    let nodes = [];
-    let edges = [];
-
-    if (this._mode === 'evo') {
-      const pres = this.preReqsOf(this._current);
-      const centerY = h - 120;
-      const preY = 130;
-      const per = pres.length > 0 ? Math.min(rpx(160), (w - 80) / pres.length) : rpx(160);
-      const x0 = cx - ((pres.length - 1) * per) / 2;
-      pres.forEach((p, i) => {
-        const x = x0 + i * per;
-        nodes.push(this.nodeView('anc', p, x, preY, rpx(90)));
-        edges.push({ x1: x, y1: preY + rpx(24), x2: cx, y2: centerY - rpx(52) });
-      });
-      nodes.push(this.nodeView('center', this._current, cx, centerY, rpx(200), true));
-    } else {
-      const kids = this._currentKids || [];
-      const MAX_KIDS = 8; // 工作记忆上限 7±2
-      // 组视图：组内分圈
-      let showKids = kids;
-      let showGroups = null;
-      if (this._current && this._current.grpType && kids.length > MAX_KIDS) {
-        const ringIndex = this.data.ringIndex;
-        const ringCount = Math.ceil(kids.length / MAX_KIDS);
-        showKids = kids.slice(ringIndex * MAX_KIDS, (ringIndex + 1) * MAX_KIDS);
-        this.setData({ ringCount: ringCount, showRingNext: ringCount > 1 });
-      } else {
-        this.setData({ showRingNext: false });
-        // 结构统筹：kids>8 且非组视图 → 只显示组节点（不平铺）
-        if (kids.length > MAX_KIDS) {
-          showGroups = groupKids(kids);
-          showKids = [];
-        }
-      }
-      const n = showKids.length;
-      const R = Math.min(w * 0.36, rpx(280));
-      const cR = rpx(60), kR = rpx(30);
-      showKids.forEach((k, i) => {
-        const ang = (i / n) * Math.PI * 2 - Math.PI / 2;
-        const x = cx + R * Math.cos(ang);
-        const y = cy + R * Math.sin(ang);
-        nodes.push(this.nodeView('kid', k, x, y, rpx(108)));
-        const dx = x - cx, dy = y - cy, dist = Math.hypot(dx, dy);
-        const ux = dx / dist, uy = dy / dist;
-        edges.push({
-          x1: cx + ux * cR, y1: cy + uy * cR,
-          x2: x - ux * kR, y2: y - uy * kR
-        });
-      });
-      // 结构统筹：渲染组节点（组节点≤6不超上限）
-      if (showGroups) {
-        showGroups.forEach((g, i) => {
-          const ang = (i / showGroups.length) * Math.PI * 2 - Math.PI / 2;
-          const x = cx + R * Math.cos(ang);
-          const y = cy + R * Math.sin(ang);
-          nodes.push({
-            id: 'grp-' + g.type, role: 'kid', name: g.label + ' x' + g.count, isCenter: false,
-            synthetic: true, hasMastery: false, showNameIn: false,
-            label: g.label + ' x' + g.count, typeLabel: '', mastery: null,
-            left: x, top: y, size: rpx(108), borderColor: '#a1a1a6',
-            masteryText: '', animDelay: nodesCount++ * 40
-          });
-        });
-      }
-      nodes.push(this.nodeView('center', this._current, cx, cy, rpx(150), true));
-    }
-
-    this.setData({
-      nodes,
-      showEvoReturn: this._mode === 'evo' && this._evoReturn && this._evoReturn.node !== this._current,
-    });
-
-    this.drawEdges(edges);
-    this.renderInfo();
-  },
-
-  nodeView(role, node, x, y, size, isCenter) {
+  /* ---------- 节点/线 view 生成 ---------- */
+  nodeView(role, node, x, y, isCenter, reveal) {
     const m = node.mastery != null ? node.mastery : 0;
     const longName = node.name && node.name.length > 5;
     return {
@@ -325,56 +437,56 @@ Page({
       role,
       name: node.name || '',
       isCenter: !!isCenter,
+      focusing: false,
+      reveal: !!reveal,
+      origin: !!reveal,
+      oldfade: false,
       synthetic: !!node.synthetic,
-      hasMastery: node.mastery != null,
+      hasMastery: node.mastery != null && !node.synthetic,
       showNameIn: !isCenter && !longName && !node.synthetic,
       label: (!isCenter && (longName || node.synthetic)) ? node.name : '',
-      typeLabel: node.synthetic ? TYPE_LABEL[node.type] || '' : TYPE_LABEL[node.type] || '',
-      mastery: node.mastery != null ? m : null,
-      left: x, top: y, size,
+      typeLabel: node.synthetic ? '' : (TYPE_LABEL[node.type] || ''),
+      masteryText: (node.mastery != null && !node.synthetic) ? m + '%' : '',
       borderColor: node.synthetic ? '#d8d8dc' : mColor(m),
-      masteryText: node.mastery != null ? m + '%' : '',
-      animDelay: nodesCount++ * 40
+      left: Math.round(x), top: Math.round(y)
     };
   },
 
-  drawEdges(edges) {
-    if (!this._ctx || !this._canvas) {
-      this.initCanvas(() => this.drawEdges(edges));
-      return;
-    }
-    const { w, h } = this.data.stageSize;
-    const ctx = this._ctx;
-    ctx.clearRect(0, 0, w, h);
-    ctx.lineWidth = 1.2;
-    ctx.strokeStyle = 'rgba(0,122,255,0.22)';
-    ctx.beginPath();
-    for (const e of edges) {
-      ctx.moveTo(e.x1, e.y1);
-      ctx.lineTo(e.x2, e.y2);
-    }
-    ctx.stroke();
+  groupView(g, x, y, reveal) {
+    return {
+      id: 'grp-' + g.type, role: 'kid', name: g.label + ' ×' + g.count,
+      isCenter: false, focusing: false, reveal: !!reveal, origin: !!reveal,
+      oldfade: false, synthetic: true, hasMastery: false, showNameIn: false,
+      label: g.label + ' ×' + g.count, typeLabel: '', masteryText: '',
+      borderColor: '#d8d8dc', left: Math.round(x), top: Math.round(y)
+    };
   },
 
-  initCanvas(cb) {
-    wx.createSelectorQuery().in(this)
-      .select('#graphCanvas')
-      .fields({ node: true, size: true })
-      .exec((res) => {
-        if (!res || !res[0] || !res[0].node) return;
-        const canvas = res[0].node;
-        const { w, h } = this.data.stageSize;
-        const dpr = this._dpr;
-        canvas.width = w * dpr;
-        canvas.height = h * dpr;
-        const ctx = canvas.getContext('2d');
-        ctx.scale(dpr, dpr);
-        this._canvas = canvas;
-        this._ctx = ctx;
-        if (cb) cb();
-      });
+  // 连接线：view 细条（垂直段 + 斜线段），世界坐标
+  buildLines(kids, groups, cw) {
+    const lines = [];
+    const cx = cw.x, cy = cw.y;
+    const pushEdge = (x1, y1, x2, y2) => {
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      if (len < 1) return;
+      const rot = Math.atan2(dy, dx) * 180 / Math.PI;
+      lines.push({ x1: Math.round(x1), y1: Math.round(y1), w: Math.round(len), h: 2, rot: Math.round(rot * 10) / 10 });
+    };
+    const items = (groups || []).length ? groups : (kids || []);
+    const pos = this.layoutOf(items.length);
+    items.forEach((k, i) => {
+      const wp = this.worldPos(pos[i].x, pos[i].y);
+      const midY = (cy + CENTER_R + wp.y - KID_R) / 2;
+      // 垂直段：中心底部 → 弯点
+      lines.push({ x1: Math.round(cx), y1: Math.round(cy + CENTER_R), w: 2, h: Math.round(midY - cy - CENTER_R), rot: 0 });
+      // 斜线段：弯点 → 子节点顶部
+      pushEdge(cx, midY, wp.x, wp.y - KID_R);
+    });
+    return lines;
   },
 
+  /* ---------- 信息卡 ---------- */
   renderInfo() {
     const n = this._current;
     if (!n) return;
@@ -411,26 +523,24 @@ Page({
       if (!node) return;
       this._evoStack.push(this._current);
       this._current = node;
-      this.render();
+      this.renderEvoStatic();
       return;
     }
+    // 分组节点
     if (id && id.indexOf('grp-') === 0) {
       const gtype = id.slice(4);
       const groups = groupKids(this._currentKids || []);
       const g = groups.find(x => x.type === gtype);
       if (!g) return;
-      this.enterGroup(g);
+      const el = this.data.nodes.find(n => n.id === id);
+      this.enterInto(g, el.left, el.top);
       return;
     }
     const kid = (this._currentKids || []).find((k) => (k.knowledgeId || k.secName || k.unitName) === id);
     if (!kid) return;
-    if (kid.unitName && !kid.secName) {
-      this.enterUnit(kid.unitName);
-    } else if (kid.secName && !kid.knowledgeId) {
-      this.enterSection(kid.secName, kid.unitName);
-    } else if (kid.knowledgeId) {
-      this.enterNode(this._byId[kid.knowledgeId]);
-    }
+    const el = this.data.nodes.find(n => n.id === id);
+    if (!el) return;
+    this.enterInto(kid, el.left, el.top);
   },
 
   onModeTap() {
@@ -442,7 +552,7 @@ Page({
     if (this._mode === 'evo') {
       if (this._evoStack.length) {
         this._current = this._evoStack.pop();
-        this.render();
+        this.renderEvoStatic();
       } else {
         this.exitEvo();
         wx.showToast({ title: '已退出演化模式', icon: 'none' });
@@ -450,19 +560,7 @@ Page({
       return;
     }
     if (this._stack.length === 0) { wx.navigateBack(); return; }
-    const prev = this._stack.pop();
-    this._current = prev.node;
-    this._currentKids = prev.kids;
-    this.setData({ crumb: this.crumbFor(this._current), showUp: this._current.name !== '数学' });
-    this.render();
-  },
-
-  crumbFor(n) {
-    const c = [{ name: '数学', idx: 0 }];
-    if (n.unitName) c.push({ name: n.unitName, idx: 1 });
-    if (n.secName) c.push({ name: n.secName, idx: 2 });
-    if (n.name && !n.synthetic) c.push({ name: n.name, idx: 3 });
-    return c;
+    this.goToCrumb(this._stack.length - 1);
   },
 
   onEvoReturnTap() { this.evoReturn(); },
@@ -470,7 +568,7 @@ Page({
   onRingNext() {
     const rc = this.data.ringCount || 1;
     this.setData({ ringIndex: (this.data.ringIndex + 1) % rc });
-    this.render();
+    this.renderStatic();
   },
 
   onCrumbTap(e) {
@@ -479,24 +577,14 @@ Page({
       if (idx >= this._evoStack.length) return;
       this._current = this._evoStack[idx];
       this._evoStack = this._evoStack.slice(0, idx);
-      this.render();
+      this.renderEvoStatic();
       return;
     }
-    const popCount = this._stack.length - (idx - 1);
-    let prev = null;
-    for (let i = 0; i < popCount; i++) prev = this._stack.pop();
-    if (idx === 0 || !prev) { this.enterSubject(); return; }
-    this._current = prev.node;
-    this._currentKids = prev.kids;
-    this.setData({ crumb: this.crumbFor(this._current), showUp: this._current.name !== '数学' });
-    this.render();
+    this.goToCrumb(idx);
   },
 
   onBackTap() {
-    // tab 页无返回栈
     if (getCurrentPages().length <= 1) return;
     wx.navigateBack();
   }
 });
-
-let nodesCount = 0;

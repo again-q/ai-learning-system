@@ -78,21 +78,66 @@ page {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
   overflow: hidden;
 }
-.canvas { position: absolute; inset: 0; z-index: 0; }
+.world {
+  position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+  transform-origin: 0 0;
+  /* 镜头移动：整个世界平移 */
+  transition: transform 0.7s cubic-bezier(0.22, 0.1, 0.12, 1); /* ease-out-expo：先快后慢钻入 */
+}
+.line {
+  position: absolute;
+  background: rgba(0, 122, 255, 0.22);
+  border-radius: 2rpx;
+  transform-origin: 0 50%;
+  z-index: 0;
+}
 .node {
   position: absolute;
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  opacity: 1; /* 动画只动 transform，opacity 恒可见 */
-  animation: nodeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 1;
   z-index: 1;
 }
 @keyframes nodeIn {
-  from { transform: translate(-50%, -50%) scale(0.6); }
-  to { transform: translate(-50%, -50%) scale(1); }
+  0%   { transform: translate(-50%, -50%) scale(0.6); }
+  60%  { transform: translate(-50%, -50%) scale(1.06); } /* 过冲回弹 */
+  100% { transform: translate(-50%, -50%) scale(1); }
 }
+/* 聚焦导航：旧层淡出 */
+.node.leaving { animation: nodeOut 0.2s ease forwards !important; }
+@keyframes nodeOut {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+}
+/* 新主节点：镜头聚焦（大缩放进入 + 回弹） */
+.node.center { animation: focusIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+@keyframes focusIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+  60% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+/* ===== 镜头移动动画（v2） ===== */
+/* 下一级子节点：移动过程中慢慢浮现（从中心散开） */
+.node.reveal { transition: transform 0.75s cubic-bezier(0.3, 0.9, 0.3, 1), opacity 0.75s ease; }
+.node.reveal.origin { transform: translate(0, 0) scale(0.45); opacity: 0; }
+/* 旧层节点：干脆消失 */
+.node.oldfade { transition: opacity 0.35s ease; opacity: 0 !important; }
+/* 被点节点：逐渐放大 + 渐变变蓝（与世界移动同步） */
+.node.focusing .dot {
+  transition: width 0.65s cubic-bezier(0.3, 0.9, 0.3, 1),
+              height 0.65s cubic-bezier(0.3, 0.9, 0.3, 1),
+              background 0.65s ease, color 0.4s ease, box-shadow 0.6s ease;
+}
+.node.focusing.center .dot {
+  width: 240rpx; height: 240rpx;
+  background: linear-gradient(135deg, #6cc3ff 0%, #007aff 58%, #004ecb 100%);
+  box-shadow: 0 12px 34px rgba(0, 122, 255, 0.28);
+}
+.node.focusing.center .nm { color: #ffffff; font-size: 24rpx; font-weight: 700; max-width: 220rpx; }
+.node.focusing.center .tp { color: rgba(255, 255, 255, 0.85); }
+.node.focusing.center .ring { display: none; }
 .dot {
   position: relative;
   border-radius: 50%;
@@ -102,8 +147,10 @@ page {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 120rpx; height: 120rpx; /* kid 默认 */
 }
+.node.anc .dot { width: 90rpx; height: 90rpx; }
+.node.center .dot { width: 240rpx; height: 240rpx; }
 /* 掌握度环：border 色环（小程序渲染稳定，不用 conic/mask） */
 .ring {
   position: absolute;
@@ -113,6 +160,10 @@ page {
   box-sizing: border-box;
   border: 5rpx solid #e5e5ea;
 }
+.node.anc .ring { border-width: 4rpx; }
+/* 点击微效：按下瞬间缩小（120ms 后自动恢复） */
+.node-hover { transform: translate(-50%, -50%) scale(0.92) !important; }
+.node.center.node-hover .dot { transform: scale(0.95); }
 .nm, .tp, .mv { position: relative; z-index: 1; }
 .nm {
   font-size: 16rpx;
@@ -149,6 +200,12 @@ page {
   border-radius: 999rpx;
 }
 .node.center .ring { display: none; }
+/* 焦点脉冲：中心节点呼吸光晕（其他 AI 实现经验：独立 keyframes 不干扰状态） */
+.node.center .dot { animation: focusPulse 2.4s ease-in-out infinite; }
+@keyframes focusPulse {
+  0%, 100% { box-shadow: 0 12px 34px rgba(0, 122, 255, 0.28), 0 0 0 0 rgba(0, 122, 255, 0.18); }
+  50% { box-shadow: 0 12px 34px rgba(0, 122, 255, 0.28), 0 0 0 16rpx rgba(0, 122, 255, 0.06); }
+}
 .badge {
   position: absolute;
   z-index: 6;

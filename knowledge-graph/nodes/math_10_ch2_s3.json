@@ -297,7 +297,7 @@
     "knowledge_id": "math_10_ch2_s3_009",
     "basic": {
       "name": "用一元二次不等式解决实际问题",
-      "type": "example",
+      "type": "method",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册",
@@ -407,7 +407,7 @@
     "knowledge_id": "math_10_ch2_s3_013",
     "basic": {
       "name": "函数概念的发展历程（阅读与思考）",
-      "type": "reading",
+      "type": "method",
       "subject": "数学",
       "stage": "高中",
       "grade": "必修第一册",

@@ -1,0 +1,114 @@
+=========================================
+  1.3 全自动管线测试
+  2026-07-28 22:44:08
+=========================================
+
+▶️  Agent 1 版面分析...
+INFO: Using session_id: default:to:ai-learning-system-math-banmianfenxi-agent:1785249858009:d2e8ae68
+INFO: Auto-added identity prefix: [Agent default requesting]
+[SESSION: default:to:ai-learning-system-math-banmianfenxi-agent:1785249858009:d2e8ae68]
+
+文件已发送。如果需要我调整 Markdown 中的标题层级、修复遗漏的 OCR 错误，或补充任何缺失的内容（例如补集部分的完整定义，该文件在 p18 处截断），随时告知。
+✅ Agent 1 完成，耗时 138 秒
+
+▶️  Agent 2 知识点提取...
+INFO: Using session_id: default:to:ai-learning-system-math-jiegouzhuanhua-agent:1785249997440:a88d3ebc
+INFO: Auto-added identity prefix: [Agent default requesting]
+[SESSION: default:to:ai-learning-system-math-jiegouzhuanhua-agent:1785249997440:a88d3ebc]
+
+完成。1.3 节「集合的基本运算」知识点提取结果：
+
+### 输出概览
+
+**文件：** `output/agent2_extraction/nodes/math_10_ch1_s3.json`
+**索引：** `output/agent2_extraction/knowledge_index.json`（已追加）
+
+### 提取的 10 个知识点
+
+| ID | 知识点 | 层级 | 类型 | 课标权重 |
+|---|---|---|---|---|
+| 001 | **并集** — 定义与表示 (A∪B) | 核心 | definition | ⭐⭐⭐ |
+| 002 | **交集** — 定义与表示 (A∩B) | 核心 | definition | ⭐⭐⭐ |
+| 003 | **全集** — 定义 (U) | 核心 | definition | ⭐⭐⭐ |
+| 004 | 并集的运算性质 (A∪A=A, A∪∅=A) | 辅助 | property | ⭐⭐ |
+| 005 | 交集的运算性质 (A∩A=A, A∩∅=∅) | 辅助 | property | ⭐⭐ |
+| 006 | 用交集表示直线的三种位置关系 | 辅助 | method | ⭐⭐ |
+| 007 | Venn图表示集合运算 | 辅助 | method | ⭐⭐ |
+| 008 | 数轴法求区间集合的并集 | 辅助 | method | ⭐⭐ |
+| 009 | 同一问题在不同全集下的解集差异 | 隐性 | property | ⭐⭐ |
+| 010 | 并集中元素的互异性 | 隐性 | property | ⭐⭐ |
+
+**索引总节点数：** 21 → **31**（s3 贡献 10 个新节点）
+
+**注意**：文件 `math_10_ch1_s3_1.3_集合的基本运算.md` 实际包含了 1.1、1.2、1.3 三节内容。我仅提取了 1.3 节的部分。补集的定义在文中仅引入「全集」概念就截断了，完整的补集内容（含补集定义、运算性质、德摩根律）应出现在教材后续页面，待对应布局文件到来后提取。
+✅ Agent 2 完成，耗时 73 秒
+
+▶️  Agent 3 质检...
+INFO: Using session_id: default:to:ai-learning-system-math-zhiliangjianyan-agent:1785250068688:2a4c5742
+INFO: Auto-added identity prefix: [Agent default requesting]
+[SESSION: default:to:ai-learning-system-math-zhiliangjianyan-agent:1785250068688:2a4c5742]
+
+审查完成 ✅ 以下是完整的质检报告。
+
+---
+
+**Section: `math_10_ch1_s3` — 1.3 集合的基本运算**
+**结论：✅ 通过（0 阻塞，2 警告，均经人工终判）**
+
+## 10 节点清单
+
+| ID | 名称 | 类型 | 父节点 |
+|:--:|------|:----:|:------:|
+| 001 | **并集** | definition | root |
+| 002 | **交集** | definition | root |
+| 003 | **全集** | definition | root |
+| 004 | 并集的运算性质 | property | 001 |
+| 005 | 交集的运算性质 | property | 002 |
+| 006 | 用交集表示直线的位置关系 | method | 002 |
+| 007 | **Venn图表示集合运算** | method | root |
+| 008 | 数轴法求区间集合的并集 | method | 001 |
+| 009 | 同一问题在不同全集下的解集差异 | property | 003 |
+| 010 | 并集中元素的互异性 | property | 001 |
+
+## 🔴 阻塞级（7项全绿）
+
+- ✅ 结构完整：name/source_text/path 全部就位
+- ✅ 关系可达：所有 parent/reference/related 均存在（跨节引用 `s1_001/003/005/007`、`s2_003/008` 全部验证通过）
+- ✅ ID 唯一无重复
+
+## 🟡 警告级（2项，均已终判）
+
+**⚠️ #12 知识点遗漏：补集**
+- **原因查明：** OCR 输入仅覆盖至第 18 页（`sections/` 文件页范围：10-18），第 18 页结束于「全集」定义，补集定义（∁UA、补集性质）在后续页未捕获
+- **归责：** ❌ 非 Agent 2 提取问题，属于 OCR 输入截断
+- **建议：** 补充第 19+ 页 OCR 数据后重新提取
+
+**⚠️ #13a 耦合对：并集 ↔ 交集**
+- **初审：** 互为引用 + 同父( root ) + 同类型( definition )
+- **终判：❌ 不合并**
+- **理由：** 并集与交集是集合的两大独立基本运算，各自可独立评估（学生可掌握其一而不掌握其二），类比 1.1 中列举法↔描述法的处理
+
+## 📋 额外观察
+
+- **008 数轴法求区间集合的并集** — 名称限定为并集场景，后续如有交集数轴法节点可考虑统一为「数轴法」
+- **009 同一问题在不同全集下的解集差异** — 提取自补集前的引文样例，建议补充补集后评估是否保留
+
+## 累计进度（第一章）
+
+| 节 | 节点数 | 状态 |
+|:-:|:-----:|:----:|
+| 1.1 集合的概念 | 11 ✅ | 已通过 |
+| 1.2 集合间的基本关系 | 10 ✅ | 已通过 |
+| 1.3 集合的基本运算 | **10 ✅** | **本轮完成** |
+✅ Agent 3 完成，耗时 127 秒
+
+📊 质检结果：
+  通过: True
+  🟡 {'check': 12, 'severity': 'warning', 'detail': '知识遗漏：缺少核心概念「补集」—— OCR输入仅覆盖至第18页（全集定义），补集定义（∁UA）在后续页面未捕获，非Agent 2提取问题'}
+  🟡 {'check': '13a', 'severity': 'warning', 'detail': '节点「并集」与「交集」互为引用、同父（root）同类型（definition），属于中低置信度耦合对'}
+  通过：0 阻塞，2 警告（告警#12因OCR截断不可归责、告警#13a经领域判断不合并）。10节点全绿通过，跨节引用（1.1/1.2）全部有效，关系拓扑合理
+
+=========================================
+  总耗时: 338 秒
+  日志: /Users/apple/Desktop/ai-learning-system/output/_test_1.3.log
+=========================================

@@ -115,12 +115,29 @@ def collect():
     return nodes, problems
 
 
+TYPE_WHITELIST = {'definition', 'property', 'method', 'notation'}  # 4 类：概念/性质/方法/记号（example/reading 已抽象合并进 method）
+# 非知识点命名检测（总结/逻辑链/概述类，不应作为知识点节点）
+NON_KP_PATTERNS = ['逻辑链', '核心地位', '概述', '小结', '本节', '导言', '导读', '综述']
+
+
+def check_quality(nodes, problems):
+    """type 白名单 + 命名质量检查"""
+    for n in nodes:
+        if n['type'] not in TYPE_WHITELIST:
+            problems.append(f"[type非法] {n['knowledgeId']} {n['name']} type={n['type']}")
+        for pat in NON_KP_PATTERNS:
+            if pat in n['name']:
+                problems.append(f"[疑似非知识点] {n['knowledgeId']} {n['name']}（含'{pat}'）")
+                break
+
+
 def main():
     cmd = sys.argv[1] if len(sys.argv) > 1 else 'gen'
     nodes, problems = collect()
     print(f'节点总数: {len(nodes)}')
 
     if cmd == 'check':
+        check_quality(nodes, problems)
         print(f'path 仍为空: {sum(1 for n in nodes if not n["path"])} 个')
         for p in problems:
             print(' ', p)
@@ -129,6 +146,7 @@ def main():
         return
 
     if cmd == 'gen':
+        check_quality(nodes, problems)
         out = None
         for i, a in enumerate(sys.argv):
             if a == '--out' and i + 1 < len(sys.argv):

@@ -1,4 +1,4 @@
-<!-- 知识图谱（结构 + 演化双模式）· K 维度知识层 -->
+<!-- 知识图谱（结构 + 演化双模式）· K 维度知识层 · 镜头移动交互 -->
 <view class="page">
 
   <!-- 顶部导航 -->
@@ -27,24 +27,35 @@
 
   <!-- 图谱舞台 -->
   <view class="stage" id="graphStage" style="height:{{stageSize.h}}px">
-    <canvas type="2d" id="graphCanvas" class="canvas" style="width:{{stageSize.w}}px;height:{{stageSize.h}}px"></canvas>
 
-    <!-- 节点层 -->
-    <view
-      wx:for="{{nodes}}"
-      wx:key="id"
-      class="node {{item.role}} {{item.isCenter ? 'center' : ''}}"
-      data-id="{{item.id}}"
-      bindtap="onNodeTap"
-      style="left:{{item.left}}px;top:{{item.top}}px;animation-delay:{{item.animDelay}}ms"
-    >
-      <view class="dot" style="width:{{item.size}}px;height:{{item.size}}px;">
-        <view class="ring" style="width:{{item.size}}px;height:{{item.size}}px;border-color:{{item.borderColor}}"></view>
-        <text class="nm" wx:if="{{item.isCenter || item.showNameIn}}">{{item.name}}</text>
-        <text class="tp" wx:if="{{item.isCenter && item.typeLabel}}">{{item.typeLabel}}</text>
-        <text class="mv" wx:if="{{item.isCenter && item.hasMastery}}">{{item.masteryText}}</text>
+    <!-- 世界容器：整个图谱（节点+线）整体移动（镜头移动核心） -->
+    <view id="world" class="world" style="transform:{{worldTransform}};">
+      <!-- 连线层（view 细条，跟随世界移动） -->
+      <view
+        wx:for="{{lines}}"
+        wx:key="index"
+        class="line"
+        style="left:{{item.x1}}px;top:{{item.y1}}px;width:{{item.w}}px;height:{{item.h}}px;transform:rotate({{item.rot}}deg);"
+      ></view>
+
+      <!-- 节点层 -->
+      <view
+        wx:for="{{nodes}}"
+        wx:key="id"
+        class="node {{item.role}} {{item.isCenter ? 'center' : ''}} {{item.focusing ? 'focusing' : ''}} {{item.reveal ? 'reveal' : ''}} {{item.origin ? 'origin' : ''}} {{item.oldfade ? 'oldfade' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onNodeTap"
+        hover-class="node-hover"
+        hover-stay-time="120"
+        style="left:{{item.left}}px;top:{{item.top}}px;"
+      >
+        <view class="dot">
+          <text class="nm" wx:if="{{item.isCenter || item.showNameIn}}">{{item.name}}</text>
+          <text class="tp" wx:if="{{item.isCenter && item.typeLabel}}">{{item.typeLabel}}</text>
+          <text class="mv" wx:if="{{item.isCenter && item.hasMastery}}">{{item.masteryText}}</text>
+        </view>
+        <text class="label" wx:if="{{item.label}}">{{item.label}}</text>
       </view>
-      <text class="label" wx:if="{{item.label}}">{{item.label}}</text>
     </view>
 
     <!-- 返回上级 -->
