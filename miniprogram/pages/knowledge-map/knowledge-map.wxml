@@ -50,6 +50,8 @@
     <view class="badge up" wx:if="{{showUp}}" bindtap="onUpTap">‹ 返回上级</view>
     <!-- 模式切换 -->
     <view class="badge mode {{mode === 'evo' ? 'active' : ''}}" bindtap="onModeTap">{{mode === 'evo' ? '◉ 演化中' : '⟲ 演化'}}</view>
+    <!-- 分圈切换（组内 >8） -->
+    <view class="badge ring-next" wx:if="{{showRingNext}}" bindtap="onRingNext">下一圈 {{ringIndex + 1}}/{{ringCount}}</view>
     <!-- 一键回起点 -->
     <view class="badge evo-return" wx:if="{{showEvoReturn}}" bindtap="onEvoReturnTap">⤺ 回起点</view>
 

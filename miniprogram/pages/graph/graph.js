@@ -26,6 +26,16 @@ function mockMastery(name) {
 }
 function mColor(m) { return m >= 75 ? '#34c759' : m >= 50 ? '#ff9500' : m > 0 ? '#ff3b30' : '#c7c7cc'; }
 function mStatus(m) { return m >= 75 ? '已掌握' : m >= 50 ? '学习中' : m > 0 ? '薄弱' : '未学'; }
+// 按 type 分组（结构节点统筹）
+function groupKids(kids) {
+  const TYPE_ORDER = ['definition', 'property', 'method', 'notation', 'example', 'reading'];
+  const groups = [];
+  for (const t of TYPE_ORDER) {
+    const items = (kids || []).filter(k => k.type === t);
+    if (items.length) groups.push({ type: t, label: TYPE_LABEL[t] || t, count: items.length, items });
+  }
+  return groups;
+}
 
 Page({
   data: {
@@ -40,7 +50,9 @@ Page({
     showUp: false,
     showEvoReturn: false,
     stageSize: { w: 375, h: 600 },
-    kidsExpanded: false   // 卫星超过 8 个时折叠（工作记忆 7±2）
+    ringIndex: 0,
+    ringCount: 0,
+    showRingNext: false,
   },
 
   _nodes: [], _byId: {}, _units: {}, _unitList: [],
@@ -118,7 +130,7 @@ Page({
   },
 
   enterUnit(unitName) {
-    this.setData({ kidsExpanded: false });
+    this.setData({ kidsExpanded: false, ringIndex: 0 });
     this._stack.push({ node: this._current, kids: this._currentKids });
     const secs = Object.keys(this._units[unitName].secs).sort();
     this._current = { name: unitName, type: 'unit', synthetic: true, mastery: null, unitName };
@@ -134,7 +146,7 @@ Page({
   },
 
   enterSection(secName, unitName) {
-    this.setData({ kidsExpanded: false });
+    this.setData({ kidsExpanded: false, ringIndex: 0 });
     this._stack.push({ node: this._current, kids: this._currentKids });
     const roots = this._units[unitName].secs[secName] || [];
     this._current = { name: secName, type: 'section', synthetic: true, mastery: null, secName, unitName };
@@ -150,8 +162,22 @@ Page({
     this.render();
   },
 
+  enterGroup(g) {
+    this.setData({ kidsExpanded: false, ringIndex: 0 });
+    this._stack.push({ node: this._current, kids: this._currentKids });
+    this._current = { name: g.label + ' x' + g.count, type: 'section', synthetic: true, mastery: null, grpType: g.type };
+    this._currentKids = g.items.map((n) => ({ ...n, mastery: mockMastery(n.name) }));
+    const crumb = [{ name: '数学', idx: 0 }];
+    const p = (g.items[0] && g.items[0].path) || [];
+    if (p[2]) crumb.push({ name: p[2], idx: 1 });
+    if (p[3]) crumb.push({ name: p[3], idx: 2 });
+    crumb.push({ name: this._current.name, idx: 3 });
+    this.setData({ crumb: crumb, showUp: true });
+    this.render();
+  },
+
   enterNode(node) {
-    this.setData({ kidsExpanded: false });
+    this.setData({ kidsExpanded: false, ringIndex: 0 });
     this._stack.push({ node: this._current, kids: this._currentKids });
     this._current = node;
     this._currentKids = this._childrenOf(node);
@@ -233,8 +259,22 @@ Page({
     } else {
       const kids = this._currentKids || [];
       const MAX_KIDS = 8; // 工作记忆上限 7±2
-      const expanded = this.data.kidsExpanded;
-      const showKids = kids.length > MAX_KIDS && !expanded ? kids.slice(0, MAX_KIDS) : kids;
+      // 组视图：组内分圈
+      let showKids = kids;
+      let showGroups = null;
+      if (this._current && this._current.grpType && kids.length > MAX_KIDS) {
+        const ringIndex = this.data.ringIndex;
+        const ringCount = Math.ceil(kids.length / MAX_KIDS);
+        showKids = kids.slice(ringIndex * MAX_KIDS, (ringIndex + 1) * MAX_KIDS);
+        this.setData({ ringCount: ringCount, showRingNext: ringCount > 1 });
+      } else {
+        this.setData({ showRingNext: false });
+        // 结构统筹：kids>8 且非组视图 → 只显示组节点（不平铺）
+        if (kids.length > MAX_KIDS) {
+          showGroups = groupKids(kids);
+          showKids = [];
+        }
+      }
       const n = showKids.length;
       const R = Math.min(w * 0.36, rpx(280));
       const cR = rpx(60), kR = rpx(30);
@@ -250,17 +290,19 @@ Page({
           x2: x - ux * kR, y2: y - uy * kR
         });
       });
-      if (kids.length > MAX_KIDS && !expanded) {
-        const extra = kids.length - MAX_KIDS;
-        const ang = ((n) * Math.PI * 2) / Math.max(kids.length, 1) - Math.PI / 2 + Math.PI / Math.max(kids.length, 1);
-        const x = cx + R * Math.cos(ang);
-        const y = cy + R * Math.sin(ang);
-        nodes.push({
-          id: 'more', role: 'kid', name: '+' + extra + ' 更多', isCenter: false,
-          synthetic: true, hasMastery: false, showNameIn: false,
-          label: '+' + extra + ' 更多', typeLabel: '', mastery: null,
-          left: x, top: y, size: rpx(108), borderColor: '#a1a1a6',
-          masteryText: '', animDelay: nodesCount++ * 40
+      // 结构统筹：渲染组节点（组节点≤6不超上限）
+      if (showGroups) {
+        showGroups.forEach((g, i) => {
+          const ang = (i / showGroups.length) * Math.PI * 2 - Math.PI / 2;
+          const x = cx + R * Math.cos(ang);
+          const y = cy + R * Math.sin(ang);
+          nodes.push({
+            id: 'grp-' + g.type, role: 'kid', name: g.label + ' x' + g.count, isCenter: false,
+            synthetic: true, hasMastery: false, showNameIn: false,
+            label: g.label + ' x' + g.count, typeLabel: '', mastery: null,
+            left: x, top: y, size: rpx(108), borderColor: '#a1a1a6',
+            masteryText: '', animDelay: nodesCount++ * 40
+          });
         });
       }
       nodes.push(this.nodeView('center', this._current, cx, cy, rpx(150), true));
@@ -372,9 +414,12 @@ Page({
       this.render();
       return;
     }
-    if (id === 'more') {
-      this.setData({ kidsExpanded: true });
-      this.render();
+    if (id && id.indexOf('grp-') === 0) {
+      const gtype = id.slice(4);
+      const groups = groupKids(this._currentKids || []);
+      const g = groups.find(x => x.type === gtype);
+      if (!g) return;
+      this.enterGroup(g);
       return;
     }
     const kid = (this._currentKids || []).find((k) => (k.knowledgeId || k.secName || k.unitName) === id);
@@ -421,6 +466,12 @@ Page({
   },
 
   onEvoReturnTap() { this.evoReturn(); },
+
+  onRingNext() {
+    const rc = this.data.ringCount || 1;
+    this.setData({ ringIndex: (this.data.ringIndex + 1) % rc });
+    this.render();
+  },
 
   onCrumbTap(e) {
     const idx = e.currentTarget.dataset.idx;
