@@ -281,3 +281,5 @@ page {
 .chip.primary { color: #007aff; background: rgba(0, 122, 255, 0.08); }
 .chip.hot { color: #ff3b30; background: rgba(255, 59, 48, 0.08); }
 .chip.key { color: #ff9500; background: rgba(255, 149, 0, 0.1); }
+
+.badge.ring-next { bottom: 24rpx; left: 50%; transform: translateX(-50%); color: #007aff; }
