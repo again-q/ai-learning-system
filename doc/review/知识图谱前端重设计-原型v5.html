@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>知识图谱重新设计 · v5（目录列表 + 演化链）</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --ink: #1d1d1f;
+    --ink2: #6e6e73;
+    --ink3: #a1a1a6;
+    --accent: #007aff;
+    --accent-soft: rgba(0,122,255,0.08);
+    --track: #e5e5ea;
+    --border: #e5e5ea;
+    --green: #34c759;
+    --orange: #ff9500;
+    --red: #ff3b30;
+    --gray: #c7c7cc;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    background: var(--bg); color: var(--ink);
+    min-height: 100vh; display: flex; justify-content: center;
+  }
+  .phone { width: 100%; max-width: 420px; min-height: 100vh; position: relative; padding-bottom: 40px; }
+
+  /* ===== 顶部导航 ===== */
+  .nav {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(245,245,247,0.85);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 10px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav .back {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: var(--accent); cursor: pointer;
+    transition: transform 0.15s var(--ease);
+  }
+  .nav .back:active { transform: scale(0.9); }
+  .nav .title { font-size: 17px; font-weight: 600; }
+  .nav .subject {
+    font-size: 12px; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); padding: 5px 12px; border-radius: 999px;
+  }
+
+  /* ===== 面包屑 ===== */
+  .crumb { padding: 6px 20px 0; font-size: 12px; color: var(--ink3); display: flex; gap: 4px; flex-wrap: wrap; }
+  .crumb span { cursor: pointer; padding: 2px 1px; }
+  .crumb .cur { color: var(--ink2); font-weight: 600; }
+  .crumb .sep { opacity: 0.5; cursor: default; }
+
+  /* ===== 模式分段控件（替代原来漂浮徽标） ===== */
+  .seg-wrap {
+    display: flex; margin: 12px 20px 0; background: var(--track);
+    border-radius: 12px; padding: 3px; position: relative;
+  }
+  .seg-btn {
+    flex: 1; text-align: center; font-size: 13px; font-weight: 600; color: var(--ink2);
+    padding: 8px 0; border-radius: 10px; cursor: pointer; position: relative; z-index: 1;
+    transition: color 0.2s var(--ease);
+  }
+  .seg-btn.active { color: var(--accent); }
+  .seg-thumb {
+    position: absolute; top: 3px; left: 3px; width: calc(50% - 3px); height: calc(100% - 6px);
+    background: #fff; border-radius: 10px; box-shadow: var(--shadow-sm);
+    transition: transform 0.28s var(--spring);
+  }
+  .seg-thumb.right { transform: translateX(100%); }
+
+  /* ===== 图例 ===== */
+  .legend { display: flex; gap: 12px; padding: 10px 20px 0; font-size: 10px; color: var(--ink3); align-items: center; flex-wrap: wrap; }
+  .legend .sw { width: 12px; height: 12px; border-radius: 50%; display: inline-block; vertical-align: -2px; margin-right: 3px; background: var(--c); }
+
+  /* ===================== 目录模式（列表 + 卡片网格） ===================== */
+  #treeView { padding: 12px 20px 8px; }
+
+  .focus-bar {
+    background: var(--card); border-radius: 20px; padding: 18px 20px;
+    box-shadow: var(--shadow-md); margin-bottom: 16px;
+    animation: rise 0.35s var(--ease) both;
+  }
+  .up-pill {
+    display: inline-flex; align-items: center; gap: 2px; font-size: 12px; font-weight: 600;
+    color: var(--accent); background: var(--accent-soft); padding: 5px 12px 5px 10px;
+    border-radius: 999px; margin-bottom: 10px; cursor: pointer; transition: transform 0.15s var(--ease);
+  }
+  .up-pill:active { transform: scale(0.94); }
+  .focus-name { font-size: 19px; font-weight: 700; line-height: 1.3; }
+  .focus-sub { font-size: 12px; color: var(--ink3); margin-top: 4px; }
+  .focus-meta { font-size: 12px; color: var(--ink2); margin-top: 10px; }
+  .focus-mastery-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+  .bar-track { flex: 1; height: 8px; border-radius: 999px; background: var(--track); overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 999px; transition: width 0.4s var(--ease); }
+  .bar-val { font-size: 13px; font-weight: 700; min-width: 34px; text-align: right; }
+  .focus-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .evo-btn {
+    font-size: 12px; font-weight: 600; color: var(--accent); background: var(--accent-soft);
+    padding: 8px 14px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+    transition: transform 0.15s var(--ease);
+  }
+  .evo-btn:active { transform: scale(0.95); }
+
+  /* ---- 目录行（章/节，结构节点，不含掌握度） ---- */
+  .row-list { background: var(--card); border-radius: 20px; box-shadow: var(--shadow-md); overflow: hidden; }
+  .row {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 16px 18px; cursor: pointer; transition: background 0.15s var(--ease);
+  }
+  .row + .row { border-top: 1px solid var(--border); }
+  .row:active { background: var(--bg); }
+  .row-main { min-width: 0; }
+  .row-name { font-size: 15px; font-weight: 600; }
+  .row-sub { font-size: 12px; color: var(--ink3); margin-top: 3px; line-height: 1.4; }
+  .row-chev { font-size: 16px; color: var(--ink3); flex-shrink: 0; }
+
+  /* ---- 知识点分组（按 type：概念/性质/方法…） ---- */
+  .grp { margin-bottom: 18px; animation: rise 0.35s var(--ease) both; }
+  .grp-head { display: flex; align-items: center; gap: 6px; padding: 0 4px 8px; }
+  .grp-title { font-size: 13px; font-weight: 700; color: var(--ink2); }
+  .grp-count { font-size: 11px; font-weight: 600; color: var(--ink3); background: var(--track); padding: 1px 8px; border-radius: 999px; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+  .kcard {
+    background: var(--card); border-radius: 16px; padding: 14px;
+    box-shadow: var(--shadow-sm); border: 1.5px solid transparent;
+    cursor: pointer; transition: transform 0.15s var(--spring), border-color 0.15s var(--ease);
+  }
+  .kcard:active { transform: scale(0.96); }
+  .kcard.selected { border-color: var(--accent); }
+  .kcard-top { display: flex; align-items: center; justify-content: space-between; }
+  .kdot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex-shrink: 0; }
+  .kmastery { font-size: 12px; font-weight: 700; color: var(--c); }
+  .kname {
+    font-size: 14px; font-weight: 600; margin-top: 8px; line-height: 1.35;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .kmore { font-size: 11px; color: var(--ink3); margin-top: 6px; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ===================== 演化模式（保留放射，仅用于依赖链） ===================== */
+  #evoView { padding: 12px 20px 8px; }
+  .evo-empty {
+    background: var(--card); border-radius: 20px; padding: 40px 24px; text-align: center;
+    box-shadow: var(--shadow-md); color: var(--ink3); font-size: 13px; line-height: 1.7;
+  }
+  .evo-empty .go-tree {
+    display: inline-block; margin-top: 14px; font-size: 13px; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); padding: 8px 18px; border-radius: 999px; cursor: pointer;
+  }
+  .evo-stage {
+    position: relative; height: 360px; background: linear-gradient(180deg, #ffffff 0%, #fafafc 100%);
+    border-radius: 24px; box-shadow: var(--shadow-md); overflow: hidden;
+  }
+  .evo-stage svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .enode {
+    position: absolute; transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; cursor: pointer; user-select: none;
+    animation: nodeIn 0.4s var(--ease) both;
+  }
+  @keyframes nodeIn { from { transform: translate(-50%,-50%) scale(0.6); } to { transform: translate(-50%,-50%) scale(1); } }
+  .enode .dot {
+    border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08); border: 3px solid var(--c);
+    transition: transform 0.15s var(--spring);
+  }
+  .enode:active .dot { transform: scale(0.92); }
+  .enode.pre .dot { width: 52px; height: 52px; }
+  .enode.center .dot {
+    width: 92px; height: 92px; border: none;
+    background: linear-gradient(135deg, #6cc3ff 0%, #007aff 58%, #004ecb 100%);
+    box-shadow: 0 10px 28px rgba(0,122,255,0.28);
+  }
+  .enode .nm { font-size: 10px; font-weight: 600; text-align: center; max-width: 60px; line-height: 1.25; }
+  .enode.center .nm { color: #fff; font-size: 13px; font-weight: 700; max-width: 84px; }
+  .enode .lbl { margin-top: 6px; font-size: 10px; color: var(--ink2); font-weight: 500; max-width: 90px; text-align: center; line-height: 1.3; }
+  .evo-up {
+    position: absolute; top: 12px; left: 12px; z-index: 5;
+    background: #fff; color: var(--ink2); font-size: 12px; font-weight: 600;
+    padding: 7px 14px 7px 10px; border-radius: 999px; box-shadow: var(--shadow-md);
+    border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 4px;
+  }
+  .evo-hint { position: absolute; bottom: 14px; left: 0; right: 0; text-align: center; font-size: 11px; color: var(--ink3); }
+
+  /* ===== 底部详情面板（仅叶子知识点点击后出现） ===== */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.28); z-index: 25;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s var(--ease);
+  }
+  .overlay.show { opacity: 1; pointer-events: auto; }
+  .sheet {
+    position: fixed; left: 50%; bottom: 0; transform: translate(-50%, 100%);
+    width: 100%; max-width: 420px; z-index: 26;
+    background: #fff; border-radius: 28px 28px 0 0; box-shadow: 0 -8px 30px rgba(0,0,0,0.1);
+    padding: 12px 22px calc(22px + env(safe-area-inset-bottom, 0px));
+    transition: transform 0.32s var(--spring);
+  }
+  .sheet.show { transform: translate(-50%, 0); }
+  .grabber { width: 40px; height: 4px; border-radius: 999px; background: var(--track); margin: 0 auto 16px; }
+  .sheet-top { display: flex; align-items: center; gap: 14px; }
+  .mring {
+    width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0; position: relative;
+    display: flex; align-items: center; justify-content: center; border: 4px solid var(--track);
+  }
+  .mring b { font-size: 13px; font-weight: 700; }
+  .sheet-meta h3 { font-size: 16px; font-weight: 700; }
+  .sheet-meta .path { font-size: 10px; color: var(--ink3); margin-top: 2px; }
+  .sheet-meta .status { font-size: 11px; font-weight: 600; margin-top: 4px; }
+  .st-high { color: var(--green); } .st-mid { color: var(--orange); }
+  .st-low { color: var(--red); } .st-zero { color: var(--gray); }
+  .sheet-desc { font-size: 12px; color: var(--ink2); line-height: 1.6; margin-top: 12px; }
+  .sheet-chips { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .chip { font-size: 10px; font-weight: 600; color: var(--ink2); background: var(--bg); padding: 4px 10px; border-radius: 999px; }
+  .chip.primary { color: var(--accent); background: var(--accent-soft); }
+  .chip.hot { color: #ff3b30; background: rgba(255,59,48,0.08); }
+  .chip.key { color: #ff9500; background: rgba(255,149,0,0.1); }
+  .sheet-actions { display: flex; gap: 8px; margin-top: 16px; }
+  .sheet-btn {
+    flex: 1; text-align: center; font-size: 13px; font-weight: 600; padding: 12px 0;
+    border-radius: 999px; cursor: pointer; transition: transform 0.15s var(--ease);
+  }
+  .sheet-btn:active { transform: scale(0.97); }
+  .sheet-btn.primary { background: var(--accent); color: #fff; }
+  .sheet-btn.ghost { background: var(--bg); color: var(--ink2); }
+
+  .toast {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
+    background: rgba(29,29,31,0.9); color: #fff; font-size: 13px;
+    padding: 12px 22px; border-radius: 14px; z-index: 50; opacity: 0;
+    transition: opacity 0.25s, transform 0.25s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="nav">
+    <div class="back" onclick="toast('原型演示：返回上一页')">‹</div>
+    <div class="title">知识图谱</div>
+    <div class="subject">数学</div>
+  </div>
+
+  <div class="crumb" id="crumb"></div>
+
+  <div class="seg-wrap">
+    <div class="seg-thumb" id="segThumb"></div>
+    <div class="seg-btn active" id="segTree" onclick="switchMode('tree')">目录</div>
+    <div class="seg-btn" id="segEvo" onclick="switchMode('evo')">演化链</div>
+  </div>
+
+  <div class="legend" id="legend">
+    <span><span class="sw" style="--c:var(--green)"></span>已掌握</span>
+    <span><span class="sw" style="--c:var(--orange)"></span>学习中</span>
+    <span><span class="sw" style="--c:var(--red)"></span>薄弱</span>
+    <span><span class="sw" style="--c:var(--gray)"></span>未学</span>
+  </div>
+
+  <!-- ===== 目录模式 ===== -->
+  <div id="treeView">
+    <div id="focusBar"></div>
+    <div id="listBox"></div>
+  </div>
+
+  <!-- ===== 演化模式 ===== -->
+  <div id="evoView" style="display:none">
+    <div id="evoBody"></div>
+  </div>
+
+  <div class="overlay" id="overlay" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-top">
+      <div class="mring" id="mring"><b id="mringVal">0</b></div>
+      <div class="sheet-meta">
+        <h3 id="curName">—</h3>
+        <div class="path" id="curPath">—</div>
+        <div class="status" id="curStatus">—</div>
+      </div>
+    </div>
+    <div class="sheet-desc" id="curDesc">—</div>
+    <div class="sheet-chips" id="curChips"></div>
+    <div class="sheet-actions">
+      <div class="sheet-btn ghost" onclick="closeSheet()">收起</div>
+      <div class="sheet-btn primary" onclick="viewEvoFromSheet()">查看演化链 →</div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">—</div>
+</div>
+
+<script>
+/* ============ 数据（真实 schema：subject→unit→chapter→section→知识点树；mastery 为演示值） ============ */
+const TYPE_LABEL = { definition: '概念', property: '性质', method: '方法', notation: '记号', example: '例子', reading: '阅读' };
+const TYPE_ORDER = ['definition', 'property', 'method', 'notation', 'example', 'reading'];
+const STRUCTURAL = new Set(['subject', 'unit', 'chapter', 'section']);
+
+const TREE = {
+  name: '数学', type: 'subject',
+  children: [
+    { name: '必修第一册', type: 'unit',
+      children: [
+        { name: '第一章 集合与常用逻辑用语', type: 'chapter',
+          desc: '高中数学起点章：集合语言、逻辑用语，是后续一切推理的基础。',
+          children: [
+            { name: '1.1 集合的概念', type: 'section',
+              desc: '集合的概念、元素、集合的表示方法。',
+              children: [
+                { name: '集合', type: 'definition', mastery: 82, desc: '把一些确定的对象组成的整体叫做集合。',
+                  children: [
+                    { name: '元素', type: 'definition', mastery: 90, desc: '集合中的每个对象叫做元素。' },
+                    { name: '确定性', type: 'property', mastery: 76, desc: '集合的元素必须是确定的。' },
+                    { name: '互异性', type: 'property', mastery: 88, desc: '同一集合中元素互不相同。' },
+                    { name: '集合相等', type: 'property', mastery: 64, desc: '两集合元素完全相同则相等。' },
+                    { name: '字母表示', type: 'notation', mastery: 55, desc: '大写表示集合、小写表示元素。' },
+                    { name: '属于与不属于', type: 'notation', mastery: 70, desc: '∈ / ∉ 符号的使用与判断。' },
+                    { name: '常用数集', type: 'notation', mastery: 92, desc: 'N、N*、Z、Q、R 等数集符号。' },
+                    { name: '列举法', type: 'method', mastery: 45, desc: '把元素一一列出写在大括号里。' },
+                    { name: '描述法', type: 'method', mastery: 38, desc: '用共同特征描述集合 {x|条件}。' },
+                    { name: '无序性', type: 'property', mastery: 80, desc: '集合中元素无先后顺序。' }
+                  ] }
+              ] },
+            { name: '1.2 集合间的基本关系', type: 'section',
+              desc: '子集、真子集、空集与集合相等的关系。',
+              children: [
+                { name: '子集', type: 'definition', mastery: 75, desc: '集合 A 中所有元素都属于 B，则 A⊆B。',
+                  children: [
+                    { name: 'Venn图', type: 'notation', mastery: 68, desc: '用图形表示集合关系。' },
+                    { name: '自反性', type: 'property', mastery: 60, desc: '任何集合都是它本身的子集。' },
+                    { name: '传递性', type: 'property', mastery: 52, desc: 'A⊆B 且 B⊆C ⇒ A⊆C。' },
+                    { name: '∈ 与 ⊆ 的区别', type: 'property', mastery: 33, desc: '元素与集合、集合与集合的关系。' },
+                    { name: '列举所有子集', type: 'method', mastery: 28, desc: 'n 个元素集合有 2ⁿ 个子集。' }
+                  ] },
+                { name: '集合相等', type: 'definition', mastery: 64, desc: '互为子集则相等。' },
+                { name: '真子集', type: 'definition', mastery: 58, desc: 'A⊆B 且 A≠B，记 A⫋B。' },
+                { name: '空集', type: 'definition', mastery: 71, desc: '不含任何元素的集合，记 ∅。',
+                  children: [
+                    { name: '空集是任何集合的子集', type: 'property', mastery: 66, desc: '∅⊆A 恒成立。' }
+                  ] }
+              ] },
+            { name: '1.4 充分条件与必要条件', type: 'section',
+              desc: '命题与充要条件，逻辑推理的开端。',
+              children: [
+                { name: '命题', type: 'definition', mastery: 61, desc: '可以判断真假的陈述句。',
+                  children: [
+                    { name: '真命题与假命题', type: 'definition', mastery: 57, desc: '判断真假的标准。' },
+                    { name: '「若p则q」形式', type: 'notation', mastery: 49, desc: '命题的标准书写形式。' }
+                  ] },
+                { name: '充分条件', type: 'definition', mastery: 42, desc: 'p⇒q 则 p 是 q 的充分条件。' },
+                { name: '必要条件', type: 'definition', mastery: 40, desc: 'p⇒q 则 q 是 p 的必要条件。' },
+                { name: '充要条件', type: 'definition', mastery: 35, desc: 'p⇔q，互为充要。',
+                  children: [
+                    { name: '充要条件的证明方法', type: 'method', mastery: 30, desc: '分充分性（p⇒q）与必要性（q⇒p）两方面证明。' },
+                    { name: '充要条件与等价定义', type: 'property', mastery: 28, desc: '多个充要条件从不同角度刻画同一概念。' }
+                  ] },
+                { name: '判定定理是充分条件', type: 'property', mastery: 33, desc: '几何判定定理给出结论成立的充分条件。' },
+                { name: '性质定理是必要条件', type: 'property', mastery: 31, desc: '性质定理给出结论成立的必要条件。' },
+                { name: '四种条件关系的判断', type: 'method', mastery: 25, desc: '充分不必要 / 必要不充分 / 充要 / 既不充分也不必要。' }
+              ] },
+            { name: '1.5 全称量词与存在量词', type: 'section',
+              desc: '∀ 全称量词、∃ 存在量词及命题的否定。',
+              children: [
+                { name: '量词', type: 'definition', mastery: 53, desc: '∀ 与 ∃ 的含义。',
+                  children: [
+                    { name: '全称量词', type: 'definition', mastery: 55, desc: '∀x∈M，p(x) 恒成立。' },
+                    { name: '存在量词', type: 'definition', mastery: 47, desc: '∃x∈M，p(x) 成立。' }
+                  ] },
+                { name: '命题的否定', type: 'method', mastery: 39, desc: '否定词的变换规则。',
+                  children: [
+                    { name: '全称命题的否定', type: 'method', mastery: 36, desc: '∀ 变 ∃，结论取反。' },
+                    { name: '存在命题的否定', type: 'method', mastery: 41, desc: '∃ 变 ∀，结论取反。' }
+                  ] },
+                { name: '集合中元素的个数', type: 'reading', mastery: 0, desc: '阅读与思考：集合中元素的个数问题。' },
+                { name: '容斥原理', type: 'method', mastery: 0, desc: '|A∪B| = |A|+|B|-|A∩B|。' }
+              ] }
+          ] }
+      ] }
+  ]
+};
+
+/* 注入父引用 */
+(function linkParents(node, parent) {
+  node._parent = parent || null;
+  (node.children || []).forEach(c => linkParents(c, node));
+})(TREE, null);
+
+/* 前置依赖（模拟 relations.reference，name → 前置节点名列表） */
+const REFS = {
+  '集合': [], '元素': ['集合'], '确定性': ['集合'], '互异性': ['集合', '确定性'],
+  '集合相等': ['集合', '元素'], '字母表示': ['集合', '元素'], '属于与不属于': ['集合', '元素'],
+  '常用数集': ['集合'], '列举法': ['集合', '元素'], '描述法': ['集合', '元素'], '无序性': ['集合', '确定性', '互异性'],
+  '子集': ['集合', '元素', '属于与不属于'], 'Venn图': ['集合', '子集'], '真子集': ['子集', '属于与不属于'],
+  '空集': ['集合', '元素'], '空集是任何集合的子集': ['空集', '子集'], '∈ 与 ⊆ 的区别': ['子集', '属于与不属于'],
+  '自反性': ['子集'], '传递性': ['子集'], '命题': [], '真命题与假命题': ['命题'], '「若p则q」形式': ['命题'],
+  '充分条件': ['命题'], '必要条件': ['命题'], '充要条件': ['命题', '充分条件', '必要条件'],
+  '充要条件的证明方法': ['充要条件'], '充要条件与等价定义': ['充要条件'],
+  '判定定理是充分条件': ['充分条件', '充要条件'], '性质定理是必要条件': ['必要条件', '充要条件'],
+  '四种条件关系的判断': ['充要条件', '判定定理是充分条件'], '量词': [], '全称量词': ['量词'], '存在量词': ['量词'],
+  '命题的否定': ['命题'], '全称命题的否定': ['命题的否定', '全称量词'], '存在命题的否定': ['命题的否定', '存在量词'],
+  '集合中元素的个数': ['集合'], '容斥原理': ['集合', '子集']
+};
+
+/* 教材原文 + 考频标记 */
+const SRC = {
+  '集合': { src: '把一些元素组成的总体叫做集合（set）（简称为集）', w: 4, f: 4 },
+  '元素': { src: '我们把研究对象统称为元素（element）', w: 3, f: 3 },
+  '确定性': { src: '给定的集合，它的元素必须是确定的。给定一个集合，那么一个元素在或不在这个集合中就确定了', w: 3, f: 3 },
+  '互异性': { src: '一个给定集合中的元素是互不相同的，也就是说，集合中的元素是不重复出现的', w: 3, f: 3 },
+  '集合相等': { src: '只要构成两个集合的元素是一样的，我们就称这两个集合是相等的', w: 2, f: 2 },
+  '字母表示': { src: '我们通常用大写拉丁字母 A, B, C, … 表示集合，用小写拉丁字母 a, b, c, … 表示集合中的元素', w: 2, f: 1 },
+  '属于与不属于': { src: '如果 a 是集合 A 的元素，就说 a 属于集合 A，记作 a ∈ A；如果 a 不是集合 A 中的元素，就说 a 不属于集合 A，记作 a ∉ A', w: 3, f: 3 },
+  '常用数集': { src: '常用数集及其符号表示：非负整数集（自然数集）记作 N；正整数集记作 N* 或 N₊；整数集记作 Z；有理数集记作 Q；实数集记作 R', w: 3, f: 3 },
+  '列举法': { src: '把集合的所有元素一一列举出来，并用花括号"{}"括起来表示集合的方法叫做列举法', w: 3, f: 3 },
+  '描述法': { src: '用集合所含元素的共同特征表示集合的方法称为描述法：花括号内先写元素的一般符号及取值范围，再画一条竖线，竖线后写出元素的共同特征', w: 4, f: 4 },
+  '无序性': { src: '集合中的元素是没有顺序的，如集合 {1,2} 与 {2,1} 是同一个集合', w: 2, f: 2 },
+  '子集': { src: '如果集合 A 中任意一个元素都是集合 B 中的元素，就称集合 A 为集合 B 的子集，记作 A⊆B（读作 A 包含于 B）', w: 4, f: 4 },
+  'Venn图': { src: '在数学中，我们经常用平面上封闭曲线的内部代表集合，这种图称为 Venn 图', w: 2, f: 2 },
+  '真子集': { src: '如果集合 A⊆B，但存在元素 x∈B 且 x∉A，就称集合 A 是集合 B 的真子集，记作 A⊊B', w: 3, f: 3 },
+  '空集': { src: '一般地，我们把不含任何元素的集合叫做空集（empty set），记为 ∅', w: 3, f: 3 },
+  '量词': { src: '对变量取值范围进行限定的短语称为量词，它使含有变量的陈述句成为命题', w: 2, f: 1 },
+  '全称量词': { src: '短语"所有的""任意一个"在逻辑中通常叫做全称量词，并用符号 "∀" 表示', w: 3, f: 3 },
+  '存在量词': { src: '短语"存在一个""至少有一个"在逻辑中通常叫做存在量词，并用符号 "∃" 表示', w: 3, f: 3 },
+  '命题的否定': { src: '对一个命题进行否定得到新命题，一个命题和它的否定不能同时为真，也不能同时为假', w: 2, f: 2 }
+};
+
+/* ============ 状态 ============ */
+let stack = [];          /* 目录导航栈（结构树，与演化模式完全独立） */
+let current = TREE;
+let mode = 'tree';       /* 'tree' | 'evo' */
+let selectedLeaf = null; /* 当前详情面板对应的叶子节点 */
+let evoFocus = null;     /* 演化模式当前中心节点 */
+let evoStack = [];       /* 演化模式内部追溯栈（仅在演化 tab 内使用，退出即清空） */
+let _evoPreList = [];    /* 当前演化画面里「前置节点」的引用列表，供 stepEvo(i) 按索引取用 */
+
+function mColor(m) { return m >= 75 ? 'var(--green)' : m >= 50 ? 'var(--orange)' : m > 0 ? 'var(--red)' : 'var(--gray)'; }
+function mStatus(m) { return m >= 75 ? '已掌握' : m >= 50 ? '学习中' : m > 0 ? '薄弱' : '未学'; }
+function mStCls(m) { return m >= 75 ? 'st-high' : m >= 50 ? 'st-mid' : m > 0 ? 'st-low' : 'st-zero'; }
+function isStructural(n) { return STRUCTURAL.has(n.type); }
+function hasKids(n) { return !!(n.children && n.children.length); }
+function escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+function pathNames(n) {
+  const names = [];
+  let p = n._parent;
+  while (p) { names.unshift(p.name); p = p._parent; }
+  return names;
+}
+function findAny(name) {
+  let hit = null;
+  (function walk(n) { if (n.name === name) { hit = n; return; } (n.children || []).forEach(walk); })(TREE);
+  return hit;
+}
+function refsOf(n) { return (REFS[n.name] || []).map(findAny).filter(Boolean); }
+
+/* ============ 面包屑（两模式各用各的链） ============ */
+function renderCrumb() {
+  const box = document.getElementById('crumb');
+  if (mode === 'evo') {
+    const names = evoStack.map(n => n.name);
+    if (evoFocus) names.push(evoFocus.name);
+    box.innerHTML = names.map((n, i) =>
+      i === names.length - 1 ? `<span class="cur">${escapeHtml(n)}</span>`
+        : `<span onclick="jumpEvo(${i})">${escapeHtml(n)}</span><span class="sep">›</span>`
+    ).join('');
+    return;
+  }
+  const names = stack.map(n => n.name).concat([current.name]);
+  box.innerHTML = names.map((n, i) =>
+    i === names.length - 1 ? `<span class="cur">${escapeHtml(n)}</span>`
+      : `<span onclick="jumpTree(${i})">${escapeHtml(n)}</span><span class="sep">›</span>`
+  ).join('');
+}
+function jumpTree(i) {
+  if (i >= stack.length) return; /* 点到的是当前项本身，无需跳转 */
+  current = stack[i];
+  stack = stack.slice(0, i);
+  selectedLeaf = null;
+  closeSheet();
+  render();
+}
+function jumpEvo(i) { evoFocus = evoStack[i]; evoStack = evoStack.slice(0, i); render(); }
+
+/* ============ 目录模式渲染 ============ */
+function renderTree() {
+  const kids = current.children || [];
+  const structuralChildren = kids.length && isStructural(kids[0]);
+  const showUp = stack.length > 0;
+
+  /* 焦点卡：结构节点无掌握度；知识节点展示自身掌握度 */
+  let focusHtml = `<div class="focus-bar">`;
+  if (showUp) focusHtml += `<div class="up-pill" id="upPill">‹ 上一级</div>`;
+  focusHtml += `<div class="focus-name">${escapeHtml(current.name)}</div>`;
+  if (!isStructural(current)) {
+    const m = current.mastery || 0;
+    focusHtml += `
+      <div class="focus-mastery-row">
+        <div class="bar-track"><div class="bar-fill" style="width:${m}%;background:${mColor(m)}"></div></div>
+        <div class="bar-val" style="color:${mColor(m)}">${m}%</div>
+      </div>
+      <div class="focus-meta">${mStatus(m)} · ${kids.length ? kids.length + ' 个相关知识点' : '最细知识点'}</div>
+      <div class="focus-actions"><div class="evo-btn" onclick="viewEvo(current)">↗ 查看演化链</div></div>`;
+  } else {
+    focusHtml += `<div class="focus-meta">${(current.desc ? escapeHtml(current.desc) + ' · ' : '') + kids.length + ' 项'}</div>`;
+  }
+  focusHtml += `</div>`;
+
+  let listHtml = '';
+  if (!kids.length) {
+    listHtml = `<div class="row-list"><div class="row"><div class="row-main"><div class="row-name">暂无下级内容</div></div></div></div>`;
+  } else if (structuralChildren) {
+    listHtml = `<div class="row-list">` + kids.map((k, i) => `
+      <div class="row" data-idx="${i}" onclick="enterTree(${i})">
+        <div class="row-main">
+          <div class="row-name">${escapeHtml(k.name)}</div>
+          <div class="row-sub">${k.desc ? escapeHtml(k.desc) : (k.children || []).length + ' 项'}</div>
+        </div>
+        <div class="row-chev">›</div>
+      </div>`).join('') + `</div>`;
+  } else {
+    const groups = {};
+    kids.forEach((k, i) => { (groups[k.type] = groups[k.type] || []).push(i); });
+    listHtml = TYPE_ORDER.filter(t => groups[t]).map(t => `
+      <div class="grp">
+        <div class="grp-head"><span class="grp-title">${TYPE_LABEL[t]}</span><span class="grp-count">${groups[t].length}</span></div>
+        <div class="grid">${groups[t].map(i => {
+          const k = kids[i];
+          const m = k.mastery || 0;
+          return `
+          <div class="kcard ${selectedLeaf === k ? 'selected' : ''}" style="--c:${mColor(m)}" onclick="tapCard(${i})">
+            <div class="kcard-top"><span class="kdot"></span><span class="kmastery">${m}%</span></div>
+            <div class="kname">${escapeHtml(k.name)}</div>
+            ${hasKids(k) ? `<div class="kmore">${k.children.length} 项 ›</div>` : ''}
+          </div>`;
+        }).join('')}</div>
+      </div>`).join('');
+  }
+
+  document.getElementById('focusBar').innerHTML = focusHtml;
+  document.getElementById('listBox').innerHTML = listHtml;
+  const upPill = document.getElementById('upPill');
+  if (upPill) upPill.onclick = goUpTree;
+}
+
+function enterTree(i) {
+  const kid = (current.children || [])[i];
+  if (!kid) return;
+  stack.push(current);
+  current = kid;
+  selectedLeaf = null;
+  closeSheet();
+  render();
+}
+function tapCard(i) {
+  const kid = (current.children || [])[i];
+  if (!kid) return;
+  if (hasKids(kid)) { enterTree(i); return; }
+  selectedLeaf = kid;
+  render();
+  openSheet(kid);
+}
+function goUpTree() {
+  if (!stack.length) return;
+  current = stack.pop();
+  selectedLeaf = null;
+  closeSheet();
+  render();
+}
+
+/* ============ 演化模式渲染 ============ */
+function viewEvo(node) {
+  if (!node) return;
+  evoFocus = node;
+  evoStack = [];
+  switchMode('evo');
+}
+function viewEvoFromSheet() {
+  if (!selectedLeaf) return;
+  closeSheet();
+  viewEvo(selectedLeaf);
+}
+function renderEvo() {
+  const body = document.getElementById('evoBody');
+  if (!evoFocus) {
+    body.innerHTML = `
+      <div class="evo-empty">
+        在「目录」里点开一个知识点卡片，<br>再切到这里查看它的形成链路。
+        <div class="go-tree" onclick="switchMode('tree')">去目录选一个 →</div>
+      </div>`;
+    return;
+  }
+  const pres = refsOf(evoFocus);
+  const n = pres.length;
+  const W = 380, H = 360;
+  const cx = W / 2, cy = H - 90;
+  const preY = 110;
+  const per = n > 0 ? Math.min(84, (W - 60) / n) : 84;
+  const x0 = cx - ((n - 1) * per) / 2;
+
+  let svg = '';
+  pres.forEach((p, i) => {
+    const x = x0 + i * per;
+    svg += `<line x1="${x}" y1="${preY + 26}" x2="${cx}" y2="${cy - 46}" stroke="#007aff" stroke-width="1.3" opacity="0.22"/>`;
+  });
+
+  _evoPreList = pres; /* 供 stepEvo(i) 按索引取节点引用，避免把节点名拼进 onclick 字符串 */
+  let nodes = '';
+  pres.forEach((p, i) => {
+    const x = x0 + i * per;
+    const m = p.mastery || 0;
+    nodes += `
+      <div class="enode pre" style="left:${x}px;top:${preY}px;animation-delay:${i * 0.05}s" onclick="stepEvo(${i})">
+        <div class="dot" style="--c:${mColor(m)}"><div class="nm">${escapeHtml(p.name)}</div></div>
+        <div class="lbl">↑ ${m}%</div>
+      </div>`;
+  });
+  nodes += `
+    <div class="enode center" style="left:${cx}px;top:${cy}px;animation-delay:0.1s">
+      <div class="dot"><div class="nm">${escapeHtml(evoFocus.name)}</div></div>
+    </div>`;
+
+  body.innerHTML = `
+    <div class="evo-stage">
+      ${evoStack.length ? `<div class="evo-up" onclick="stepBackEvo()">‹ 上一步</div>` : ''}
+      <svg viewBox="0 0 ${W} ${H}">${svg}</svg>
+      ${nodes}
+      <div class="evo-hint">${n ? '点上方节点继续向前追溯' : '这是最基础的起点，无更前置知识点'}</div>
+    </div>`;
+}
+function stepEvo(i) {
+  const node = _evoPreList[i];
+  if (!node) return;
+  evoStack.push(evoFocus);
+  evoFocus = node;
+  render();
+}
+function stepBackEvo() {
+  if (!evoStack.length) return;
+  evoFocus = evoStack.pop();
+  render();
+}
+
+/* ============ 详情面板（叶子知识点） ============ */
+function openSheet(node) {
+  const m = node.mastery || 0;
+  document.getElementById('curName').textContent = node.name;
+  document.getElementById('curPath').textContent = pathNames(node).concat([node.name]).join(' / ');
+  const st = document.getElementById('curStatus');
+  st.textContent = mStatus(m) + ' · ' + m + '%';
+  st.className = 'status ' + mStCls(m);
+  document.getElementById('mring').style.borderColor = mColor(m);
+  document.getElementById('mringVal').textContent = m;
+  document.getElementById('mringVal').style.color = mColor(m);
+  const meta = SRC[node.name];
+  document.getElementById('curDesc').textContent = (meta && meta.src) || node.desc || '暂无描述。';
+  let chips = `<span class="chip primary">${TYPE_LABEL[node.type] || '知识点'}</span>`;
+  if (meta) {
+    if (meta.f >= 4) chips += `<span class="chip hot">🔥 高频考点</span>`;
+    if (meta.w >= 4) chips += `<span class="chip key">⭐ 核心必考</span>`;
+  }
+  document.getElementById('curChips').innerHTML = chips;
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('sheet').classList.add('show');
+}
+function closeSheet() {
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('sheet').classList.remove('show');
+}
+
+/* ============ 模式切换 ============ */
+function switchMode(next) {
+  if (mode === next) return;
+  mode = next;
+  document.getElementById('segTree').classList.toggle('active', next === 'tree');
+  document.getElementById('segEvo').classList.toggle('active', next === 'evo');
+  document.getElementById('segThumb').classList.toggle('right', next === 'evo');
+  document.getElementById('treeView').style.display = next === 'tree' ? '' : 'none';
+  document.getElementById('evoView').style.display = next === 'evo' ? '' : 'none';
+  document.getElementById('legend').style.display = next === 'tree' ? '' : 'none';
+  render();
+}
+
+function render() {
+  if (mode === 'evo') renderEvo(); else renderTree();
+  renderCrumb();
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 1400);
+}
+
+render();
+</script>
+</body>
+</html>

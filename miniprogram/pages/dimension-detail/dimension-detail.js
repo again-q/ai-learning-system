@@ -52,8 +52,13 @@ Page({
 
   goLayer(e) {
     const id = e.currentTarget.dataset.id;
+    // K 维度知识层：真正入口是 tabBar「图谱」pages/graph（新版目录+演化链）
+    // knowledge-map 为历史副入口，日常勿再 navigateTo 过去
+    if (id === 'knowledge') {
+      wx.switchTab({ url: '/pages/graph/graph' });
+      return;
+    }
     const pageMap = {
-      'knowledge': '/pages/knowledge-map/knowledge-map',
       'model': '/pages/model-cards/model-cards',
       'method': '/pages/method-list/method-list'
     };
