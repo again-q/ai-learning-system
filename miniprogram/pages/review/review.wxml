@@ -28,10 +28,19 @@
         <text class="q-no">第 {{index + 1}} 题</text>
         <text class="q-tag {{item.transcriptionReviewed ? 'ok' : ''}}">{{item.transcriptionReviewed ? '已确认' : '待确认'}}</text>
       </view>
-      <towxml nodes="{{item.article}}" />
-      <view class="ans" wx:if="{{item.studentAnswer}}">
-        <text class="ans-label">学生作答</text>
-        <text class="ans-text">{{item.studentAnswer}}</text>
+      <view wx:if="{{item.article.child}}">
+        <towxml nodes="{{item.article}}" />
+      </view>
+      <text class="q-plain" wx:else>{{item.questionText}}</text>
+      <view class="trace" wx:if="{{item.traceText}}">
+        <view class="trace-head">
+          <text class="trace-label">做题痕迹</text>
+          <text class="trace-toggle" data-index="{{index}}" bindtap="onToggleTrace">{{item.traceOpen ? '收起' : '展开'}}</text>
+        </view>
+        <view class="trace-body" wx:if="{{item.traceOpen}}">
+          <towxml wx:if="{{item.traceArticle.child}}" nodes="{{item.traceArticle}}" />
+          <text class="q-plain" wx:else>{{item.traceText}}</text>
+        </view>
       </view>
       <view class="card-actions">
         <view class="btn ghost" data-index="{{index}}" bindtap="onEditQuestion">✏️ 修改题目</view>

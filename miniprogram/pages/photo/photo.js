@@ -1,4 +1,5 @@
 const app = getApp();
+const log = require('../../utils/upload-log');
 
 Page({
   data: {
@@ -67,6 +68,7 @@ Page({
 
     this.setData({ submitting: true, progressText: '上传中...' });
     wx.showLoading({ title: '上传中...', mask: true });
+    log.append('upload_start', { imageCount: this.data.images.length });
 
     try {
       // 1. 逐张上传到云存储（路径含 userId，实现照片隔离——CR-002 修复）
@@ -78,6 +80,7 @@ Page({
         const up = await wx.cloud.uploadFile({ cloudPath, filePath: file });
         fileIds.push(up.fileID);
       }
+      log.append('upload_done', { fileIds: fileIds.length });
 
       // 2. 登记批次（photoUpload 云函数——只登记 fileIds，不重复上传）
       const batchRes = await wx.cloud.callFunction({
@@ -86,10 +89,12 @@ Page({
       });
       const batchData = batchRes.result;
       if (batchData.code !== 0) throw new Error(batchData.message);
+      log.append('batch_created', { batchId: batchData.data.batchId });
 
       // 3. 拆分阶段：视觉转录 + 拆题 + 建题（不含判定，快）
       this.setData({ analyzing: true, progressText: 'AI 识别题目中...', progressPercent: 5 });
       wx.showLoading({ title: '识别题目中...', mask: true });
+      log.append('diagnose_start', { batchId: batchData.data.batchId });
       const diagRes = await wx.cloud.callFunction({
         name: 'diagnose',
         data: { batchId: batchData.data.batchId },
@@ -97,6 +102,12 @@ Page({
       });
       const diagData = diagRes.result;
       if (diagData.code !== 0) throw new Error(diagData.message);
+      log.append('diagnose_done', {
+        totalQuestions: diagData.data.totalQuestions,
+        failedCount: diagData.data.failedCount,
+        questionIds: (diagData.data.questions || []).map(q => q.questionId),
+        errors: (diagData.data.questions || []).filter(q => q.error).map(q => q.error),
+      });
 
       const pendingQ = (diagData.data.questions || []).filter((q) => q.status === 'pending');
       const total = pendingQ.length;
@@ -109,6 +120,7 @@ Page({
         return;
       }
       this.setData({ analyzing: false });
+      log.append('navigate_review', { batchId: batchData.data.batchId });
       wx.navigateTo({ url: '/pages/review/review?batchId=' + batchData.data.batchId });
       return;
       // 旧流程（judgeOne 批量 + 报告页）已迁移至复核页，以下保留参考
@@ -147,12 +159,27 @@ Page({
       }, 300);
     } catch (e) {
       console.error('[photo] submit error:', e);
+      log.append('submit_fail', { error: e.message || String(e), stack: (e.stack || '').slice(0, 500) });
       wx.hideLoading();
       this.setData({ analyzing: false });
       wx.showToast({ title: e.message || '提交失败，请重试', icon: 'none' });
     } finally {
       this.setData({ submitting: false });
     }
+  },
+
+  // 长按标题：复制上传链路日志（排查用）
+  onCopyLogs() {
+    const logs = log.getAll();
+    if (!logs.length) {
+      wx.showToast({ title: '暂无日志', icon: 'none' });
+      return;
+    }
+    const text = logs.map(l => `[${l.t}] ${l.step} ${JSON.stringify(l.data || {})}`).join('\n');
+    wx.setClipboardData({
+      data: text,
+      success: () => wx.showToast({ title: '已复制 ' + logs.length + ' 条日志', icon: 'none' }),
+    });
   },
 
   goBack() {

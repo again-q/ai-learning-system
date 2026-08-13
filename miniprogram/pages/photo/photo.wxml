@@ -5,7 +5,7 @@
       <text class="nav-back-icon">‹</text>
       <text>返回</text>
     </view>
-    <text class="nav-title">拍照诊断</text>
+    <text class="nav-title" bindlongpress="onCopyLogs">拍照诊断</text>
     <view class="nav-placeholder"></view>
   </view>
 

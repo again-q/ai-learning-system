@@ -1,5 +1,6 @@
 // 复核页：一次复核（题目转录确认）→ 二次复核（参数确认）→ 完成
 const app = getApp();
+const log = require('../../utils/upload-log');
 
 Page({
   data: {
@@ -27,6 +28,18 @@ Page({
     }
   },
 
+  // towxml 渲染兜底：失败回退纯文本
+  renderMd(text) {
+    if (!text) return {};
+    try {
+      const d = app.towxml(text, 'markdown');
+      return d && d.child ? d : {};
+    } catch (e) {
+      console.error('[review] towxml render failed:', e.message);
+      return {};
+    }
+  },
+
   loadQuestions() {
     wx.cloud.callFunction({
       name: 'judgeOne',
@@ -36,11 +49,16 @@ Page({
       if (r.code !== 0) throw new Error(r.message);
       const items = (r.data || []).map((q) => ({
         ...q,
-        article: q.questionText ? app.towxml(q.questionText, 'markdown') : {},
+        traceText: q.traceReport || '',
+        traceOpen: false,
+        article: this.renderMd(q.questionText),
+        traceArticle: this.renderMd(q.traceReport),
       }));
       this.setData({ items, loading: false });
+      log.append('review_load', { count: items.length, batchId: this.data.batchId });
     }).catch((e) => {
       console.error('[review] load failed:', e);
+      log.append('review_load_fail', { error: e.message || String(e), batchId: this.data.batchId });
       this.setData({ loading: false });
       wx.showToast({ title: '加载失败：' + (e.message || '网络错误'), icon: 'none' });
     });
@@ -72,6 +90,7 @@ Page({
       const items = this.data.items.slice();
       items[idx] = { ...items[idx], questionText: text, transcriptionReviewed: true, article: app.towxml(text, 'markdown') };
       this.setData({ items, editMode: '' });
+      log.append('transcription_saved', { questionId: item.questionId, len: text.length });
       wx.showToast({ title: '已保存', icon: 'success' });
     }).catch((e) => {
       wx.showToast({ title: '保存失败：' + (e.message || '网络错误'), icon: 'none' });
@@ -83,6 +102,7 @@ Page({
     const pending = this.data.items;
     if (!pending.length) return;
     this.setData({ analyzing: true, progressText: '0/' + pending.length });
+    log.append('analyze_start', { total: pending.length, questionIds: pending.map(q => q.questionId) });
     // 逐题判定（judgeOne judge），并发 2
     const queue = pending.slice();
     let done = 0, failed = 0;
@@ -98,12 +118,15 @@ Page({
         } catch (e) {
           failed++;
           console.error('[review] judgeOne failed:', item.questionId, e);
+          log.append('judge_fail', { questionId: item.questionId, error: e.message || String(e) });
         }
+        log.append('judge_done', { questionId: item.questionId });
         done++;
         this.setData({ progressText: done + '/' + pending.length });
       }
     };
     Promise.all([worker(), worker()]).then(() => {
+      log.append('analyze_done', { total: pending.length, failed });
       if (failed > 0) {
         wx.showToast({ title: failed + ' 题分析失败', icon: 'none' });
       }
@@ -121,11 +144,13 @@ Page({
       if (r.code !== 0) throw new Error(r.message);
       const items = (r.data || []).map((q) => ({
         ...q,
-        article: q.questionText ? app.towxml(q.questionText, 'markdown') : {},
+        article: this.renderMd(q.questionText),
       }));
       this.setData({ items, stage: 'params', analyzing: false });
+      log.append('params_loaded', { count: items.length });
     }).catch((e) => {
       console.error('[review] load params failed:', e);
+      log.append('params_load_fail', { error: e.message || String(e) });
       this.setData({ analyzing: false });
       wx.showToast({ title: '参数加载失败', icon: 'none' });
     });
@@ -173,6 +198,7 @@ Page({
       const items = this.data.items.slice();
       items[idx] = { ...items[idx], ...params, paramsReviewed: true };
       this.setData({ items, editMode: '' });
+      log.append('params_saved', { questionId: item.questionId, params });
       wx.showToast({ title: '已保存', icon: 'success' });
     }).catch((e) => {
       wx.showToast({ title: '保存失败：' + (e.message || '网络错误'), icon: 'none' });
@@ -181,10 +207,18 @@ Page({
 
   onFinish() {
     if (this.data.finishing) return;
+    log.append('review_finish', { count: this.data.items.length });
     this.setData({ finishing: true });
     setTimeout(() => {
       this.setData({ finishing: false, stage: 'done' });
     }, 400);
+  },
+
+  onToggleTrace(e) {
+    const idx = e.currentTarget.dataset.index;
+    const items = this.data.items.slice();
+    items[idx] = { ...items[idx], traceOpen: !items[idx].traceOpen };
+    this.setData({ items });
   },
 
   /* ---------- 通用 ---------- */

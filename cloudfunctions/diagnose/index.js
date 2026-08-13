@@ -41,12 +41,31 @@ async function aiSplitQuestions(report) {
   if (!resp.ok) throw new Error('拆题失败 HTTP ' + resp.status);
   const data = await resp.json();
   const content = data.choices[0].message.content || '';
-  const idx = content.indexOf('"questions"');
-  if (idx < 0) throw new Error('拆题输出无 questions');
-  const end = content.lastIndexOf('}');
-  if (end < 0 || end < idx) throw new Error('拆题 JSON 提取失败');
-  const parsed = JSON.parse(content.slice(idx - 1, end + 1)); // 从 "questions" 键所在对象起点截取
-  return (parsed.questions || [])
+  const parseErr = (m) => {
+    const e = new Error(m + ' | content前150: ' + content.slice(0, 150).replace(/\n/g, ' '));
+    console.error('[diagnose] aiSplit:', e.message);
+    throw e;
+  };
+  let parsed = null;
+  // ① 先试整体解析（模型可能直接输出纯 JSON）
+  try {
+    parsed = JSON.parse(content);
+  } catch (e) {
+    parsed = null;
+  }
+  // ② 整体失败：从第一个 { 到最后一个 } 截取配平（跳过前置说明文本）
+  if (!parsed) {
+    const start = content.indexOf('{');
+    const end = content.lastIndexOf('}');
+    if (start < 0 || end < 0 || end < start) parseErr('拆题 JSON 定位失败');
+    try {
+      parsed = JSON.parse(content.slice(start, end + 1));
+    } catch (e) {
+      parseErr('拆题 JSON 解析失败: ' + e.message);
+    }
+  }
+  if (!parsed || !Array.isArray(parsed.questions) || parsed.questions.length === 0) parseErr('拆题输出无 questions');
+  return parsed.questions
     .map((q) => ({ text: q.text || '', type: guessType(q.text || '') }))
     .filter((q) => q.text.length > 5);
 }
@@ -152,22 +171,26 @@ exports.main = async (event) => {
     for (const vr of visionResults) {
       if (!vr.success) {
         failedCount++;
+        console.error('[diagnose] vision failed:', vr.fileId, vr.error);
         const qIns = await db.collection('questions').add({
           data: {
             _openid: openid, userId: openid, batchId, imageFileId: vr.fileId,
             questionText: '', questionType: '其他', isCorrect: null,
             nodeStatus: 'unmapped', source: 'photo', traceReport: null,
+            failedReason: 'vision:' + (vr.error || '未知错误'),
             revisions: [], createdAt: db.serverDate(),
           },
         });
-        questions.push({ questionId: qIns._id, status: 'failed' });
+        questions.push({ questionId: qIns._id, status: 'failed', error: vr.error });
         continue;
       }
 
       let items = [];
+      let splitError = null;
       try {
         items = await aiSplitQuestions(vr.report);
       } catch (e) {
+        splitError = e.message;
         console.warn('[diagnose] aiSplit failed:', e.message);
       }
       if (!items.length) {
@@ -177,10 +200,11 @@ exports.main = async (event) => {
             _openid: openid, userId: openid, batchId, imageFileId: vr.fileId,
             questionText: '', questionType: '其他', isCorrect: null,
             nodeStatus: 'unmapped', source: 'photo', traceReport: vr.report,
+            failedReason: 'split:' + (splitError || '拆出0题'),
             revisions: [], createdAt: db.serverDate(),
           },
         });
-        questions.push({ questionId: qIns._id, status: 'failed' });
+        questions.push({ questionId: qIns._id, status: 'failed', error: splitError });
         continue;
       }
 
@@ -203,7 +227,11 @@ exports.main = async (event) => {
       data: { status: 'analyzing', totalQuestions, failedCount: failedCount + filteredCount, progress: { done: 0, total: totalQuestions } },
     });
 
-    return success({ batchId, status: 'analyzing', totalQuestions, failedCount: failedCount + filteredCount, questions });
+    return success({
+      batchId, status: 'analyzing', totalQuestions,
+      failedCount: failedCount + filteredCount,
+      questions: questions.map((q) => ({ questionId: q.questionId, status: q.status, error: q.error || null })),
+    });
   } catch (e) {
     console.error('[diagnose] error:', e);
     try {

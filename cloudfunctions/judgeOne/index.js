@@ -36,6 +36,11 @@ const RUBRIC = `
 | 纯原创 | L11 | 0.98–0.999 |
 ■ 例子锚：L1:A∩B求值 L2:√(x-1)定义域 L3:比log大小 L4:△ABC求c(含参分类讨论也算L4) L5:裂项求和 L6:e^x-ax²两零点 L7:极点极线 L8:极值点偏移 L9:多高观点 L10:竞赛 L11:IMO
 ■ 5维锁定：L1(1,1,1,1,1) L2(1-2,1,1,2,1) L3(2,1,1,2,2) L4(2,2,1,3,2) L5(2,2,2,3,2) L6(3,3,2,3,2) L7(3,3,3,4,3) L8(4,4,3,4,3) L9(4,4,4,4,4) L10(5,5,4,5,5) L11(5,5,5,5,5)
+■ 档内 D 值（决策 024）：
+   判完档后，心里综合该题的五维难度感受（知识复杂度/思维深度/陷阱密度/计算强度/陌生度），
+   直接在档位区间内打一个精细的 D 值：
+   · 档内越简单 → 靠下沿；档内越难 → 靠上沿
+   · 凭整体感受直接给值，不要趋同、不要总取中间
 ■ 题型：回忆类=直接套公式；单元内=本单元变形推理分类讨论；跨单元=结合≥2单元
 ■ P（§4.4）：1.0清晰/0.5模糊/0.3思路对/0空白
 ■ η：只对解答题0.4~1.0；填空选择null
@@ -124,19 +129,52 @@ function buildReportText(report) {
   return `题目：${report.questionText || ''} | 作答：${report.studentAnswer || ''} | 判定：${report.isCorrect ? '对' : '错'} | 题型：${report.questionCategory || ''} | 难度：${report.difficultyLevel || ''} | 知识点：${report.knowledgeNodeId || ''}`;
 }
 
+// ============ 完整标尺（决策 023 定稿：学生视角 + L1-L11 判档） ============
+const RUBRIC_V2 = `
+【我方 D 难度标尺 L1~L11（决策 020/021/023 定稿）】
+■ 档位边界卡：
+L1(0.01-0.15) 读题即写答案，0步推导
+L2(0.15-0.30) 套1公式，1-2步计算
+L3(0.30-0.45) 套1-2公式，2-3步推导无变形
+L4(0.45-0.60) 3-5步标准流程，单板块串联
+L5(0.60-0.70) 5-10步，轻度分类讨论
+L6(0.70-0.79) 10步+，复杂分类讨论，或需二级结论
+L7(0.79-0.85) 需二级结论或高观点工具，或非线性构造
+L8(0.85-0.90) 需高数背景初等化（泰勒/拉格朗日/帕德）
+L9(0.90-0.94) 需多个高观点叠加，或复杂构造性证明
+L10(0.94-0.98) 课外科板块（数论/组合/平几）
+L11(0.98-0.999) 纯原创，全球个位数能解
+■ 例子锚：L1:A∩B求值 L2:√(x-1)定义域 L3:比log大小 L4:△ABC求c(含参分类也L4) L5:裂项求和 L6:e^x-ax²两零点 L7:极点极线；抽象函数性质推理 L8:极值点偏移；新定义集合运算 L9:多高观点；新定义+抽象条件+多问证明压轴 L10:竞赛 L11:IMO
+■ 新定义/抽象函数补充：难度不在步骤数而在「先理解新定义→再构造逻辑链」的思维跳跃+陌生度；单问新定义→L7-L8；新定义+抽象条件+多问证明压轴→L8-L9
+■ 5维锁定：L1(1,1,1,1,1) L2(1-2,1,1,2,1) L3(2,1,1,2,2) L4(2,2,1,3,2) L5(2,2,2,3,2) L6(3,3,2,3,2) L7(3,3,3,4,3) L8(4,4,3,4,3) L9(4,4,4,4,4) L10(5,5,4,5,5) L11(5,5,5,5,5)
+■ 档内 D 值（决策 024）：
+   判完档后，心里综合该题的五维难度感受（知识复杂度/思维深度/陷阱密度/计算强度/陌生度），
+   直接在档位区间内打一个精细的 D 值：
+   · 档内越简单 → 靠下沿；档内越难 → 靠上沿
+   · 凭整体感受直接给值，不要趋同、不要总取中间
+■ P：1.0清晰/0.5模糊/0.3思路对/0空白；η：只对解答题0.4~1.0；r：一律null
+■ isCorrect：严格数学判定；归因：做错才给，做对null，不编造
+`;
+
 // ============ 单题判定 ============
 async function judgeQuestion(question, ragContext) {
   const ragSection = ragContext ? `\n\n【历史参考（仅供参考不强制）】\n${ragContext}` : '';
-  const userMsg = `输入是一道题的视觉转录上下文（题目文本 + 整图痕迹，可能含转录误差）。只判定这一题，按完整版标尺输出：
-{"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"isCorrect":true|false,"correctAnswer":"","P":0|0.3|0.5|1.0,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","fiveDim":{"K":0,"A":0,"T":0,"Q":0,"S":0}}
-约束：D 落在 level 区间；knowledgeNodeName 必须用教材术语原词；fiveDim 各维度 1~5 整数（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，对标尺5维锁定表）；最后输出纯 JSON`;
+  const userMsg = `输入是一道题的视觉转录上下文（题目文本 + 整图痕迹，可能含转录误差）。对这道题做两件事：
+
+第一步【学生视角感受难度】：模拟一个对应水平的高中生真实解题体验——先注意到什么、第一次卡在哪、卡住时缺的是什么、思维需要几次跳跃（每次难不难）、试错成本多高。重点是【体验难度】，不是拆步骤、不是证明。
+
+第二步【判定作答 + 对照标尺判档】：基于学生视角体验对照 L1-L11 标尺判档（档位边界卡+例子锚+新定义补充+5维锁定），同时判定对错/作答质量。
+
+只输出 JSON：
+{"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"isCorrect":true|false,"correctAnswer":"","P":0|0.3|0.5|1.0,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","dims":{"知识复杂度":1,"思维深度":1,"陷阱密度":1,"计算强度":1,"陌生度":1},"fiveDim":{"K":0,"A":0,"T":0,"Q":0,"S":0}}
+约束：D 落在 level 区间（D 是题目固有难度，与学生熟练度无关）；knowledgeNodeName 必须用教材术语原词；dims 是【难度五维】（中文键：知识复杂度/思维深度/陷阱密度/计算强度/陌生度，各 1~5 整数）；fiveDim 是【能力五维】（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，各 1~5 整数）；最后输出纯 JSON`;
   const data = await postJSON(`${DS_BASE_URL}/chat/completions`, {
     model: DS_MODEL,
-    thinking: { type: DS_THINKING },
-    reasoning_effort: DS_EFFORT,
+    thinking: { type: 'disabled' },       // 决策 023：thinking 开 + 难题 = content 空死锁，判档用 disabled
+    temperature: 0.2,                      // 决策 023：低温稳定档位
     messages: [
-      { role: 'system', content: '你是严谨的数学诊断推理引擎。严格按完整版标尺判定单题。最后输出纯 JSON。' },
-      { role: 'user', content: userMsg + '\n\n===== 完整版标尺 =====\n' + RUBRIC + ragSection + '\n\n===== 本题上下文 =====\n题目：' + question.questionText + '\n整图痕迹：' + (question.traceReport || '').slice(0, 1500) },
+      { role: 'system', content: '你是严谨的数学诊断推理引擎。先学生视角感受难度，再对照 L1-L11 标尺判档，最后判定作答。输出纯 JSON。' },
+      { role: 'user', content: userMsg + '\n\n===== L1-L11 标尺 =====\n' + RUBRIC_V2 + ragSection + '\n\n===== 本题上下文 =====\n题目：' + question.questionText + '\n\n【学生作答痕迹（仅用于判定对错/P/η/归因，严禁用于评估难度——难度是题目固有属性，与作答过程无关）】\n' + (question.traceReport || '').slice(0, 1500) },
     ],
     max_tokens: 8000,
   }, DS_API_KEY);
@@ -241,6 +279,7 @@ exports.main = async (event) => {
         pathQuality: clamped.eta,
         errorAttribution: raw.errorAttribution || null,
         knowledgeNodeName: raw.knowledgeNodeName || '',
+        dims: raw.dims || null,
         fiveDim: raw.fiveDim || null,
         reviewed: true,
       },
