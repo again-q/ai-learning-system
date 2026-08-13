@@ -128,8 +128,8 @@ function buildReportText(report) {
 async function judgeQuestion(question, ragContext) {
   const ragSection = ragContext ? `\n\n【历史参考（仅供参考不强制）】\n${ragContext}` : '';
   const userMsg = `输入是一道题的视觉转录上下文（题目文本 + 整图痕迹，可能含转录误差）。只判定这一题，按完整版标尺输出：
-{"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"isCorrect":true|false,"correctAnswer":"","P":0|0.3|0.5|1.0,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|""}
-约束：D 落在 level 区间；最后输出纯 JSON`;
+{"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"isCorrect":true|false,"correctAnswer":"","P":0|0.3|0.5|1.0,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","fiveDim":{"K":0,"A":0,"T":0,"Q":0,"S":0}}
+约束：D 落在 level 区间；knowledgeNodeName 必须用教材术语原词；fiveDim 各维度 1~5 整数（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，对标尺5维锁定表）；最后输出纯 JSON`;
   const data = await postJSON(`${DS_BASE_URL}/chat/completions`, {
     model: DS_MODEL,
     thinking: { type: DS_THINKING },
@@ -162,6 +162,55 @@ exports.main = async (event) => {
     const openid = wxContext.OPENID;
     if (!openid) return fail(401, '未登录');
 
+    const { action } = event;
+    // ===== 复核接口（一次复核/二次复核共用） =====
+    if (action === 'listQuestions') {
+      const { batchId } = event;
+      if (!batchId) return fail(400, '缺少批次ID');
+      const batchRes = await db.collection('batches').doc(batchId).get().catch(() => null);
+      if (!batchRes || !batchRes.data || batchRes.data.userId !== openid) return fail(403, '无权操作他人批次');
+      const qs = await db.collection('questions').where({ batchId, userId: openid }).limit(30).get();
+      return success(qs.data.map((q) => ({
+        questionId: q._id, questionText: q.questionText || '', studentAnswer: q.studentAnswer || '',
+        traceReport: q.traceReport || '', status: q.status || 'pending',
+        reviewed: !!q.reviewed,
+        // 二次复核参数（judge 后）
+        questionType: q.questionType || '', questionCategory: q.questionCategory || '',
+        difficultyLevel: q.difficultyLevel || '', difficultyValue: q.difficultyValue != null ? q.difficultyValue : null,
+        isCorrect: q.isCorrect === undefined ? null : q.isCorrect, P: q.processScore != null ? q.processScore : null,
+        eta: q.pathQuality != null ? q.pathQuality : null, errorAttribution: q.errorAttribution || null,
+        knowledgeNodeName: q.knowledgeNodeName || '', fiveDim: q.fiveDim || null,
+      })));
+    }
+    if (action === 'updateTranscription') {
+      const { questionId, questionText, studentAnswer } = event;
+      if (!questionId) return fail(400, '缺少题目ID');
+      const qRes = await db.collection('questions').doc(questionId).get().catch(() => null);
+      if (!qRes || !qRes.data || qRes.data.userId !== openid) return fail(403, '无权操作他人题目');
+      const patch = {};
+      if (typeof questionText === 'string' && questionText.trim()) patch.questionText = questionText.trim();
+      if (typeof studentAnswer === 'string') patch.studentAnswer = studentAnswer.trim();
+      patch.transcriptionReviewed = true;
+      await db.collection('questions').doc(questionId).update({ data: patch });
+      return success({ questionId });
+    }
+    if (action === 'updateParams') {
+      const { questionId, params } = event;
+      if (!questionId || !params) return fail(400, '缺少参数');
+      const qRes = await db.collection('questions').doc(questionId).get().catch(() => null);
+      if (!qRes || !qRes.data || qRes.data.userId !== openid) return fail(403, '无权操作他人题目');
+      const patch = {};
+      if (params.difficultyLevel) patch.difficultyLevel = params.difficultyLevel;
+      if (params.difficultyValue != null) patch.difficultyValue = params.difficultyValue;
+      if (params.knowledgeNodeName) patch.knowledgeNodeName = params.knowledgeNodeName;
+      if (params.fiveDim) patch.fiveDim = params.fiveDim;
+      if (params.isCorrect !== undefined) patch.isCorrect = params.isCorrect;
+      patch.paramsReviewed = true;
+      await db.collection('questions').doc(questionId).update({ data: patch });
+      return success({ questionId });
+    }
+
+    // ===== 默认：单题判定 =====
     const { questionId } = event;
     if (!questionId) return fail(400, '缺少题目ID');
 
@@ -191,45 +240,14 @@ exports.main = async (event) => {
         processScore: clamped.P,
         pathQuality: clamped.eta,
         errorAttribution: raw.errorAttribution || null,
+        knowledgeNodeName: raw.knowledgeNodeName || '',
+        fiveDim: raw.fiveDim || null,
+        reviewed: true,
       },
     });
 
-    // 完整报告 + embedding 入库（RAG 自增强）
-    const report = {
-      questionText: question.questionText || '',
-      questionType,
-      studentAnswer: raw.studentAnswer || '',
-      correctAnswer: raw.correctAnswer || '',
-      isCorrect: raw.isCorrect === undefined ? null : raw.isCorrect,
-      questionCategory: raw.questionCategory || '无法归类',
-      difficultyLevel: raw.level || 'L4',
-      difficultyValue: clamped.D,
-      processScore: clamped.P,
-      pathQuality: clamped.eta,
-      transferQuality: null,
-      knowledgeNodeId: null,
-      nodeStatus: 'unmapped',
-      errorAttribution: raw.errorAttribution || null,
-      evidence: [], actionAdvice: null,
-    };
-    const reportText = buildReportText(report);
-    let embedding = [];
-    try {
-      embedding = await embedText(reportText);
-    } catch (e) {
-      console.warn('[judgeOne] embed failed:', e.message);
-    }
-    try {
-      await db.collection('mastery_logs').add({
-        data: {
-          _openid: openid, userId: openid, questionId,
-          knowledgeNodeId: null, algorithm: 'score_poc',
-          report, reportText, embedding, createdAt: db.serverDate(),
-        },
-      });
-    } catch (e) {
-      console.warn('[judgeOne] mastery_logs add failed:', e.message);
-    }
+    // 报告 + embedding 入库（RAG 自增强）——本阶段「报告先不输出」，后续报告功能恢复时再打开
+    // const report = {...}; const reportText = buildReportText(report); mastery_logs.add(...)
 
     // 更新批次进度；最后一题判完 → completed
     try {
@@ -253,13 +271,15 @@ exports.main = async (event) => {
     return success({
       questionId,
       newDiagnosis: {
-        isCorrect: report.isCorrect,
-        correctAnswer: report.correctAnswer,
-        questionCategory: report.questionCategory,
-        difficultyLevel: report.difficultyLevel,
+        isCorrect: raw.isCorrect === undefined ? null : raw.isCorrect,
+        correctAnswer: raw.correctAnswer || '',
+        questionCategory: raw.questionCategory || '无法归类',
+        difficultyLevel: raw.level || 'L4',
         difficultyValue: clamped.D,
         processScore: clamped.P,
         pathQuality: clamped.eta,
+        knowledgeNodeName: raw.knowledgeNodeName || '',
+        fiveDim: raw.fiveDim || null,
       },
     });
   } catch (e) {

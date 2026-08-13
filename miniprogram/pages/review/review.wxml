@@ -1,0 +1,139 @@
+<!-- 复核页：一次复核（题目转录）→ 二次复核（题目参数）→ 完成（报告暂不输出） -->
+<view class="page">
+
+  <!-- 顶栏 -->
+  <view class="nav">
+    <view class="back" bindtap="onBackTap">‹</view>
+    <view class="title">题目复核</view>
+    <view class="nav-right">{{stage === 'transcribe' ? '①/②' : stage === 'params' ? '②/②' : '✓'}}</view>
+  </view>
+
+  <!-- 阶段指示 -->
+  <view class="steps">
+    <view class="step {{stage === 'transcribe' ? 'on' : 'done'}}">
+      <view class="dot">{{stage === 'transcribe' ? '1' : '✓'}}</view>
+      <text>复核题目</text>
+    </view>
+    <view class="line {{stage === 'params' || stage === 'done' ? 'on' : ''}}"></view>
+    <view class="step {{stage === 'params' || stage === 'done' ? 'on' : ''}}">
+      <view class="dot">{{stage === 'params' ? '2' : stage === 'done' ? '✓' : '2'}}</view>
+      <text>复核参数</text>
+    </view>
+  </view>
+
+  <!-- ========== 一次复核：题目转录确认 ========== -->
+  <scroll-view class="list" wx:if="{{stage === 'transcribe'}}" scroll-y>
+    <view class="card" wx:for="{{items}}" wx:key="questionId">
+      <view class="q-head">
+        <text class="q-no">第 {{index + 1}} 题</text>
+        <text class="q-tag {{item.transcriptionReviewed ? 'ok' : ''}}">{{item.transcriptionReviewed ? '已确认' : '待确认'}}</text>
+      </view>
+      <towxml nodes="{{item.article}}" />
+      <view class="ans" wx:if="{{item.studentAnswer}}">
+        <text class="ans-label">学生作答</text>
+        <text class="ans-text">{{item.studentAnswer}}</text>
+      </view>
+      <view class="card-actions">
+        <view class="btn ghost" data-index="{{index}}" bindtap="onEditQuestion">✏️ 修改题目</view>
+      </view>
+    </view>
+
+    <view class="empty" wx:if="{{items.length === 0 && !loading}}">未识别到题目</view>
+
+    <button class="btn primary big" bindtap="onStartAnalyze" disabled="{{analyzing || items.length === 0}}">
+      {{analyzing ? 'AI 分析中 ' + progressText : '全部确认，开始分析'}}
+    </button>
+  </scroll-view>
+
+  <!-- ========== 二次复核：参数确认 ========== -->
+  <scroll-view class="list" wx:if="{{stage === 'params'}}" scroll-y>
+    <view class="card" wx:for="{{items}}" wx:key="questionId">
+      <view class="q-head">
+        <text class="q-no">第 {{index + 1}} 题</text>
+        <text class="q-tag {{item.paramsReviewed ? 'ok' : ''}}">{{item.paramsReviewed ? '已确认' : '待确认'}}</text>
+      </view>
+      <view class="param-grid">
+        <view class="p-cell">
+          <text class="p-label">难度</text>
+          <text class="p-val strong">{{item.difficultyLevel || '—'}}</text>
+          <text class="p-sub">D = {{item.difficultyValue != null ? item.difficultyValue : '—'}}</text>
+        </view>
+        <view class="p-cell">
+          <text class="p-label">知识点</text>
+          <text class="p-val">{{item.knowledgeNodeName || '未关联'}}</text>
+        </view>
+        <view class="p-cell">
+          <text class="p-label">判定</text>
+          <text class="p-val {{item.isCorrect === true ? 'right' : item.isCorrect === false ? 'wrong' : ''}}">{{item.isCorrect === true ? '✓ 对' : item.isCorrect === false ? '✗ 错' : '—'}}</text>
+        </view>
+        <view class="p-cell">
+          <text class="p-label">作答质量</text>
+          <text class="p-val">P={{item.P != null ? item.P : '—'}}</text>
+          <text class="p-sub">η={{item.eta != null ? item.eta : '—'}}</text>
+        </view>
+        <view class="p-cell wide" wx:if="{{item.errorAttribution}}">
+          <text class="p-label">错误归因</text>
+          <text class="p-val">{{item.errorAttribution}}</text>
+        </view>
+        <view class="p-cell wide" wx:if="{{item.fiveDim}}">
+          <text class="p-label">五维</text>
+          <text class="p-val dims">K{{item.fiveDim.K}} · A{{item.fiveDim.A}} · T{{item.fiveDim.T}} · Q{{item.fiveDim.Q}} · S{{item.fiveDim.S}}</text>
+        </view>
+      </view>
+      <view class="card-actions">
+        <view class="btn ghost" data-index="{{index}}" bindtap="onEditParams">✏️ 修改参数</view>
+      </view>
+    </view>
+
+    <button class="btn primary big" bindtap="onFinish" disabled="{{finishing}}">
+      {{finishing ? '保存中…' : '确认完成'}}
+    </button>
+    <view class="tip-note">报告生成暂未开放，分析结果已保存，后续可在报告页查看</view>
+  </scroll-view>
+
+  <!-- ========== 完成 ========== -->
+  <view class="done-view" wx:if="{{stage === 'done'}}">
+    <view class="done-icon">✓</view>
+    <view class="done-title">分析完成</view>
+    <view class="done-sub">共 {{items.length}} 题，参数已保存</view>
+    <button class="btn primary big" bindtap="onBackHome">返回首页</button>
+  </view>
+
+  <!-- 修改题目弹层 -->
+  <view class="mask" wx:if="{{editMode === 'question'}}" bindtap="closeEdit">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-title">修改题目转录</view>
+      <textarea class="edit-area" value="{{editValue}}" bindinput="onEditInput" auto-height maxlength="2000" placeholder="粘贴修正后的题目文本（支持 Markdown / LaTeX 公式）"></textarea>
+      <view class="sheet-actions">
+        <view class="btn ghost" bindtap="closeEdit">取消</view>
+        <view class="btn primary" bindtap="onSaveQuestion">保存</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 修改参数弹层 -->
+  <view class="mask" wx:if="{{editMode === 'params'}}" bindtap="closeEdit">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-title">修改参数（难度 / 知识点）</view>
+      <view class="field">
+        <text class="field-label">难度（如 L7 0.82）</text>
+        <input class="field-input" value="{{editD}}" bindinput="onEditDInput" placeholder="Lx D值" />
+      </view>
+      <view class="field">
+        <text class="field-label">知识点（教材术语）</text>
+        <input class="field-input" value="{{editK}}" bindinput="onEditKInput" placeholder="如：函数的单调性" />
+      </view>
+      <view class="sheet-actions">
+        <view class="btn ghost" bindtap="closeEdit">取消</view>
+        <view class="btn primary" bindtap="onSaveParams">保存</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载态 -->
+  <view class="loading" wx:if="{{loading}}">
+    <view class="spinner"></view>
+    <text>加载题目中…</text>
+  </view>
+
+</view>

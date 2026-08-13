@@ -102,15 +102,18 @@ Page({
       const total = pendingQ.length;
       wx.hideLoading();
 
-      // 4. 逐题判定（judgeOne，进度条 1/N…N/N）
+      // 4. 跳转复核页（一次复核题目 → 二次复核参数，报告暂不输出）
       if (total === 0) {
         wx.showToast({ title: '未识别到题目，请重试', icon: 'none' });
         this.setData({ analyzing: false });
         return;
       }
+      this.setData({ analyzing: false });
+      wx.navigateTo({ url: '/pages/review/review?batchId=' + batchData.data.batchId });
+      return;
+      // 旧流程（judgeOne 批量 + 报告页）已迁移至复核页，以下保留参考
       this.setData({ totalQuestions: total, progressText: 'AI 判定题目中...', progressPercent: 10 });
       let done = 0, failed = 0;
-      // 并发 2 个，high 档每题 ~60s，9 题约 4-5 分钟
       const queue = [...pendingQ];
       const worker = async () => {
         while (queue.length > 0) {
