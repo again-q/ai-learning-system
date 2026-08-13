@@ -150,6 +150,7 @@
 - [x] **① 361 节点导入** `knowledge_nodes` ✅（含 path 修复：270 个空 path 全部补齐，1.3 集合的基本运算 等）
 - [x] **② 云函数链路** ✅：`graphService` 修复根节点查询（`{parentId:null}` + 过滤旧数据）+ 新增 `getAll`（全量拉取）；新增 **`knowledgeAdmin`** 云函数（importNodes/importFromStorage/addNode/updateNode/deleteNode/stats）＋ **`scripts/manage-knowledge-nodes.py`**（节点管理/修复/生成导入 JSON）
 - [x] **③ 前端页面落地** ✅：新增 `pages/knowledge-map`（结构模式：数学→小节→知识点→子知识点，Canvas 画边 + view 节点；演化模式：relations.reference 前置链；返回/回起点/面包屑/模式切换/信息卡含教材原文+高频考点徽标），首页加入口按钮
+- [x] **③.1 前端生产化重设计** ✅（2026-08-13，用户验收原型后确认「写成生产级」）：v1 单一放射图 + Canvas 画边有多处 bug（面包屑丢失/分组分页复杂/Canvas 坐标同步），改为**目录列表 + 演化链双模式**：目录用结构行列表（章/节）+ 知识点按 type 分组卡片网格，掌握度用进度条/色点呈现；演化链保留放射布局但**连线改用 CSS `transform:rotate` 的 DOM 线，去掉 Canvas**，坐标可直接用设计稿 rpx 常量（无需 onReady 实测，见 `doc/standards/前端视觉与动画工程经验.md` 教训 11）；卡片选中态改用 `knowledgeId` 比较（教训 12）。原型稿：`doc/review/知识图谱前端重设计-原型v5.html`
 - [ ] 掌握度：**mock 先用**（用户指示），待诊断链路写入 knowledge_progress 后接入（judgeOne 知识点关联未做）
 
 > **原型 v4 已出**（`output/knowledge-graph-prototype.html`，2026-08-10 逐轮确认）：
@@ -210,6 +211,9 @@
 
 | 日期 | 更新内容 |
 |------|---------|
+| 2026-08-13 | **协作质量流程写入 AI协作手册 §九**：先诊断→谈方向→可点原型自测→用户验收→生产化对齐既有模式→经验沉淀；补常见陷阱与一句话总结 |
+| 2026-08-13 | **补洞：新版 UI 同步到 tab「图谱」`pages/graph`**（先前只改了几乎无入口的 knowledge-map，用户编译仍见旧版；见开发经验 #13） |
+| 2026-08-13 | **知识图谱前端重设计并生产化**：v1 单一放射图+Canvas 画边体验有 bug，与用户确认设计方向（原型 `doc/review/知识图谱前端重设计-原型v5.html`）后落地到 `pages/knowledge-map`——目录列表+卡片网格（结构导航） / 演化链保留放射但连线改 CSS DOM 线（去 Canvas，见前端经验文档教训 11/12） |
 | 2026-08-10 | **图谱 P0 前端落地**：① 361 节点导入+path 修复；② graphService 修根查询+getAll、新增 knowledgeAdmin 云函数、manage-knowledge-nodes.py 脚本；③ pages/knowledge-map 双模式页面落地（结构=parentId 树/演化=reference 链），掌握度 mock 先用 |
 | 2026-08-10 | 快照日期同步（08-06→08-10）、剩余天数 32→22；**v3.0 定位澄清（用户）**：思维训练场 = 应试化落地，但**不内置题库**；三方向「广度」定为**联想能力**——头脑风暴模式：学生+AI 共创方法 → 收录个人知识图谱；深度/熟练度仍占位 |
 | 2026-08-10 | **远期版本愿景**：v1.0 拍照→报告→自增强存储（9/1 硬 DL）→ v2.0 个人数据全掌握的 AI 私教 → v3.0 思维训练场（广度/深度/熟练度占位）；核心路径同步 |

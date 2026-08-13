@@ -1,14 +1,11 @@
 const app = getApp();
-let sys = wx.getSystemInfoSync();
 
-// rpx → px
-const rpx = (v) => (sys.windowWidth / 750) * v;
-
-// 类型标签
+// 类型标签（知识节点用；结构节点/单元/小节不显示类型标签）
 const TYPE_LABEL = {
   definition: '概念', property: '性质', method: '方法',
-  notation: '记号', example: '例子', reading: '阅读', section: '小节', unit: '单元'
+  notation: '记号', example: '例子', reading: '阅读'
 };
+const TYPE_ORDER = ['definition', 'property', 'method', 'notation', 'example', 'reading'];
 
 // 掌握度 mock（待诊断链路接入 knowledge_progress 后移除）
 const MOCK_MASTERY = {
@@ -26,59 +23,53 @@ function mockMastery(name) {
 }
 function mColor(m) { return m >= 75 ? '#34c759' : m >= 50 ? '#ff9500' : m > 0 ? '#ff3b30' : '#c7c7cc'; }
 function mStatus(m) { return m >= 75 ? '已掌握' : m >= 50 ? '学习中' : m > 0 ? '薄弱' : '未学'; }
-// 按 type 分组（结构节点统筹）
-function groupKids(kids) {
-  const TYPE_ORDER = ['definition', 'property', 'method', 'notation', 'example', 'reading'];
-  const groups = [];
-  for (const t of TYPE_ORDER) {
-    const items = (kids || []).filter(k => k.type === t);
-    if (items.length) groups.push({ type: t, label: TYPE_LABEL[t] || t, count: items.length, items });
-  }
-  return groups;
+function mStCls(m) { return m >= 75 ? 'st-high' : m >= 50 ? 'st-mid' : m > 0 ? 'st-low' : 'st-zero'; }
+
+// 演化模式画布坐标系：直接用设计稿 rpx 数值（750 设计宽 - 左右各 32rpx padding = 686），
+// 不依赖运行时测量（避免与 canvas 方案一样的坐标同步问题）
+const EVO_W = 686, EVO_H = 460, EVO_CENTER_Y = EVO_H - 130, EVO_PRE_Y = 120;
+const EVO_CENTER_R = 76, EVO_PRE_R = 48;
+
+function lineBetween(x1, y1, x2, y2) {
+  const dx = x2 - x1, dy = y2 - y1;
+  const len = Math.hypot(dx, dy);
+  const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+  return { left: x1, top: y1, width: len, angle };
 }
 
 Page({
   data: {
     loading: true,
-    isTab: false,          // tab 页不显示返回按钮
-    infoExpanded: false,   // 详情展开/收起
-    mode: 'radial',        // radial | evo
-    nodes: [],
+    isTab: true,         // app.json tabBar「图谱」页：恒为 tab，不可 navigateTo
+    mode: 'tree',        // 'tree' | 'evo'
     crumb: [],
-    info: null,
-    infoExpanded: false,   // 详情展开/收起
     showUp: false,
-    showEvoReturn: false,
-    stageSize: { w: 375, h: 600 },
-    ringIndex: 0,
-    ringCount: 0,
-    showRingNext: false,
+    isStructural: true,
+    focus: null,
+    rows: [],
+    groups: [],
+    sheet: null,
+    evoEmpty: true,
+    evoLines: [],
+    evoPres: [],
+    evoCenter: null,
+    evoShowBack: false,
+    evoStageH: EVO_H
   },
 
   _nodes: [], _byId: {}, _units: {}, _unitList: [],
-  _stack: [], _evoStack: [], _evoReturn: null,
-  _current: null, _currentKids: [],
-  _canvas: null, _ctx: null, _dpr: 1,
+  _stack: [], _current: null, _currentKids: [],
+  _selectedLeaf: null,
+  _evoFocus: null, _evoStack: [],
 
   onLoad() {
-    this._dpr = sys.pixelRatio || 2;
-    // tab 页（页面栈长度 1）不显示返回按钮
-    this.setData({ isTab: getCurrentPages().length === 1 });
-  },
-
-  onReady() {
-    // 实测舞台尺寸，canvas 与节点共用同一坐标系（修正线位置偏移）
-    const query = wx.createSelectorQuery().in(this);
-    query.select('#graphStage').boundingClientRect((rect) => {
-      if (!rect || !rect.width) return;
-      this.setData({ stageSize: { w: rect.width, h: rect.height } });
-      this.initCanvas(() => { if (this._nodes.length) this.render(); });
-    }).exec();
+    this.loadAll();
   },
 
   onShow() {
-    if (this._nodes.length === 0) this.loadAll();
-    else this.render();
+    // tab 切换回来时：已有数据就重渲；首次/清空后重新拉
+    if (this._nodes.length) this.render();
+    else if (!this.data.loading) this.loadAll();
   },
 
   loadAll() {
@@ -114,120 +105,18 @@ Page({
     this._unitList = Object.keys(this._units).sort();
   },
 
-  /* ---------- 结构模式导航（数学 → 单元 → 小节 → 知识点） ---------- */
-  enterSubject() {
-    this._stack = [];
-    this._mode = 'radial';
-    const center = { name: '数学', type: 'unit', synthetic: true, mastery: null };
-    const kids = this._unitList.map((u, i) => ({
-      id: 'unit-' + i, name: u, type: 'unit', synthetic: true,
-      mastery: null, unitName: u
-    }));
-    this._current = center;
-    this._currentKids = kids;
-    this.setData({ crumb: [{ name: '数学', idx: 0 }], showUp: false, showEvoReturn: false });
-    this.render();
+  _childCount(knowledgeId) {
+    return this._nodes.filter((n) => n.parentId === knowledgeId).length;
   },
-
-  enterUnit(unitName) {
-    this.setData({ kidsExpanded: false, ringIndex: 0 });
-    this._stack.push({ node: this._current, kids: this._currentKids });
-    const secs = Object.keys(this._units[unitName].secs).sort();
-    this._current = { name: unitName, type: 'unit', synthetic: true, mastery: null, unitName };
-    this._currentKids = secs.map((s, i) => ({
-      id: 'sec-' + i, name: s, type: 'section', synthetic: true,
-      mastery: null, secName: s, unitName
-    }));
-    this.setData({
-      crumb: [{ name: '数学', idx: 0 }, { name: unitName, idx: 1 }],
-      showUp: true
-    });
-    this.render();
+  _hasKids(node) {
+    return !node.synthetic && this._childCount(node.knowledgeId) > 0;
   },
-
-  enterSection(secName, unitName) {
-    this.setData({ kidsExpanded: false, ringIndex: 0 });
-    this._stack.push({ node: this._current, kids: this._currentKids });
-    const roots = this._units[unitName].secs[secName] || [];
-    this._current = { name: secName, type: 'section', synthetic: true, mastery: null, secName, unitName };
-    this._currentKids = roots.map((n) => ({ ...n, mastery: mockMastery(n.name) }));
-    this.setData({
-      crumb: [
-        { name: '数学', idx: 0 },
-        { name: unitName, idx: 1 },
-        { name: secName, idx: 2 }
-      ],
-      showUp: true
-    });
-    this.render();
-  },
-
-  enterGroup(g) {
-    this.setData({ kidsExpanded: false, ringIndex: 0 });
-    this._stack.push({ node: this._current, kids: this._currentKids });
-    this._current = { name: g.label + ' x' + g.count, type: 'section', synthetic: true, mastery: null, grpType: g.type };
-    this._currentKids = g.items.map((n) => ({ ...n, mastery: mockMastery(n.name) }));
-    const crumb = [{ name: '数学', idx: 0 }];
-    const p = (g.items[0] && g.items[0].path) || [];
-    if (p[2]) crumb.push({ name: p[2], idx: 1 });
-    if (p[3]) crumb.push({ name: p[3], idx: 2 });
-    crumb.push({ name: this._current.name, idx: 3 });
-    this.setData({ crumb: crumb, showUp: true });
-    this.render();
-  },
-
-  enterNode(node) {
-    this.setData({ kidsExpanded: false, ringIndex: 0 });
-    this._stack.push({ node: this._current, kids: this._currentKids });
-    this._current = node;
-    this._currentKids = this._childrenOf(node);
-    const p = node.path || [];
-    const crumb = [{ name: '数学', idx: 0 }];
-    if (p[2]) crumb.push({ name: p[2], idx: 1 });
-    if (p[3]) crumb.push({ name: p[3], idx: 2 });
-    crumb.push({ name: node.name, idx: 3 });
-    this.setData({ crumb, showUp: true });
-    this.render();
-  },
-
   _childrenOf(node) {
     if (!node || node.synthetic) return [];
     return this._nodes.filter((n) => n.parentId === node.knowledgeId)
       .map((n) => ({ ...n, mastery: mockMastery(n.name) }));
   },
-
-  /* ---------- 演化模式 ---------- */
-  enterEvo() {
-    if (this._mode === 'evo') return;
-    this._evoReturn = { node: this._current, stack: this._stack.slice() };
-    this._evoStack = [];
-    this._mode = 'evo';
-    this.setData({ mode: 'evo' });
-    this.render();
-  },
-
-  exitEvo() {
-    this._mode = 'radial';
-    this._evoStack = [];
-    this._evoReturn = null;
-    this.setData({ mode: 'radial' });
-    this.render();
-  },
-
-  evoReturn() {
-    if (!this._evoReturn) return;
-    this._stack = this._evoReturn.stack.slice();
-    this._current = this._evoReturn.node;
-    this._currentKids = this._childrenOf(this._current);
-    this._mode = 'radial';
-    this._evoStack = [];
-    this._evoReturn = null;
-    this.setData({ mode: 'radial' });
-    this.render();
-    wx.showToast({ title: '已回到「' + this._current.name + '」', icon: 'none' });
-  },
-
-  preReqsOf(node) {
+  _refsOf(node) {
     if (!node || !node.relations || !node.relations.reference) return [];
     return node.relations.reference
       .map((id) => this._byId[id])
@@ -235,268 +124,313 @@ Page({
       .map((n) => ({ ...n, mastery: mockMastery(n.name) }));
   },
 
-  /* ---------- 渲染 ---------- */
-  render() {
-    nodesCount = 0;
-    const { w, h } = this.data.stageSize;
-    const cx = w / 2, cy = h / 2 - 6;
-
-    let nodes = [];
-    let edges = [];
-
-    if (this._mode === 'evo') {
-      const pres = this.preReqsOf(this._current);
-      const centerY = h - 120;
-      const preY = 130;
-      const per = pres.length > 0 ? Math.min(rpx(160), (w - 80) / pres.length) : rpx(160);
-      const x0 = cx - ((pres.length - 1) * per) / 2;
-      pres.forEach((p, i) => {
-        const x = x0 + i * per;
-        nodes.push(this.nodeView('anc', p, x, preY, rpx(90)));
-        edges.push({ x1: x, y1: preY + rpx(24), x2: cx, y2: centerY - rpx(52) });
-      });
-      nodes.push(this.nodeView('center', this._current, cx, centerY, rpx(200), true));
-    } else {
-      const kids = this._currentKids || [];
-      const MAX_KIDS = 8; // 工作记忆上限 7±2
-      // 组视图：组内分圈
-      let showKids = kids;
-      let showGroups = null;
-      if (this._current && this._current.grpType && kids.length > MAX_KIDS) {
-        const ringIndex = this.data.ringIndex;
-        const ringCount = Math.ceil(kids.length / MAX_KIDS);
-        showKids = kids.slice(ringIndex * MAX_KIDS, (ringIndex + 1) * MAX_KIDS);
-        this.setData({ ringCount: ringCount, showRingNext: ringCount > 1 });
-      } else {
-        this.setData({ showRingNext: false });
-        // 结构统筹：kids>8 且非组视图 → 只显示组节点（不平铺）
-        if (kids.length > MAX_KIDS) {
-          showGroups = groupKids(kids);
-          showKids = [];
-        }
-      }
-      const n = showKids.length;
-      const R = Math.min(w * 0.36, rpx(280));
-      const cR = rpx(60), kR = rpx(30);
-      showKids.forEach((k, i) => {
-        const ang = (i / n) * Math.PI * 2 - Math.PI / 2;
-        const x = cx + R * Math.cos(ang);
-        const y = cy + R * Math.sin(ang);
-        nodes.push(this.nodeView('kid', k, x, y, rpx(108)));
-        const dx = x - cx, dy = y - cy, dist = Math.hypot(dx, dy);
-        const ux = dx / dist, uy = dy / dist;
-        edges.push({
-          x1: cx + ux * cR, y1: cy + uy * cR,
-          x2: x - ux * kR, y2: y - uy * kR
-        });
-      });
-      // 结构统筹：渲染组节点（组节点≤6不超上限）
-      if (showGroups) {
-        showGroups.forEach((g, i) => {
-          const ang = (i / showGroups.length) * Math.PI * 2 - Math.PI / 2;
-          const x = cx + R * Math.cos(ang);
-          const y = cy + R * Math.sin(ang);
-          nodes.push({
-            id: 'grp-' + g.type, role: 'kid', name: g.label + ' x' + g.count, isCenter: false,
-            synthetic: true, hasMastery: false, showNameIn: false,
-            label: g.label + ' x' + g.count, typeLabel: '', mastery: null,
-            left: x, top: y, size: rpx(108), borderColor: '#a1a1a6',
-            masteryText: '', animDelay: nodesCount++ * 40
-          });
-        });
-      }
-      nodes.push(this.nodeView('center', this._current, cx, cy, rpx(150), true));
-    }
-
-    this.setData({
-      nodes,
-      showEvoReturn: this._mode === 'evo' && this._evoReturn && this._evoReturn.node !== this._current,
-    });
-
-    this.drawEdges(edges);
-    this.renderInfo();
+  /* ---------- 目录导航（数学 → 单元 → 小节 → 知识点树） ---------- */
+  enterSubject() {
+    this._stack = [];
+    this._current = { name: '数学', type: 'unit', synthetic: true, mastery: null };
+    this._currentKids = this._unitList.map((u, i) => ({
+      id: 'unit-' + i, name: u, type: 'unit', synthetic: true, unitName: u
+    }));
+    this._selectedLeaf = null;
+    this.closeSheet();
+    this.render();
   },
 
-  nodeView(role, node, x, y, size, isCenter) {
-    const m = node.mastery != null ? node.mastery : 0;
-    const longName = node.name && node.name.length > 5;
-    return {
-      id: node.knowledgeId || node.secName || node.unitName || node.name,
-      role,
-      name: node.name || '',
-      isCenter: !!isCenter,
-      synthetic: !!node.synthetic,
-      hasMastery: node.mastery != null,
-      showNameIn: !isCenter && !longName && !node.synthetic,
-      label: (!isCenter && (longName || node.synthetic)) ? node.name : '',
-      typeLabel: node.synthetic ? TYPE_LABEL[node.type] || '' : TYPE_LABEL[node.type] || '',
-      mastery: node.mastery != null ? m : null,
-      left: x, top: y, size,
-      borderColor: node.synthetic ? '#d8d8dc' : mColor(m),
-      masteryText: node.mastery != null ? m + '%' : '',
-      animDelay: nodesCount++ * 40
-    };
+  enterUnit(unitName) {
+    this._stack.push({ node: this._current, kids: this._currentKids });
+    const secs = Object.keys(this._units[unitName].secs).sort();
+    this._current = { name: unitName, type: 'unit', synthetic: true, unitName };
+    this._currentKids = secs.map((s, i) => ({
+      id: 'sec-' + i, name: s, type: 'section', synthetic: true, secName: s, unitName
+    }));
+    this._selectedLeaf = null;
+    this.closeSheet();
+    this.render();
   },
 
-  drawEdges(edges) {
-    if (!this._ctx || !this._canvas) {
-      this.initCanvas(() => this.drawEdges(edges));
+  enterSection(secName, unitName) {
+    this._stack.push({ node: this._current, kids: this._currentKids });
+    const roots = this._units[unitName].secs[secName] || [];
+    this._current = { name: secName, type: 'section', synthetic: true, secName, unitName };
+    this._currentKids = roots.map((n) => ({ ...n, mastery: mockMastery(n.name) }));
+    this._selectedLeaf = null;
+    this.closeSheet();
+    this.render();
+  },
+
+  enterNode(node) {
+    this._stack.push({ node: this._current, kids: this._currentKids });
+    this._current = node;
+    this._currentKids = this._childrenOf(node);
+    this._selectedLeaf = null;
+    this.closeSheet();
+    this.render();
+  },
+
+  goUpTree() {
+    if (!this._stack.length) {
+      // tab 根层没有「上一页」可退；非 tab 才 navigateBack
+      if (!this.data.isTab) wx.navigateBack();
       return;
     }
-    const { w, h } = this.data.stageSize;
-    const ctx = this._ctx;
-    ctx.clearRect(0, 0, w, h);
-    ctx.lineWidth = 1.2;
-    ctx.strokeStyle = 'rgba(0,122,255,0.22)';
-    ctx.beginPath();
-    for (const e of edges) {
-      ctx.moveTo(e.x1, e.y1);
-      ctx.lineTo(e.x2, e.y2);
-    }
-    ctx.stroke();
-  },
-
-  initCanvas(cb) {
-    wx.createSelectorQuery().in(this)
-      .select('#graphCanvas')
-      .fields({ node: true, size: true })
-      .exec((res) => {
-        if (!res || !res[0] || !res[0].node) return;
-        const canvas = res[0].node;
-        const { w, h } = this.data.stageSize;
-        const dpr = this._dpr;
-        canvas.width = w * dpr;
-        canvas.height = h * dpr;
-        const ctx = canvas.getContext('2d');
-        ctx.scale(dpr, dpr);
-        this._canvas = canvas;
-        this._ctx = ctx;
-        if (cb) cb();
-      });
-  },
-
-  renderInfo() {
-    const n = this._current;
-    if (!n) return;
-    const m = n.mastery != null ? n.mastery : (n.synthetic ? null : mockMastery(n.name));
-    const src = n.concept && n.concept.source_text;
-    const imp = n.importance || {};
-    const info = {
-      name: n.name,
-      path: (n.path || []).join(' / ') || (n.synthetic ? '数学 · 知识图谱' : ''),
-      mastery: m,
-      masteryText: m != null ? String(m) : '—',
-      masteryBg: m != null ? `conic-gradient(${mColor(m)} ${m}%, #e5e5ea 0)` : '#e5e5ea',
-      masteryColor: m != null ? mColor(m) : '#c7c7cc',
-      status: m != null ? mStatus(m) : '',
-      statusClass: m != null ? (m >= 75 ? 'st-high' : m >= 50 ? 'st-mid' : m > 0 ? 'st-low' : 'st-zero') : 'st-zero',
-      desc: src || '',
-      typeLabel: TYPE_LABEL[n.type] || '知识点',
-      count: this._currentKids ? this._currentKids.length : 0,
-      hot: imp.exam_frequency >= 4,
-      key: imp.curriculum_weight >= 4
-    };
-    this.setData({ info });
-  },
-
-  /* ---------- 事件 ---------- */
-  toggleDesc() {
-    this.setData({ infoExpanded: !this.data.infoExpanded });
-  },
-
-  onNodeTap(e) {
-    const id = e.currentTarget.dataset.id;
-    if (this.data.mode === 'evo') {
-      const node = this._byId[id];
-      if (!node) return;
-      this._evoStack.push(this._current);
-      this._current = node;
-      this.render();
-      return;
-    }
-    if (id && id.indexOf('grp-') === 0) {
-      const gtype = id.slice(4);
-      const groups = groupKids(this._currentKids || []);
-      const g = groups.find(x => x.type === gtype);
-      if (!g) return;
-      this.enterGroup(g);
-      return;
-    }
-    const kid = (this._currentKids || []).find((k) => (k.knowledgeId || k.secName || k.unitName) === id);
-    if (!kid) return;
-    if (kid.unitName && !kid.secName) {
-      this.enterUnit(kid.unitName);
-    } else if (kid.secName && !kid.knowledgeId) {
-      this.enterSection(kid.secName, kid.unitName);
-    } else if (kid.knowledgeId) {
-      this.enterNode(this._byId[kid.knowledgeId]);
-    }
-  },
-
-  onModeTap() {
-    if (this._mode === 'radial') this.enterEvo();
-    else this.exitEvo();
-  },
-
-  onUpTap() {
-    if (this._mode === 'evo') {
-      if (this._evoStack.length) {
-        this._current = this._evoStack.pop();
-        this.render();
-      } else {
-        this.exitEvo();
-        wx.showToast({ title: '已退出演化模式', icon: 'none' });
-      }
-      return;
-    }
-    if (this._stack.length === 0) { wx.navigateBack(); return; }
     const prev = this._stack.pop();
     this._current = prev.node;
     this._currentKids = prev.kids;
-    this.setData({ crumb: this.crumbFor(this._current), showUp: this._current.name !== '数学' });
+    this._selectedLeaf = null;
+    this.closeSheet();
     this.render();
   },
 
-  crumbFor(n) {
-    const c = [{ name: '数学', idx: 0 }];
-    if (n.unitName) c.push({ name: n.unitName, idx: 1 });
-    if (n.secName) c.push({ name: n.secName, idx: 2 });
-    if (n.name && !n.synthetic) c.push({ name: n.name, idx: 3 });
-    return c;
-  },
-
-  onEvoReturnTap() { this.evoReturn(); },
-
-  onRingNext() {
-    const rc = this.data.ringCount || 1;
-    this.setData({ ringIndex: (this.data.ringIndex + 1) % rc });
+  jumpTree(idx) {
+    if (idx >= this._stack.length) return; // 点到的是当前项本身
+    const target = this._stack[idx];
+    this._current = target.node;
+    this._currentKids = target.kids;
+    this._stack = this._stack.slice(0, idx);
+    this._selectedLeaf = null;
+    this.closeSheet();
     this.render();
   },
+
+  /* ---------- 演化模式（前置依赖链，relations.reference） ---------- */
+  viewEvo(node) {
+    if (!node || node.synthetic) return;
+    this._evoFocus = node;
+    this._evoStack = [];
+    this.setData({ mode: 'evo' });
+    this.render();
+  },
+
+  viewEvoFromSheet() {
+    if (!this._selectedLeaf) return;
+    const node = this._selectedLeaf;
+    this.closeSheet();
+    this.viewEvo(node);
+  },
+
+  stepEvo(id) {
+    const node = this._byId[id];
+    if (!node) return;
+    this._evoStack.push(this._evoFocus);
+    this._evoFocus = node;
+    this.render();
+  },
+
+  stepBackEvo() {
+    if (!this._evoStack.length) return;
+    this._evoFocus = this._evoStack.pop();
+    this.render();
+  },
+
+  /* ---------- 渲染 ---------- */
+  render() {
+    if (this.data.mode === 'evo') this.renderEvo();
+    else this.renderTree();
+    this.renderCrumb();
+  },
+
+  renderTree() {
+    const kids = this._currentKids || [];
+    const isStructural = kids.length > 0 && !!kids[0].synthetic;
+    this.setData({
+      showUp: this._stack.length > 0,
+      isStructural,
+      focus: this.buildFocus(kids, isStructural),
+      rows: isStructural ? this.buildRows(kids) : [],
+      groups: isStructural ? [] : this.buildGroups(kids)
+    });
+  },
+
+  buildFocus(kids, isStructural) {
+    const cur = this._current;
+    if (isStructural || cur.synthetic) {
+      return {
+        name: cur.name,
+        showMastery: false,
+        metaText: kids.length ? kids.length + ' 项' : '暂无内容',
+        showEvoBtn: false
+      };
+    }
+    const m = cur.mastery != null ? cur.mastery : mockMastery(cur.name);
+    return {
+      name: cur.name,
+      showMastery: true,
+      masteryPct: m,
+      masteryColor: mColor(m),
+      statusText: mStatus(m),
+      metaText: kids.length ? kids.length + ' 个相关知识点' : '最细知识点',
+      showEvoBtn: true
+    };
+  },
+
+  buildRows(kids) {
+    return kids.map((k) => {
+      let sub = '';
+      if (k.unitName && !k.secName) {
+        const secCount = Object.keys(this._units[k.unitName].secs).length;
+        sub = secCount + ' 节';
+      } else if (k.secName) {
+        const rootCount = (this._units[k.unitName].secs[k.secName] || []).length;
+        sub = rootCount + ' 个知识点';
+      }
+      return { id: k.id, name: k.name, sub };
+    });
+  },
+
+  buildGroups(kids) {
+    const buckets = {};
+    kids.forEach((k) => { (buckets[k.type] = buckets[k.type] || []).push(k); });
+    const selectedId = this._selectedLeaf ? this._selectedLeaf.knowledgeId : null;
+    return TYPE_ORDER.filter((t) => buckets[t]).map((t) => ({
+      type: t,
+      label: TYPE_LABEL[t],
+      count: buckets[t].length,
+      items: buckets[t].map((k) => {
+        const m = k.mastery != null ? k.mastery : mockMastery(k.name);
+        const childCount = this._childCount(k.knowledgeId);
+        return {
+          id: k.knowledgeId,
+          name: k.name,
+          mastery: m,
+          masteryColor: mColor(m),
+          hasMore: childCount > 0,
+          moreCount: childCount,
+          selected: k.knowledgeId === selectedId
+        };
+      })
+    }));
+  },
+
+  renderEvo() {
+    const focus = this._evoFocus;
+    if (!focus) {
+      this.setData({ evoEmpty: true, evoLines: [], evoPres: [], evoCenter: null, evoShowBack: false });
+      return;
+    }
+    const pres = this._refsOf(focus);
+    const n = pres.length;
+    const cx = EVO_W / 2, cy = EVO_CENTER_Y;
+    const per = n > 0 ? Math.max(96, Math.min(160, (EVO_W - 80) / n)) : 160;
+    const x0 = cx - ((n - 1) * per) / 2;
+
+    const evoPres = [];
+    const evoLines = [];
+    pres.forEach((p, i) => {
+      const x = x0 + i * per;
+      const y = EVO_PRE_Y;
+      const m = p.mastery != null ? p.mastery : mockMastery(p.name);
+      evoPres.push({ id: p.knowledgeId, name: p.name, mastery: m, masteryColor: mColor(m), left: x, top: y });
+
+      // 连线两端各按自身圆半径收缩，避免线头扎进圆心
+      const dx = cx - x, dy = cy - y, dist = Math.hypot(dx, dy) || 1;
+      const ux = dx / dist, uy = dy / dist;
+      const line = lineBetween(x + ux * EVO_PRE_R, y + uy * EVO_PRE_R, cx - ux * EVO_CENTER_R, cy - uy * EVO_CENTER_R);
+      line.idx = i;
+      evoLines.push(line);
+    });
+
+    this.setData({
+      evoEmpty: false,
+      evoLines,
+      evoPres,
+      evoCenter: { name: focus.name, left: cx, top: cy },
+      evoShowBack: this._evoStack.length > 0,
+      evoStageH: EVO_H
+    });
+  },
+
+  renderCrumb() {
+    let names;
+    if (this.data.mode === 'evo') {
+      names = this._evoStack.map((n) => n.name);
+      if (this._evoFocus) names.push(this._evoFocus.name);
+    } else {
+      names = this._stack.map((s) => s.node.name).concat([this._current ? this._current.name : '']);
+    }
+    const crumb = names.map((name, idx) => ({ name, idx, isLast: idx === names.length - 1 }));
+    this.setData({ crumb });
+  },
+
+  /* ---------- 详情面板（叶子知识点） ---------- */
+  openSheet(node) {
+    const m = node.mastery != null ? node.mastery : mockMastery(node.name);
+    const src = (node.concept && node.concept.source_text) || '';
+    const imp = node.importance || {};
+    const path = (node.path || []).concat([node.name]).join(' / ');
+    this.setData({
+      sheet: {
+        name: node.name,
+        path,
+        masteryPct: m,
+        masteryColor: mColor(m),
+        statusText: mStatus(m) + ' · ' + m + '%',
+        statusClass: mStCls(m),
+        desc: src || '暂无教材原文。',
+        typeLabel: TYPE_LABEL[node.type] || '知识点',
+        hot: imp.exam_frequency >= 4,
+        key: imp.curriculum_weight >= 4
+      }
+    });
+  },
+
+  closeSheet() {
+    this.setData({ sheet: null });
+  },
+
+  /* ---------- 事件 ---------- */
+  onModeTap(e) {
+    const next = e.currentTarget.dataset.mode;
+    if (next === this.data.mode) return;
+    this.setData({ mode: next });
+    this.render();
+  },
+
+  onRowTap(e) {
+    const id = e.currentTarget.dataset.id;
+    const kid = (this._currentKids || []).find((k) => k.id === id);
+    if (!kid) return;
+    if (kid.unitName && !kid.secName) this.enterUnit(kid.unitName);
+    else if (kid.secName) this.enterSection(kid.secName, kid.unitName);
+  },
+
+  onCardTap(e) {
+    const id = e.currentTarget.dataset.id;
+    const kid = (this._currentKids || []).find((k) => k.knowledgeId === id);
+    if (!kid) return;
+    if (this._hasKids(kid)) {
+      this.enterNode(this._byId[kid.knowledgeId]);
+      return;
+    }
+    this._selectedLeaf = kid;
+    this.render();
+    this.openSheet(kid);
+  },
+
+  onEvoBtnTap() { this.viewEvo(this._current); },
+  onSheetEvoTap() { this.viewEvoFromSheet(); },
+  onSheetCloseTap() { this.closeSheet(); },
+  onOverlayTap() { this.closeSheet(); },
+
+  onUpTap() { this.goUpTree(); },
+
+  onEvoPreTap(e) { this.stepEvo(e.currentTarget.dataset.id); },
+  onEvoBackTap() { this.stepBackEvo(); },
+  onEvoEmptyGoTree() { this.setData({ mode: 'tree' }); this.render(); },
 
   onCrumbTap(e) {
     const idx = e.currentTarget.dataset.idx;
-    if (this._mode === 'evo') {
+    if (this.data.mode === 'evo') {
       if (idx >= this._evoStack.length) return;
-      this._current = this._evoStack[idx];
+      this._evoFocus = this._evoStack[idx];
       this._evoStack = this._evoStack.slice(0, idx);
       this.render();
       return;
     }
-    const popCount = this._stack.length - (idx - 1);
-    let prev = null;
-    for (let i = 0; i < popCount; i++) prev = this._stack.pop();
-    if (idx === 0 || !prev) { this.enterSubject(); return; }
-    this._current = prev.node;
-    this._currentKids = prev.kids;
-    this.setData({ crumb: this.crumbFor(this._current), showUp: this._current.name !== '数学' });
-    this.render();
+    this.jumpTree(idx);
   },
 
   onBackTap() {
-    // tab 页无返回栈
-    if (getCurrentPages().length <= 1) return;
+    if (this.data.isTab) return;
     wx.navigateBack();
   }
 });
-
-let nodesCount = 0;
