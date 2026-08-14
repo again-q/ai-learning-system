@@ -112,17 +112,21 @@ ai学习系统开发/
 │       ├── login/                  # 登录页
 │       ├── index/                  # 首页
 │       ├── study/                  # AI 学习对话页
-│       ├── graph/                  # 五维能力图谱页
+│       ├── graph/                  # 知识图谱页（Tab「图谱」；2026-08-10 起取代原五维雷达）
 │       ├── mine/                   # 个人中心
-│       ├── dimension-detail/       # 维度详情页
-│       ├── knowledge-tree/         # 知识树展示页
-│       ├── model-cards/            # 模型卡页
-│       ├── method-list/            # 方法列表页
+│       ├── photo/                  # 拍照诊断
+│       ├── report/                 # 诊断报告
+│       ├── dimension-detail/       # 维度详情页（占位，暂无入口）
+│       ├── model-cards/            # 模型卡页（占位）
+│       ├── method-list/            # 方法列表页（占位）
 │       └── admin/knowledge-admin/  # 知识管理后台
+│   （已归档：archive/miniprogram/pages/knowledge-map、knowledge-tree）
 ├── cloudfunctions/                 # 云函数
 │   ├── userLogin/                  # 用户登录/注册云函数
-│   ├── manageKnowledge/            # 知识库管理云函数
-│   └── quickstartFunctions/        # 云开发示例云函数
+│   ├── graphService/               # 知识图谱查询
+│   ├── knowledgeAdmin/             # 节点导入/管理
+│   ├── manageKnowledge/            # 旧版知识库 CRUD（双轨遗留）
+│   ├── photoUpload/ diagnose/ judgeOne/ dispute/  # 拍照诊断链路
 ├── .reasonix/                      # Reasonix 配置（PreToolUse Hook、7个 Skill）
 ├── scripts/                        # 门禁脚本
 │   ├── gate.sh                     # 统一门禁 CLI
@@ -249,13 +253,16 @@ App({
 1. `pages/login/login` — 登录页（启动页）
 2. `pages/index/index` — 首页
 3. `pages/study/study` — 学习页
-4. `pages/graph/graph` — 图谱页
+4. `pages/graph/graph` — **知识图谱页**（Tab「图谱」；目录 + 演化链）
 5. `pages/mine/mine` — 我的页
-6. `pages/dimension-detail/dimension-detail` — 维度详情页
-9. `pages/knowledge-tree/knowledge-tree` — 知识树页
-10. `pages/model-cards/model-cards` — 模型卡页
-11. `pages/method-list/method-list` — 方法列表页
-12. `pages/admin/knowledge-admin/knowledge-admin` — 知识管理后台
+6. `pages/photo/photo` — 拍照页
+7. `pages/report/report` — 报告页
+8. `pages/dimension-detail/dimension-detail` — 维度详情页（占位）
+9. `pages/model-cards/model-cards` — 模型卡页
+10. `pages/method-list/method-list` — 方法列表页
+11. `pages/admin/knowledge-admin/knowledge-admin` — 知识管理后台
+
+> ⚠️ `knowledge-map`、`knowledge-tree` 已归档至 `archive/miniprogram/pages/`（2026-08-14）。**现行结构以 `doc/PROJECT-STRUCTURE.md` 为准。**
 
 **TabBar 配置**（4 个标签）：
 
@@ -356,9 +363,20 @@ App({
 
 ---
 
-### 6.4 图谱页 [pages/graph/](file:///Users/apple/Desktop/ai%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/miniprogram/pages/graph/graph.js)
+### 6.4 图谱页 [pages/graph/](miniprogram/pages/graph/graph.js)
 
-**职责**：五维能力向量模型的可视化页面，是本项目最核心的可视化模块。用 Canvas 绘制可交互的五维能力雷达图，支持点击节点缩放聚焦。
+> **⚠️ 2026-08-14 更新**：本节下方大量描述的是 **2026-08-10 之前** 的五维雷达实现，**已废弃**。当前 `pages/graph` 为 **知识图谱**（目录列表 + 演化链双模式，调 `graphService.getAll`）。详见 `doc/PROJECT-STRUCTURE.md` §2.1。
+>
+> 五维雷达可视化 **暂无页面**，待重建。
+
+**当前职责（2026-08-13 起）**：K 维度知识层浏览——单元→小节→知识点树（目录模式）+ 前置依赖链（演化模式）。TabBar「图谱」唯一入口。
+
+**历史职责（已废弃，仅供查阅）**：五维能力向量雷达图 Canvas 可视化…
+
+---
+<!-- 以下为历史文档，描述已移除的五维雷达实现 -->
+
+**职责（历史）**：五维能力向量模型的可视化页面，是本项目最核心的可视化模块。用 Canvas 绘制可交互的五维能力雷达图，支持点击节点缩放聚焦。
 
 **内部状态（非 setData）**：
 为避免 setData 性能开销，Canvas 相关状态存于实例属性：
@@ -826,7 +844,7 @@ PRD → 架构 → 详细设计 → 编码 → 代码评审
 | [login.js](file:///Users/apple/Desktop/ai%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/miniprogram/pages/login/login.js) | 97 | 登录主流程 + 头像上传 |
 | [index.js](file:///Users/apple/Desktop/ai%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/miniprogram/pages/index/index.js) | 105 | 首页总览 + 环形图绘制 |
 | [study.js](file:///Users/apple/Desktop/ai%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/miniprogram/pages/study/study.js) | 67 | AI 对话学习 |
-| [graph.js](file:///Users/apple/Desktop/ai%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/miniprogram/pages/graph/graph.js) | 310 | 五维能力图谱（最复杂） |
+| [graph.js](miniprogram/pages/graph/graph.js) | ~430 | **知识图谱**（Tab「图谱」；目录+演化链） |
 | [mine.js](file:///Users/apple/Desktop/ai%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/miniprogram/pages/mine/mine.js) | 73 | 个人中心 |
 | [dimension-detail.js](file:///Users/apple/Desktop/ai%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/miniprogram/pages/dimension-detail/dimension-detail.js) | 27 | 维度详情占位页 |
 | [userLogin/index.js](file:///Users/apple/Desktop/ai%E5%AD%A6%E4%B9%A0%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91/cloudfunctions/userLogin/index.js) | 74 | 用户登录/注册云函数 |

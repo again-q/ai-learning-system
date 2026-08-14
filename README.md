@@ -2,8 +2,7 @@
 
 > **课后辅助工具，不代替学校。**
 >
-> 一个基于认知科学的初中学科薄弱点精确诊断系统。
-> 通过学校日常练习 + 轻量诊断，告诉你真正该学什么、为什么、怎么学。
+> 基于认知科学的初高中学科薄弱点精确诊断系统（微信小程序 + CloudBase 云开发）。
 
 | 项目 | 值 |
 |------|-----|
@@ -14,59 +13,63 @@
 
 ---
 
-## 📊 项目进展（2026-07-30）
+## 快速入口
 
-```
-总进度：约 42%
-理论阶段结束，工程阶段开始
-```
+| 你想… | 去这里 |
+|--------|--------|
+| **看完整文件分类** | [`doc/PROJECT-STRUCTURE.md`](doc/PROJECT-STRUCTURE.md) |
+| **更新项目状态** | [`doc/STATUS-MANIFEST.md`](doc/STATUS-MANIFEST.md) |
+| **看路线图** | [`ROADMAP.md`](ROADMAP.md) |
+| **改知识图谱前端** | `miniprogram/pages/graph/`（Tab「图谱」） |
+| **改图谱数据** | `knowledge-graph/nodes/` → `scripts/manage-knowledge-nodes.py` |
+| **AI 协作规则** | [`AI协作手册.md`](AI协作手册.md) |
+| **查归档/废弃文件** | [`archive/README.md`](archive/README.md) |
+
+---
+
+## 当前进度（2026-08-14）
 
 | 模块 | 状态 | 说明 |
 |------|------|------|
-| **五维能力模型** | ✅ 定稿 v2.5 | 三层重构：知识层/模型层/**思想方法层** |
-| **知识图谱** | ✅ **全部交付** | **361 节点**（356 知识层 + 5 思想方法层）含容斥原理补全 |
-| **诊断引擎设计** | ✅ **架构定稿** | 双 AI 管线 + RAG + Flash Agent Tool-Use + 自增强闭环 |
-| **拍照录入** | 🔴 **下一步** | 拍照→结构化→入库 |
-| **AI 教练** | 🟡 待开发 | 基于知识图谱的诊断对话（复用诊断工具包） |
-| **评分引擎** | 🟡 待开发 | K/A/Q/S/T 各维度云函数 |
-| **前端真实数据** | 🟡 待开发 | 替换 mock |
-| **UI 打磨** | 🟢 后续 | 动画/微交互/批量体验 |
-
-**下一里程碑**：拍照录入 MVP（9/1 开学前）
+| 知识图谱数据 | ✅ | 361 节点入库 `knowledge_nodes` |
+| 知识图谱前端 | ✅ | Tab「图谱」= `pages/graph`（目录 + 演化链） |
+| 拍照诊断 | 🟡 | 前端 photo/report 就绪，云函数待部署 |
+| 五维雷达可视化 | 🔴 | 原 graph 页已改知识图谱，雷达待重建 |
+| 掌握度真实数据 | 🔴 | 前端 mock，待诊断链路写入 |
 
 ---
 
-## 📁 项目结构
+## 项目结构（精简）
 
 ```
 ai-learning-system/
-├── knowledge-graph/          ← 知识图谱最终产出（24节/356节点）
-│   ├── knowledge_index.json
-│   └── nodes/
-├── doc/                      ← 项目文档
-│   ├── decision-log.md       ← 决策记录
-│   ├── methodology-knowledge-graph.md  ← 方法论
-│   └── postmortem-知识图谱构建复盘.md  ← 完整复盘
-├── scripts/                  ← 管线脚本
-├── miniprogram/              ← 小程序源码
+├── miniprogram/              ← 小程序（编译这个）
+│   └── pages/graph/          ← Tab「图谱」= 知识图谱（唯一入口）
 ├── cloudfunctions/           ← 云函数
-└── ROADMAP.md                ← 开发路线图
+│   ├── graphService/         ← 图谱查询
+│   └── knowledgeAdmin/       ← 节点管理
+├── knowledge-graph/          ← 图谱 JSON 源文件
+├── output/                   ← OCR 管线中间产物
+├── doc/                      ← 全部设计文档
+│   ├── PROJECT-STRUCTURE.md  ← 文件用途分类（详细）
+│   └── STATUS-MANIFEST.md    ← 状态快照 + 更新清单
+├── archive/                  ← 废弃页面/原型（不参与编译）
+├── scripts/                  ← 门禁、导入、测试
+└── ROADMAP.md
 ```
 
 ---
 
-## 🔗 相关文档
+## 相关文档
 
 | 文档 | 路径 |
 |------|------|
+| 文件结构详解 | `doc/PROJECT-STRUCTURE.md` |
 | 开发路线图 | `ROADMAP.md` |
 | 决策记录 | `doc/decision-log.md` |
-| 知识图谱方法论 | `doc/methodology-knowledge-graph.md` |
-| 知识图谱复盘 | `doc/postmortem-知识图谱构建复盘.md` |
-| 知识图谱 JSON 规范 | `doc/知识图谱结构规范.md` |
-| 编码规范 | `knowledge-base/项目独有/coding-rules.md` |
-| 编码门禁 | `knowledge-base/项目独有/GATE_SUMMARY.md` |
+| 知识图谱规范 | `doc/knowledge-graph/知识图谱结构规范.md` |
+| 编码门禁 | `GATE_SUMMARY.md` |
 
 ---
 
-*距 9/1 开学还有 32 天*
+*结构整理：2026-08-14 · 废弃页面见 `archive/`*
