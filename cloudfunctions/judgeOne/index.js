@@ -326,6 +326,12 @@ exports.main = async (event) => {
     const questionType = raw.questionType || question.questionType || '其他';
     const clamped = clampParams(raw, questionType);
 
+    // 规则（用户 2026-08-14）：选择/填空无过程可分，答案错 → P 强制 0
+    // （AI 偶发 P 与 isCorrect 矛盾：isCorrect=false 却给 P=1/0.3，会导致掌握度虚高）
+    if ((questionType === '选择' || questionType === '填空') && raw.isCorrect === false) {
+      clamped.P = 0;
+    }
+
     // 更新题目
     await db.collection('questions').doc(questionId).update({
       data: {
