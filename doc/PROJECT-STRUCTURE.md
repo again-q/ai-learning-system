@@ -1,25 +1,39 @@
 # 项目文件结构说明（按用途分类）
 
 > **单一事实来源**：本文描述 `main` 分支当前仓库布局。归档内容见 [`archive/README.md`](../archive/README.md)。
-> 最后更新：2026-08-14
+> 最后更新：2026-08-14（根目录瘦身 + `data/` 归并）
 
 ---
 
 ## 一、总览
 
 ```
-ai-learning-system/                    ~404 文件 · ~10MB
-├── miniprogram/          【运行】微信小程序前端
-├── cloudfunctions/       【运行】CloudBase 云函数
-├── knowledge-graph/      【数据】知识图谱 JSON 源文件（入库前真源）
-├── output/               【管线】OCR/抽取中间产物（非前端直读）
-├── scripts/              【工具】门禁、导入、测试脚本
+ai-learning-system/
+├── miniprogram/          【前端】微信小程序（微信规定必须在根目录）
+├── cloudfunctions/       【后端】CloudBase 云函数（微信规定必须在根目录）
+├── data/                 【数据】图谱源文件 + OCR 管线产物
+│   ├── knowledge-graph/  ← 356 节点 JSON（入库前真源）
+│   └── pipeline/         ← Agent 抽取 / 质检中间文件
 ├── doc/                  【文档】PRD / 架构 / 详设 / 规范 / 评审
-├── archive/              【归档】已废弃页面与原型（不参与编译）
+│   └── project/          ← 路线图、协作手册、门禁（原根目录散落 md）
+├── scripts/              【工具】门禁、导入、部署、测试
+├── config/               【配置】sync-config 等
+├── archive/              【归档】废弃页面与原型（不参与编译）
 ├── knowledge-base/       【镜像】文档同步副本（→ 外部知识库，非运行时）
 ├── .reasonix/            【协作】AI Skill 与 Hook 配置
-└── （根目录）            项目入口 README、ROADMAP、gate.sh 等
+└── （根目录）            README、CLAUDE.md、gate.sh、微信工程配置
 ```
+
+**根目录 intentionally 瘦身后仅保留：**
+
+| 保留 | 原因 |
+|------|------|
+| `README.md` | 项目入口 |
+| `CLAUDE.md` | AI 协作最高规则（Hook 引用） |
+| `coding-rules.md` / `AI协作手册.md` | → `doc/project/` 的符号链接，兼容既有引用 |
+| `gate.sh` | → `scripts/gate.sh` 转发 |
+| `uploadCloudFunction.sh` | → `scripts/uploadCloudFunction.sh` 转发 |
+| `project.config.json` 等 | 微信开发者工具必需 |
 
 ---
 
@@ -53,14 +67,6 @@ ai-learning-system/                    ~404 文件 · ~10MB
 | `pages/knowledge-map/` | `archive/miniprogram/pages/knowledge-map/` | 与 graph 重复 |
 | `pages/knowledge-tree/` | `archive/miniprogram/pages/knowledge-tree/` | 旧树 + 旧云函数 |
 
-### 2.4 其他
-
-| 路径 | 用途 |
-|------|------|
-| `app.js` / `app.json` / `app.wxss` | 全局配置、TabBar、页面注册 |
-| `components/cloudTipModal/` | 云开发提示组件 |
-| `images/` | Tab 图标、UI 资源（含云开发模板遗留图） |
-
 ---
 
 ## 三、云函数 `cloudfunctions/`
@@ -76,26 +82,27 @@ ai-learning-system/                    ~404 文件 · ~10MB
 | `judgeOne` | 单题判定 | diagnose 内部 | 🟡 同上 |
 | `dispute` | 异议重诊 | report | 🟡 同上 |
 
-部署脚本：`uploadCloudFunction.sh`
+部署：`bash scripts/uploadCloudFunction.sh`（根目录脚本为兼容转发）
 
 ---
 
-## 四、知识图谱数据（两层，勿混）
+## 四、数据 `data/`（两层，勿混）
 
 | 位置 | 内容 | 谁用 |
 |------|------|------|
-| **`knowledge-graph/nodes/*.json`** | 24 节标准 JSON，356 节点 | 导入脚本 → CloudBase |
-| **`output/`** | OCR layout / agent2 抽取 / agent3 质检 / sections 文本 | 构建管线，**前端不读** |
+| **`data/knowledge-graph/nodes/*.json`** | 24 节标准 JSON，356 节点 | 导入脚本 → CloudBase |
+| **`data/pipeline/`** | OCR layout / agent2 抽取 / agent3 质检 / sections 文本 | 构建管线，**前端不读** |
 | **CloudBase `knowledge_nodes`** | 361 条已入库 | `graphService.getAll` |
 
 导入工具：`scripts/manage-knowledge-nodes.py`、`scripts/import-knowledge-graph.js`
 
 ---
 
-## 五、文档 `doc/`（61 文件）
+## 五、文档 `doc/`
 
 | 子目录 | 用途 |
 |--------|------|
+| **`project/`** | **ROADMAP、AI协作手册、coding-rules、GATE_SUMMARY、REVIEW_STRUCTURE** |
 | `prd/` | 产品需求（拍照录入 MVP） |
 | `arch/` | 小程序/后端 SAD |
 | `architecture/` | 诊断引擎、五维评分、系统架构 |
@@ -105,15 +112,9 @@ ai-learning-system/                    ~404 文件 · ~10MB
 | `review/` | 评审包、**知识图谱原型 v5** |
 | `reference/` | Code-Wiki（代码百科，部分章节待更新） |
 | `knowledge-graph/` | 图谱构建方法论与规范 |
-| `data/` | 需求确认、数据来源清单 |
-| `prompts/` | Agent 抽取 prompt |
-| `external-references/` | 外部参考书籍摘录 |
 | `decision-log.md` | 决策记录 |
-| `ENGINEERING_TODO.md` | 工程待办 |
 | **`PROJECT-STRUCTURE.md`** | **本文** |
 | **`STATUS-MANIFEST.md`** | 状态更新操作清单 + 当前快照 |
-
-> 旧版 K 维度规格已移至 [`archive/doc/`](../archive/doc/)。
 
 ---
 
@@ -121,18 +122,20 @@ ai-learning-system/                    ~404 文件 · ~10MB
 
 | 文件 | 用途 |
 |------|------|
-| `gate.sh`（根目录 symlink） | 五阶段门禁 CLI |
+| `gate.sh`（根目录转发） | 五阶段门禁 CLI |
 | `scripts/gate-hook.sh` | PreToolUse 编辑拦截 |
 | `scripts/manage-knowledge-nodes.py` | 图谱 path 修复 + 导入 JSON |
 | `scripts/import-knowledge-graph.js` | 批量导入 CloudBase |
+| `scripts/uploadCloudFunction.sh` | 云函数部署 |
 | `scripts/pipeline-all.sh` | OCR 全管线 |
+| `config/sync-config.json` | 知识库同步映射 |
 | `.reasonix/skills/` | prd-writer、gatekeeper、code-reviewer 等 |
 
 ---
 
 ## 七、镜像目录 `knowledge-base/`
 
-由 `sync-config.json` 定义，将根目录文档同步到外部知识库平台。**不是运行时依赖**，改 doc 后按需 sync。
+由 `config/sync-config.json` 定义，将项目文档同步到外部知识库平台。**不是运行时依赖**，改 doc 后按需 sync。见 [`knowledge-base/README.md`](../knowledge-base/README.md)。
 
 ---
 
@@ -150,8 +153,8 @@ ai-learning-system/                    ~404 文件 · ~10MB
 | 我要改… | 先查… |
 |---------|-------|
 | 知识图谱 UI | `miniprogram/pages/graph/` + `app.json` tabBar |
-| 图谱数据 | `knowledge-graph/nodes/` → 导入 → `graphService` |
+| 图谱数据 | `data/knowledge-graph/nodes/` → 导入 → `graphService` |
 | 拍照诊断 | `pages/photo` + `pages/report` + `diagnose` 云函数 |
 | 设计规范 | `doc/standards/设计语言规范.md` |
 | 小程序坑 | `doc/standards/前端视觉与动画工程经验.md` |
-| AI 协作流程 | `AI协作手册.md` |
+| AI 协作流程 | `doc/project/AI协作手册.md` |

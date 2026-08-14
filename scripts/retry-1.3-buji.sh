@@ -3,18 +3,18 @@
 # OCR已追加第19页(补集定义+例5+例6)
 # 用法：bash scripts/retry-1.3-buji.sh
 
-PROJECT="/Users/apple/Desktop/ai-learning-system"
+PROJECT="$(cd "$(dirname "$0")/.." && pwd)"
 SID="math_10_ch1_s3"
-OCRFILE=$(ls "${PROJECT}/output/sections/${SID}"*.txt 2>/dev/null | head -1)
+OCRFILE=$(ls "${PROJECT}/data/pipeline/sections/${SID}"*.txt 2>/dev/null | head -1)
 BASENAME=$(basename "$OCRFILE" .txt)
-LAYOUT="${PROJECT}/output/agent1_layout/${BASENAME}.md"
+LAYOUT="${PROJECT}/data/pipeline/agent1_layout/${BASENAME}.md"
 
 echo "========================================="
 echo "  重跑 1.3 集合的基本运算（补集修复）"
 echo "========================================="
 
 rm -f "$LAYOUT"
-rm -f "${PROJECT}/output/agent2_extraction/nodes/${SID}"*.json
+rm -f "${PROJECT}/data/pipeline/agent2_extraction/nodes/${SID}"*.json
 
 echo "▶️  A1..."
 T1=$(date +%s)
@@ -29,9 +29,9 @@ echo "▶️  A2..."
 T2=$(date +%s)
 qwenpaw agent chat --from-agent default \
   --to-agent ai-learning-system-math-jiegouzhuanhua-agent \
-  --text "从 ${LAYOUT} 提取知识点，section_id=${SID}，输出到 ${PROJECT}/output/agent2_extraction/nodes/" 2>&1 || true
+  --text "从 ${LAYOUT} 提取知识点，section_id=${SID}，输出到 ${PROJECT}/data/pipeline/agent2_extraction/nodes/" 2>&1 || true
 D2=$(( $(date +%s) - T2 ))
-NF=$(ls -t "${PROJECT}/output/agent2_extraction/nodes/${SID}"*.json 2>/dev/null | head -1)
+NF=$(ls -t "${PROJECT}/data/pipeline/agent2_extraction/nodes/${SID}"*.json 2>/dev/null | head -1)
 [ -z "$NF" ] && echo "❌ A2" && exit 1
 echo "   ✅ A2 ${D2}s"
 

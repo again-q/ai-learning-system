@@ -2,7 +2,7 @@
 """
 知识图谱 Schema 统一脚本
 ========================
-将 knowledge-graph/nodes/ 下 24 个 JSON 文件统一为标准格式。
+将 data/knowledge-graph/nodes/ 下 24 个 JSON 文件统一为标准格式。
 
 标准格式：
 {
@@ -23,7 +23,7 @@ import json
 import os
 import re
 
-NODES_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "knowledge-graph", "nodes")
+NODES_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data/knowledge-graph", "nodes")
 
 BASIC_SUBJECT = "数学"
 BASIC_STAGE = "高中"

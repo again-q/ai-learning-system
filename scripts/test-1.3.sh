@@ -4,11 +4,11 @@
 
 set -e
 SECTION="math_10_ch1_s3"
-PROJECT="/Users/apple/Desktop/ai-learning-system"
-SECTION_FILE="${PROJECT}/output/sections/math_10_ch1_s3_1.3_集合的基本运算.txt"
-LOG="${PROJECT}/output/_test_1.3.log"
-mkdir -p "${PROJECT}/output/agent1_layout"
-mkdir -p "${PROJECT}/output/agent2_extraction/nodes"
+PROJECT="$(cd "$(dirname "$0")/.." && pwd)"
+SECTION_FILE="${PROJECT}/data/pipeline/sections/math_10_ch1_s3_1.3_集合的基本运算.txt"
+LOG="${PROJECT}/data/pipeline/_test_1.3.log"
+mkdir -p "${PROJECT}/data/pipeline/agent1_layout"
+mkdir -p "${PROJECT}/data/pipeline/agent2_extraction/nodes"
 
 echo "=========================================" | tee "$LOG"
 echo "  1.3 全自动管线测试" | tee -a "$LOG"
@@ -22,7 +22,7 @@ START=$(date +%s)
 qwenpaw agent chat \
   --from-agent default \
   --to-agent ai-learning-system-math-banmianfenxi-agent \
-  --text "处理章节 ${SECTION}，输入 ${SECTION_FILE}，输出到 ${PROJECT}/output/agent1_layout/" \
+  --text "处理章节 ${SECTION}，输入 ${SECTION_FILE}，输出到 ${PROJECT}/data/pipeline/agent1_layout/" \
   2>&1 | tee -a "$LOG"
 RC1=$?
 DUR1=$(( $(date +%s) - START ))
@@ -39,7 +39,7 @@ START=$(date +%s)
 qwenpaw agent chat \
   --from-agent default \
   --to-agent ai-learning-system-math-jiegouzhuanhua-agent \
-  --text "从 ${PROJECT}/output/agent1_layout/${SECTION}.md 提取知识点，输出到 ${PROJECT}/output/agent2_extraction/nodes/" \
+  --text "从 ${PROJECT}/data/pipeline/agent1_layout/${SECTION}.md 提取知识点，输出到 ${PROJECT}/data/pipeline/agent2_extraction/nodes/" \
   2>&1 | tee -a "$LOG"
 RC2=$?
 DUR2=$(( $(date +%s) - START ))
@@ -72,7 +72,7 @@ echo "📊 质检结果：" | tee -a "$LOG"
 python3 -c "
 import json,sys
 try:
-    r=json.load(open('${PROJECT}/output/agent3_quality/quality_report.json'))
+    r=json.load(open('${PROJECT}/data/pipeline/agent3_quality/quality_report.json'))
     rep=r['report']
     print(f'  通过: {rep[\"passed\"]}')
     if not rep['passed']:

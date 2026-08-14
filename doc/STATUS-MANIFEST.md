@@ -15,8 +15,9 @@
 |------|------|------|
 | 小程序前端 | `miniprogram/` | ✅ 11 个活跃页面（已归档 knowledge-map / knowledge-tree） |
 | 云函数 | `cloudfunctions/` | 8 个（graphService + knowledgeAdmin 为图谱核心） |
-| 图谱源数据 | `knowledge-graph/` | 356 节点 JSON |
-| 管线产物 | `output/` | OCR/抽取中间文件 |
+| 图谱源数据 | `data/knowledge-graph/` | 356 节点 JSON |
+| 管线产物 | `data/pipeline/` | OCR/抽取中间文件 |
+| 项目级文档 | `doc/project/` | ROADMAP、协作手册、门禁 |
 | 文档 | `doc/` | 61 文件 |
 | 归档 | `archive/` | 废弃页面 + v4 原型 + 旧 K 维度规格 |
 | 知识库镜像 | `knowledge-base/` | 文档同步副本，非运行时 |

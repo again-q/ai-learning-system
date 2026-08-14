@@ -32,7 +32,7 @@ print(f"\n✅ 识别到 {len(result['TextDetections'])} 个文本块\n")
 for i, t in enumerate(result["TextDetections"], 1):
     print(f"  {i:2d}. [{t['Confidence']:3d}%] {t['DetectedText']}")
 
-os.makedirs("output/raw", exist_ok=True)
-with open("output/raw/ocr_page1.json", "w", encoding="utf-8") as f:
+os.makedirs("data/pipeline/raw", exist_ok=True)
+with open("data/pipeline/raw/ocr_page1.json", "w", encoding="utf-8") as f:
     json.dump(result, f, ensure_ascii=False, indent=2)
 print(f"\n📁 已保存 output/raw/ocr_page1.json")

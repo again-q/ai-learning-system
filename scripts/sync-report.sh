@@ -43,12 +43,14 @@ trap 'rm -f "$TMP_PY"' EXIT
 cat > "$TMP_PY" << 'PYEOF'
 import json, os, subprocess, sys
 
-config_path = "sync-config.json"
+config_path = "config/sync-config.json"
+if not os.path.exists(config_path):
+    config_path = "sync-config.json"  # 兼容旧路径
 kb_dir = "knowledge-base"
 apply = "--apply" in sys.argv
 
 if not os.path.exists(config_path):
-    print("ERROR: 未找到 sync-config.json，请确保运行在项目根目录")
+    print("ERROR: 未找到 config/sync-config.json，请确保运行在项目根目录")
     sys.exit(1)
 
 with open(config_path, encoding="utf-8") as f:

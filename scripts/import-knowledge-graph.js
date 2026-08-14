@@ -10,7 +10,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const NODES_DIR = path.join(__dirname, '../knowledge-graph/nodes');
+const NODES_DIR = path.join(__dirname, '../data/knowledge-graph/nodes');
 
 function collectNodes(dir) {
   const nodes = [];

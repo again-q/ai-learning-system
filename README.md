@@ -19,10 +19,10 @@
 |--------|--------|
 | **看完整文件分类** | [`doc/PROJECT-STRUCTURE.md`](doc/PROJECT-STRUCTURE.md) |
 | **更新项目状态** | [`doc/STATUS-MANIFEST.md`](doc/STATUS-MANIFEST.md) |
-| **看路线图** | [`ROADMAP.md`](ROADMAP.md) |
+| **看路线图** | [`doc/project/ROADMAP.md`](doc/project/ROADMAP.md) |
 | **改知识图谱前端** | `miniprogram/pages/graph/`（Tab「图谱」） |
-| **改图谱数据** | `knowledge-graph/nodes/` → `scripts/manage-knowledge-nodes.py` |
-| **AI 协作规则** | [`AI协作手册.md`](AI协作手册.md) |
+| **改图谱数据** | `data/knowledge-graph/nodes/` → `scripts/manage-knowledge-nodes.py` |
+| **AI 协作规则** | [`doc/project/AI协作手册.md`](doc/project/AI协作手册.md) |
 | **查归档/废弃文件** | [`archive/README.md`](archive/README.md) |
 
 ---
@@ -43,20 +43,27 @@
 
 ```
 ai-learning-system/
-├── miniprogram/              ← 小程序（编译这个）
-│   └── pages/graph/          ← Tab「图谱」= 知识图谱（唯一入口）
-├── cloudfunctions/           ← 云函数
+├── miniprogram/              ← 【前端】小程序（微信规定必须在根目录）
+│   └── pages/graph/          ← Tab「图谱」= 知识图谱
+├── cloudfunctions/           ← 【后端】云函数（微信规定必须在根目录）
 │   ├── graphService/         ← 图谱查询
 │   └── knowledgeAdmin/       ← 节点管理
-├── knowledge-graph/          ← 图谱 JSON 源文件
-├── output/                   ← OCR 管线中间产物
-├── doc/                      ← 全部设计文档
+├── data/                     ← 【数据】图谱源文件 + OCR 管线产物
+│   ├── knowledge-graph/      ← 356 节点 JSON（入库前）
+│   └── pipeline/             ← OCR/抽取中间文件
+├── doc/                      ← 【文档】设计 / 规范 / 评审
+│   ├── project/              ← 路线图、协作手册、门禁
 │   ├── PROJECT-STRUCTURE.md  ← 文件用途分类（详细）
-│   └── STATUS-MANIFEST.md    ← 状态快照 + 更新清单
-├── archive/                  ← 废弃页面/原型（不参与编译）
-├── scripts/                  ← 门禁、导入、测试
-└── ROADMAP.md
+│   └── STATUS-MANIFEST.md    ← 状态快照
+├── scripts/                  ← 【工具】门禁、导入、部署
+├── archive/                  ← 【归档】废弃页面/原型
+├── knowledge-base/           ← 【镜像】外部知识库同步副本（非运行时）
+├── README.md                 ← 本文件
+├── CLAUDE.md                 ← AI 协作最高规则
+└── gate.sh                   ← 门禁 CLI 入口
 ```
+
+> **为何没有 `frontend/`、`backend/` 文件夹？** 微信开发者工具要求 `miniprogram/` 与 `cloudfunctions/` 位于项目根目录（见 `project.config.json`），无法整体挪进子目录。
 
 ---
 
@@ -65,10 +72,10 @@ ai-learning-system/
 | 文档 | 路径 |
 |------|------|
 | 文件结构详解 | `doc/PROJECT-STRUCTURE.md` |
-| 开发路线图 | `ROADMAP.md` |
+| 开发路线图 | `doc/project/ROADMAP.md` |
 | 决策记录 | `doc/decision-log.md` |
 | 知识图谱规范 | `doc/knowledge-graph/知识图谱结构规范.md` |
-| 编码门禁 | `GATE_SUMMARY.md` |
+| 编码门禁 | `doc/project/GATE_SUMMARY.md` |
 
 ---
 
