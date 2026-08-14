@@ -87,6 +87,90 @@ const LR = {
 };
 // P 连续 0~1（决策 2026-08-14 用户：不再收敛四档），clampParams 内直接钳制
 
+// ============ 知识点匹配（#3 方案：封装独立函数，精确 → 子串最长；待 #9 图谱补全后升级为搜索） ============
+let _nodeCache = null;
+let _nodeCacheAt = 0;
+const NODE_CACHE_TTL = 5 * 60 * 1000;   // 5 分钟缓存，避免每次判题拉全量
+
+async function loadNodes() {
+  const now = Date.now();
+  if (!_nodeCache || now - _nodeCacheAt > NODE_CACHE_TTL) {
+    const res = await db.collection('knowledge_nodes')
+      .where({ knowledgeId: _.exists(true) }).limit(1000).get();
+    _nodeCache = res.data;
+    _nodeCacheAt = now;
+  }
+  return _nodeCache;
+}
+
+// 知识节点匹配：先精确（name 全等），失败则子串容错（AI 常输出句子式描述，取最长命中的节点名=最具体）
+async function matchKnowledgeNode(kName) {
+  const nodes = await loadNodes();
+  let nodeId = null, bestLen = 0;
+  for (const n of nodes) {
+    const nm = n.name || '';
+    if (!nm) continue;
+    if (nm === kName) return n.knowledgeId;
+    if (kName.includes(nm) && nm.length > bestLen) { bestLen = nm.length; nodeId = n.knowledgeId; }
+  }
+  return nodeId;
+}
+
+// 掌握度迁移（#8 用户拍板 2026-08-14）：复核页改 knowledgeNodeName 后，把这条题的 S_k/D_k 贡献从旧节点移到新节点
+// 旧节点扣回（Dsum 归零则删记录），新节点添加；同名/匹配失败安全跳过
+async function migrateProgress(openid, oldName, newName, D, P) {
+  if (!oldName || !newName || oldName === newName) return;
+  const d = Number(D) || 0;
+  const p = Number(P) || 0;
+  if (d <= 0) return;   // 没判过题（无 D）就没有掌握度可迁
+  const oldId = await matchKnowledgeNode(oldName);
+  const newId = await matchKnowledgeNode(newName);
+  if (oldId === newId) return;
+
+  // 旧节点扣回
+  if (oldId) {
+    const pRes = await db.collection('knowledge_progress')
+      .where({ userId: openid, knowledgeNodeId: oldId }).limit(1).get();
+    if (pRes.data.length) {
+      const doc = pRes.data[0];
+      const S = Math.max(0, (doc.sValue || 0) - d * p);
+      const Dsum = Math.max(0, (doc.dValue || 0) - d);
+      if (Dsum <= 0.0001) {
+        await db.collection('knowledge_progress').doc(doc._id).remove();
+      } else {
+        await db.collection('knowledge_progress').doc(doc._id).update({ data: {
+          sValue: Math.round(S * 10000) / 10000,
+          dValue: Math.round(Dsum * 10000) / 10000,
+          mastery: Math.round((S / Dsum) * 100) / 100,
+          lastUpdated: db.serverDate(),
+        }});
+      }
+    }
+  }
+
+  // 新节点添加
+  if (newId) {
+    const pRes = await db.collection('knowledge_progress')
+      .where({ userId: openid, knowledgeNodeId: newId }).limit(1).get();
+    const doc = pRes.data[0] || {};
+    const S = (doc.sValue || 0) + d * p;
+    const Dsum = (doc.dValue || 0) + d;
+    const patch = {
+      sValue: Math.round(S * 10000) / 10000,
+      dValue: Math.round(Dsum * 10000) / 10000,
+      mastery: Math.round((S / Dsum) * 100) / 100,
+      attempts: (doc.attempts || 0) + 1,
+      correctCount: (doc.correctCount || 0) + (p >= 0.5 ? 1 : 0),
+      lastUpdated: db.serverDate(),
+    };
+    if (pRes.data.length) {
+      await db.collection('knowledge_progress').doc(pRes.data[0]._id).update({ data: patch });
+    } else {
+      await db.collection('knowledge_progress').add({ data: { userId: openid, knowledgeNodeId: newId, ...patch } });
+    }
+  }
+}
+
 function clampParams(raw, questionType) {
   const [lo, hi] = LR[raw.level] || [0.01, 0.999];
   const D = Math.min(hi, Math.max(lo, Number(raw.D) || lo));
@@ -216,6 +300,7 @@ L11(0.98-0.999) 纯原创，全球个位数能解
 // ============ 单题判定 ============
 async function judgeQuestion(question, ragContext) {
   const ragSection = ragContext ? `\n\n【历史参考（仅供参考不强制）】\n${ragContext}` : '';
+  // isRecallQuestion 字段保留输出（未来报告/统计可用），当前掌握度逻辑不再区分回忆/应用（2026-08-14 K 整题更新）
   const userMsg = `输入是一道题的视觉转录上下文（题目文本 + 整图痕迹，可能含转录误差）。对这道题做两件事：
 
 第一步【学生视角感受难度】：模拟一个对应水平的高中生真实解题体验——先注意到什么、第一次卡在哪、卡住时缺的是什么、思维需要几次跳跃（每次难不难）、试错成本多高。重点是【体验难度】，不是拆步骤、不是证明。
@@ -302,6 +387,17 @@ exports.main = async (event) => {
       if (params.isCorrect !== undefined) patch.isCorrect = params.isCorrect;
       patch.paramsReviewed = true;
       await db.collection('questions').doc(questionId).update({ data: patch });
+      // 掌握度迁移（#8）：改了知识点名 → 把这条题的贡献从旧节点移到新节点（try/catch 不阻断复核保存）
+      try {
+        const newName = (params.knowledgeNodeName || '').trim();
+        const oldName = (qRes.data.knowledgeNodeName || '').trim();
+        if (newName && newName !== oldName) {
+          await migrateProgress(openid, oldName, newName,
+            qRes.data.difficultyValue, qRes.data.processScore);
+        }
+      } catch (e) {
+        console.error('[judgeOne] 掌握度迁移失败:', e);
+      }
       return success({ questionId });
     }
 
@@ -354,20 +450,8 @@ exports.main = async (event) => {
       const isOut = raw.isOutOfSyllabus === true;
       const eta = clamped.eta;   // 仅解答题 0.4~1.0，选择/填空 null
 
-      // 节点匹配（精确 → 子串最长），供主知识点定位
-      const allRes = await db.collection('knowledge_nodes')
-        .where({ knowledgeId: _.exists(true) }).limit(1000).get();
-      const matchNodeId = (uName) => {
-        let nodeId = null, bestLen = 0;
-        for (const n of allRes.data) {
-          const nm = n.name || '';
-          if (!nm) continue;
-          if (nm === uName) { return n.knowledgeId; }
-          if (uName.includes(nm) && nm.length > bestLen) { bestLen = nm.length; nodeId = n.knowledgeId; }
-        }
-        return nodeId;
-      };
-      const mainNodeId = matchNodeId((raw.knowledgeNodeName || '').trim());
+      // 主知识点定位（matchKnowledgeNode：模块级独立函数，精确 → 子串最长）
+      const mainNodeId = await matchKnowledgeNode((raw.knowledgeNodeName || '').trim());
       const upsertProgress = async (nodeId, patch) => {
         const pRes = await db.collection('knowledge_progress')
           .where({ userId: openid, knowledgeNodeId: nodeId }).limit(1).get();
@@ -404,7 +488,7 @@ exports.main = async (event) => {
         for (const u of usage) {
           const uName = (u.name || '').trim();
           if (!uName) continue;
-          const nodeId = matchNodeId(uName);
+          const nodeId = await matchKnowledgeNode(uName);
           if (!nodeId) continue;
           const Dkp = Math.min(1, Math.max(0, Number(u.D) || 0));
           const Pkp = u.correct === true ? 1 : 0;
