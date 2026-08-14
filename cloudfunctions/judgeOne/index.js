@@ -211,7 +211,7 @@ L11(0.98-0.999) 纯原创，全球个位数能解
    · 五维中多数维度偏高 → 明显上浮，落到档内上沿附近
    · 单个维度特别突出（如陷阱密度很高）→ 至少向上浮动一档内位置
    最终给出一个精细 D 值；不要趋同、不要总取中间；D 必须落在本档区间内
-■ P：1.0清晰/0.5模糊/0.3思路对/0空白；η：只对解答题0.4~1.0；r：一律null
+■ P（§4.4 连续 0~1）：过程与正确答案的距离——完全正确且答案对=1.0；答案错但过程几乎完整（最后一步错/抄错）=0.8~0.95；中途偏航但思路对=0.4~0.7；只有思路无结果=0.2~0.3；空白/完全跑偏=0。判错时 P 必须 < 1（1.0 只留给完全正确）；η：只对解答题0.4~1.0；r：一律null
 ■ isCorrect：严格数学判定；归因：做错才给，做对null，不编造
 `;
 
@@ -225,8 +225,8 @@ async function judgeQuestion(question, ragContext) {
 第二步【判定作答 + 对照标尺判档】：基于学生视角体验对照 L1-L11 标尺判档（档位边界卡+例子锚+新定义补充+5维锁定），同时判定对错/作答质量。
 
 只输出 JSON：
-{"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"isCorrect":true|false,"correctAnswer":"","P":0~1,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","fiveDim":{"K":0,"A":0,"T":0,"Q":0,"S":0},"isRecallQuestion":true,"isOutOfSyllabus":false}
-约束：D 落在 level 区间（D 是题目固有难度，与学生熟练度无关）；knowledgeNodeName 必须用教材术语原词；fiveDim 是【能力五维】（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，各 1~5 整数）；isRecallQuestion 是【回忆类题标记】：默写公式/复述定义/判断对错=回忆类（true），解题应用=应用类（false）；isOutOfSyllabus 是【超纲标记】：超出高中课标范围才 true，默认 false；最后输出纯 JSON`;
+{"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"isCorrect":true|false,"correctAnswer":"","P":0~1,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","fiveDim":{"K":0,"A":0,"T":0,"Q":0,"S":0},"isRecallQuestion":true,"isOutOfSyllabus":false,"errorDimension":null,"knowledgeUsage":[{"name":"知识点教材术语","correct":true|false,"D":0~1}]}
+约束：D 落在 level 区间（D 是题目固有难度，与学生熟练度无关）；knowledgeNodeName 必须用教材术语原词；fiveDim 是【能力五维】（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，各 1~5 整数）；isRecallQuestion 是【回忆类题标记】：默写公式/复述定义/判断对错=回忆类（true），解题应用=应用类（false）；isOutOfSyllabus 是【超纲标记】：超出高中课标范围才 true，默认 false；errorDimension 是【错题归因维度】：判错时归因 K=概念/公式/定义掌握问题、A=思路/变式/应用问题、T=跨单元迁移问题、S=计算/审题/执行失误，做对时 null；errorAttribution 是【错因一句话描述】（如"分类讨论遗漏B={-2}情形"），**只写文本描述，不要写维度代号**；knowledgeUsage 是【本题知识点使用清单】1~5 个：列出本题实际调用的知识点，name 用教材术语原词，correct=该知识点是否被正确使用，D=该知识点环节在本题的难度（0~1，与整题 D 无关）；最后输出纯 JSON`;
   const data = await postJSON(`${DS_BASE_URL}/chat/completions`, {
     model: DS_MODEL,
     thinking: { type: 'disabled' },       // 决策 023：thinking 开 + 难题 = content 空死锁，判档用 disabled
@@ -352,77 +352,95 @@ exports.main = async (event) => {
     // 报告 + embedding 入库（RAG 自增强）——本阶段「报告先不输出」，后续报告功能恢复时再打开
     // const report = {...}; const reportText = buildReportText(report); mastery_logs.add(...)
 
-    // 掌握度更新（文档 §4.4 K=加权得分法 S_k/D_k；§5.5 A=能力指数 E=D×η）
-    // 规则：仅回忆类题更新 K；超纲题做错不计入 K（不降）；A 依赖 η（仅解答题有值）
+    // 掌握度更新（重建 2026-08-14 用户拍板：K=知识点使用剥离，每知识点独立记 S_k/D_k；A=能力指数 E=D×η）
+    // 规则：K 不区分回忆/应用——遍历 knowledgeUsage 逐知识点记证据（用对 P=1 / 用错 P=0，难度取该知识点环节 D）；
+    //       超纲且整题判错 → 跳过 K（文档：超纲做错不降）；A 依赖 η（仅解答题有值），错题归因 K/S → E=0
     try {
-      const kName = (raw.knowledgeNodeName || '').trim();
-      if (kName) {
-        // 节点匹配：先精确（name 全等），失败则子串容错（AI 常输出句子式描述，取最长命中的节点名=最具体）
-        const allRes = await db.collection('knowledge_nodes')
-          .where({ knowledgeId: _.exists(true) }).limit(1000).get();
-        let nodeId = null;
-        let bestLen = 0;
+      const isCorrect = raw.isCorrect === true;
+      const isOut = raw.isOutOfSyllabus === true;
+      const usage = Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [];
+      const eta = clamped.eta;   // 仅解答题 0.4~1.0，选择/填空 null
+
+      // 节点清单只拉一次，供 knowledgeUsage 逐项匹配
+      const allRes = await db.collection('knowledge_nodes')
+        .where({ knowledgeId: _.exists(true) }).limit(1000).get();
+      const matchNodeId = (uName) => {
+        let nodeId = null, bestLen = 0;
         for (const n of allRes.data) {
           const nm = n.name || '';
           if (!nm) continue;
-          if (nm === kName) { nodeId = n.knowledgeId; break; }
-          if (kName.includes(nm) && nm.length > bestLen) { bestLen = nm.length; nodeId = n.knowledgeId; }
+          if (nm === uName) { return n.knowledgeId; }
+          if (uName.includes(nm) && nm.length > bestLen) { bestLen = nm.length; nodeId = n.knowledgeId; }
         }
-        if (nodeId) {
-          const isCorrect = raw.isCorrect === true;
-          const isRecall = raw.isRecallQuestion !== false;     // 缺省按回忆类
-          const isOut = raw.isOutOfSyllabus === true;
+        return nodeId;
+      };
+
+      // ---- K 维度（§4.4 加权得分法，知识点级剥离）----
+      if (!(isOut && !isCorrect)) {
+        for (const u of usage) {
+          const uName = (u.name || '').trim();
+          if (!uName) continue;
+          const nodeId = matchNodeId(uName);
+          if (!nodeId) continue;
+          const Dkp = Math.min(1, Math.max(0, Number(u.D) || 0));
+          const Pkp = u.correct === true ? 1 : 0;
           const pRes = await db.collection('knowledge_progress')
             .where({ userId: openid, knowledgeNodeId: nodeId }).limit(1).get();
           const old = pRes.data[0] || {};
-          const patch = {};
-
-          // ---- K 维度（§4.4 加权得分法：S_k = Σ(D×P)，D_k = ΣD，mastery = S_k/D_k）----
-          if (isRecall && !(isOut && !isCorrect)) {
-            const D = Number(clamped.D) || 0;
-            const P = Number(clamped.P) || 0;
-            const S = (old.sValue || 0) + D * P;
-            const Dsum = (old.dValue || 0) + D;
-            patch.sValue = Math.round(S * 10000) / 10000;
-            patch.dValue = Math.round(Dsum * 10000) / 10000;
-            patch.mastery = Dsum > 0 ? Math.round((S / Dsum) * 100) / 100 : 0;
+          const S = (old.sValue || 0) + Dkp * Pkp;
+          const Dsum = (old.dValue || 0) + Dkp;
+          const patch = {
+            sValue: Math.round(S * 10000) / 10000,
+            dValue: Math.round(Dsum * 10000) / 10000,
+            mastery: Dsum > 0 ? Math.round((S / Dsum) * 100) / 100 : 0,
+            attempts: (old.attempts || 0) + 1,
+            correctCount: (old.correctCount || 0) + Pkp,
+            lastUpdated: db.serverDate(),
+          };
+          if (pRes.data.length) {
+            await db.collection('knowledge_progress').doc(pRes.data[0]._id).update({ data: patch });
+          } else {
+            await db.collection('knowledge_progress').add({ data: { userId: openid, knowledgeNodeId: nodeId, ...patch } });
           }
+        }
+      }
 
-          // ---- A 维度（§5.5 能力指数：E = D×η；ΔA = 0.25×E×(U−A)）----
-          const eta = clamped.eta;   // 仅解答题 0.4~1.0，选择/填空 null
-          if (eta != null && eta >= 0.4) {
-            const D = Number(clamped.D) || 0;
-            // 做错且归因是 K/S 问题（概念/公式/记忆类）→ E=0 不更新 A
-            const isKS = !isCorrect && /概念|定义|公式|记错|遗忘|知识/.test(raw.errorAttribution || '');
-            const eff = isKS ? 0 : (isCorrect ? D * eta : -D * eta);
-            if (eff !== 0) {
-              let A = old.aValue != null ? old.aValue : 0.3;
-              let U = old.aUpper != null ? old.aUpper : 0.5;
-              // U 上浮：本质解法（η≥0.7）+ 鉴别力足够（E≥0.5）
-              if (eff >= 0.5 && eta >= 0.7) U += 0.05 * (1 - U);
-              // U 下浮：连续 5 题低路径质量（暴力计算挤压虚假上限）
-              let streak = old.lowEtaStreak || 0;
-              if (eta <= 0.6) {
-                streak += 1;
-                if (streak >= 5) { U -= 0.03 * (U - A); streak = 0; }
-              } else streak = 0;
-              const dA = 0.25 * Math.abs(eff) * (U - A);
-              A = eff > 0 ? Math.min(A + dA, U) : Math.max(A - dA, 0);
-              patch.aValue = Math.round(A * 100) / 100;
-              patch.aUpper = Math.round(U * 100) / 100;
-              patch.lowEtaStreak = streak;
-            }
-          }
-
-          if (Object.keys(patch).length) {
-            patch.attempts = (old.attempts || 0) + 1;
-            patch.correctCount = (old.correctCount || 0) + (isCorrect ? 1 : 0);
-            patch.lastUpdated = db.serverDate();
-            if (pRes.data.length) {
-              await db.collection('knowledge_progress').doc(pRes.data[0]._id).update({ data: patch });
-            } else {
-              await db.collection('knowledge_progress').add({ data: { userId: openid, knowledgeNodeId: nodeId, ...patch } });
-            }
+      // ---- A 维度（§5.5 能力指数：E = D×η；ΔA = 0.25×E×(U−A)）----
+      if (eta != null && eta >= 0.4) {
+        const D = Number(clamped.D) || 0;
+        // 错题归因 K（概念/公式）或 S（执行失误）→ E=0 不更新 A；errorDimension 缺失时回退关键词判断
+        const dim = raw.errorDimension;
+        const isKS = !isCorrect && (dim === 'K' || dim === 'S'
+          || (!dim && /概念|定义|公式|记错|遗忘|知识/.test(raw.errorAttribution || '')));
+        const eff = isKS ? 0 : (isCorrect ? D * eta : -D * eta);
+        // A 挂在主知识点（knowledgeNodeName）节点上；匹配失败则跳过（文档为单元级，此处节点级简化）
+        const aNodeId = matchNodeId((raw.knowledgeNodeName || '').trim());
+        if (eff !== 0 && aNodeId) {
+          const pRes = await db.collection('knowledge_progress')
+            .where({ userId: openid, knowledgeNodeId: aNodeId }).limit(1).get();
+          const old = pRes.data[0] || {};
+          let A = old.aValue != null ? old.aValue : 0.3;
+          let U = old.aUpper != null ? old.aUpper : 0.5;
+          // U 上浮：本质解法（η≥0.7）+ 鉴别力足够（E≥0.5）
+          if (eff >= 0.5 && eta >= 0.7) U += 0.05 * (1 - U);
+          // U 下浮：连续 5 题低路径质量（暴力计算挤压虚假上限）
+          let streak = old.lowEtaStreak || 0;
+          if (eta <= 0.6) {
+            streak += 1;
+            if (streak >= 5) { U -= 0.03 * (U - A); streak = 0; }
+          } else streak = 0;
+          const dA = 0.25 * Math.abs(eff) * (U - A);
+          A = eff > 0 ? Math.min(A + dA, U) : Math.max(A - dA, 0);
+          const patch = {
+            aValue: Math.round(A * 100) / 100,
+            aUpper: Math.round(U * 100) / 100,
+            lowEtaStreak: streak,
+            lastUpdated: db.serverDate(),
+          };
+          if (pRes.data.length) {
+            await db.collection('knowledge_progress').doc(pRes.data[0]._id).update({ data: patch });
+          } else {
+            await db.collection('knowledge_progress').add({ data: { userId: openid, knowledgeNodeId: aNodeId, ...patch } });
           }
         }
       }
