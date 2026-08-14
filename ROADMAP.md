@@ -211,6 +211,7 @@
 
 | 日期 | 更新内容 |
 |------|---------|
+| 2026-08-14 | **仓库结构整理**：新建 `archive/`（knowledge-map、knowledge-tree、v4 原型、旧 K 维度规格）；`app.json` 移除归档页；新增 `doc/PROJECT-STRUCTURE.md`；重写 README + STATUS-MANIFEST 快照；Code-Wiki 标注 graph 已改知识图谱 |
 | 2026-08-13 | **协作质量流程写入 AI协作手册 §九**：先诊断→谈方向→可点原型自测→用户验收→生产化对齐既有模式→经验沉淀；补常见陷阱与一句话总结 |
 | 2026-08-13 | **补洞：新版 UI 同步到 tab「图谱」`pages/graph`**（先前只改了几乎无入口的 knowledge-map，用户编译仍见旧版；见开发经验 #13） |
 | 2026-08-13 | **知识图谱前端重设计并生产化**：v1 单一放射图+Canvas 画边体验有 bug，与用户确认设计方向（原型 `doc/review/知识图谱前端重设计-原型v5.html`）后落地到 `pages/knowledge-map`——目录列表+卡片网格（结构导航） / 演化链保留放射但连线改 CSS DOM 线（去 Canvas，见前端经验文档教训 11/12） |
