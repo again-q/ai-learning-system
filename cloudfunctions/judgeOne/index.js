@@ -226,7 +226,7 @@ async function judgeQuestion(question, ragContext) {
 
 只输出 JSON：
 {"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"isCorrect":true|false,"correctAnswer":"","P":0~1,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","fiveDim":{"K":0,"A":0,"T":0,"Q":0,"S":0},"isRecallQuestion":true,"isOutOfSyllabus":false,"errorDimension":null,"knowledgeUsage":[{"name":"知识点教材术语","correct":true|false,"D":0~1}]}
-约束：D 落在 level 区间（D 是题目固有难度，与学生熟练度无关）；knowledgeNodeName 必须用教材术语原词；fiveDim 是【能力五维】（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，各 1~5 整数）；isRecallQuestion 是【回忆类题标记】：默写公式/复述定义/判断对错=回忆类（true），解题应用=应用类（false）；isOutOfSyllabus 是【超纲标记】：超出高中课标范围才 true，默认 false；errorDimension 是【错题归因维度】：判错时归因 K=概念/公式/定义掌握问题、A=思路/变式/应用问题、T=跨单元迁移问题、S=计算/审题/执行失误，做对时 null；errorAttribution 是【错因一句话描述】（如"分类讨论遗漏B={-2}情形"），**只写文本描述，不要写维度代号**；knowledgeUsage 是【本题知识点使用清单】1~5 个：列出本题实际调用的知识点，name 用教材术语原词，correct=该知识点是否被正确使用，D=该知识点环节在本题的难度（0~1，与整题 D 无关）；最后输出纯 JSON`;
+约束：D 落在 level 区间（D 是题目固有难度，与学生熟练度无关）；knowledgeNodeName 必须用教材术语原词；fiveDim 是【能力五维】（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，各 1~5 整数）；isRecallQuestion 是【回忆类题标记】：默写公式/复述定义/判断对错=回忆类（true），解题应用=应用类（false）；isOutOfSyllabus 是【超纲标记】：超出高中课标范围才 true，默认 false；errorDimension 是【错题归因维度】：判错时归因 K=概念/公式/定义掌握问题、A=思路/变式/应用问题、T=跨单元迁移问题、S=计算/审题/执行失误，做对时 null；errorAttribution 是【错因一句话描述】（如"分类讨论遗漏B={-2}情形"），只写文本描述；knowledgeUsage 是【本题知识点使用清单】1~5 个：列出本题实际调用的知识点，name 用教材术语原词，correct=该知识点是否被正确使用，D=该知识点环节在本题的难度（0~1，与整题 D 无关）；最后输出纯 JSON`;
   const data = await postJSON(`${DS_BASE_URL}/chat/completions`, {
     model: DS_MODEL,
     thinking: { type: 'disabled' },       // 决策 023：thinking 开 + 难题 = content 空死锁，判档用 disabled
@@ -352,16 +352,16 @@ exports.main = async (event) => {
     // 报告 + embedding 入库（RAG 自增强）——本阶段「报告先不输出」，后续报告功能恢复时再打开
     // const report = {...}; const reportText = buildReportText(report); mastery_logs.add(...)
 
-    // 掌握度更新（重建 2026-08-14 用户拍板：K=知识点使用剥离，每知识点独立记 S_k/D_k；A=能力指数 E=D×η）
-    // 规则：K 不区分回忆/应用——遍历 knowledgeUsage 逐知识点记证据（用对 P=1 / 用错 P=0，难度取该知识点环节 D）；
-    //       超纲且整题判错 → 跳过 K（文档：超纲做错不降）；A 依赖 η（仅解答题有值），错题归因 K/S → E=0
+    // 掌握度更新（2026-08-14 简化版：K=整题加权得分法 S_k/D_k；A=能力指数 E=D×η）
+    // 开关：USE_KNOWLEDGE_USAGE=false 时走最简版（K 用整题 D×P，A 不做归因分流）；
+    //       true 时恢复知识点剥离（knowledgeUsage）与归因分流（errorDimension）——功能保留，暂时不跑
     try {
+      const USE_KNOWLEDGE_USAGE = false;   // 2026-08-14 用户：剥离/归因暂时不跑，先验证 D/P 参数
       const isCorrect = raw.isCorrect === true;
       const isOut = raw.isOutOfSyllabus === true;
-      const usage = Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [];
       const eta = clamped.eta;   // 仅解答题 0.4~1.0，选择/填空 null
 
-      // 节点清单只拉一次，供 knowledgeUsage 逐项匹配
+      // 节点匹配（精确 → 子串最长），供主知识点定位
       const allRes = await db.collection('knowledge_nodes')
         .where({ knowledgeId: _.exists(true) }).limit(1000).get();
       const matchNodeId = (uName) => {
@@ -374,9 +374,40 @@ exports.main = async (event) => {
         }
         return nodeId;
       };
+      const mainNodeId = matchNodeId((raw.knowledgeNodeName || '').trim());
+      const upsertProgress = async (nodeId, patch) => {
+        const pRes = await db.collection('knowledge_progress')
+          .where({ userId: openid, knowledgeNodeId: nodeId }).limit(1).get();
+        if (pRes.data.length) {
+          await db.collection('knowledge_progress').doc(pRes.data[0]._id).update({ data: patch });
+        } else {
+          await db.collection('knowledge_progress').add({ data: { userId: openid, knowledgeNodeId: nodeId, ...patch } });
+        }
+      };
 
-      // ---- K 维度（§4.4 加权得分法，知识点级剥离）----
-      if (!(isOut && !isCorrect)) {
+      // ---- K 维度（§4.4 加权得分法：S_k = Σ(D×P)，D_k = ΣD，mastery = S_k/D_k）----
+      // 最简版：整题 D×P 挂在主知识点；超纲且判错 → 跳过（文档：超纲做错不降）
+      if (mainNodeId && !(isOut && !isCorrect)) {
+        const D = Number(clamped.D) || 0;
+        const P = Number(clamped.P) || 0;
+        const pRes = await db.collection('knowledge_progress')
+          .where({ userId: openid, knowledgeNodeId: mainNodeId }).limit(1).get();
+        const old = pRes.data[0] || {};
+        const S = (old.sValue || 0) + D * P;
+        const Dsum = (old.dValue || 0) + D;
+        await upsertProgress(mainNodeId, {
+          sValue: Math.round(S * 10000) / 10000,
+          dValue: Math.round(Dsum * 10000) / 10000,
+          mastery: Dsum > 0 ? Math.round((S / Dsum) * 100) / 100 : 0,
+          attempts: (old.attempts || 0) + 1,
+          correctCount: (old.correctCount || 0) + (isCorrect ? 1 : 0),
+          lastUpdated: db.serverDate(),
+        });
+      }
+
+      // ---- K 剥离版（暂不跑，USE_KNOWLEDGE_USAGE=true 时启用）----
+      if (USE_KNOWLEDGE_USAGE && !(isOut && !isCorrect)) {
+        const usage = Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [];
         for (const u of usage) {
           const uName = (u.name || '').trim();
           if (!uName) continue;
@@ -389,35 +420,32 @@ exports.main = async (event) => {
           const old = pRes.data[0] || {};
           const S = (old.sValue || 0) + Dkp * Pkp;
           const Dsum = (old.dValue || 0) + Dkp;
-          const patch = {
+          await upsertProgress(nodeId, {
             sValue: Math.round(S * 10000) / 10000,
             dValue: Math.round(Dsum * 10000) / 10000,
             mastery: Dsum > 0 ? Math.round((S / Dsum) * 100) / 100 : 0,
             attempts: (old.attempts || 0) + 1,
             correctCount: (old.correctCount || 0) + Pkp,
             lastUpdated: db.serverDate(),
-          };
-          if (pRes.data.length) {
-            await db.collection('knowledge_progress').doc(pRes.data[0]._id).update({ data: patch });
-          } else {
-            await db.collection('knowledge_progress').add({ data: { userId: openid, knowledgeNodeId: nodeId, ...patch } });
-          }
+          });
         }
       }
 
       // ---- A 维度（§5.5 能力指数：E = D×η；ΔA = 0.25×E×(U−A)）----
-      if (eta != null && eta >= 0.4) {
+      if (eta != null && eta >= 0.4 && mainNodeId) {
         const D = Number(clamped.D) || 0;
-        // 错题归因 K（概念/公式）或 S（执行失误）→ E=0 不更新 A；errorDimension 缺失时回退关键词判断
-        const dim = raw.errorDimension;
-        const isKS = !isCorrect && (dim === 'K' || dim === 'S'
-          || (!dim && /概念|定义|公式|记错|遗忘|知识/.test(raw.errorAttribution || '')));
-        const eff = isKS ? 0 : (isCorrect ? D * eta : -D * eta);
-        // A 挂在主知识点（knowledgeNodeName）节点上；匹配失败则跳过（文档为单元级，此处节点级简化）
-        const aNodeId = matchNodeId((raw.knowledgeNodeName || '').trim());
-        if (eff !== 0 && aNodeId) {
+        // 最简版：不做归因分流（E = 做对正 / 做错负）；errorDimension 归因分流保留在开关分支
+        let eff = isCorrect ? D * eta : -D * eta;
+        if (USE_KNOWLEDGE_USAGE) {
+          // 归因分流（暂不跑）：错题归因 K/S → E=0；errorDimension 缺失时回退关键词判断
+          const dim = raw.errorDimension;
+          const isKS = !isCorrect && (dim === 'K' || dim === 'S'
+            || (!dim && /概念|定义|公式|记错|遗忘|知识/.test(raw.errorAttribution || '')));
+          if (isKS) eff = 0;
+        }
+        if (eff !== 0) {
           const pRes = await db.collection('knowledge_progress')
-            .where({ userId: openid, knowledgeNodeId: aNodeId }).limit(1).get();
+            .where({ userId: openid, knowledgeNodeId: mainNodeId }).limit(1).get();
           const old = pRes.data[0] || {};
           let A = old.aValue != null ? old.aValue : 0.3;
           let U = old.aUpper != null ? old.aUpper : 0.5;
@@ -431,17 +459,12 @@ exports.main = async (event) => {
           } else streak = 0;
           const dA = 0.25 * Math.abs(eff) * (U - A);
           A = eff > 0 ? Math.min(A + dA, U) : Math.max(A - dA, 0);
-          const patch = {
+          await upsertProgress(mainNodeId, {
             aValue: Math.round(A * 100) / 100,
             aUpper: Math.round(U * 100) / 100,
             lowEtaStreak: streak,
             lastUpdated: db.serverDate(),
-          };
-          if (pRes.data.length) {
-            await db.collection('knowledge_progress').doc(pRes.data[0]._id).update({ data: patch });
-          } else {
-            await db.collection('knowledge_progress').add({ data: { userId: openid, knowledgeNodeId: aNodeId, ...patch } });
-          }
+          });
         }
       }
     } catch (e) {
