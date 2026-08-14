@@ -14,7 +14,17 @@ exports.main = async (event) => {
     if (action === 'getAll') {
       const res = await db.collection('knowledge_nodes')
         .where({ knowledgeId: _.exists(true) }).limit(1000).get();
-      return success({ nodes: res.data });
+      // 合并当前用户掌握度（knowledge_progress，按 knowledgeId 匹配）
+      const wxContext = cloud.getWXContext();
+      const openid = wxContext.OPENID;
+      let progressMap = {};
+      if (openid && res.data.length) {
+        const ids = res.data.map(n => n.knowledgeId);
+        const pRes = await db.collection('knowledge_progress')
+          .where({ userId: openid, knowledgeNodeId: _.in(ids) }).limit(1000).get();
+        pRes.data.forEach((p) => { progressMap[p.knowledgeNodeId] = p.mastery; });
+      }
+      return success({ nodes: res.data, progressMap });
     }
 
     // 图谱查询（公开可读；掌握度前端先用 mock，待诊断链路补上后接入）

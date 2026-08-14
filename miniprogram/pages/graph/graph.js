@@ -7,20 +7,7 @@ const TYPE_LABEL = {
 };
 const TYPE_ORDER = ['definition', 'property', 'method', 'notation', 'example', 'reading'];
 
-// 掌握度 mock（待诊断链路接入 knowledge_progress 后移除）
-const MOCK_MASTERY = {
-  '集合': 82, '元素': 90, '确定性': 76, '互异性': 88, '集合相等': 64,
-  '字母表示': 55, '属于与不属于': 70, '常用数集': 92, '列举法': 45,
-  '描述法': 38, '无序性': 80, '子集': 75, '真子集': 58, '空集': 71,
-  '命题': 61, '充分条件': 42, '必要条件': 40, '充要条件': 35,
-  '量词': 53, '命题的否定': 39, '并集的概念与定义': 60, '交集的概念与定义': 58
-};
-function mockMastery(name) {
-  if (MOCK_MASTERY[name] != null) return MOCK_MASTERY[name];
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 997;
-  return 20 + (h % 60);
-}
+// 掌握度颜色/状态（真实数据来自 knowledge_progress，无记录 = 未学 0）
 function mColor(m) { return m >= 75 ? '#34c759' : m >= 50 ? '#ff9500' : m > 0 ? '#ff3b30' : '#c7c7cc'; }
 function mStatus(m) { return m >= 75 ? '已掌握' : m >= 50 ? '学习中' : m > 0 ? '薄弱' : '未学'; }
 function mStCls(m) { return m >= 75 ? 'st-high' : m >= 50 ? 'st-mid' : m > 0 ? 'st-low' : 'st-zero'; }
@@ -76,8 +63,11 @@ Page({
     this.setData({ loading: true });
     wx.cloud.callFunction({ name: 'graphService', data: { action: 'getAll' } })
       .then((res) => {
-        const nodes = (res.result && res.result.data && res.result.data.nodes) || [];
-        this._nodes = nodes;
+        const data = (res.result && res.result.data) || {};
+        const nodes = data.nodes || [];
+        const progressMap = data.progressMap || {};
+        // 掌握度真实值：knowledge_progress 无记录 = 未学（0）
+        this._nodes = nodes.map((n) => ({ ...n, mastery: progressMap[n.knowledgeId] != null ? progressMap[n.knowledgeId] : 0 }));
         this.buildIndex();
         this.enterSubject();
       })
@@ -114,14 +104,14 @@ Page({
   _childrenOf(node) {
     if (!node || node.synthetic) return [];
     return this._nodes.filter((n) => n.parentId === node.knowledgeId)
-      .map((n) => ({ ...n, mastery: mockMastery(n.name) }));
+      .map((n) => ({ ...n, mastery: n.mastery != null ? n.mastery : 0 }));
   },
   _refsOf(node) {
     if (!node || !node.relations || !node.relations.reference) return [];
     return node.relations.reference
       .map((id) => this._byId[id])
       .filter(Boolean)
-      .map((n) => ({ ...n, mastery: mockMastery(n.name) }));
+      .map((n) => ({ ...n, mastery: n.mastery != null ? n.mastery : 0 }));
   },
 
   /* ---------- 目录导航（数学 → 单元 → 小节 → 知识点树） ---------- */
@@ -152,7 +142,7 @@ Page({
     this._stack.push({ node: this._current, kids: this._currentKids });
     const roots = this._units[unitName].secs[secName] || [];
     this._current = { name: secName, type: 'section', synthetic: true, secName, unitName };
-    this._currentKids = roots.map((n) => ({ ...n, mastery: mockMastery(n.name) }));
+    this._currentKids = roots.map((n) => ({ ...n, mastery: n.mastery != null ? n.mastery : 0 }));
     this._selectedLeaf = null;
     this.closeSheet();
     this.render();
@@ -251,7 +241,7 @@ Page({
         showEvoBtn: false
       };
     }
-    const m = cur.mastery != null ? cur.mastery : mockMastery(cur.name);
+    const m = cur.mastery != null ? cur.mastery : 0;
     return {
       name: cur.name,
       showMastery: true,
@@ -286,7 +276,7 @@ Page({
       label: TYPE_LABEL[t],
       count: buckets[t].length,
       items: buckets[t].map((k) => {
-        const m = k.mastery != null ? k.mastery : mockMastery(k.name);
+        const m = k.mastery != null ? k.mastery : 0;
         const childCount = this._childCount(k.knowledgeId);
         return {
           id: k.knowledgeId,
@@ -318,7 +308,7 @@ Page({
     pres.forEach((p, i) => {
       const x = x0 + i * per;
       const y = EVO_PRE_Y;
-      const m = p.mastery != null ? p.mastery : mockMastery(p.name);
+      const m = p.mastery != null ? p.mastery : 0;
       evoPres.push({ id: p.knowledgeId, name: p.name, mastery: m, masteryColor: mColor(m), left: x, top: y });
 
       // 连线两端各按自身圆半径收缩，避免线头扎进圆心
@@ -353,7 +343,7 @@ Page({
 
   /* ---------- 详情面板（叶子知识点） ---------- */
   openSheet(node) {
-    const m = node.mastery != null ? node.mastery : mockMastery(node.name);
+    const m = node.mastery != null ? node.mastery : 0;
     const src = (node.concept && node.concept.source_text) || '';
     const imp = node.importance || {};
     const path = (node.path || []).concat([node.name]).join(' / ');

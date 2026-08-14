@@ -347,6 +347,46 @@ exports.main = async (event) => {
     // 报告 + embedding 入库（RAG 自增强）——本阶段「报告先不输出」，后续报告功能恢复时再打开
     // const report = {...}; const reportText = buildReportText(report); mastery_logs.add(...)
 
+    // 掌握度更新（决策：统一 knowledge_progress；对 +0.1 / 错 -0.15 简单 BKT 近似，clamp [0.05, 0.95]）
+    try {
+      const kName = (raw.knowledgeNodeName || '').trim();
+      if (kName) {
+        // 节点匹配：先精确（name 全等），失败则子串容错（AI 常输出句子式描述，取最长命中的节点名=最具体）
+        const allRes = await db.collection('knowledge_nodes')
+          .where({ knowledgeId: _.exists(true) }).limit(1000).get();
+        let nodeId = null;
+        let bestLen = 0;
+        for (const n of allRes.data) {
+          const nm = n.name || '';
+          if (!nm) continue;
+          if (nm === kName) { nodeId = n.knowledgeId; break; }
+          if (kName.includes(nm) && nm.length > bestLen) { bestLen = nm.length; nodeId = n.knowledgeId; }
+        }
+        if (nodeId) {
+          const isCorrect = raw.isCorrect === true;
+          const pRes = await db.collection('knowledge_progress')
+            .where({ userId: openid, knowledgeNodeId: nodeId }).limit(1).get();
+          const prev = pRes.data.length ? (pRes.data[0].mastery || 0.5) : 0.5;
+          const next = Math.min(0.95, Math.max(0.05, prev + (isCorrect ? 0.1 : -0.15)));
+          const patch = {
+            userId: openid,
+            knowledgeNodeId: nodeId,
+            mastery: Math.round(next * 100) / 100,
+            attempts: (pRes.data.length ? pRes.data[0].attempts || 0 : 0) + 1,
+            correctCount: (pRes.data.length ? pRes.data[0].correctCount || 0 : 0) + (isCorrect ? 1 : 0),
+            lastUpdated: db.serverDate(),
+          };
+          if (pRes.data.length) {
+            await db.collection('knowledge_progress').doc(pRes.data[0]._id).update({ data: patch });
+          } else {
+            await db.collection('knowledge_progress').add({ data: patch });
+          }
+        }
+      }
+    } catch (e) {
+      console.error('[judgeOne] 掌握度更新失败:', e);
+    }
+
     // 更新批次进度；最后一题判完 → completed
     try {
       const batchRes = await db.collection('batches').doc(question.batchId).get();

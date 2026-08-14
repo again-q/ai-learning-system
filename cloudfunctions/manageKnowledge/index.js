@@ -21,14 +21,14 @@ exports.main = async (event) => {
       const res = await db.collection('knowledge_nodes')
         .where(where).orderBy('chapter', 'asc').get();
 
-      // 获取当前用户的掌握度
+      // 获取当前用户的掌握度（knowledge_progress；后台节点以 _id 为键）
       const openid = wxContext.OPENID;
       let progressMap = {};
       if (openid && res.data.length > 0) {
         const nodeIds = res.data.map(n => n._id);
-        const progRes = await db.collection('node_progress')
-          .where({ openid, nodeId: _.in(nodeIds) }).get();
-        progRes.data.forEach(p => { progressMap[p.nodeId] = p.mastery || 0; });
+        const progRes = await db.collection('knowledge_progress')
+          .where({ userId: openid, knowledgeNodeId: _.in(nodeIds) }).get();
+        progRes.data.forEach(p => { progressMap[p.knowledgeNodeId] = p.mastery || 0; });
       }
 
       return success(res.data.map(n => ({
