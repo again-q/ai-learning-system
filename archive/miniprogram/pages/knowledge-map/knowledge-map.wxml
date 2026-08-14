@@ -3,8 +3,7 @@
 
   <!-- 顶部导航 -->
   <view class="nav">
-    <view class="back" wx:if="{{!isTab}}" bindtap="onBackTap">‹</view>
-    <view class="back placeholder" wx:if="{{isTab}}"></view>
+    <view class="back" bindtap="onBackTap">‹</view>
     <view class="title">知识图谱</view>
     <view class="subject">数学</view>
   </view>

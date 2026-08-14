@@ -226,8 +226,8 @@ async function judgeQuestion(question, ragContext) {
 第二步【判定作答 + 对照标尺判档】：基于学生视角体验对照 L1-L11 标尺判档（档位边界卡+例子锚+新定义补充+5维锁定），同时判定对错/作答质量。
 
 只输出 JSON：
-{"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"isCorrect":true|false,"correctAnswer":"","P":0|0.3|0.5|1.0,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","dims":{"知识复杂度":1,"思维深度":1,"陷阱密度":1,"计算强度":1,"陌生度":1},"fiveDim":{"K":0,"A":0,"T":0,"Q":0,"S":0}}
-约束：D 落在 level 区间（D 是题目固有难度，与学生熟练度无关）；knowledgeNodeName 必须用教材术语原词；dims 是【难度五维】（中文键：知识复杂度/思维深度/陷阱密度/计算强度/陌生度，各 1~5 整数）；fiveDim 是【能力五维】（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，各 1~5 整数）；最后输出纯 JSON`;
+{"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"isCorrect":true|false,"correctAnswer":"","P":0|0.3|0.5|1.0,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","fiveDim":{"K":0,"A":0,"T":0,"Q":0,"S":0}}
+约束：D 落在 level 区间（D 是题目固有难度，与学生熟练度无关）；knowledgeNodeName 必须用教材术语原词；fiveDim 是【能力五维】（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，各 1~5 整数）；最后输出纯 JSON`;
   const data = await postJSON(`${DS_BASE_URL}/chat/completions`, {
     model: DS_MODEL,
     thinking: { type: 'disabled' },       // 决策 023：thinking 开 + 难题 = content 空死锁，判档用 disabled
@@ -339,7 +339,6 @@ exports.main = async (event) => {
         pathQuality: clamped.eta,
         errorAttribution: raw.errorAttribution || null,
         knowledgeNodeName: raw.knowledgeNodeName || '',
-        dims: raw.dims || null,
         fiveDim: raw.fiveDim || null,
         reviewed: true,
       },

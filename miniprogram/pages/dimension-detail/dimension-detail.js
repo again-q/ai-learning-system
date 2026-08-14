@@ -52,8 +52,12 @@ Page({
 
   goLayer(e) {
     const id = e.currentTarget.dataset.id;
+    // K 维度知识层 → Tab「图谱」
+    if (id === 'knowledge') {
+      wx.switchTab({ url: '/pages/graph/graph' });
+      return;
+    }
     const pageMap = {
-      'knowledge': '/pages/knowledge-map/knowledge-map',
       'model': '/pages/model-cards/model-cards',
       'method': '/pages/method-list/method-list'
     };

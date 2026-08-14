@@ -9,9 +9,6 @@ page {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  /* tabBar 占位，避免底部内容被挡 */
-  padding-bottom: calc(100rpx + env(safe-area-inset-bottom));
-  box-sizing: border-box;
 }
 
 /* ===== 顶部导航 ===== */
@@ -36,7 +33,6 @@ page {
   color: #007aff;
 }
 .back:active { transform: scale(0.9); }
-.back.placeholder { background: transparent; }
 .title { font-size: 30rpx; font-weight: 600; }
 .subject {
   font-size: 22rpx;

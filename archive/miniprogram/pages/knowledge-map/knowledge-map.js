@@ -40,7 +40,6 @@ function lineBetween(x1, y1, x2, y2) {
 Page({
   data: {
     loading: true,
-    isTab: true,         // app.json tabBar「图谱」页：恒为 tab，不可 navigateTo
     mode: 'tree',        // 'tree' | 'evo'
     crumb: [],
     showUp: false,
@@ -67,9 +66,7 @@ Page({
   },
 
   onShow() {
-    // tab 切换回来时：已有数据就重渲；首次/清空后重新拉
     if (this._nodes.length) this.render();
-    else if (!this.data.loading) this.loadAll();
   },
 
   loadAll() {
@@ -168,11 +165,7 @@ Page({
   },
 
   goUpTree() {
-    if (!this._stack.length) {
-      // tab 根层没有「上一页」可退；非 tab 才 navigateBack
-      if (!this.data.isTab) wx.navigateBack();
-      return;
-    }
+    if (!this._stack.length) { wx.navigateBack(); return; }
     const prev = this._stack.pop();
     this._current = prev.node;
     this._currentKids = prev.kids;
@@ -429,8 +422,5 @@ Page({
     this.jumpTree(idx);
   },
 
-  onBackTap() {
-    if (this.data.isTab) return;
-    wx.navigateBack();
-  }
+  onBackTap() { wx.navigateBack(); }
 });
