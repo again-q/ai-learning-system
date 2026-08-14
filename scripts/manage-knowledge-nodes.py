@@ -3,7 +3,7 @@
 """
 知识图谱节点管理脚本（本地工具）
 用途：
-  1) 校验/修复 knowledge-graph/nodes/*.json 的数据（重点是补齐缺失的 path）
+  1) 校验/修复 data/knowledge-graph/nodes/*.json 的数据（重点是补齐缺失的 path）
   2) 输出标准导入 JSON（供 knowledgeAdmin 云函数 action=import 批量 upsert）
 
 用法:
@@ -18,7 +18,7 @@ import glob
 import sys
 import os
 
-NODES_DIR = os.path.join(os.path.dirname(__file__), '..', 'knowledge-graph', 'nodes')
+NODES_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'knowledge-graph', 'nodes')
 INDEX_EXCLUDE = 'knowledge_index.json'
 
 # 人教A版 必修第一册 章/节 名称映射（按 knowledge_id 的 ch/s 段补 path）

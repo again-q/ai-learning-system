@@ -24,10 +24,10 @@
       "files": [
         { "source": "README.md",            "category": "项目独有", "external": "项目总览 README" },
         { "source": "Code-Wiki.md",         "category": "项目独有", "external": "代码百科 Code-Wiki" },
-        { "source": "ROADMAP.md",           "category": "项目独有", "external": "项目路线图 ROADMAP" },
-        { "source": "ENGINEERING_TODO.md",  "category": "项目独有", "external": "工程待办 ENGINEERING_TODO" },
-        { "source": "REVIEW_STRUCTURE.md",  "category": "项目独有", "external": "代码评审结构 REVIEW_STRUCTURE" },
-        { "source": "GATE_SUMMARY.md",      "category": "项目独有", "external": "门禁系统 GATE_SUMMARY" }
+        { "source": "doc/project/ROADMAP.md",           "category": "项目独有", "external": "项目路线图 ROADMAP" },
+        { "source": "doc/ENGINEERING_TODO.md",  "category": "项目独有", "external": "工程待办 ENGINEERING_TODO" },
+        { "source": "doc/project/REVIEW_STRUCTURE.md",  "category": "项目独有", "external": "代码评审结构 REVIEW_STRUCTURE" },
+        { "source": "doc/project/GATE_SUMMARY.md",      "category": "项目独有", "external": "门禁系统 GATE_SUMMARY" }
       ]
     },
     "knowledge-graph": {

@@ -2,8 +2,8 @@
 # retry-4.2-4.4.sh — 重跑失败的 4.2~4.4 节
 # 用法：bash scripts/retry-4.2-4.4.sh
 
-PROJECT="/Users/apple/Desktop/ai-learning-system"
-FAILED="${PROJECT}/output/_failed.log"
+PROJECT="$(cd "$(dirname "$0")/.." && pwd)"
+FAILED="${PROJECT}/data/pipeline/_failed.log"
 
 echo "========================================="
 echo "  重跑 4.2 指数函数 | 4.3 对数 | 4.4 对数函数"
@@ -14,14 +14,14 @@ for SID in math_10_ch4_s2 math_10_ch4_s3 math_10_ch4_s4; do
   echo ""
   echo "━━━ ${SID} ━━━"
   
-  SF=$(ls "${PROJECT}/output/sections/${SID}"*.txt 2>/dev/null | head -1)
+  SF=$(ls "${PROJECT}/data/pipeline/sections/${SID}"*.txt 2>/dev/null | head -1)
   [ -z "$SF" ] && echo "❌ 无OCR文件" && continue
   BN=$(basename "$SF" .txt)
-  LF="${PROJECT}/output/agent1_layout/${BN}.md"
+  LF="${PROJECT}/data/pipeline/agent1_layout/${BN}.md"
   
   # 清旧文件+日志
   rm -f "$LF"
-  rm -f "${PROJECT}/output/agent2_extraction/nodes/${SID}"*.json 2>/dev/null
+  rm -f "${PROJECT}/data/pipeline/agent2_extraction/nodes/${SID}"*.json 2>/dev/null
   sed -i '' "/${SID}/d" "$FAILED" 2>/dev/null || true
   
   # A1
@@ -39,9 +39,9 @@ for SID in math_10_ch4_s2 math_10_ch4_s3 math_10_ch4_s4; do
   T2=$(date +%s)
   qwenpaw agent chat --from-agent default \
     --to-agent ai-learning-system-math-jiegouzhuanhua-agent \
-    --text "从 ${LF} 提取知识点，section_id=${SID}，输出到 ${PROJECT}/output/agent2_extraction/nodes/" 2>&1 || true
+    --text "从 ${LF} 提取知识点，section_id=${SID}，输出到 ${PROJECT}/data/pipeline/agent2_extraction/nodes/" 2>&1 || true
   D2=$(( $(date +%s) - T2 ))
-  NF=$(ls -t "${PROJECT}/output/agent2_extraction/nodes/${SID}"*.json 2>/dev/null | head -1)
+  NF=$(ls -t "${PROJECT}/data/pipeline/agent2_extraction/nodes/${SID}"*.json 2>/dev/null | head -1)
   [ -z "$NF" ] && echo "❌ A2失败(${D2}s)" && echo "${SID} agent2" >> "$FAILED" && continue
   echo "   ✅ A2 (${D2}s)"
   
