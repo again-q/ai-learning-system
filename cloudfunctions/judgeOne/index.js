@@ -472,14 +472,31 @@ exports.main = async (event) => {
         const old = pRes.data[0] || {};
         const S = (old.sValue || 0) + D * P;
         const Dsum = (old.dValue || 0) + D;
+        const newMastery = Dsum > 0 ? Math.round((S / Dsum) * 100) / 100 : 0;
         await upsertProgress(mainNodeId, {
           sValue: Math.round(S * 10000) / 10000,
           dValue: Math.round(Dsum * 10000) / 10000,
-          mastery: Dsum > 0 ? Math.round((S / Dsum) * 100) / 100 : 0,
+          mastery: newMastery,
           attempts: (old.attempts || 0) + 1,
           correctCount: (old.correctCount || 0) + (pOk ? 1 : 0),
           lastUpdated: db.serverDate(),
         });
+        // mastery_logs 追加写（#5 三集合架构补写 2026-08-14）：每次 K 更新记一笔，支持趋势/重算
+        try {
+          await db.collection('mastery_logs').add({
+            data: {
+              userId: openid,
+              knowledgeNodeId: mainNodeId,
+              triggerQuestionId: questionId,
+              oldMastery: old.mastery != null ? old.mastery : null,
+              newMastery,
+              algorithm: 'weighted_score_v1',
+              createdAt: db.serverDate(),
+            },
+          });
+        } catch (e) {
+          console.warn('[judgeOne] mastery_logs 写入失败:', e.message);
+        }
       }
 
       // ---- K 剥离版（暂不跑，USE_KNOWLEDGE_USAGE=true 时启用）----
