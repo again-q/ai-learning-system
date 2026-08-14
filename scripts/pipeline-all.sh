@@ -5,12 +5,12 @@
 
 set +e
 
-PROJECT="/Users/apple/Desktop/ai-learning-system"
-INDEX="${PROJECT}/output/agent2_extraction/knowledge_index.json"
-FAILED="${PROJECT}/output/_failed.log"
-REVIEW="${PROJECT}/output/_needs_review.log"
+PROJECT="$(cd "$(dirname "$0")/.." && pwd)"
+INDEX="${PROJECT}/data/pipeline/agent2_extraction/knowledge_index.json"
+FAILED="${PROJECT}/data/pipeline/_failed.log"
+REVIEW="${PROJECT}/data/pipeline/_needs_review.log"
 
-mkdir -p "${PROJECT}/output/agent1_layout" "${PROJECT}/output/agent2_extraction/nodes"
+mkdir -p "${PROJECT}/data/pipeline/agent1_layout" "${PROJECT}/data/pipeline/agent2_extraction/nodes"
 
 # 已完成的节
 python3 -c "
@@ -28,7 +28,7 @@ echo "========================================="
 
 total=0 ok=0 skip_done=0 skip_fail=0 review=0 fail=0
 
-for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
+for F in "${PROJECT}"/data/pipeline/sections/math_10_ch*.txt; do
     [ -f "$F" ] || continue
     BASENAME=$(basename "$F" .txt)
     
@@ -53,7 +53,7 @@ for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
     # Agent 1 — 如果已有版面文件就跳过
     echo "▶️  Agent 1 版面..."
     T1=$(date +%s)
-    LAYOUT_FILE="${PROJECT}/output/agent1_layout/${BASENAME}.md"
+    LAYOUT_FILE="${PROJECT}/data/pipeline/agent1_layout/${BASENAME}.md"
     if [ -f "$LAYOUT_FILE" ]; then
         echo "   ⏭️  已有，跳过"
         D1=0
@@ -61,7 +61,7 @@ for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
         qwenpaw agent chat \
           --from-agent default \
           --to-agent ai-learning-system-math-banmianfenxi-agent \
-          --text "处理章节 ${SID}，输入 ${F}，输出到 ${PROJECT}/output/agent1_layout/${BASENAME}.md" \
+          --text "处理章节 ${SID}，输入 ${F}，输出到 ${PROJECT}/data/pipeline/agent1_layout/${BASENAME}.md" \
           2>&1 || true
         D1=$(( $(date +%s) - T1 ))
         if [ ! -f "$LAYOUT_FILE" ]; then
@@ -76,7 +76,7 @@ for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
     # Agent 2 — 如果已有节点文件就跳过
     echo "▶️  Agent 2 提取..."
     T2=$(date +%s)
-    NODE_FILE=$(ls -t "${PROJECT}/output/agent2_extraction/nodes/${SID}"*.json 2>/dev/null | head -1)
+    NODE_FILE=$(ls -t "${PROJECT}/data/pipeline/agent2_extraction/nodes/${SID}"*.json 2>/dev/null | head -1)
     if [ -n "$NODE_FILE" ]; then
         echo "   ⏭️  已有，跳过"
         D2=0
@@ -84,10 +84,10 @@ for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
         qwenpaw agent chat \
           --from-agent default \
           --to-agent ai-learning-system-math-jiegouzhuanhua-agent \
-          --text "从 ${LAYOUT_FILE} 提取知识点，section_id=${SID}，输出到 ${PROJECT}/output/agent2_extraction/nodes/" \
+          --text "从 ${LAYOUT_FILE} 提取知识点，section_id=${SID}，输出到 ${PROJECT}/data/pipeline/agent2_extraction/nodes/" \
           2>&1 || true
         D2=$(( $(date +%s) - T2 ))
-        NODE_FILE=$(ls -t "${PROJECT}/output/agent2_extraction/nodes/${SID}"*.json 2>/dev/null | head -1)
+        NODE_FILE=$(ls -t "${PROJECT}/data/pipeline/agent2_extraction/nodes/${SID}"*.json 2>/dev/null | head -1)
         if [ -z "$NODE_FILE" ]; then
             echo "❌ Agent 2 失败 (${D2}s)"
             echo "${SID} agent2" >> "${FAILED}"
@@ -111,7 +111,7 @@ for F in "${PROJECT}"/output/sections/math_10_ch*.txt; do
     # 看质检结果
     PASSED=$(python3 -c "
 import json
-r=json.load(open('${PROJECT}/output/agent3_quality/quality_report.json'))
+r=json.load(open('${PROJECT}/data/pipeline/agent3_quality/quality_report.json'))
 print(r['report']['passed'])
 " 2>/dev/null)
     
@@ -123,7 +123,7 @@ print(r['report']['passed'])
         echo "${SID} ${TITLE}" >> "${REVIEW}"
         python3 -c "
 import json
-r=json.load(open('${PROJECT}/output/agent3_quality/quality_report.json'))
+r=json.load(open('${PROJECT}/data/pipeline/agent3_quality/quality_report.json'))
 rep=r['report']
 for b in rep.get('blocking_issues',[]): print(f'     🔴 {b}')
 for w in rep.get('warnings',[]): print(f'     🟡 {w.get(\"detail\",w)}')
