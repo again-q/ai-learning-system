@@ -103,17 +103,29 @@ async function loadNodes() {
   return _nodeCache;
 }
 
-// 知识节点匹配：先精确（name 全等），失败则子串容错（AI 常输出句子式描述，取最长命中的节点名=最具体）
-async function matchKnowledgeNode(kName) {
+// 知识节点查找：先精确（name 全等），失败则子串容错（AI 常输出句子式描述，取最长命中的节点名=最具体），返回节点对象
+async function findNode(kName) {
   const nodes = await loadNodes();
-  let nodeId = null, bestLen = 0;
+  let best = null, bestLen = 0;
   for (const n of nodes) {
     const nm = n.name || '';
     if (!nm) continue;
-    if (nm === kName) return n.knowledgeId;
-    if (kName.includes(nm) && nm.length > bestLen) { bestLen = nm.length; nodeId = n.knowledgeId; }
+    if (nm === kName) return n;
+    if (kName.includes(nm) && nm.length > bestLen) { bestLen = nm.length; best = n; }
   }
-  return nodeId;
+  return best;
+}
+
+// 知识节点匹配：返回 knowledgeId（A 单元级定位用 findNode 取 path[2]）
+async function matchKnowledgeNode(kName) {
+  const n = await findNode(kName);
+  return n ? n.knowledgeId : null;
+}
+
+// 知识点所属单元名（宪法 §5.3：A 为单元级）——节点 path[2] 即单元名，如「第一章 集合与常用逻辑用语」
+function unitNameOf(node) {
+  if (!node || !Array.isArray(node.path) || node.path.length < 3) return null;
+  return node.path[2];
 }
 
 // 掌握度迁移（#8 用户拍板 2026-08-14）：复核页改 knowledgeNodeName 后，把这条题的 S_k/D_k 贡献从旧节点移到新节点
@@ -525,40 +537,50 @@ exports.main = async (event) => {
         }
       }
 
-      // ---- A 维度（§5.5 能力指数：E = D×η；ΔA = 0.25×E×(U−A)）----
+      // ---- A 维度（宪法 §5.3/§5.5：单元级 A/U/N，独立集合 unit_progress）----
+      // E = D×η×(2P−1)（P 编码方向，替代已删 isCorrect）；归因分流保留在开关分支
       if (eta != null && eta >= 0.4 && mainNodeId) {
-        const D = Number(clamped.D) || 0;
-        // 最简版：E 方向由 P 映射（P≥0.5 正刺激 / P<0.5 负刺激），E = D×η×(2P−1)；归因分流保留在开关分支
-        let eff = D * eta * (2 * Number(clamped.P) - 1);
-        if (USE_KNOWLEDGE_USAGE) {
-          // 归因分流（暂不跑）：错题归因 K/S → E=0；errorDimension 缺失时回退关键词判断
-          const dim = raw.errorDimension;
-          const isKS = !pOk && (dim === 'K' || dim === 'S'
-            || (!dim && /概念|定义|公式|记错|遗忘|知识/.test(raw.errorAttribution || '')));
-          if (isKS) eff = 0;
-        }
-        if (eff !== 0) {
-          const pRes = await db.collection('knowledge_progress')
-            .where({ userId: openid, knowledgeNodeId: mainNodeId }).limit(1).get();
-          const old = pRes.data[0] || {};
+        const mainNode = await findNode((raw.knowledgeNodeName || '').trim());
+        const unitName = unitNameOf(mainNode);
+        if (unitName) {
+          const D = Number(clamped.D) || 0;
+          let eff = D * eta * (2 * Number(clamped.P) - 1);
+          if (USE_KNOWLEDGE_USAGE) {
+            // 归因分流（暂不跑）：错题归因 K/S → E=0；errorDimension 缺失时回退关键词判断
+            const dim = raw.errorDimension;
+            const isKS = !pOk && (dim === 'K' || dim === 'S'
+              || (!dim && /概念|定义|公式|记错|遗忘|知识/.test(raw.errorAttribution || '')));
+            if (isKS) eff = 0;
+          }
+          const uRes = await db.collection('unit_progress')
+            .where({ userId: openid, unitName }).limit(1).get();
+          const old = uRes.data[0] || {};
           let A = old.aValue != null ? old.aValue : 0.3;
           let U = old.aUpper != null ? old.aUpper : 0.5;
-          // U 上浮：本质解法（η≥0.7）+ 鉴别力足够（E≥0.5）
-          if (eff >= 0.5 && eta >= 0.7) U += 0.05 * (1 - U);
-          // U 下浮：连续 5 题低路径质量（暴力计算挤压虚假上限）
           let streak = old.lowEtaStreak || 0;
-          if (eta <= 0.6) {
-            streak += 1;
-            if (streak >= 5) { U -= 0.03 * (U - A); streak = 0; }
-          } else streak = 0;
-          const dA = 0.25 * Math.abs(eff) * (U - A);
-          A = eff > 0 ? Math.min(A + dA, U) : Math.max(A - dA, 0);
-          await upsertProgress(mainNodeId, {
+          if (eff !== 0) {
+            // U 上浮：本质解法（η≥0.7）+ 鉴别力足够（E≥0.5）
+            if (eff >= 0.5 && eta >= 0.7) U += 0.05 * (1 - U);
+            // U 下浮：连续 5 题低路径质量（暴力计算挤压虚假上限）
+            if (eta <= 0.6) {
+              streak += 1;
+              if (streak >= 5) { U -= 0.03 * (U - A); streak = 0; }
+            } else streak = 0;
+            const dA = 0.25 * Math.abs(eff) * (U - A);
+            A = eff > 0 ? Math.min(A + dA, U) : Math.max(A - dA, 0);
+          }
+          const patch = {
             aValue: Math.round(A * 100) / 100,
             aUpper: Math.round(U * 100) / 100,
+            n: (old.n || 0) + 1,
             lowEtaStreak: streak,
             lastUpdated: db.serverDate(),
-          });
+          };
+          if (uRes.data.length) {
+            await db.collection('unit_progress').doc(uRes.data[0]._id).update({ data: patch });
+          } else {
+            await db.collection('unit_progress').add({ data: { userId: openid, unitName, ...patch } });
+          }
         }
       }
     } catch (e) {
