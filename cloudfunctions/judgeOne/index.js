@@ -72,7 +72,7 @@ const RUBRIC = `
    · 单个维度特别突出（如陷阱密度很高）→ 至少向上浮动一档内位置
    最终给出一个精细 D 值；不要趋同、不要总取中间；D 必须落在本档区间内
 ■ 题型：回忆类=直接套公式；单元内=本单元变形推理分类讨论；跨单元=结合≥2单元
-■ P（§4.4）：1.0清晰/0.5模糊/0.3思路对/0空白
+■ P（§4.4 连续 0~1）：过程与正确答案的距离——完全正确且答案对=1.0；答案错但过程几乎完整（最后一步错/抄错）=0.8~0.95；中途偏航但思路对=0.4~0.7；只有思路无结果=0.2~0.3；空白/完全跑偏=0。判错时 P 必须 < 1（1.0 只留给完全正确）
 ■ η：只对解答题0.4~1.0；填空选择null
 ■ r：一律null
 ■ isCorrect：严格数学判定（vision的≥可能被读成>，按数学逻辑核验；答案转录可能带OCR前缀误差）
@@ -86,17 +86,16 @@ const LR = {
   L7: [0.79, 0.85], L8: [0.85, 0.90], L9: [0.90, 0.94],
   L10: [0.94, 0.98], L11: [0.98, 0.999],
 };
-const P_BINS = [0, 0.3, 0.5, 1.0];
+// P 连续 0~1（决策 2026-08-14 用户：不再收敛四档），clampParams 内直接钳制
 
 function clampParams(raw, questionType) {
   const [lo, hi] = LR[raw.level] || [0.01, 0.999];
   const D = Math.min(hi, Math.max(lo, Number(raw.D) || lo));
   const isOpen = questionType === '解答';
   const eta = isOpen ? (raw.eta === undefined ? null : raw.eta) : null;
-  let P = Number(raw.P);
-  if (!P_BINS.includes(P)) {
-    P = P_BINS.reduce((prev, curr) => (Math.abs(curr - P) < Math.abs(prev - P) ? curr : prev));
-  }
+  // P：连续 0~1（决策 2026-08-14 用户：P=过程距答案的距离，不再收敛四档）
+  let P = Math.min(1, Math.max(0, Number(raw.P) || 0));
+  P = Math.round(P * 100) / 100;
   return { D, eta, P };
 }
 
@@ -226,7 +225,7 @@ async function judgeQuestion(question, ragContext) {
 第二步【判定作答 + 对照标尺判档】：基于学生视角体验对照 L1-L11 标尺判档（档位边界卡+例子锚+新定义补充+5维锁定），同时判定对错/作答质量。
 
 只输出 JSON：
-{"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"isCorrect":true|false,"correctAnswer":"","P":0|0.3|0.5|1.0,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","fiveDim":{"K":0,"A":0,"T":0,"Q":0,"S":0},"isRecallQuestion":true,"isOutOfSyllabus":false}
+{"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"isCorrect":true|false,"correctAnswer":"","P":0~1,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","fiveDim":{"K":0,"A":0,"T":0,"Q":0,"S":0},"isRecallQuestion":true,"isOutOfSyllabus":false}
 约束：D 落在 level 区间（D 是题目固有难度，与学生熟练度无关）；knowledgeNodeName 必须用教材术语原词；fiveDim 是【能力五维】（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，各 1~5 整数）；isRecallQuestion 是【回忆类题标记】：默写公式/复述定义/判断对错=回忆类（true），解题应用=应用类（false）；isOutOfSyllabus 是【超纲标记】：超出高中课标范围才 true，默认 false；最后输出纯 JSON`;
   const data = await postJSON(`${DS_BASE_URL}/chat/completions`, {
     model: DS_MODEL,
@@ -326,10 +325,10 @@ exports.main = async (event) => {
     const questionType = raw.questionType || question.questionType || '其他';
     const clamped = clampParams(raw, questionType);
 
-    // 规则（用户 2026-08-14）：选择/填空无过程可分，答案错 → P 强制 0
-    // （AI 偶发 P 与 isCorrect 矛盾：isCorrect=false 却给 P=1/0.3，会导致掌握度虚高）
-    if ((questionType === '选择' || questionType === '填空') && raw.isCorrect === false) {
-      clamped.P = 0;
+    // 规则（用户 2026-08-14）：P 连续 0~1，判错时不可能 1.0（1.0 只留给「完全正确且答案对」）
+    //   选填无过程可分 → P 强制 0；解答题按过程距答案的远近由 AI 判，上限 0.99
+    if (raw.isCorrect === false) {
+      clamped.P = (questionType === '选择' || questionType === '填空') ? 0 : Math.min(clamped.P, 0.99);
     }
 
     // 更新题目
