@@ -211,6 +211,7 @@
 
 | 日期 | 更新内容 |
 |------|---------|
+| 2026-08-14 | **掌握度真实数据接入（对齐理论 §4.4/§5.5）**：judgeOne 判题后写 knowledge_progress——K 用加权得分法 S_k/D_k（仅回忆类更新、超纲错题不计入），A 用能力指数 E=D×η（ΔA=0.25×E×(U−A)，U 上下浮规则），prompt 新增 isRecallQuestion/isOutOfSyllabus 字段；graphService 返回 progressMap、graph 页删 mock；历史 17 题回填（集合 1.00/真子集 1.00/基本不等式 0.76/单调性 0.71）；新增 add-knowledge-node.py 交互式加点脚本 |
 | 2026-08-14 | **仓库结构整理**：新建 `archive/`（knowledge-map、knowledge-tree、v4 原型、旧 K 维度规格）；`app.json` 移除归档页；新增 `doc/PROJECT-STRUCTURE.md`；重写 README + STATUS-MANIFEST 快照；Code-Wiki 标注 graph 已改知识图谱 |
 | 2026-08-13 | **协作质量流程写入 AI协作手册 §九**：先诊断→谈方向→可点原型自测→用户验收→生产化对齐既有模式→经验沉淀；补常见陷阱与一句话总结 |
 | 2026-08-13 | **补洞：新版 UI 同步到 tab「图谱」`pages/graph`**（先前只改了几乎无入口的 knowledge-map，用户编译仍见旧版；见开发经验 #13） |
