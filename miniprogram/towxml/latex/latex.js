@@ -27,7 +27,7 @@ Component({
 			// 设置公式图片
 			_ts.setData({
 				attr:{
-					src:`${config.latex.api}=${dataAttr.value}&theme=${global._theme}`,
+					src:`${config.latex.api}${dataAttr.value}`,
 					class:`${dataAttr.class} ${dataAttr.class}--${dataAttr.type}`
 				}
 			});

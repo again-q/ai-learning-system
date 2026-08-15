@@ -1,9 +1,9 @@
 module.exports = {
     // LaTex公式、yuml解析服务架设参见 https://github.com/sbfkcel/markdown-server
 
-    // 数学公式解析API
+    // 数学公式解析API（2026-08-15：原 towxml.vvadd.com 已失效，换 codecogs；真机需在小程序后台配置 downloadFile 合法域名 latex.codecogs.com）
     latex:{
-        api:'http://towxml.vvadd.com/?tex'
+        api:'https://latex.codecogs.com/png.latex?'
     },
 
     // yuml图解析APPI
@@ -18,7 +18,8 @@ module.exports = {
         'ins',                      // 文本删除线支持
         'mark',                     // 文本高亮支持
         'emoji',                    // emoji表情支持
-        'todo'                      // todo支持
+        'todo',                     // todo支持
+        'latex'                     // 数学公式支持（$...$ → 外部公式图片服务渲染）
     ],
 
     // 代码高亮配置，保留需要的选项即可（尽量越少越好，不要随意调整顺序。部分高亮有顺序依赖）
