@@ -211,6 +211,7 @@
 
 | 日期 | 更新内容 |
 |------|---------|
+| 2026-08-15 | **报告设计进入探讨（P0）**：定位=处方；范围=①结论+③行动+④趋势占位+RAG；生成=规则+AI整理；入口可选查看；报告按知识点组织、题型（解题模式）为语义锚；RAG=模糊匹配实测成立（题型锚拉大同类/干扰间距）；讨论状态见 `doc/报告设计-讨论状态.md`（Q1~Q18 待商讨） |
 | 2026-08-14 | **决策 025：掌握度链路重建**——P 改连续 0~1（废四档）、isCorrect 删除（未定义伪参数，P 编码对错）、fiveDim 对齐 0~1、K 整题 S_k/D_k（knowledgeUsage 剥离开关暂缓）、A 方向 E=D×η×(2P−1)、节点匹配函数化、mastery_logs 补写、掌握度迁移；**五维模型文档为宪法**；**官方图谱保护**（上线后 knowledge_nodes 只能官方改，自定义节点独立集合）；测试数据规则（错即删记录） |
 | 2026-08-14 | **掌握度真实数据接入（对齐理论 §4.4/§5.5）**：judgeOne 判题后写 knowledge_progress——K 用加权得分法 S_k/D_k（仅回忆类更新、超纲错题不计入），A 用能力指数 E=D×η（ΔA=0.25×E×(U−A)，U 上下浮规则），prompt 新增 isRecallQuestion/isOutOfSyllabus 字段；graphService 返回 progressMap、graph 页删 mock；历史 17 题回填（集合 1.00/真子集 1.00/基本不等式 0.76/单调性 0.71）；新增 add-knowledge-node.py 交互式加点脚本 |
 | 2026-08-14 | **仓库结构整理**：新建 `archive/`（knowledge-map、knowledge-tree、v4 原型、旧 K 维度规格）；`app.json` 移除归档页；新增 `doc/PROJECT-STRUCTURE.md`；重写 README + STATUS-MANIFEST 快照；Code-Wiki 标注 graph 已改知识图谱 |
