@@ -33,6 +33,15 @@
     <view class="count" wx:if="{{images.length > 0}}">
       <text>{{images.length}}/9 张</text>
     </view>
+
+    <!-- 流水线失败：页内提示，避免与 progress-mask / 系统 toast 叠层 -->
+    <view class="pipeline-error" wx:if="{{pipelineError && !submitting && !analyzing}}">
+      <text class="pipeline-error-text">{{pipelineError}}</text>
+      <view class="pipeline-error-actions">
+        <view class="pipeline-error-btn" bindtap="clearPipelineError">知道了</view>
+        <view class="pipeline-error-btn primary" bindtap="submit">重试</view>
+      </view>
+    </view>
   </view>
 
   <!-- 底部提交 -->
