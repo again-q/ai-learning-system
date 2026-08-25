@@ -1,4 +1,3 @@
-const towxml = require('/towxml/index.js'); // towxml 3.x：Markdown + LaTeX 公式渲染（复核页用）
 const { getCachedUser } = require('./utils/user-cache');
 const { renderLatex, renderMathText } = require('./utils/latex');
 
@@ -6,7 +5,6 @@ App({
   // LaTeX 内核：app.renderLatex(tex) / app.renderMathText(混排文本) → rich-text nodes
   renderLatex,
   renderMathText,
-
   globalData: {
     userInfo: null,
     env: 'cloud1-d8g0ty39wd73f430a'

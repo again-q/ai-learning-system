@@ -144,7 +144,7 @@ Page({
       }
       this.setData({ analyzing: false });
       log.append('navigate_review', { batchId: batchData.data.batchId });
-      wx.navigateTo({ url: '/pages/review/review?batchId=' + batchData.data.batchId });
+      wx.navigateTo({ url: '/packageDiagnose/pages/review/review?batchId=' + batchData.data.batchId });
       return;
       // 旧流程（judgeOne 批量 + 报告页）已迁移至复核页，以下保留参考
       this.setData({ totalQuestions: total, progressText: 'AI 判定题目中...', progressPercent: 10 });
@@ -180,7 +180,7 @@ Page({
         this.setData({ pipelineError: `${failed} 题判定失败，可在报告中重试` });
       }
       setTimeout(() => {
-        wx.navigateTo({ url: `/pages/report/report?batchId=${batchData.data.batchId}` });
+        wx.navigateTo({ url: `/packageDiagnose/pages/report/report?batchId=${batchData.data.batchId}` });
       }, 300);
     } catch (e) {
       console.error('[photo] submit error:', e);

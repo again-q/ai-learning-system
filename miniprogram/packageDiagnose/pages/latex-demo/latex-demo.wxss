@@ -1,3 +1,5 @@
+@import '/packageDiagnose/libs/katex-mini/index.wxss';
+
 .page {
   min-height: 100vh;
   background: #f6f7f9;
