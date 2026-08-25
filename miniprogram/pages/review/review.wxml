@@ -32,9 +32,13 @@
         <towxml nodes="{{item.article}}" />
       </view>
       <text class="q-plain" wx:else>{{item.questionText}}</text>
+      <view class="answer-line" wx:if="{{item.studentAnswer}}">
+        <text class="answer-label">作答</text>
+        <text class="answer-val">{{item.studentAnswer}}</text>
+      </view>
       <view class="trace" wx:if="{{item.traceText}}">
         <view class="trace-head">
-          <text class="trace-label">做题痕迹</text>
+          <text class="trace-label">做题过程</text>
           <text class="trace-toggle" data-index="{{index}}" bindtap="onToggleTrace">{{item.traceOpen ? '收起' : '展开'}}</text>
         </view>
         <view class="trace-body" wx:if="{{item.traceOpen}}">
@@ -43,7 +47,7 @@
         </view>
       </view>
       <view class="card-actions">
-        <view class="btn ghost" data-index="{{index}}" bindtap="onEditQuestion">✏️ 修改题目</view>
+        <view class="btn ghost" data-index="{{index}}" bindtap="onEditQuestion">✏️ 修改</view>
       </view>
     </view>
 
@@ -101,13 +105,34 @@
     <button class="btn ghost big" bindtap="onBackHome">返回首页</button>
   </view>
 
-  <!-- 修改题目弹层 -->
+  <!-- 修改题目弹层：可手改三字段；不会打公式时用白话让 AI 改写 -->
   <view class="mask" wx:if="{{editMode === 'question'}}" bindtap="closeEdit">
     <view class="sheet" catchtap="noop">
-      <view class="sheet-title">修改题目转录</view>
-      <textarea class="edit-area" value="{{editValue}}" bindinput="onEditInput" auto-height maxlength="2000" placeholder="粘贴修正后的题目文本（支持 Markdown / LaTeX 公式）"></textarea>
-      <text class="field-label">做题痕迹 / 作答</text>
-      <textarea class="edit-area trace-area" value="{{editTrace}}" bindinput="onEditTraceInput" auto-height maxlength="3000" placeholder="可修改或补充学生的做题痕迹、作答过程"></textarea>
+      <view class="sheet-title">修改本题</view>
+
+      <text class="field-label">用一句话说要改什么（推荐）</text>
+      <textarea
+        class="edit-area nl-area"
+        value="{{editNL}}"
+        bindinput="onEditNLInput"
+        auto-height
+        maxlength="500"
+        placeholder="例如：答案不是 A 是 B；第二步 x 应该等于二分之一"
+      />
+      <view class="btn ghost ai-btn {{revising ? 'disabled' : ''}}" bindtap="onAIRevise">
+        {{revising ? 'AI 改写中…' : '✨ AI 按这句话改写'}}
+      </view>
+      <view class="nl-tip">改写后请核对下面三栏，确认无误再保存。默认相信你的修正。</view>
+
+      <text class="field-label">题目</text>
+      <textarea class="edit-area" value="{{editValue}}" bindinput="onEditInput" auto-height maxlength="2000" placeholder="题目文本"></textarea>
+
+      <text class="field-label">最终作答</text>
+      <input class="field-input answer-input" value="{{editAnswer}}" bindinput="onEditAnswerInput" placeholder="如 A、x=1/2、3" />
+
+      <text class="field-label">做题过程</text>
+      <textarea class="edit-area trace-area" value="{{editTrace}}" bindinput="onEditTraceInput" auto-height maxlength="3000" placeholder="做题痕迹 / 过程"></textarea>
+
       <view class="sheet-actions">
         <view class="btn ghost" bindtap="closeEdit">取消</view>
         <view class="btn primary" bindtap="onSaveQuestion">保存</view>
