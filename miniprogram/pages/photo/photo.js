@@ -79,25 +79,29 @@ Page({
       estimatedText: '预计 ' + Math.ceil(this.data.images.length * 3) + ' 秒',
       progressPercent: 2,
     });
+    log.beginSession('photo_submit');
     log.append('upload_start', { imageCount: this.data.images.length });
 
     try {
       // 1. 逐张上传到云存储（路径含 userId，实现照片隔离——CR-002 修复）
       const uid = user._openid;
       const fileIds = [];
+      const tUpload = Date.now();
       for (const file of this.data.images) {
         const ext = file.split('.').pop() || 'jpg';
         const cloudPath = `photos/${uid}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
         const up = await wx.cloud.uploadFile({ cloudPath, filePath: file });
         fileIds.push(up.fileID);
       }
-      log.append('upload_done', { fileIds: fileIds.length });
+      log.append('upload_done', { fileIds: fileIds.length, durationMs: Date.now() - tUpload });
 
       // 2. 登记批次（photoUpload 云函数——只登记 fileIds，不重复上传）
-      const batchRes = await wx.cloud.callFunction({
-        name: 'photoUpload',
-        data: { fileIds },
-      });
+      const batchRes = await log.timed('photoUpload', { fileCount: fileIds.length }, () =>
+        wx.cloud.callFunction({
+          name: 'photoUpload',
+          data: { fileIds },
+        })
+      );
       const batchData = batchRes.result;
       if (batchData.code !== 0) throw new Error(batchData.message);
       log.append('batch_created', { batchId: batchData.data.batchId });
@@ -109,15 +113,16 @@ Page({
         estimatedText: '预计 ' + Math.ceil(this.data.images.length * 25) + ' 秒',
         progressPercent: 5,
       });
-      log.append('diagnose_start', { batchId: batchData.data.batchId });
-      const diagRes = await wx.cloud.callFunction({
-        name: 'diagnose',
-        data: { batchId: batchData.data.batchId },
-        timeout: 120000,
-      });
+      const diagRes = await log.timed('diagnose', { batchId: batchData.data.batchId }, () =>
+        wx.cloud.callFunction({
+          name: 'diagnose',
+          data: { batchId: batchData.data.batchId },
+          timeout: 120000,
+        })
+      );
       const diagData = diagRes.result;
       if (diagData.code !== 0) throw new Error(diagData.message);
-      log.append('diagnose_done', {
+      log.append('diagnose_summary', {
         totalQuestions: diagData.data.totalQuestions,
         failedCount: diagData.data.failedCount,
         questionIds: (diagData.data.questions || []).map(q => q.questionId),
