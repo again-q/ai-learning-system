@@ -1,5 +1,6 @@
+const towxml = require('../../towxml/index.js');
+const log = require('../../../utils/upload-log');
 const app = getApp();
-const log = require('../../utils/upload-log');
 
 Page({
   data: {
@@ -251,7 +252,7 @@ Page({
   renderMd(text) {
     if (!text) return {};
     try {
-      const d = app.towxml(text, 'markdown');
+      const d = towxml(text, 'markdown');
       return d && d.child ? d : {};
     } catch (e) {
       console.error('[report] towxml render failed:', e.message);
