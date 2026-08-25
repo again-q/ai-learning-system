@@ -29,15 +29,14 @@ Page({
     }
   },
 
-  // towxml 渲染兜底：失败回退纯文本
+  // 公式混排：utils/latex → rich-text nodes（失败回退纯文本节点）
   renderMd(text) {
-    if (!text) return {};
+    if (!text) return [];
     try {
-      const d = app.towxml(text, 'markdown');
-      return d && d.child ? d : {};
+      return app.renderMathText(text) || [];
     } catch (e) {
-      console.error('[review] towxml render failed:', e.message);
-      return {};
+      console.error('[review] renderMathText failed:', e.message);
+      return [{ type: 'text', text: String(text) }];
     }
   },
 
@@ -106,7 +105,7 @@ Page({
         traceReport: trace,
         traceText: trace,
         transcriptionReviewed: true,
-        article: app.towxml(text, 'markdown'),
+        article: this.renderMd(text),
         traceArticle: this.renderMd(trace),
       };
       this.setData({ items, editMode: '' });

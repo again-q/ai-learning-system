@@ -1,9 +1,6 @@
-const towxml = require('/towxml/index.js'); // towxml 3.x：Markdown 渲染（复核/报告过渡用）
 const { renderLatex, renderMathText } = require('./utils/latex');
 
 App({
-  // 转换函数：app.towxml(markdownText, 'markdown') → 渲染数据
-  towxml: (str, type) => towxml(str, type),
   // LaTeX 内核：app.renderLatex(tex) / app.renderMathText(混排文本) → rich-text nodes
   renderLatex,
   renderMathText,
