@@ -18,9 +18,56 @@ const fail = (code, msg) => ({ code, data: null, message: msg });
 const VISION_PROMPT = `你是数学学习诊断助手的图像理解阶段。任务：准确转录题目 + 如实描述做题痕迹。不要做诊断判断。
 
 输出 Markdown：
-# 题目转录（每题独立成块，以「题号.」开头，含完整题干、所有选项内容和题目形式；一题一段，块与块之间空行）
-# 做题痕迹观察（按书写顺序逐条：第N步+位置+痕迹；涂改/草稿/最终答案）
-# 输出要求：不确定处标(不确定)；看不清写(看不清)；最终答案逐字符精确（≥≤><=符号不能错）；不臆测`;
+# 题目转录
+（每题独立成块，以「1.」「2.」等题号开头，含完整题干、所有选项内容和题目形式；一题一段，块与块之间空行）
+
+# 做题痕迹观察
+（必须按题号分组，禁止把所有题的痕迹混成一段）
+## 第1题
+- 按书写顺序：步骤/位置/痕迹（涂改、草稿、最终答案）
+## 第2题
+- …
+（有几题写几节；某题完全无痕迹则写「无可见痕迹」）
+
+# 输出要求
+不确定处标(不确定)；看不清写(看不清)；最终答案逐字符精确（≥≤><=符号不能错）；不臆测；公式尽量用 $...$ / $$...$$`;
+
+// ============ 痕迹按题切开（禁止把整份视觉报告塞进每道题） ============
+function looksLikeFullVisionReport(trace, fullReport) {
+  const t = (trace || '').trim();
+  if (!t) return false;
+  if (/#\s*题目转录/.test(t) && /#\s*做题痕迹/.test(t)) return true;
+  const full = (fullReport || '').trim();
+  if (full && t.length >= Math.floor(full.length * 0.75)) return true;
+  return false;
+}
+
+/** 从整份转录里按「## 第N题」摘出该题痕迹；失败返回 '' */
+function extractTraceByIndex(fullReport, index1Based) {
+  const full = fullReport || '';
+  if (!full || !index1Based) return '';
+  // 优先在「做题痕迹」章节内找
+  const sectionMatch = full.match(/#\s*做题痕迹[\s\S]*?(?=\n#\s+[^\n#]|$)/);
+  const section = sectionMatch ? sectionMatch[0] : full;
+  const re = new RegExp(
+    `(?:^|\\n)##\\s*第\\s*${index1Based}\\s*题\\s*\\n([\\s\\S]*?)(?=\\n##\\s*第\\s*\\d+\\s*题|\\n#\\s+|$)`
+  );
+  const m = section.match(re);
+  if (m && m[1] && m[1].trim()) return m[1].trim();
+  return '';
+}
+
+/**
+ * 选定某题的 traceReport：
+ * 1) 拆题 AI 给出的片段（且不是整份报告）
+ * 2) 否则从全文按题号摘录
+ * 3) 再不行给空串——绝不回退整份 vr.report
+ */
+function pickTraceReport(itemTrace, fullReport, index1Based) {
+  const raw = (itemTrace || '').trim();
+  if (raw && !looksLikeFullVisionReport(raw, fullReport)) return raw;
+  return extractTraceByIndex(fullReport, index1Based) || '';
+}
 
 // ============ AI 拆题（自然判断，不用死正则） ============
 async function aiSplitQuestions(report) {
@@ -28,8 +75,23 @@ async function aiSplitQuestions(report) {
     model: DS_MODEL,
     thinking: { type: 'disabled' }, // 拆题不思考，便宜快
     messages: [
-      { role: 'system', content: '你是题目拆分助手。把视觉转录中的题目逐题拆出，同时从「做题痕迹观察」中摘出每道题对应的做题痕迹片段。只输出 JSON。' },
-      { role: 'user', content: `把以下转录拆成独立题目（一题一个对象）。每题包含：index、text=完整题干+选项+题号、traceReport=该题对应的做题痕迹片段（从转录的做题痕迹观察中按题摘录，没有对应痕迹就填空字符串）。输出：{"questions":[{"index":1,"text":"完整题目文本","traceReport":"该题做题痕迹"}]}\n\n===== 转录 =====\n${report.slice(0, 6000)}` },
+      {
+        role: 'system',
+        content:
+          '你是题目拆分助手。把视觉转录中的题目逐题拆出，并从「做题痕迹观察」中按题号摘出对应痕迹。' +
+          'traceReport 只能是该题自己的痕迹，禁止复制整份转录或把其他题的痕迹塞进来；没有就返回空字符串。只输出 JSON。',
+      },
+      {
+        role: 'user',
+        content:
+          '把以下转录拆成独立题目（一题一个对象）。每题字段：\n' +
+          '- index：题号（从 1 起）\n' +
+          '- text：完整题干+选项+题号\n' +
+          '- traceReport：仅该题的做题痕迹（对应「## 第N题」小节；无则 ""）\n' +
+          '输出：{"questions":[{"index":1,"text":"完整题目文本","traceReport":"该题做题痕迹"}]}\n\n' +
+          '===== 转录 =====\n' +
+          report.slice(0, 6000),
+      },
     ],
     max_tokens: 8000, // 8 题完整题干较长，4000 会截断 JSON
   };
@@ -66,9 +128,10 @@ async function aiSplitQuestions(report) {
   }
   if (!parsed || !Array.isArray(parsed.questions) || parsed.questions.length === 0) parseErr('拆题输出无 questions');
   return parsed.questions
-    .map((q) => ({
+    .map((q, i) => ({
+      index: Number(q.index) > 0 ? Number(q.index) : i + 1,
       text: q.text || '',
-      traceReport: q.traceReport || '',
+      traceReport: typeof q.traceReport === 'string' ? q.traceReport : '',
       type: guessType(q.text || ''),
     }))
     .filter((q) => q.text.length > 5);
@@ -212,14 +275,17 @@ exports.main = async (event) => {
         continue;
       }
 
-      for (const item of items) {
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const index1 = item.index || i + 1;
+        const traceReport = pickTraceReport(item.traceReport, vr.report, index1);
         totalQuestions++;
         const qIns = await db.collection('questions').add({
           data: {
             _openid: openid, userId: openid, batchId, imageFileId: vr.fileId,
             questionText: item.text, questionType: item.type || '其他',
             isCorrect: null, nodeStatus: 'unmapped', source: 'photo',
-            traceReport: item.traceReport || vr.report, revisions: [], createdAt: db.serverDate(),
+            traceReport, revisions: [], createdAt: db.serverDate(),
           },
         });
         questions.push({ questionId: qIns._id, status: 'pending' });
