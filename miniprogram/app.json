@@ -5,16 +5,42 @@
     "pages/study/study",
     "pages/graph/graph",
     "pages/mine/mine",
-    "pages/photo/photo",
-    "pages/report/report",
-    "pages/dimension-detail/dimension-detail",
-    "pages/review/review",
-    "pages/model-cards/model-cards",
-    "pages/method-list/method-list",
-    "pages/admin/knowledge-admin/knowledge-admin",
-    "pages/logs/logs",
-    "pages/latex-demo/latex-demo"
+    "pages/photo/photo"
   ],
+  "subPackages": [
+    {
+      "root": "packageDiagnose",
+      "name": "diagnose",
+      "pages": [
+        "pages/review/review",
+        "pages/report/report"
+      ]
+    },
+    {
+      "root": "packageLatex",
+      "name": "latex",
+      "pages": [
+        "pages/latex-demo/latex-demo"
+      ]
+    },
+    {
+      "root": "packageExtra",
+      "name": "extra",
+      "pages": [
+        "pages/logs/logs",
+        "pages/dimension-detail/dimension-detail",
+        "pages/model-cards/model-cards",
+        "pages/method-list/method-list",
+        "pages/admin/knowledge-admin/knowledge-admin"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/photo/photo": {
+      "network": "all",
+      "packages": ["diagnose"]
+    }
+  },
   "window": {
     "navigationStyle": "custom",
     "backgroundColor": "#f5f5f7",

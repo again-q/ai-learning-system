@@ -1,6 +1,6 @@
 // 复核页：一次复核（题目转录确认）→ 二次复核（参数确认）→ 完成
-const app = getApp();
-const log = require('../../utils/upload-log');
+const towxml = require('../../towxml/index.js');
+const log = require('../../../utils/upload-log');
 
 Page({
   data: {
@@ -33,7 +33,7 @@ Page({
   renderMd(text) {
     if (!text) return {};
     try {
-      const d = app.towxml(text, 'markdown');
+      const d = towxml(text, 'markdown');
       return d && d.child ? d : {};
     } catch (e) {
       console.error('[review] towxml render failed:', e.message);
@@ -106,7 +106,7 @@ Page({
         traceReport: trace,
         traceText: trace,
         transcriptionReviewed: true,
-        article: app.towxml(text, 'markdown'),
+        article: towxml(text, 'markdown'),
         traceArticle: this.renderMd(trace),
       };
       this.setData({ items, editMode: '' });
@@ -261,7 +261,7 @@ Page({
       wx.showToast({ title: '缺少批次信息', icon: 'none' });
       return;
     }
-    wx.navigateTo({ url: '/pages/report/report?batchId=' + this.data.batchId });
+    wx.navigateTo({ url: '/packageDiagnose/pages/report/report?batchId=' + this.data.batchId });
   },
 
   closeEdit() { this.setData({ editMode: '' }); },

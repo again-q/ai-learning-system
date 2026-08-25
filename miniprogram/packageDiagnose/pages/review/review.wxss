@@ -1,3 +1,5 @@
+@import '/packageDiagnose/towxml/style/main.wxss';
+
 /* 复核页样式 */
 .page {
   height: 100vh;

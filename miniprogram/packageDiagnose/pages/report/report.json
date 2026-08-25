@@ -4,6 +4,6 @@
     "report-overview": "/components/report-overview/report-overview",
     "report-module": "/components/report-module/report-module",
     "report-dispute-modal": "/components/report-dispute-modal/report-dispute-modal",
-    "towxml": "/towxml/towxml"
+    "towxml": "/packageDiagnose/towxml/towxml"
   }
 }

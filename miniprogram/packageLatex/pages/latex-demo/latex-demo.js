@@ -1,8 +1,8 @@
-// latex-demo：@rojer/katex-mini 官方示范页（输入 LaTeX → 渲染 rich-text）
-// 文档：https://github.com/rojer/katex-mini（npm install @rojer/katex-mini + katex → 构建 npm → app.wxss 引入样式）
+// latex-demo：与原先正常版一致（displayMode + throwError）
+// 库放在 packageLatex 分包，样式用原 base64 自包含版（小程序本地字体路径易失效导致叠字）
 let parseLatex = null;
 try {
-  const mod = require('@rojer/katex-mini');
+  const mod = require('../../libs/katex-mini/index.js');
   parseLatex = (mod && (mod.default || mod.parseLatex || mod)) || null;
 } catch (e) {
   console.error('[latex-demo] katex-mini load failed:', e);
@@ -37,7 +37,7 @@ Page({
     if (!parseLatex) {
       this.setData({
         nodes: [{ type: 'text', text: tex }],
-        error: 'katex-mini 未加载：请确认已构建 npm（工具 → 构建 npm）',
+        error: 'katex-mini 未加载',
       });
       return;
     }
@@ -59,7 +59,11 @@ Page({
     }
   },
 
+  onRenderTap() {
+    this.renderLatex();
+  },
+
   goBack() {
-    wx.navigateBack();
+    wx.navigateBack({ delta: 1 });
   },
 });
