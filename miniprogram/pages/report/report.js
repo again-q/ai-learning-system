@@ -1,6 +1,23 @@
 const app = getApp();
 const log = require('../../utils/upload-log');
 
+// 长请求无真实流式进度：按耗时推进阶段文案（不做百分比假进度条）
+const GEN_STAGES = [
+  { afterSec: 0, text: '整理本次答题数据…' },
+  { afterSec: 6, text: '检索历史同类题与错误模式…' },
+  { afterSec: 16, text: '定位薄弱点与断点…' },
+  { afterSec: 28, text: '撰写诊断报告…' },
+  { afterSec: 45, text: '润色与校验…' },
+  { afterSec: 70, text: '仍在生成，请再稍候…' },
+];
+
+function getOpenid() {
+  const fromKey = wx.getStorageSync('openid');
+  if (fromKey) return fromKey;
+  const user = wx.getStorageSync('userInfo') || (getApp().globalData && getApp().globalData.userInfo) || {};
+  return user._openid || '';
+}
+
 Page({
   data: {
     loading: true,
@@ -15,7 +32,10 @@ Page({
     historyLoading: false,
     reportProgressVisible: false,
     reportProgressText: '',
-    reportProgressPercent: 0,
+    reportElapsedSec: 0,
+    reportStageIndex: 0,
+    genStages: GEN_STAGES,
+    regenerating: false,   // 异议重生成：页内提示，避免与系统 Loading 叠层
     retryable: false,
     // 报告渐进展示：先断点 → 根因 → 钩子 → 检验，避免一口气展示全部
     activeStep: 1,
@@ -27,7 +47,6 @@ Page({
     const batchId = options.batchId || (app.globalData && app.globalData.currentBatchId) || '';
     this.setData({ batchId });
     if (!batchId) {
-      // 没有批次信息时直接进入历史报告列表
       this.setData({ historyVisible: true });
       this.loadHistory();
       return;
@@ -35,9 +54,50 @@ Page({
     this.loadReport(batchId);
   },
 
+  onUnload() {
+    this.stopProgressTicker();
+  },
+
+  stopProgressTicker() {
+    if (this._progressTimer) {
+      clearInterval(this._progressTimer);
+      this._progressTimer = null;
+    }
+  },
+
+  startProgressTicker() {
+    this.stopProgressTicker();
+    const started = Date.now();
+    const tick = () => {
+      const sec = Math.floor((Date.now() - started) / 1000);
+      let stage = GEN_STAGES[0];
+      let stageIndex = 0;
+      for (let i = 0; i < GEN_STAGES.length; i++) {
+        if (sec >= GEN_STAGES[i].afterSec) {
+          stage = GEN_STAGES[i];
+          stageIndex = i;
+        }
+      }
+      this.setData({
+        reportElapsedSec: sec,
+        reportProgressText: stage.text,
+        reportStageIndex: stageIndex,
+      });
+    };
+    tick();
+    this._progressTimer = setInterval(tick, 1000);
+  },
+
   // 读该批次最新报告；无则触发生成
   async loadReport(batchId) {
-    const openid = wx.getStorageSync('openid') || '';
+    this.setData({
+      loading: true,
+      emptyMsg: '',
+      reportProgressVisible: false,
+      reportProgressText: '读取报告…',
+      retryable: false,
+    });
+    const openid = getOpenid();
     try {
       const res = await wx.cloud.callFunction({
         name: 'reportService',
@@ -55,11 +115,14 @@ Page({
           currentWp: (report.weakpoints || [])[0] || null,
         });
       } else {
-        // 无报告 → 生成
         this.generate(batchId);
       }
     } catch (e) {
-      this.setData({ loading: false, emptyMsg: '报告读取失败：' + (e.message || '未知错误') });
+      this.setData({
+        loading: false,
+        emptyMsg: '报告读取失败：' + (e.message || '未知错误'),
+        retryable: true,
+      });
     }
   },
 
@@ -68,16 +131,21 @@ Page({
       loading: true,
       emptyMsg: '',
       reportProgressVisible: true,
-      reportProgressText: '正在生成报告，预计需要 30~60 秒',
-      reportProgressPercent: 15,
+      reportProgressText: GEN_STAGES[0].text,
+      reportElapsedSec: 0,
+      reportStageIndex: 0,
       retryable: false,
     });
+    this.startProgressTicker();
+    log.append('report_generate_start', { batchId });
     try {
-      const openid = wx.getStorageSync('openid') || '';
+      const openid = getOpenid();
       const res = await wx.cloud.callFunction({
         name: 'reportService',
         data: { batchId, userId: openid },
+        timeout: 180000,
       });
+      this.stopProgressTicker();
       const d = res.result;
       if (d && d.code === 0) {
         if (d.data && d.data.report) {
@@ -91,14 +159,37 @@ Page({
             activeWpIndex: 0,
             currentWp: (report.weakpoints || [])[0] || null,
           });
+          log.append('report_generate_ok', { batchId, reportId: d.data.reportId });
         } else {
-          this.setData({ loading: false, reportProgressVisible: false, emptyMsg: (d.data && d.data.message) || '本批无错题，暂不生成报告' });
+          this.setData({
+            loading: false,
+            reportProgressVisible: false,
+            emptyMsg: (d.data && d.data.message) || '本批暂无需要生成的报告内容',
+            retryable: false,
+          });
         }
       } else {
-        this.setData({ loading: false, reportProgressVisible: false, emptyMsg: (d && d.message) || '报告生成失败，请重试', retryable: true });
+        this.setData({
+          loading: false,
+          reportProgressVisible: false,
+          emptyMsg: (d && d.message) || '报告生成失败，请重试',
+          retryable: true,
+        });
+        log.append('report_generate_fail', { batchId, message: (d && d.message) || '' });
       }
     } catch (e) {
-      this.setData({ loading: false, reportProgressVisible: false, emptyMsg: '报告生成失败：' + (e.message || '未知错误'), retryable: true });
+      this.stopProgressTicker();
+      const msg = e.message || '未知错误';
+      const tip = /timeout|timed out|TIME_LIMIT/i.test(msg)
+        ? '生成超时了。网络或模型较慢时可能发生，点下方重试即可。'
+        : ('报告生成失败：' + msg);
+      this.setData({
+        loading: false,
+        reportProgressVisible: false,
+        emptyMsg: tip,
+        retryable: true,
+      });
+      log.append('report_generate_error', { batchId, error: msg });
     }
   },
 
@@ -119,7 +210,7 @@ Page({
   async loadHistory() {
     this.setData({ historyLoading: true, emptyMsg: '' });
     try {
-      const openid = wx.getStorageSync('openid') || '';
+      const openid = getOpenid();
       const res = await wx.cloud.callFunction({
         name: 'reportService',
         data: { action: 'listByUser', userId: openid },
@@ -147,7 +238,7 @@ Page({
     if (!id) return;
     this.setData({ loading: true, historyVisible: false, emptyMsg: '' });
     try {
-      const openid = wx.getStorageSync('openid') || '';
+      const openid = getOpenid();
       const res = await wx.cloud.callFunction({
         name: 'reportService',
         data: { action: 'getById', reportId: id, userId: openid },
@@ -197,10 +288,9 @@ Page({
     const { reason } = e.detail;
     const target = this.data.disputeTarget;
     if (!target || !this.data.reportId) return;
-    this.setData({ disputeVisible: false });
-    wx.showLoading({ title: '重新生成中...' });
+    this.setData({ disputeVisible: false, regenerating: true });
     try {
-      const openid = wx.getStorageSync('openid') || '';
+      const openid = getOpenid();
       const res = await wx.cloud.callFunction({
         name: 'reportService',
         data: {
@@ -212,6 +302,7 @@ Page({
           reason,
           userId: openid,
         },
+        timeout: 120000,
       });
       const d = res.result;
       if (d && d.code === 0 && d.data && d.data.report) {
@@ -220,15 +311,16 @@ Page({
         this.setData({
           report,
           currentWp: wp[this.data.activeWpIndex] || wp[0] || null,
+          regenerating: false,
         });
         wx.showToast({ title: '已重新生成', icon: 'success' });
       } else {
+        this.setData({ regenerating: false });
         wx.showToast({ title: (d && d.message) || '重新生成失败', icon: 'none' });
       }
     } catch (err) {
+      this.setData({ regenerating: false });
       wx.showToast({ title: '重新生成失败', icon: 'none' });
-    } finally {
-      wx.hideLoading();
     }
   },
 
