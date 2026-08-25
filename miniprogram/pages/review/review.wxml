@@ -67,16 +67,17 @@
         <view class="p-cell">
           <text class="p-label">难度</text>
           <text class="p-val strong">{{item.difficultyLevel || '—'}}</text>
-          <text class="p-sub">D = {{item.difficultyValue != null ? item.difficultyValue : '—'}}</text>
+          <text class="p-sub" wx:if="{{item.difficultyValue != null}}">D = {{item.difficultyValue}}</text>
         </view>
         <view class="p-cell">
           <text class="p-label">知识点</text>
           <text class="p-val">{{item.knowledgeNodeName || '未关联'}}</text>
         </view>
         <view class="p-cell">
-          <text class="p-label">作答质量</text>
-          <text class="p-val">P={{item.P != null ? item.P : '—'}}</text>
-          <text class="p-sub">η={{item.eta != null ? item.eta : '—'}}</text>
+          <text class="p-label">判定</text>
+          <text class="p-val {{item.isCorrect === true ? 'right' : item.isCorrect === false ? 'wrong' : ''}}">
+            {{item.isCorrect === true ? '对' : item.isCorrect === false ? '错' : '未判定'}}
+          </text>
         </view>
         <view class="p-cell wide" wx:if="{{item.errorAttribution}}">
           <text class="p-label">错误归因</text>
