@@ -12,7 +12,8 @@
 
 .list { padding: 16rpx 24rpx 60rpx; }
 .log-item { background: #fff; border-radius: 20rpx; padding: 24rpx; margin-bottom: 16rpx; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04); }
-.log-head { display: flex; align-items: center; justify-content: space-between; }
+.log-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8rpx 16rpx; }
 .log-time { font-size: 22rpx; color: #999; }
-.log-step { font-size: 28rpx; font-weight: 600; color: #1a1a1a; }
+.log-timing { font-size: 22rpx; color: #007aff; font-family: Menlo, Consolas, monospace; }
+.log-step { font-size: 28rpx; font-weight: 600; color: #1a1a1a; margin-left: auto; }
 .log-data { margin-top: 12rpx; font-size: 24rpx; color: #666; line-height: 1.6; word-break: break-all; }
