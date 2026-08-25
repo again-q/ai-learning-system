@@ -58,8 +58,8 @@ Page({
       return;
     }
     const pageMap = {
-      'model': '/pages/model-cards/model-cards',
-      'method': '/pages/method-list/method-list'
+      'model': '/packageExtra/pages/model-cards/model-cards',
+      'method': '/packageExtra/pages/method-list/method-list'
     };
     const url = pageMap[id];
     if (url) {

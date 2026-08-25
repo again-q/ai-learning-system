@@ -1,9 +1,4 @@
-const towxml = require('/towxml/index.js'); // towxml 3.x：Markdown + LaTeX 公式渲染（复核页用）
-
 App({
-  // 转换函数：app.towxml(markdownText, 'markdown') → 渲染数据
-  towxml: (str, type) => towxml(str, type),
-
   globalData: {
     userInfo: null,
     env: 'cloud1-d8g0ty39wd73f430a'

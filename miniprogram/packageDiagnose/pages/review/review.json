@@ -3,6 +3,6 @@
   "backgroundColor": "#f5f5f7",
   "disableScroll": true,
   "usingComponents": {
-    "towxml": "/towxml/towxml"
+    "towxml": "/packageDiagnose/towxml/towxml"
   }
 }
