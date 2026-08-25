@@ -1,0 +1,28 @@
+<view class="page">
+  <!-- 顶栏 -->
+  <view class="nav">
+    <view class="nav-back" bindtap="goBack">‹</view>
+    <text class="nav-title">运行日志</text>
+    <view class="nav-actions">
+      <text class="nav-btn" bindtap="copyLogs">复制</text>
+      <text class="nav-btn danger" bindtap="clearLogs">清空</text>
+    </view>
+  </view>
+
+  <!-- 空态 -->
+  <view class="empty" wx:if="{{empty}}">
+    <text>暂无运行日志</text>
+    <text class="empty-sub">拍照、判题、报告等操作会自动记录</text>
+  </view>
+
+  <!-- 日志列表 -->
+  <view class="list" wx:else>
+    <view class="log-item" wx:for="{{logs}}" wx:key="id">
+      <view class="log-head">
+        <text class="log-time">{{item.time}}</text>
+        <text class="log-step">{{item.step}}</text>
+      </view>
+      <view class="log-data" wx:if="{{item.dataText}}">{{item.dataText}}</view>
+    </view>
+  </view>
+</view>

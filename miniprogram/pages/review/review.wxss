@@ -167,6 +167,14 @@
   width: 100%;
   margin-top: 12rpx;
 }
+.btn.ghost.big {
+  width: 100%;
+  margin-top: 12rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
 .btn.primary[disabled] {
   background: #a8c7f5;
   color: #fff;

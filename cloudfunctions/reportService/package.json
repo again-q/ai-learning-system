@@ -1,0 +1,10 @@
+{
+  "name": "reportService",
+  "version": "1.0.0",
+  "description": "诊断报告生成：数据装配 + Function Calling（ragService 工具）+ Flash 生成 JSON 报告 + 持久化",
+  "main": "index.js",
+  "engines": { "node": ">=18.0.0" },
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

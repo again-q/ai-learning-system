@@ -1,0 +1,18 @@
+<!-- 通用折叠模块容器：标题 + 预览 + 异议按钮 + 展开内容（slot） -->
+<view class="rm">
+  <view class="rm-header" bindtap="toggle">
+    <view class="rm-title">
+      <text class="rm-arrow {{open ? 'open' : ''}}">▸</text>
+      <text class="rm-name">{{title}}</text>
+    </view>
+    <view class="rm-actions" wx:if="{{moduleKey}}">
+      <view class="rm-dispute" catchtap="onDispute">我有异议</view>
+    </view>
+  </view>
+  <!-- 预览（折叠时显示） -->
+  <view class="rm-preview" wx:if="{{!open}}">{{preview}}</view>
+  <!-- 展开内容 -->
+  <view class="rm-body" wx:if="{{open}}">
+    <slot></slot>
+  </view>
+</view>

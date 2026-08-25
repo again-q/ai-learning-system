@@ -28,8 +28,8 @@ async function aiSplitQuestions(report) {
     model: DS_MODEL,
     thinking: { type: 'disabled' }, // 拆题不思考，便宜快
     messages: [
-      { role: 'system', content: '你是题目拆分助手。把视觉转录中的题目逐题拆出，保持每题的完整题干和选项。只输出 JSON。' },
-      { role: 'user', content: `把以下转录拆成独立题目（一题一个对象，含完整题干+选项+题号）。输出：{"questions":[{"index":1,"text":"完整题目文本"}]}\n\n===== 转录 =====\n${report.slice(0, 6000)}` },
+      { role: 'system', content: '你是题目拆分助手。把视觉转录中的题目逐题拆出，同时从「做题痕迹观察」中摘出每道题对应的做题痕迹片段。只输出 JSON。' },
+      { role: 'user', content: `把以下转录拆成独立题目（一题一个对象）。每题包含：index、text=完整题干+选项+题号、traceReport=该题对应的做题痕迹片段（从转录的做题痕迹观察中按题摘录，没有对应痕迹就填空字符串）。输出：{"questions":[{"index":1,"text":"完整题目文本","traceReport":"该题做题痕迹"}]}\n\n===== 转录 =====\n${report.slice(0, 6000)}` },
     ],
     max_tokens: 8000, // 8 题完整题干较长，4000 会截断 JSON
   };
@@ -66,7 +66,11 @@ async function aiSplitQuestions(report) {
   }
   if (!parsed || !Array.isArray(parsed.questions) || parsed.questions.length === 0) parseErr('拆题输出无 questions');
   return parsed.questions
-    .map((q) => ({ text: q.text || '', type: guessType(q.text || '') }))
+    .map((q) => ({
+      text: q.text || '',
+      traceReport: q.traceReport || '',
+      type: guessType(q.text || ''),
+    }))
     .filter((q) => q.text.length > 5);
 }
 
@@ -215,7 +219,7 @@ exports.main = async (event) => {
             _openid: openid, userId: openid, batchId, imageFileId: vr.fileId,
             questionText: item.text, questionType: item.type || '其他',
             isCorrect: null, nodeStatus: 'unmapped', source: 'photo',
-            traceReport: vr.report, revisions: [], createdAt: db.serverDate(),
+            traceReport: item.traceReport || vr.report, revisions: [], createdAt: db.serverDate(),
           },
         });
         questions.push({ questionId: qIns._id, status: 'pending' });

@@ -7,6 +7,7 @@ Page({
     submitting: false,
     analyzing: false,
     progressText: '',
+    estimatedText: '',
     totalQuestions: 0,
     doneCount: 0,
     progressPercent: 0,
@@ -66,8 +67,12 @@ Page({
       return;
     }
 
-    this.setData({ submitting: true, progressText: '上传中...' });
-    wx.showLoading({ title: '上传中...', mask: true });
+    this.setData({
+      submitting: true,
+      progressText: '上传中...',
+      estimatedText: '预计 ' + Math.ceil(this.data.images.length * 3) + ' 秒',
+      progressPercent: 2,
+    });
     log.append('upload_start', { imageCount: this.data.images.length });
 
     try {
@@ -92,8 +97,12 @@ Page({
       log.append('batch_created', { batchId: batchData.data.batchId });
 
       // 3. 拆分阶段：视觉转录 + 拆题 + 建题（不含判定，快）
-      this.setData({ analyzing: true, progressText: 'AI 识别题目中...', progressPercent: 5 });
-      wx.showLoading({ title: '识别题目中...', mask: true });
+      this.setData({
+        analyzing: true,
+        progressText: 'AI 识别题目中...',
+        estimatedText: '预计 ' + Math.ceil(this.data.images.length * 25) + ' 秒',
+        progressPercent: 5,
+      });
       log.append('diagnose_start', { batchId: batchData.data.batchId });
       const diagRes = await wx.cloud.callFunction({
         name: 'diagnose',
@@ -111,7 +120,6 @@ Page({
 
       const pendingQ = (diagData.data.questions || []).filter((q) => q.status === 'pending');
       const total = pendingQ.length;
-      wx.hideLoading();
 
       // 4. 跳转复核页（一次复核题目 → 二次复核参数，报告暂不输出）
       if (total === 0) {
@@ -160,8 +168,7 @@ Page({
     } catch (e) {
       console.error('[photo] submit error:', e);
       log.append('submit_fail', { error: e.message || String(e), stack: (e.stack || '').slice(0, 500) });
-      wx.hideLoading();
-      this.setData({ analyzing: false });
+      this.setData({ analyzing: false, submitting: false });
       wx.showToast({ title: e.message || '提交失败，请重试', icon: 'none' });
     } finally {
       this.setData({ submitting: false });

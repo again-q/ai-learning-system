@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaTeX 公式效果预览（目标效果）</title>
+<link rel="stylesheet" href="../node_modules/katex/dist/katex.min.css">
+<script src="../node_modules/katex/dist/katex.min.js"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f6f7f9; margin: 0; padding: 40px 20px; }
+  .card { max-width: 760px; margin: 0 auto; background: #fff; border-radius: 20px; padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+  h1 { font-size: 22px; color: #1a1a1a; margin: 0 0 8px; }
+  .sub { color: #999; font-size: 13px; margin-bottom: 24px; }
+  .row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+  .row:last-child { border-bottom: none; }
+  .label { color: #666; font-size: 14px; width: 140px; flex-shrink: 0; }
+  .math { font-size: 22px; color: #1a1a1a; text-align: right; flex: 1; overflow-x: auto; white-space: nowrap; padding-left: 16px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>LaTeX 公式效果预览</h1>
+  <div class="sub">这是我们要在小程序里达到的视觉效果（网页用 KaTeX 展示目标，小程序端将自研 Canvas 渲染接近此效果）</div>
+
+  <div class="row"><div class="label">分数</div><div class="math" data-latex="\frac{1}{2} + \frac{x+1}{x-1}"></div></div>
+  <div class="row"><div class="label">根号</div><div class="math" data-latex="\sqrt{x^2+1} + \sqrt[3]{8}"></div></div>
+  <div class="row"><div class="label">上下标</div><div class="math" data-latex="x^2 + a_n + 2^{n+1}"></div></div>
+  <div class="row"><div class="label">求和 / 积分</div><div class="math" data-latex="\sum_{i=1}^{n} i^2 = \frac{n(n+1)(2n+1)}{6}"></div></div>
+  <div class="row"><div class="label">积分</div><div class="math" data-latex="\int_{0}^{1} x^2 \, dx = \frac{1}{3}"></div></div>
+  <div class="row"><div class="label">三角函数</div><div class="math" data-latex="\sin^2 \theta + \cos^2 \theta = 1"></div></div>
+  <div class="row"><div class="label">对数</div><div class="math" data-latex="\log_a b = \frac{\ln b}{\ln a}"></div></div>
+  <div class="row"><div class="label">不等式</div><div class="math" data-latex="x \leq y \quad \Rightarrow \quad \frac{1}{x} \geq \frac{1}{y}"></div></div>
+  <div class="row"><div class="label">集合</div><div class="math" data-latex="A \cup B = \{ x \mid x \in A \text{ 或 } x \in B \}"></div></div>
+  <div class="row"><div class="label">向量</div><div class="math" data-latex="\vec{a} \cdot \vec{b} = |\vec{a}| |\vec{b}| \cos \theta"></div></div>
+  <div class="row"><div class="label">数列 / 极限</div><div class="math" data-latex="\lim_{n \to \infty} \left(1 + \frac{1}{n}\right)^n = e"></div></div>
+  <div class="row"><div class="label">括号自适应</div><div class="math" data-latex="\left( \frac{\frac{a}{b}}{\frac{c}{d}} \right)"></div></div>
+</div>
+
+<script>
+  document.querySelectorAll('.math').forEach(function (el) {
+    var tex = el.getAttribute('data-latex');
+    try {
+      katex.render(tex, el, { throwOnError: false, displayMode: false });
+    } catch (e) {
+      el.textContent = tex + ' （渲染失败）';
+    }
+  });
+</script>
+</body>
+</html>

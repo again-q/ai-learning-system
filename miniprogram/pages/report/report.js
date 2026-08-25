@@ -1,128 +1,279 @@
 const app = getApp();
+const log = require('../../utils/upload-log');
 
 Page({
   data: {
-    batchId: '',
-    questions: [],
-    failedCount: 0,
     loading: true,
-    disputingId: null, // 正在重诊的题目 ID
+    emptyMsg: '',
+    report: null,
+    reportId: null,
+    batchId: null,
+    disputeVisible: false,
+    disputeTarget: null,   // { moduleKey, index }
+    historyVisible: false,
+    historyList: [],
+    historyLoading: false,
+    reportProgressVisible: false,
+    reportProgressText: '',
+    reportProgressPercent: 0,
+    retryable: false,
+    // 报告渐进展示：先断点 → 根因 → 钩子 → 检验，避免一口气展示全部
+    activeStep: 1,
+    activeWpIndex: 0,
+    currentWp: null,
   },
 
   onLoad(options) {
-    const batchId = options.batchId || '';
+    const batchId = options.batchId || (app.globalData && app.globalData.currentBatchId) || '';
     this.setData({ batchId });
-    this.fetchReport(batchId);
+    if (!batchId) {
+      // 没有批次信息时直接进入历史报告列表
+      this.setData({ historyVisible: true });
+      this.loadHistory();
+      return;
+    }
+    this.loadReport(batchId);
   },
 
-  async fetchReport(batchId) {
-    this.setData({ loading: true });
+  // 读该批次最新报告；无则触发生成
+  async loadReport(batchId) {
+    const openid = wx.getStorageSync('openid') || '';
     try {
       const res = await wx.cloud.callFunction({
-        name: 'graphService',
-        data: { action: 'getReport', batchId },
+        name: 'reportService',
+        data: { action: 'getByBatch', batchId, userId: openid },
       });
-      const data = res.result;
-      if (data.code !== 0) throw new Error(data.message);
-      const questions = (data.data.questions || []).map((q) => ({
-        ...q,
-        statusText: q.isCorrect === true ? '正确' : q.isCorrect === false ? '错误' : '待确认',
-        statusClass: q.isCorrect === true ? 'correct' : q.isCorrect === false ? 'wrong' : 'pending', // P1-⑥：三态
-      }));
-      this.setData({
-        questions,
-        failedCount: data.data.failedCount || 0,
-        loading: false,
-      });
+      const d = res.result;
+      if (d && d.code === 0 && d.data && d.data.report) {
+        const report = this.renderFormulas(d.data.report);
+        this.setData({
+          report,
+          reportId: d.data.reportId,
+          loading: false,
+          activeStep: 1,
+          activeWpIndex: 0,
+          currentWp: (report.weakpoints || [])[0] || null,
+        });
+      } else {
+        // 无报告 → 生成
+        this.generate(batchId);
+      }
     } catch (e) {
-      console.error('[report] fetch error:', e);
-      wx.showToast({ title: e.message || '加载失败，请重试', icon: 'none' });
-      this.setData({ loading: false });
+      this.setData({ loading: false, emptyMsg: '报告读取失败：' + (e.message || '未知错误') });
     }
   },
 
-  // 打开异议弹层
-  openDispute(e) {
-    const idx = e.currentTarget.dataset.index;
-    const q = this.data.questions[idx];
-    if (this.data.disputingId) return;
+  async generate(batchId) {
     this.setData({
-      disputingId: q.questionId,
-      disputeIndex: idx,
-      disputeAnswer: q.studentAnswer || '',
-      disputeNote: '',
+      loading: true,
+      emptyMsg: '',
+      reportProgressVisible: true,
+      reportProgressText: '正在生成报告，预计需要 30~60 秒',
+      reportProgressPercent: 15,
+      retryable: false,
     });
-  },
-
-  closeDispute() {
-    this.setData({ disputingId: null });
-  },
-
-  onDisputeAnswer(e) {
-    this.setData({ disputeAnswer: e.detail.value });
-  },
-
-  onDisputeNote(e) {
-    this.setData({ disputeNote: e.detail.value });
-  },
-
-  noop() {},
-
-  // 提交异议修正 → 单题重诊
-  async submitDispute() {
-    const { disputingId, disputeIndex, disputeAnswer, disputeNote, batchId } = this.data;
-    if (!disputingId) return;
-    wx.showLoading({ title: '重新诊断中...', mask: true });
     try {
+      const openid = wx.getStorageSync('openid') || '';
       const res = await wx.cloud.callFunction({
-        name: 'dispute',
+        name: 'reportService',
+        data: { batchId, userId: openid },
+      });
+      const d = res.result;
+      if (d && d.code === 0) {
+        if (d.data && d.data.report) {
+          const report = this.renderFormulas(d.data.report);
+          this.setData({
+            report,
+            reportId: d.data.reportId,
+            loading: false,
+            reportProgressVisible: false,
+            activeStep: 1,
+            activeWpIndex: 0,
+            currentWp: (report.weakpoints || [])[0] || null,
+          });
+        } else {
+          this.setData({ loading: false, reportProgressVisible: false, emptyMsg: (d.data && d.data.message) || '本批无错题，暂不生成报告' });
+        }
+      } else {
+        this.setData({ loading: false, reportProgressVisible: false, emptyMsg: (d && d.message) || '报告生成失败，请重试', retryable: true });
+      }
+    } catch (e) {
+      this.setData({ loading: false, reportProgressVisible: false, emptyMsg: '报告生成失败：' + (e.message || '未知错误'), retryable: true });
+    }
+  },
+
+  onRetry() {
+    if (this.data.batchId) this.generate(this.data.batchId);
+  },
+
+  // ===== 历史报告 =====
+  showHistory() {
+    this.setData({ historyVisible: true });
+    if (!this.data.historyList.length) this.loadHistory();
+  },
+
+  hideHistory() {
+    this.setData({ historyVisible: false });
+  },
+
+  async loadHistory() {
+    this.setData({ historyLoading: true, emptyMsg: '' });
+    try {
+      const openid = wx.getStorageSync('openid') || '';
+      const res = await wx.cloud.callFunction({
+        name: 'reportService',
+        data: { action: 'listByUser', userId: openid },
+      });
+      const d = res.result;
+      if (d && d.code === 0) {
+        this.setData({
+          historyList: (d.data && d.data.reports) || [],
+          historyLoading: false,
+          loading: false,
+        });
+        if (!this.data.historyList.length) {
+          this.setData({ emptyMsg: '暂无历史报告' });
+        }
+      } else {
+        this.setData({ historyLoading: false, emptyMsg: (d && d.message) || '历史报告加载失败' });
+      }
+    } catch (e) {
+      this.setData({ historyLoading: false, emptyMsg: '历史报告加载失败：' + (e.message || '未知错误') });
+    }
+  },
+
+  async openHistory(e) {
+    const { id, batch } = e.currentTarget.dataset;
+    if (!id) return;
+    this.setData({ loading: true, historyVisible: false, emptyMsg: '' });
+    try {
+      const openid = wx.getStorageSync('openid') || '';
+      const res = await wx.cloud.callFunction({
+        name: 'reportService',
+        data: { action: 'getById', reportId: id, userId: openid },
+      });
+      const d = res.result;
+      if (d && d.code === 0 && d.data && d.data.report) {
+        const report = this.renderFormulas(d.data.report);
+        this.setData({
+          report,
+          reportId: d.data.reportId,
+          batchId: batch || '',
+          loading: false,
+          activeStep: 1,
+          activeWpIndex: 0,
+          currentWp: (report.weakpoints || [])[0] || null,
+        });
+        log.append('history_report_opened', { reportId: d.data.reportId, batchId: batch || '' });
+      } else {
+        this.setData({ loading: false, emptyMsg: (d && d.message) || '报告读取失败' });
+      }
+    } catch (e) {
+      this.setData({ loading: false, emptyMsg: '报告读取失败：' + (e.message || '未知错误') });
+    }
+  },
+
+  // ===== 报告渐进展示 =====
+  unlockNext() {
+    if (this.data.activeStep >= 4) return;
+    this.setData({ activeStep: this.data.activeStep + 1 });
+  },
+
+  switchWp(e) {
+    const idx = Number(e.currentTarget.dataset.index);
+    const wp = (this.data.report && this.data.report.weakpoints) || [];
+    if (idx < 0 || idx >= wp.length) return;
+    this.setData({ activeWpIndex: idx, currentWp: wp[idx], activeStep: 1 });
+  },
+
+  // ===== 异议 =====
+  onDispute(e) {
+    this.setData({ disputeVisible: true, disputeTarget: e.detail });
+  },
+  onDisputeCancel() {
+    this.setData({ disputeVisible: false, disputeTarget: null });
+  },
+  async onDisputeSubmit(e) {
+    const { reason } = e.detail;
+    const target = this.data.disputeTarget;
+    if (!target || !this.data.reportId) return;
+    this.setData({ disputeVisible: false });
+    wx.showLoading({ title: '重新生成中...' });
+    try {
+      const openid = wx.getStorageSync('openid') || '';
+      const res = await wx.cloud.callFunction({
+        name: 'reportService',
         data: {
-          questionId: disputingId,
-          corrections: { studentAnswer: disputeAnswer, note: disputeNote },
+          action: 'disputeModule',
+          reportId: this.data.reportId,
+          batchId: this.data.batchId,
+          moduleKey: target.moduleKey,
+          index: target.index,
+          reason,
+          userId: openid,
         },
       });
-      const data = res.result;
-      if (data.code !== 0) throw new Error(data.message);
-
-      // 刷新该题（keptOriginal=判定失败保留原结果时，仅提示不覆盖判定）
-      const questions = [...this.data.questions];
-      const nd = data.data.newDiagnosis;
-      if (data.data.keptOriginal) {
-        wx.showToast({ title: '判定失败，已保留原结果', icon: 'none' });
-        this.setData({ disputingId: null });
-        wx.hideLoading();
-        return;
+      const d = res.result;
+      if (d && d.code === 0 && d.data && d.data.report) {
+        const report = this.renderFormulas(d.data.report);
+        const wp = (report.weakpoints || []);
+        this.setData({
+          report,
+          currentWp: wp[this.data.activeWpIndex] || wp[0] || null,
+        });
+        wx.showToast({ title: '已重新生成', icon: 'success' });
+      } else {
+        wx.showToast({ title: (d && d.message) || '重新生成失败', icon: 'none' });
       }
-      questions[disputeIndex] = {
-        ...questions[disputeIndex],
-        isCorrect: nd.isCorrect === undefined ? null : nd.isCorrect,
-        correctAnswer: nd.correctAnswer,
-        questionCategory: nd.questionCategory || questions[disputeIndex].questionCategory, // P2：异议后同步题型
-        difficultyLevel: nd.difficultyLevel,
-        difficultyValue: nd.difficultyValue,
-        processScore: nd.processScore,
-        pathQuality: nd.pathQuality,
-        errorAttribution: nd.errorAttribution || questions[disputeIndex].errorAttribution, // P2：同步归因
-        studentAnswer: disputeAnswer,
-        statusText: nd.isCorrect === true ? '正确' : nd.isCorrect === false ? '错误' : '待确认', // P1-B：null 走待确认
-        statusClass: nd.isCorrect === true ? 'correct' : nd.isCorrect === false ? 'wrong' : 'pending', // P1-B：同步颜色
-      };
-      this.setData({ questions, disputingId: null });
+    } catch (err) {
+      wx.showToast({ title: '重新生成失败', icon: 'none' });
+    } finally {
       wx.hideLoading();
-      wx.showToast({ title: '已重新诊断', icon: 'success' });
-    } catch (e) {
-      console.error('[report] dispute error:', e);
-      wx.hideLoading();
-      wx.showToast({ title: e.message || '修正失败，请重试', icon: 'none' });
     }
+  },
+
+  // 检验完成按钮 → 记录（MVP：toast 提示，回访记录后续接）
+  onCheckDone(e) {
+    const btn = e.currentTarget.dataset.btn;
+    wx.showToast({ title: '已记录：「' + btn + '」', icon: 'none' });
   },
 
   goBack() {
-    wx.navigateBack();
+    // 从某份报告进入历史列表后，返回键先回到当前报告，而不是直接离开页面
+    if (this.data.historyVisible && this.data.batchId && this.data.report) {
+      this.hideHistory();
+      return;
+    }
+    wx.navigateBack({ delta: 1 });
   },
 
-  // 重新上传失败照片（引导回拍照页）
-  retryUpload() {
-    wx.redirectTo({ url: '/pages/photo/photo' });
+  // towxml 渲染（公式/LaTeX）：失败回退纯文本（同 review 页方案）
+  renderMd(text) {
+    if (!text) return {};
+    try {
+      const d = app.towxml(text, 'markdown');
+      return d && d.child ? d : {};
+    } catch (e) {
+      console.error('[report] towxml render failed:', e.message);
+      return {};
+    }
+  },
+
+  // 报告里含公式的字段转 nodes（题目情况/过程证据/断点矛盾；其余文案先纯文本）
+  renderFormulas(report) {
+    const r = report;
+    if (!r) return r;
+    (r.questions || []).forEach((q) => {
+      q.questionNodes = this.renderMd(q.questionText);
+    });
+    (r.weakpoints || []).forEach((wp) => {
+      ((wp.breakpoint && wp.breakpoint.segments) || []).forEach((seg) => {
+        seg.evidenceNodes = this.renderMd(seg.evidence);
+      });
+      if (wp.breakpoint && wp.breakpoint.contradiction) {
+        wp.breakpoint.contradictionNodes = this.renderMd(wp.breakpoint.contradiction);
+      }
+    });
+    return r;
   },
 });

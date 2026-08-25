@@ -14,6 +14,7 @@ Page({
     editMode: '',          // '' | question | params
     editIndex: -1,
     editValue: '',
+    editTrace: '',
     editD: '',
     editK: '',
   },
@@ -70,6 +71,7 @@ Page({
     this.setData({
       editMode: 'question', editIndex: idx,
       editValue: this.data.items[idx].questionText || '',
+      editTrace: this.data.items[idx].traceReport || '',
     });
   },
 
@@ -77,20 +79,38 @@ Page({
     this.setData({ editValue: e.detail.value });
   },
 
+  onEditTraceInput(e) {
+    this.setData({ editTrace: e.detail.value });
+  },
+
   onSaveQuestion() {
     const idx = this.data.editIndex;
     const text = (this.data.editValue || '').trim();
+    const trace = (this.data.editTrace || '').trim();
     if (!text) { wx.showToast({ title: '题目不能为空', icon: 'none' }); return; }
     const item = this.data.items[idx];
     wx.cloud.callFunction({
       name: 'judgeOne',
-      data: { action: 'updateTranscription', questionId: item.questionId, questionText: text },
+      data: {
+        action: 'updateTranscription',
+        questionId: item.questionId,
+        questionText: text,
+        traceReport: trace,
+      },
     }).then((res) => {
       if (res.result.code !== 0) throw new Error(res.result.message);
       const items = this.data.items.slice();
-      items[idx] = { ...items[idx], questionText: text, transcriptionReviewed: true, article: app.towxml(text, 'markdown') };
+      items[idx] = {
+        ...items[idx],
+        questionText: text,
+        traceReport: trace,
+        traceText: trace,
+        transcriptionReviewed: true,
+        article: app.towxml(text, 'markdown'),
+        traceArticle: this.renderMd(trace),
+      };
       this.setData({ items, editMode: '' });
-      log.append('transcription_saved', { questionId: item.questionId, len: text.length });
+      log.append('transcription_saved', { questionId: item.questionId, len: text.length, traceLen: trace.length });
       wx.showToast({ title: '已保存', icon: 'success' });
     }).catch((e) => {
       wx.showToast({ title: '保存失败：' + (e.message || '网络错误'), icon: 'none' });
@@ -234,6 +254,14 @@ Page({
     wx.switchTab({ url: '/pages/index/index' }).catch(() => {
       wx.reLaunch({ url: '/pages/index/index' });
     });
+  },
+
+  onViewReport() {
+    if (!this.data.batchId) {
+      wx.showToast({ title: '缺少批次信息', icon: 'none' });
+      return;
+    }
+    wx.navigateTo({ url: '/pages/report/report?batchId=' + this.data.batchId });
   },
 
   closeEdit() { this.setData({ editMode: '' }); },

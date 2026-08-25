@@ -80,10 +80,6 @@
           <text class="p-label">错误归因</text>
           <text class="p-val">{{item.errorAttribution}}</text>
         </view>
-        <view class="p-cell wide" wx:if="{{item.fiveDim}}">
-          <text class="p-label">五维</text>
-          <text class="p-val dims">K{{item.fiveDim.K}} · A{{item.fiveDim.A}} · T{{item.fiveDim.T}} · Q{{item.fiveDim.Q}} · S{{item.fiveDim.S}}</text>
-        </view>
       </view>
       <view class="card-actions">
         <view class="btn ghost" data-index="{{index}}" bindtap="onEditParams">✏️ 修改参数</view>
@@ -93,7 +89,7 @@
     <button class="btn primary big" bindtap="onFinish" disabled="{{finishing}}">
       {{finishing ? '保存中…' : '确认完成'}}
     </button>
-    <view class="tip-note">报告生成暂未开放，分析结果已保存，后续可在报告页查看</view>
+    <view class="tip-note">确认完成后可查看本次诊断报告</view>
   </scroll-view>
 
   <!-- ========== 完成 ========== -->
@@ -101,7 +97,8 @@
     <view class="done-icon">✓</view>
     <view class="done-title">分析完成</view>
     <view class="done-sub">共 {{items.length}} 题，参数已保存</view>
-    <button class="btn primary big" bindtap="onBackHome">返回首页</button>
+    <button class="btn primary big" bindtap="onViewReport">查看诊断报告</button>
+    <button class="btn ghost big" bindtap="onBackHome">返回首页</button>
   </view>
 
   <!-- 修改题目弹层 -->
@@ -109,6 +106,8 @@
     <view class="sheet" catchtap="noop">
       <view class="sheet-title">修改题目转录</view>
       <textarea class="edit-area" value="{{editValue}}" bindinput="onEditInput" auto-height maxlength="2000" placeholder="粘贴修正后的题目文本（支持 Markdown / LaTeX 公式）"></textarea>
+      <text class="field-label">做题痕迹 / 作答</text>
+      <textarea class="edit-area trace-area" value="{{editTrace}}" bindinput="onEditTraceInput" auto-height maxlength="3000" placeholder="可修改或补充学生的做题痕迹、作答过程"></textarea>
       <view class="sheet-actions">
         <view class="btn ghost" bindtap="closeEdit">取消</view>
         <view class="btn primary" bindtap="onSaveQuestion">保存</view>

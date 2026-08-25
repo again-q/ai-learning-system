@@ -1,0 +1,11 @@
+<view class="dm-mask" wx:if="{{visible}}" bindtap="cancel">
+  <view class="dm-box" catchtap="noop">
+    <view class="dm-title">我有异议</view>
+    <view class="dm-sub">说说你的看法，AI 会重新生成这个模块</view>
+    <textarea class="dm-input" placeholder="例如：这里我其实不是漏了，是算错了..." value="{{reason}}" bindinput="onInput" maxlength="500" auto-height />
+    <view class="dm-actions">
+      <view class="dm-btn cancel" bindtap="cancel">取消</view>
+      <view class="dm-btn ok {{!reason ? 'disabled' : ''}}" bindtap="submit">提交并重新生成</view>
+    </view>
+  </view>
+</view>

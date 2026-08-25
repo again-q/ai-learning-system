@@ -67,11 +67,15 @@ Page({
 
   goReport() {
     if (!this.data.isLoggedIn) { this.goLogin(); return; }
-    wx.showToast({ title: '开发中', icon: 'none' });
+    wx.navigateTo({ url: '/pages/report/report' });
   },
 
   goAchievement() {
     if (!this.data.isLoggedIn) { this.goLogin(); return; }
     wx.showToast({ title: '开发中', icon: 'none' });
+  },
+
+  goLogs() {
+    wx.navigateTo({ url: '/pages/logs/logs' });
   }
 });

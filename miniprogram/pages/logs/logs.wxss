@@ -1,0 +1,18 @@
+/* 运行日志页 */
+.page { min-height: 100vh; background: #f6f7f9; padding-top: calc(88rpx + env(safe-area-inset-top)); box-sizing: border-box; }
+.nav { position: fixed; top: 0; left: 0; right: 0; height: calc(88rpx + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); display: flex; align-items: center; background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); z-index: 20; }
+.nav-back { width: 88rpx; font-size: 44rpx; color: #007aff; text-align: center; }
+.nav-title { flex: 1; text-align: center; font-size: 32rpx; font-weight: 600; color: #1a1a1a; }
+.nav-actions { display: flex; width: 176rpx; justify-content: flex-end; padding-right: 24rpx; }
+.nav-btn { font-size: 26rpx; color: #007aff; padding: 8rpx 16rpx; }
+.nav-btn.danger { color: #ff3b30; }
+
+.empty { display: flex; flex-direction: column; align-items: center; padding-top: 200rpx; color: #999; font-size: 28rpx; }
+.empty-sub { margin-top: 16rpx; font-size: 24rpx; color: #bbb; }
+
+.list { padding: 16rpx 24rpx 60rpx; }
+.log-item { background: #fff; border-radius: 20rpx; padding: 24rpx; margin-bottom: 16rpx; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04); }
+.log-head { display: flex; align-items: center; justify-content: space-between; }
+.log-time { font-size: 22rpx; color: #999; }
+.log-step { font-size: 28rpx; font-weight: 600; color: #1a1a1a; }
+.log-data { margin-top: 12rpx; font-size: 24rpx; color: #666; line-height: 1.6; word-break: break-all; }

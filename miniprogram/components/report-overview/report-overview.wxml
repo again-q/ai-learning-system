@@ -1,0 +1,18 @@
+<!-- 报告总览（默认展开） -->
+<view class="ov">
+  <view class="ov-anchor">{{ov.dataAnchor}}</view>
+  <view class="ov-mood {{ov.mood}}">{{ov.moodText}}</view>
+  <view class="ov-hint" wx:if="{{ov.coreHint}}">{{ov.coreHint}}</view>
+  <view class="ov-block">{{ov.expectedManagement}}</view>
+  <view class="ov-block light">{{ov.stateCare}}</view>
+
+  <!-- 模式列表 -->
+  <view class="ov-patterns" wx:if="{{ov.patterns.length}}">
+    <view class="ov-pattern" wx:for="{{ov.patterns}}" wx:key="name">
+      <text class="op-name {{item.isMain ? 'main' : ''}}">{{item.name}}</text>
+      <text class="op-count">{{item.count}} 次</text>
+      <text class="op-tag" wx:if="{{item.isMain}}">本次主攻</text>
+    </view>
+  </view>
+  <view class="ov-guide">想深入看？点开下面 ↓</view>
+</view>

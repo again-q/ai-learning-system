@@ -2,6 +2,7 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 const _ = db.command;
+const { updateMastery } = require('./updateMastery');
 
 // ============ 配置 ============
 const QWEN_API_KEY = process.env.QWEN_API_KEY;
@@ -116,10 +117,24 @@ async function findNode(kName) {
   return best;
 }
 
-// 知识节点匹配：返回 knowledgeId（A 单元级定位用 findNode 取 path[2]）
-async function matchKnowledgeNode(kName) {
+// 知识节点匹配：返回节点标识（A 单元级定位用 findNode 取 path[2]）
+// 决策（2026-08-17 方案 A）：官方图谱匹配失败 → custom_nodes 兜底——AI 输出的知识点名直接作为 K 的键，
+// 图谱匹配不上不丢弃 K 数据；图谱治理后匹配率上来，自然少走兜底
+async function matchKnowledgeNode(kName, userId) {
   const n = await findNode(kName);
-  return n ? n.knowledgeId : null;
+  if (n) return n.knowledgeId || n._id;   // 新 schema 用 knowledgeId，旧 schema 用 _id
+  try {
+    const cRes = await db.collection('custom_nodes')
+      .where({ name: kName }).limit(1).get();
+    if (cRes.data.length) return cRes.data[0]._id;
+    const cIns = await db.collection('custom_nodes').add({
+      data: { name: kName, userId: userId || null, createdAt: db.serverDate() },   // userId 记录提炼来源
+    });
+    return cIns._id;
+  } catch (e) {
+    console.warn('[judgeOne] custom_nodes 兜底失败:', e.message);
+    return null;
+  }
 }
 
 // 知识点所属单元名（宪法 §5.3：A 为单元级）——节点 path[2] 即单元名，如「第一章 集合与常用逻辑用语」
@@ -250,7 +265,21 @@ function buildRagContext(hits) {
 }
 
 function buildReportText(report) {
-  return `题目：${report.questionText || ''} | 作答：${report.studentAnswer || ''} | 判定：${report.isCorrect ? '对' : '错'} | 题型：${report.questionCategory || ''} | 难度：${report.difficultyLevel || ''} | 知识点：${report.knowledgeNodeId || ''}`;
+  const parts = [
+    `题目：${report.questionText || ''}`,
+    `作答：${report.studentAnswer || ''}`,
+    `判定：${report.isCorrect ? '对' : '错'}`,
+    `题型：${report.questionCategory || ''}`,
+    `难度：${report.difficultyLevel || ''}`,
+    `知识点：${report.knowledgeNodeName || report.knowledgeNodeId || ''}`,
+  ];
+  if (report.errorDimension) parts.push(`归因维度：${report.errorDimension}`);
+  if (report.errorAttribution) parts.push(`归因：${report.errorAttribution}`);
+  if (report.breakpoint) parts.push(`断点：第${report.breakpoint.index}段 ${report.breakpoint.nature}`);
+  if (Array.isArray(report.knowledgeUsage) && report.knowledgeUsage.length) {
+    parts.push(`知识点使用：${report.knowledgeUsage.map((u) => `${u.name}(P=${u.P})`).join('、')}`);
+  }
+  return parts.join(' | ');
 }
 
 // ============ 完整标尺（决策 023 定稿：学生视角 + L1-L11 判档） ============
@@ -313,15 +342,19 @@ L11(0.98-0.999) 纯原创，全球个位数能解
 async function judgeQuestion(question, ragContext) {
   const ragSection = ragContext ? `\n\n【历史参考（仅供参考不强制）】\n${ragContext}` : '';
   // isRecallQuestion 字段保留输出（未来报告/统计可用），当前掌握度逻辑不再区分回忆/应用（2026-08-14 K 整题更新）
-  const userMsg = `输入是一道题的视觉转录上下文（题目文本 + 整图痕迹，可能含转录误差）。对这道题做两件事：
+  const userMsg = `输入是一道题的视觉转录上下文（题目文本 + 整图痕迹，可能含转录误差）。对这道题做四件事：
 
 第一步【学生视角感受难度】：模拟一个对应水平的高中生真实解题体验——先注意到什么、第一次卡在哪、卡住时缺的是什么、思维需要几次跳跃（每次难不难）、试错成本多高。重点是【体验难度】，不是拆步骤、不是证明。
 
 第二步【判定作答 + 对照标尺判档】：基于学生视角体验对照 L1-L11 标尺判档（档位边界卡+例子锚+新定义补充+5维锁定），同时判定对错/作答质量。
 
+第三步【题型归类】：把本题归入中粒度题型，输出题型三层结构 {domain, pattern, variant}。pattern 是【题型描述】（能概括一类同类题，如"含参不等式恒成立求参数范围""分离参数求最值"），不是知识点名也不是题目原文；domain 是【知识板块】（如"函数""集合"）；variant 是【变体细节】只进语义不进检索。
+
+第四步【过程分段】：把学生作答过程按书写顺序切成若干段（仅解答题），逐段标记；选填题（选择/填空）无过程，segments 直接给空数组。
+
 只输出 JSON：
-{"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"correctAnswer":"","P":0~1,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","fiveDim":{"K":0.5,"A":0.5,"T":0.5,"Q":0.5,"S":0.5},"isRecallQuestion":true,"isOutOfSyllabus":false,"errorDimension":null,"knowledgeUsage":[{"name":"知识点教材术语","correct":true|false,"D":0~1}]}
-约束：D 落在 level 区间（D 是题目固有难度，与学生熟练度无关）；knowledgeNodeName 必须用教材术语原词；fiveDim 是【能力五维】（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，各 0~1 连续值，对齐理论文档五维量纲；0 最低 1 最高）；isRecallQuestion 是【回忆类题标记】：默写公式/复述定义/判断对错=回忆类（true），解题应用=应用类（false）；isOutOfSyllabus 是【超纲标记】：超出高中课标范围才 true，默认 false；errorDimension 是【错题归因维度】：判错时归因 K=概念/公式/定义掌握问题、A=思路/变式/应用问题、T=跨单元迁移问题、S=计算/审题/执行失误，做对时 null；errorAttribution 是【错因一句话描述】（如"分类讨论遗漏B={-2}情形"），只写文本描述；knowledgeUsage 是【本题知识点使用清单】1~5 个：列出本题实际调用的知识点，name 用教材术语原词，correct=该知识点是否被正确使用，D=该知识点环节在本题的难度（0~1，与整题 D 无关）；最后输出纯 JSON`;
+{"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"correctAnswer":"","P":0~1,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","fiveDim":{"K":0.5,"A":0.5,"T":0.5,"Q":0.5,"S":0.5},"isRecallQuestion":true,"isOutOfSyllabus":false,"errorDimension":null,"knowledgeUsage":[{"name":"知识点教材术语","P":0|0.5|1,"D":0~1}],"pattern":{"domain":"知识板块","pattern":"中粒度题型描述（同类题共用）","variant":"变体细节"},"segments":[{"step":"段内容摘要","status":"通|断|空白","evidence":"该段过程原文片段"}],"breakpoint":{"index":2,"nature":"起步即停|中途断|收尾断"},"processAvailable":true}
+约束：D 落在 level 区间（D 是题目固有难度，与学生熟练度无关）；knowledgeNodeName 必须用教材术语原词；fiveDim 是【能力五维】（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，各 0~1 连续值，对齐理论文档五维量纲；0 最低 1 最高）；isRecallQuestion 是【回忆类题标记】：默写公式/复述定义/判断对错=回忆类（true），解题应用=应用类（false）；isOutOfSyllabus 是【超纲标记】：超出高中课标范围才 true，默认 false；errorDimension 是【错题归因维度】：判错时归因 K=概念/公式/定义掌握问题、A=思路/变式/应用问题、T=跨单元迁移问题、S=计算/审题/执行失误，做对时 null；errorAttribution 是【错因一句话描述】（如"分类讨论遗漏B={-2}情形"），只写文本描述；knowledgeUsage 是【本题知识点使用清单】1~5 个：列出本题实际调用的知识点（含知识层/思想方法层），name 用教材术语原词，D=该知识点环节在本题的难度（0~1，与整题 D 无关），P=该知识点环节的作答质量三档（决策 026）：1=用对；0.5=用了但漏边界/不完整（如漏特殊值验证、多选漏特殊情况、知识边界掌握不清）；0=该环节缺失或全错。0.5 的判定看该知识点自身——涉及边界/陷阱/分类讨论的环节，漏了特殊情形给 0.5；环节根本没做给 0；pattern 是【题型三层结构】：domain 知识板块、pattern 中粒度题型（检索主键，必须能概括同类题，禁止用题目原文或知识点名）、variant 变体细节；segments 是【过程分段】（仅解答题）：按书写顺序把学生过程切成 N 段，每段 step=段内容摘要、status=通|断|空白、evidence=该段过程原文片段（引用转录原话，禁止编造）；breakpoint 是【断点】：{index 断点所在段号（1 起），nature=起步即停|中途断|收尾断}，没断（全通）给 null；processAvailable 是【过程可信标记】：转录清晰可引用过程=true，涂改乱/看不清/过程缺失=false。【选填题（选择/填空）无过程】：segments=[]、breakpoint=null、processAvailable=false；最后输出纯 JSON`;
   const data = await postJSON(`${DS_BASE_URL}/chat/completions`, {
     model: DS_MODEL,
     thinking: { type: 'disabled' },       // 决策 023：thinking 开 + 难题 = content 空死锁，判档用 disabled
@@ -351,7 +384,8 @@ async function judgeQuestion(question, ragContext) {
 exports.main = async (event) => {
   try {
     const wxContext = cloud.getWXContext();
-    const openid = wxContext.OPENID;
+    // 身份：小程序调用 OPENID 必有；云函数互调/测试场景（MCP invoke）OPENID 为空，用调用方显式传入的 userId
+    const openid = wxContext.OPENID || (event && event.userId) || null;
     if (!openid) return fail(401, '未登录');
 
     const { action } = event;
@@ -375,13 +409,14 @@ exports.main = async (event) => {
       })));
     }
     if (action === 'updateTranscription') {
-      const { questionId, questionText, studentAnswer } = event;
+      const { questionId, questionText, studentAnswer, traceReport } = event;
       if (!questionId) return fail(400, '缺少题目ID');
       const qRes = await db.collection('questions').doc(questionId).get().catch(() => null);
       if (!qRes || !qRes.data || qRes.data.userId !== openid) return fail(403, '无权操作他人题目');
       const patch = {};
       if (typeof questionText === 'string' && questionText.trim()) patch.questionText = questionText.trim();
       if (typeof studentAnswer === 'string') patch.studentAnswer = studentAnswer.trim();
+      if (typeof traceReport === 'string') patch.traceReport = traceReport.trim();
       patch.transcriptionReviewed = true;
       await db.collection('questions').doc(questionId).update({ data: patch });
       return success({ questionId });
@@ -446,145 +481,90 @@ exports.main = async (event) => {
         errorAttribution: raw.errorAttribution || null,
         knowledgeNodeName: raw.knowledgeNodeName || '',
         fiveDim: raw.fiveDim || null,
+        // 报告数据输入（2026-08-17）：分段路径/断点/过程可信；选填题 segments=[] breakpoint=null processAvailable=false
+        segments: Array.isArray(raw.segments) ? raw.segments : [],
+        breakpoint: raw.breakpoint || null,
+        processAvailable: raw.processAvailable === true,
         reviewed: true,
       },
     });
 
-    // 报告 + embedding 入库（RAG 自增强）——本阶段「报告先不输出」，后续报告功能恢复时再打开
-    // const report = {...}; const reportText = buildReportText(report); mastery_logs.add(...)
+    // 掌握度更新（决策 026：K 知识点粒度 + A 单元级）——独立函数 updateMastery.js
+    const mastery = await updateMastery({
+      db, matchKnowledgeNode, findNode, unitNameOf,
+      openid, questionId, question, raw, clamped,
+    });
+    let mainNodeId = mastery.mainNodeId;   // RAG 记录写入需要
+    let pOk = mastery.pOk;
 
-    // 掌握度更新（2026-08-14 简化版：K=整题加权得分法 S_k/D_k；A=能力指数 E=D×η）
-    // 开关：USE_KNOWLEDGE_USAGE=false 时走最简版（K 用整题 D×P，A 不做归因分流）；
-    //       true 时恢复知识点剥离（knowledgeUsage）与归因分流（errorDimension）——功能保留，暂时不跑
+
+    // ============ RAG 记录入库（检索源，algorithm=diagnose_v1）——判定成功即写，失败降级不报错 ============
+    // 契约：doc/architecture/RAG工具契约.md 第五节；embedding 失败时记录仍写（检索自动跳过无向量记录）
     try {
-      const USE_KNOWLEDGE_USAGE = false;   // 2026-08-14 用户：剥离/归因暂时不跑，先验证 D/P 参数
-      const pOk = clamped.P >= 0.5;   // P 编码对错：P≥0.5 视为基本答对（isCorrect 已删除 2026-08-14）
-      const isOut = raw.isOutOfSyllabus === true;
-      const eta = clamped.eta;   // 仅解答题 0.4~1.0，选择/填空 null
-
-      // 主知识点定位（matchKnowledgeNode：模块级独立函数，精确 → 子串最长）
-      const mainNodeId = await matchKnowledgeNode((raw.knowledgeNodeName || '').trim());
-      const upsertProgress = async (nodeId, patch) => {
-        const pRes = await db.collection('knowledge_progress')
-          .where({ userId: openid, knowledgeNodeId: nodeId }).limit(1).get();
-        if (pRes.data.length) {
-          await db.collection('knowledge_progress').doc(pRes.data[0]._id).update({ data: patch });
-        } else {
-          await db.collection('knowledge_progress').add({ data: { userId: openid, knowledgeNodeId: nodeId, ...patch } });
-        }
-      };
-
-      // ---- K 维度（§4.4 加权得分法：S_k = Σ(D×P)，D_k = ΣD，mastery = S_k/D_k）----
-      // 最简版：整题 D×P 挂在主知识点；超纲且判错 → 跳过（文档：超纲做错不降）
-      if (mainNodeId && !(isOut && !pOk)) {
-        const D = Number(clamped.D) || 0;
-        const P = Number(clamped.P) || 0;
-        const pRes = await db.collection('knowledge_progress')
-          .where({ userId: openid, knowledgeNodeId: mainNodeId }).limit(1).get();
-        const old = pRes.data[0] || {};
-        const S = (old.sValue || 0) + D * P;
-        const Dsum = (old.dValue || 0) + D;
-        const newMastery = Dsum > 0 ? Math.round((S / Dsum) * 100) / 100 : 0;
-        await upsertProgress(mainNodeId, {
-          sValue: Math.round(S * 10000) / 10000,
-          dValue: Math.round(Dsum * 10000) / 10000,
-          mastery: newMastery,
-          attempts: (old.attempts || 0) + 1,
-          correctCount: (old.correctCount || 0) + (pOk ? 1 : 0),
-          lastUpdated: db.serverDate(),
-        });
-        // mastery_logs 追加写（#5 三集合架构补写 2026-08-14）：每次 K 更新记一笔，支持趋势/重算
-        try {
-          await db.collection('mastery_logs').add({
-            data: {
-              userId: openid,
-              knowledgeNodeId: mainNodeId,
-              triggerQuestionId: questionId,
-              oldMastery: old.mastery != null ? old.mastery : null,
-              newMastery,
-              algorithm: 'weighted_score_v1',
-              createdAt: db.serverDate(),
-            },
-          });
-        } catch (e) {
-          console.warn('[judgeOne] mastery_logs 写入失败:', e.message);
-        }
+      // 题型三层结构（D-18）：pattern 是中粒度题型，检索主键；模型未输出/输出异常时降级为空
+      const rawPattern = (raw.pattern && typeof raw.pattern === 'object') ? raw.pattern : {};
+      const patternText = ((rawPattern.pattern || '').trim() || '').slice(0, 80);
+      const patternFull = [rawPattern.domain, rawPattern.pattern, rawPattern.variant]
+        .filter((s) => s && typeof s === 'string' && s.trim())
+        .map((s) => s.trim()).join(' / ').slice(0, 120);
+      const ragReportText = buildReportText({
+        questionText: question.questionText || '',
+        studentAnswer: (question.traceReport || '').slice(0, 300),
+        isCorrect: pOk,
+        questionCategory: patternText || raw.questionCategory || question.questionType || '',
+        difficultyLevel: raw.level || 'L4',
+        knowledgeNodeId: mainNodeId || '',
+        knowledgeNodeName: (raw.knowledgeNodeName || '').trim(),
+        errorAttribution: raw.errorAttribution || null,
+        errorDimension: raw.errorDimension || null,
+        breakpoint: raw.breakpoint || null,
+        knowledgeUsage: Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [],
+      });
+      let embedding = null;
+      let patternEmbedding = null;
+      try {
+        embedding = await embedText(ragReportText);
+        if (patternFull) patternEmbedding = await embedText(patternFull);
+      } catch (e) {
+        console.warn('[judgeOne] RAG embed failed:', e.message);
       }
-
-      // ---- K 剥离版（暂不跑，USE_KNOWLEDGE_USAGE=true 时启用）----
-      if (USE_KNOWLEDGE_USAGE && !(isOut && !pOk)) {
-        const usage = Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [];
-        for (const u of usage) {
-          const uName = (u.name || '').trim();
-          if (!uName) continue;
-          const nodeId = await matchKnowledgeNode(uName);
-          if (!nodeId) continue;
-          const Dkp = Math.min(1, Math.max(0, Number(u.D) || 0));
-          const Pkp = u.correct === true ? 1 : 0;
-          const pRes = await db.collection('knowledge_progress')
-            .where({ userId: openid, knowledgeNodeId: nodeId }).limit(1).get();
-          const old = pRes.data[0] || {};
-          const S = (old.sValue || 0) + Dkp * Pkp;
-          const Dsum = (old.dValue || 0) + Dkp;
-          await upsertProgress(nodeId, {
-            sValue: Math.round(S * 10000) / 10000,
-            dValue: Math.round(Dsum * 10000) / 10000,
-            mastery: Dsum > 0 ? Math.round((S / Dsum) * 100) / 100 : 0,
-            attempts: (old.attempts || 0) + 1,
-            correctCount: (old.correctCount || 0) + Pkp,
-            lastUpdated: db.serverDate(),
-          });
-        }
-      }
-
-      // ---- A 维度（宪法 §5.3/§5.5：单元级 A/U/N，独立集合 unit_progress）----
-      // E = D×η×(2P−1)（P 编码方向，替代已删 isCorrect）；归因分流保留在开关分支
-      if (eta != null && eta >= 0.4 && mainNodeId) {
-        const mainNode = await findNode((raw.knowledgeNodeName || '').trim());
-        const unitName = unitNameOf(mainNode);
-        if (unitName) {
-          const D = Number(clamped.D) || 0;
-          let eff = D * eta * (2 * Number(clamped.P) - 1);
-          if (USE_KNOWLEDGE_USAGE) {
-            // 归因分流（暂不跑）：错题归因 K/S → E=0；errorDimension 缺失时回退关键词判断
-            const dim = raw.errorDimension;
-            const isKS = !pOk && (dim === 'K' || dim === 'S'
-              || (!dim && /概念|定义|公式|记错|遗忘|知识/.test(raw.errorAttribution || '')));
-            if (isKS) eff = 0;
-          }
-          const uRes = await db.collection('unit_progress')
-            .where({ userId: openid, unitName }).limit(1).get();
-          const old = uRes.data[0] || {};
-          let A = old.aValue != null ? old.aValue : 0.3;
-          let U = old.aUpper != null ? old.aUpper : 0.5;
-          let streak = old.lowEtaStreak || 0;
-          if (eff !== 0) {
-            // U 上浮：本质解法（η≥0.7）+ 鉴别力足够（E≥0.5）
-            if (eff >= 0.5 && eta >= 0.7) U += 0.05 * (1 - U);
-            // U 下浮：连续 5 题低路径质量（暴力计算挤压虚假上限）
-            if (eta <= 0.6) {
-              streak += 1;
-              if (streak >= 5) { U -= 0.03 * (U - A); streak = 0; }
-            } else streak = 0;
-            const dA = 0.25 * Math.abs(eff) * (U - A);
-            A = eff > 0 ? Math.min(A + dA, U) : Math.max(A - dA, 0);
-          }
-          const patch = {
-            aValue: Math.round(A * 100) / 100,
-            aUpper: Math.round(U * 100) / 100,
-            n: (old.n || 0) + 1,
-            lowEtaStreak: streak,
-            lastUpdated: db.serverDate(),
-          };
-          if (uRes.data.length) {
-            await db.collection('unit_progress').doc(uRes.data[0]._id).update({ data: patch });
-          } else {
-            await db.collection('unit_progress').add({ data: { userId: openid, unitName, ...patch } });
-          }
-        }
-      }
+      await db.collection('mastery_logs').add({
+        data: {
+          _openid: openid,
+          userId: openid,
+          questionId,
+          knowledgeNodeId: mainNodeId || null,
+          knowledgeNodeName: (raw.knowledgeNodeName || '').trim() || null,
+          algorithm: 'diagnose_v1',
+          isCorrect: pOk,
+          processScore: Number(clamped.P) || 0,
+          difficultyValue: Number(clamped.D) || 0,
+          errorAttribution: raw.errorAttribution || null,
+          errorDimension: raw.errorDimension || null,
+          segments: Array.isArray(raw.segments) ? raw.segments : [],
+          breakpoint: raw.breakpoint || null,
+          knowledgeUsage: Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [],
+          processAvailable: raw.processAvailable === true,
+          pattern: patternFull || null,
+          report: {
+            questionText: question.questionText || '',
+            isCorrect: pOk,
+            knowledgeNodeName: (raw.knowledgeNodeName || '').trim() || null,
+            errorAttribution: raw.errorAttribution || null,
+            errorDimension: raw.errorDimension || null,
+            segments: Array.isArray(raw.segments) ? raw.segments : [],
+            breakpoint: raw.breakpoint || null,
+            knowledgeUsage: Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [],
+            processAvailable: raw.processAvailable === true,
+          },
+          reportText: ragReportText,
+          embedding,
+          patternEmbedding,
+          createdAt: db.serverDate(),
+        },
+      });
     } catch (e) {
-      console.error('[judgeOne] 掌握度更新失败:', e);
+      console.warn('[judgeOne] mastery_logs RAG 记录写入失败（判定已更新，降级）:', e.message);
     }
 
     // 更新批次进度；最后一题判完 → completed
@@ -617,6 +597,10 @@ exports.main = async (event) => {
         pathQuality: clamped.eta,
         knowledgeNodeName: raw.knowledgeNodeName || '',
         fiveDim: raw.fiveDim || null,
+        // 报告数据输入（2026-08-17）
+        segments: Array.isArray(raw.segments) ? raw.segments : [],
+        breakpoint: raw.breakpoint || null,
+        processAvailable: raw.processAvailable === true,
       },
     });
   } catch (e) {

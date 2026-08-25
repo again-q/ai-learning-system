@@ -1,0 +1,10 @@
+{
+  "name": "statService",
+  "version": "1.0.0",
+  "description": "本次答题统计聚合：total/correct/rate + 与上次对比 trend（报告数据输入）",
+  "main": "index.js",
+  "engines": { "node": ">=18.0.0" },
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

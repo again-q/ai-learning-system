@@ -12,19 +12,33 @@ exports.main = async (event) => {
 
     // 全量节点（前端一次拉取，本地建图：结构导航 + 演化链都本地计算）
     if (action === 'getAll') {
+      // 官方节点（知识图谱）
       const res = await db.collection('knowledge_nodes')
         .where({ knowledgeId: _.exists(true) }).limit(1000).get();
-      // 合并当前用户掌握度（knowledge_progress，按 knowledgeId 匹配）
+      // 自定义节点（judgeOne 兜底 / AI 提炼）——合并展示，标记来源（官方图谱保护：AI 提炼节点独立集合）
+      const cRes = await db.collection('custom_nodes').limit(500).get().catch(() => ({ data: [] }));
+      const customNodes = cRes.data.map((c) => ({
+        _id: c._id,
+        knowledgeId: c._id,          // custom 节点用 _id 作图谱键
+        name: c.name || '未命名知识点',
+        type: 'definition',
+        source: 'custom',            // 前端标记「AI 提炼」
+        path: ['自定义', 'AI 提炼'],
+        createdAt: c.createdAt,
+      }));
+      const nodes = res.data.map((n) => ({ ...n, source: 'official' })).concat(customNodes);
+
+      // 合并当前用户掌握度（knowledge_progress：官方按 knowledgeId、custom 按 _id）
       const wxContext = cloud.getWXContext();
-      const openid = wxContext.OPENID;
+      const openid = wxContext.OPENID || (event && event.userId) || null;
       let progressMap = {};
-      if (openid && res.data.length) {
-        const ids = res.data.map(n => n.knowledgeId);
+      if (openid && nodes.length) {
+        const ids = nodes.map((n) => n.knowledgeId || n._id);
         const pRes = await db.collection('knowledge_progress')
           .where({ userId: openid, knowledgeNodeId: _.in(ids) }).limit(1000).get();
         pRes.data.forEach((p) => { progressMap[p.knowledgeNodeId] = p.mastery; });
       }
-      return success({ nodes: res.data, progressMap });
+      return success({ nodes, progressMap });
     }
 
     // 图谱查询（公开可读；掌握度前端先用 mock，待诊断链路补上后接入）

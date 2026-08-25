@@ -1,0 +1,10 @@
+.dm-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.dm-box { width: 640rpx; background: #fff; border-radius: 28rpx; padding: 40rpx; }
+.dm-title { font-size: 34rpx; font-weight: 600; color: #1a1a1a; }
+.dm-sub { font-size: 24rpx; color: #999; margin: 12rpx 0 24rpx; }
+.dm-input { width: 100%; min-height: 160rpx; background: #f7f7f7; border-radius: 16rpx; padding: 20rpx; font-size: 28rpx; box-sizing: border-box; }
+.dm-actions { display: flex; justify-content: flex-end; margin-top: 28rpx; gap: 20rpx; }
+.dm-btn { font-size: 28rpx; padding: 16rpx 40rpx; border-radius: 999rpx; }
+.dm-btn.cancel { color: #666; background: #f0f0f0; }
+.dm-btn.ok { color: #fff; background: #1a1a1a; }
+.dm-btn.ok.disabled { opacity: 0.4; }

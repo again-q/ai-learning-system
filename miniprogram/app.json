@@ -12,6 +12,7 @@
     "pages/model-cards/model-cards",
     "pages/method-list/method-list",
     "pages/admin/knowledge-admin/knowledge-admin",
+    "pages/logs/logs",
     "pages/latex-demo/latex-demo"
   ],
   "window": {

@@ -45,13 +45,14 @@
   </view>
 
   <!-- 分析进度（拆题+逐题判定 1/N） -->
-  <view class="progress-mask" wx:if="{{analyzing}}">
+  <view class="progress-mask" wx:if="{{analyzing || submitting}}">
     <view class="progress-card">
       <text class="progress-title">{{progressText}}</text>
       <view class="progress-track">
         <view class="progress-bar" style="width: {{progressPercent}}%"></view>
       </view>
-      <text class="progress-num" wx:if="{{totalQuestions > 0}}">{{doneCount}}/{{totalQuestions}} 题判定完成</text>
+      <text class="progress-num" wx:if="{{estimatedText}}">{{estimatedText}}</text>
+      <text class="progress-num" wx:if="{{totalQuestions > 0 && doneCount > 0}}">{{doneCount}}/{{totalQuestions}} 题判定完成</text>
     </view>
   </view>
 </view>

@@ -45,7 +45,6 @@ Page({
     }
 
     this.setData({ canLogin: false, isLoading: true });
-    wx.showLoading({ title: '登录中', mask: true });
 
     wx.login({
       success: (res) => {
@@ -68,7 +67,6 @@ Page({
               if (res.code === 0) {
                 app.globalData.userInfo = res.data;
                 wx.setStorageSync('userInfo', res.data);
-                wx.hideLoading();
                 this.setData({ isLoading: false });
                 wx.switchTab({ url: '/pages/index/index' });
               } else {
@@ -100,7 +98,6 @@ Page({
   },
 
   loginFail(msg) {
-    wx.hideLoading();
     this.setData({ canLogin: true, isLoading: false });
     if (msg) wx.showToast({ title: msg, icon: 'none' });
   }

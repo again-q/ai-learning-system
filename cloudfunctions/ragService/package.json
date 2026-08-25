@@ -1,0 +1,10 @@
+{
+  "name": "ragService",
+  "version": "1.0.0",
+  "description": "RAG 检索工具服务：vectorSearch / getErrorPattern / getTrend / getNodeHistory（诊断 Agent Function Calling 用）",
+  "main": "index.js",
+  "engines": { "node": ">=18.0.0" },
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}
