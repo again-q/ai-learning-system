@@ -20,6 +20,7 @@
     <view class="log-item" wx:for="{{logs}}" wx:key="id">
       <view class="log-head">
         <text class="log-time">{{item.time}}</text>
+        <text class="log-timing" wx:if="{{item.timing}}">{{item.timing}}</text>
         <text class="log-step">{{item.step}}</text>
       </view>
       <view class="log-data" wx:if="{{item.dataText}}">{{item.dataText}}</view>
