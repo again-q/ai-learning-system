@@ -400,12 +400,14 @@ exports.main = async (event) => {
         questionId: q._id, questionText: q.questionText || '', studentAnswer: q.studentAnswer || '',
         traceReport: q.traceReport || '', status: q.status || 'pending',
         reviewed: !!q.reviewed,
-        // 二次复核参数（judge 后）
+        transcriptionReviewed: !!q.transcriptionReviewed,
+        paramsReviewed: !!q.paramsReviewed,
+        // 二次复核参数（学生可见：难度/知识点/对错/归因；不下发 fiveDim / P / η）
         questionType: q.questionType || '', questionCategory: q.questionCategory || '',
         difficultyLevel: q.difficultyLevel || '', difficultyValue: q.difficultyValue != null ? q.difficultyValue : null,
-        isCorrect: q.isCorrect === undefined ? null : q.isCorrect, P: q.processScore != null ? q.processScore : null,
-        eta: q.pathQuality != null ? q.pathQuality : null, errorAttribution: q.errorAttribution || null,
-        knowledgeNodeName: q.knowledgeNodeName || '', fiveDim: q.fiveDim || null,
+        isCorrect: q.isCorrect === undefined ? null : q.isCorrect,
+        errorAttribution: q.errorAttribution || null,
+        knowledgeNodeName: q.knowledgeNodeName || '',
       })));
     }
     if (action === 'updateTranscription') {
