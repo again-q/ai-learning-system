@@ -32,18 +32,30 @@
     </view>
   </view>
 
-  <!-- 加载态 -->
+  <!-- 加载态：按耗时推进阶段列表（无百分比假进度条） -->
   <view class="loading" wx:elif="{{loading}}">
     <view class="loading-spinner"></view>
     <text class="loading-text">{{reportProgressText || '报告生成中...'}}</text>
-    <view class="report-progress-track" wx:if="{{reportProgressVisible}}">
-      <view class="report-progress-bar" style="width: {{reportProgressPercent}}%"></view>
+    <view class="report-progress-wrap" wx:if="{{reportProgressVisible}}">
+      <text class="report-elapsed">已等待 {{reportElapsedSec}} 秒</text>
+      <view class="report-stages">
+        <view
+          class="report-stage {{index < reportStageIndex ? 'done' : ''}} {{index === reportStageIndex ? 'current' : ''}}"
+          wx:for="{{genStages}}"
+          wx:key="afterSec"
+          wx:for-index="index"
+        >
+          <text class="report-stage-mark">{{index < reportStageIndex ? '✓' : (index === reportStageIndex ? '●' : '○')}}</text>
+          <text class="report-stage-text">{{item.text}}</text>
+        </view>
+      </view>
+      <text class="report-hint">通常需要 1～2 分钟，请勿离开本页</text>
     </view>
   </view>
 
-  <!-- 无报告（无错题等） -->
+  <!-- 无报告 / 失败可重试 -->
   <view class="empty" wx:elif="{{emptyMsg}}">
-    <text>{{emptyMsg}}</text>
+    <text class="empty-text">{{emptyMsg}}</text>
     <view class="retry-btn" wx:if="{{retryable && batchId}}" bindtap="onRetry">重新生成</view>
   </view>
 
@@ -153,5 +165,13 @@
 
     <!-- 异议弹窗 -->
     <report-dispute-modal visible="{{disputeVisible}}" bind:cancel="onDisputeCancel" bind:submit="onDisputeSubmit" />
+
+    <!-- 异议重生成：页内遮罩，避免 wx.showLoading 与 toast 叠层 -->
+    <view class="regen-mask" wx:if="{{regenerating}}">
+      <view class="regen-box">
+        <view class="loading-spinner"></view>
+        <text class="regen-text">正在根据异议重新生成…</text>
+      </view>
+    </view>
   </view>
 </view>
