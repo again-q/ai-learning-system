@@ -1,5 +1,6 @@
 const towxml = require('../../towxml/index.js');
 const log = require('../../../utils/upload-log');
+const { renderMathText } = require('../../utils/latex');
 const app = getApp();
 
 // 长请求无真实流式进度：按耗时推进阶段文案（不做百分比假进度条）
@@ -353,7 +354,7 @@ Page({
   renderMd(text) {
     if (!text) return [];
     try {
-      return app.renderMathText(text) || [];
+      return renderMathText(text) || [];
     } catch (e) {
       console.error('[report] renderMathText failed:', e.message);
       return [{ type: 'text', text: String(text) }];

@@ -1,6 +1,7 @@
 // 复核页：一次复核（题目转录确认）→ 二次复核（参数确认）→ 完成
 const towxml = require('../../towxml/index.js');
 const log = require('../../../utils/upload-log');
+const { renderMathText } = require('../../utils/latex');
 
 Page({
   data: {
@@ -36,7 +37,7 @@ Page({
   renderMd(text) {
     if (!text) return [];
     try {
-      return app.renderMathText(text) || [];
+      return renderMathText(text) || [];
     } catch (e) {
       console.error('[review] renderMathText failed:', e.message);
       return [{ type: 'text', text: String(text) }];
