@@ -1,18 +1,12 @@
-// LaTeX 渲染组件：基于 @rojer/katex-mini 生成 rich-text nodes
-let katexMini = null;
-try {
-  katexMini = require('../../libs/katex-mini/index.js');
-} catch (e) {
-  console.error('[latex-render] katex-mini load failed:', e);
-}
-
-const parseLatex = katexMini ? (katexMini.default || katexMini.parseLatex || katexMini) : null;
+// LaTeX 渲染组件：封装 utils/latex，页面用 <latex-render latex="..." />
+const { renderLatex } = require('../../utils/latex');
 
 Component({
   properties: {
     latex: { type: String, value: '' },
     fontSize: { type: Number, value: 24 },
     color: { type: String, value: '#1a1a1a' },
+    displayMode: { type: Boolean, value: false },
   },
 
   data: {
@@ -22,7 +16,7 @@ Component({
   },
 
   observers: {
-    'latex, fontSize, color': function () {
+    'latex, fontSize, color, displayMode': function () {
       this.render();
     },
   },
@@ -36,28 +30,24 @@ Component({
   methods: {
     render() {
       const tex = (this.data.latex || '').trim();
+      const baseSize = this.data.fontSize || 28;
+      const rootStyle = `font-size:${baseSize}rpx;color:${this.data.color || '#1a1a1a'};`;
       if (!tex) {
-        this.setData({ nodes: [], error: false });
+        this.setData({ nodes: [], error: false, rootStyle });
         return;
       }
       try {
-        if (!parseLatex) throw new Error('katex-mini not available');
-        const nodes = parseLatex(tex, {
+        const nodes = renderLatex(tex, {
           throwOnError: false,
-          displayMode: false,
+          displayMode: !!this.data.displayMode,
         });
-        const baseSize = this.data.fontSize || 28;
-        this.setData({
-          nodes,
-          error: false,
-          rootStyle: `font-size:${baseSize}rpx;color:${this.data.color || '#1a1a1a'};`,
-        });
+        this.setData({ nodes, error: false, rootStyle });
       } catch (e) {
         console.error('[latex-render] render failed:', e);
         this.setData({
-          nodes: [{ type: 'text', text: tex, style: '' }],
+          nodes: [{ type: 'text', text: tex }],
           error: true,
-          rootStyle: `font-size:${this.data.fontSize || 28}rpx;color:${this.data.color || '#1a1a1a'};`,
+          rootStyle,
         });
       }
     },
