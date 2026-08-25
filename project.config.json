@@ -25,7 +25,7 @@
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
-      "outputPath": ""
+      "outputPath": "@babel/runtime"
     },
     "enableEngineNative": false,
     "useIsolateContext": true,

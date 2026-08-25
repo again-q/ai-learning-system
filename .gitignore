@@ -17,3 +17,6 @@ doc/.gate/
 
 # cursor.md 仅本地协作,不进仓库
 cursor.md
+
+# babel 辅助函数编译产物（工具自动生成）
+@babel/runtime/
