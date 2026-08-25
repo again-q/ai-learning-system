@@ -421,6 +421,82 @@ exports.main = async (event) => {
       await db.collection('questions').doc(questionId).update({ data: patch });
       return success({ questionId });
     }
+
+    // 白话改写：学生用自然语言说明要改什么 → AI 更新题干/最终作答/过程（默认信任学生，不做防作弊）
+    if (action === 'reviseByNaturalLanguage') {
+      const { questionId, instruction } = event;
+      if (!questionId) return fail(400, '缺少题目ID');
+      const note = (instruction || '').trim();
+      if (!note) return fail(400, '请用一句话说明要改什么');
+      if (note.length > 500) return fail(400, '说明太长，请精简到 500 字内');
+
+      const qRes = await db.collection('questions').doc(questionId).get().catch(() => null);
+      if (!qRes || !qRes.data || qRes.data.userId !== openid) return fail(403, '无权操作他人题目');
+      const q = qRes.data;
+
+      // 允许前端把弹层里尚未保存的草稿一并传入，否则用库里的值
+      const curText = (typeof event.questionText === 'string' ? event.questionText : q.questionText) || '';
+      const curAnswer = (typeof event.studentAnswer === 'string' ? event.studentAnswer : q.studentAnswer) || '';
+      const curTrace = (typeof event.traceReport === 'string' ? event.traceReport : q.traceReport) || '';
+
+      if (!DS_API_KEY) return fail(500, '未配置模型密钥');
+
+      const data = await postJSON(`${DS_BASE_URL}/chat/completions`, {
+        model: DS_MODEL,
+        thinking: { type: 'disabled' },
+        temperature: 0.2,
+        messages: [
+          {
+            role: 'system',
+            content:
+              '你是题目转录修正助手。学生看不懂或不会改 LaTeX，会用大白话说明要改哪里。' +
+              '根据「当前内容」和「学生说明」输出修正后的三个字段。' +
+              '规则：① 只改学生明确提到的地方，其他保持原样；② 默认信任学生的修正，不做防作弊；' +
+              '③ 公式尽量写成 $...$ 或 $$...$$；④ 最终作答保持简短（如 A、x=1/2）；⑤ 只输出 JSON，不要解释。',
+          },
+          {
+            role: 'user',
+            content:
+              '【当前题目】\n' + curText.slice(0, 2000) +
+              '\n\n【当前最终作答】\n' + curAnswer.slice(0, 200) +
+              '\n\n【当前做题过程】\n' + curTrace.slice(0, 2000) +
+              '\n\n【学生说明（要改什么）】\n' + note +
+              '\n\n输出：{"questionText":"...","studentAnswer":"...","traceReport":"..."}',
+          },
+        ],
+        max_tokens: 4000,
+      }, DS_API_KEY);
+
+      const msg = data.choices && data.choices[0] && data.choices[0].message;
+      const content = (msg && (msg.content || msg.reasoning_content)) || '';
+      const end = content.lastIndexOf('}');
+      if (end < 0) return fail(500, '改写结果解析失败');
+      let depth = 0, start = -1;
+      for (let i = end; i >= 0; i--) {
+        const ch = content[i];
+        if (ch === '}') depth++;
+        else if (ch === '{') {
+          depth--;
+          if (depth === 0) { start = i; break; }
+        }
+      }
+      if (start < 0) return fail(500, '改写结果定位失败');
+      let parsed;
+      try {
+        parsed = JSON.parse(content.slice(start, end + 1));
+      } catch (e) {
+        return fail(500, '改写 JSON 无效');
+      }
+
+      const questionText = typeof parsed.questionText === 'string' ? parsed.questionText.trim() : curText.trim();
+      const studentAnswer = typeof parsed.studentAnswer === 'string' ? parsed.studentAnswer.trim() : curAnswer.trim();
+      const traceReport = typeof parsed.traceReport === 'string' ? parsed.traceReport.trim() : curTrace.trim();
+      if (!questionText) return fail(500, '改写后题目为空');
+
+      // 只返回草稿，不直接落库——让学生在弹层确认后再点保存（仍走 updateTranscription）
+      return success({ questionText, studentAnswer, traceReport });
+    }
+
     if (action === 'updateParams') {
       const { questionId, params } = event;
       if (!questionId || !params) return fail(400, '缺少参数');

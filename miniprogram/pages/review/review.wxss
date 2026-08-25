@@ -304,6 +304,8 @@
 }
 .sheet {
   width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
   background: #fff;
   border-radius: 32rpx 32rpx 0 0;
   padding: 32rpx 32rpx calc(32rpx + env(safe-area-inset-bottom));
@@ -317,12 +319,51 @@
 }
 .edit-area {
   width: 100%;
-  min-height: 200rpx;
+  min-height: 160rpx;
   background: #f8f8fa;
   border-radius: 16rpx;
   padding: 20rpx;
   font-size: 26rpx;
   box-sizing: border-box;
+  margin-bottom: 8rpx;
+}
+.nl-area {
+  min-height: 120rpx;
+  background: #f0f7ff;
+}
+.ai-btn {
+  margin: 12rpx 0 8rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+.ai-btn.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.nl-tip {
+  font-size: 22rpx;
+  color: #8e8e93;
+  line-height: 1.5;
+  margin-bottom: 20rpx;
+}
+.answer-input {
+  margin-bottom: 16rpx;
+}
+.answer-line {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+.answer-label {
+  font-size: 22rpx;
+  color: #8e8e93;
+  flex-shrink: 0;
+}
+.answer-val {
+  font-size: 28rpx;
+  color: #1c1c1e;
+  font-weight: 600;
 }
 .field {
   display: flex;
@@ -333,6 +374,9 @@
 .field-label {
   font-size: 24rpx;
   color: #8e8e93;
+  margin-top: 8rpx;
+  margin-bottom: 8rpx;
+  display: block;
 }
 .field-input {
   background: #f8f8fa;

@@ -14,7 +14,10 @@ Page({
     editMode: '',          // '' | question | params
     editIndex: -1,
     editValue: '',
+    editAnswer: '',
     editTrace: '',
+    editNL: '',            // 白话说明：要改什么
+    revising: false,       // AI 白话改写中
     editD: '',
     editK: '',
   },
@@ -68,10 +71,14 @@ Page({
   /* ---------- 一次复核 ---------- */
   onEditQuestion(e) {
     const idx = e.currentTarget.dataset.index;
+    const item = this.data.items[idx];
     this.setData({
       editMode: 'question', editIndex: idx,
-      editValue: this.data.items[idx].questionText || '',
-      editTrace: this.data.items[idx].traceReport || '',
+      editValue: item.questionText || '',
+      editAnswer: item.studentAnswer || '',
+      editTrace: item.traceReport || '',
+      editNL: '',
+      revising: false,
     });
   },
 
@@ -79,13 +86,65 @@ Page({
     this.setData({ editValue: e.detail.value });
   },
 
+  onEditAnswerInput(e) {
+    this.setData({ editAnswer: e.detail.value });
+  },
+
   onEditTraceInput(e) {
     this.setData({ editTrace: e.detail.value });
+  },
+
+  onEditNLInput(e) {
+    this.setData({ editNL: e.detail.value });
+  },
+
+  // 白话 → AI 改写三个字段（只填弹层，不落库；学生确认后再保存）
+  onAIRevise() {
+    if (this.data.revising) return;
+    const note = (this.data.editNL || '').trim();
+    if (!note) {
+      wx.showToast({ title: '先用一句话说要改什么', icon: 'none' });
+      return;
+    }
+    const idx = this.data.editIndex;
+    const item = this.data.items[idx];
+    if (!item) return;
+    this.setData({ revising: true });
+    log.append('nl_revise_start', { questionId: item.questionId, len: note.length });
+    wx.cloud.callFunction({
+      name: 'judgeOne',
+      data: {
+        action: 'reviseByNaturalLanguage',
+        questionId: item.questionId,
+        instruction: note,
+        questionText: this.data.editValue,
+        studentAnswer: this.data.editAnswer,
+        traceReport: this.data.editTrace,
+      },
+      timeout: 60000,
+    }).then((res) => {
+      if (!res.result || res.result.code !== 0) throw new Error((res.result && res.result.message) || '改写失败');
+      const d = res.result.data || {};
+      this.setData({
+        editValue: d.questionText != null ? d.questionText : this.data.editValue,
+        editAnswer: d.studentAnswer != null ? d.studentAnswer : this.data.editAnswer,
+        editTrace: d.traceReport != null ? d.traceReport : this.data.editTrace,
+        revising: false,
+      });
+      log.append('nl_revise_ok', { questionId: item.questionId });
+      wx.showToast({ title: '已改写，请确认后保存', icon: 'none' });
+    }).catch((e) => {
+      console.error('[review] nl revise failed:', e);
+      log.append('nl_revise_fail', { questionId: item.questionId, error: e.message || String(e) });
+      this.setData({ revising: false });
+      wx.showToast({ title: '改写失败：' + (e.message || '网络错误'), icon: 'none' });
+    });
   },
 
   onSaveQuestion() {
     const idx = this.data.editIndex;
     const text = (this.data.editValue || '').trim();
+    const answer = (this.data.editAnswer || '').trim();
     const trace = (this.data.editTrace || '').trim();
     if (!text) { wx.showToast({ title: '题目不能为空', icon: 'none' }); return; }
     const item = this.data.items[idx];
@@ -95,6 +154,7 @@ Page({
         action: 'updateTranscription',
         questionId: item.questionId,
         questionText: text,
+        studentAnswer: answer,
         traceReport: trace,
       },
     }).then((res) => {
@@ -103,14 +163,20 @@ Page({
       items[idx] = {
         ...items[idx],
         questionText: text,
+        studentAnswer: answer,
         traceReport: trace,
         traceText: trace,
         transcriptionReviewed: true,
-        article: app.towxml(text, 'markdown'),
+        article: this.renderMd(text),
         traceArticle: this.renderMd(trace),
       };
-      this.setData({ items, editMode: '' });
-      log.append('transcription_saved', { questionId: item.questionId, len: text.length, traceLen: trace.length });
+      this.setData({ items, editMode: '', editNL: '' });
+      log.append('transcription_saved', {
+        questionId: item.questionId,
+        len: text.length,
+        answerLen: answer.length,
+        traceLen: trace.length,
+      });
       wx.showToast({ title: '已保存', icon: 'success' });
     }).catch((e) => {
       wx.showToast({ title: '保存失败：' + (e.message || '网络错误'), icon: 'none' });
