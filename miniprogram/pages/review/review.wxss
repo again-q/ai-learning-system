@@ -208,7 +208,6 @@
 .p-val.strong { color: #007aff; font-size: 30rpx; }
 .p-val.right { color: #34c759; }
 .p-val.wrong { color: #ff3b30; }
-.p-val.dims { font-size: 24rpx; }
 .p-sub {
   font-size: 22rpx;
   color: #8e8e93;
