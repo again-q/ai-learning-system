@@ -1,14 +1,14 @@
 const app = getApp();
 const log = require('../../utils/upload-log');
 
-// 长请求无真实流式进度：按耗时推进「体感阶段」，真实返回前最高到 92%
+// 长请求无真实流式进度：按耗时推进阶段文案（不做百分比假进度条）
 const GEN_STAGES = [
-  { afterSec: 0, pct: 10, text: '整理本次答题数据…' },
-  { afterSec: 6, pct: 28, text: '检索历史同类题与错误模式…' },
-  { afterSec: 16, pct: 48, text: '定位薄弱点与断点…' },
-  { afterSec: 28, pct: 68, text: '撰写诊断报告…' },
-  { afterSec: 45, pct: 82, text: '润色与校验…' },
-  { afterSec: 70, pct: 92, text: '仍在生成，请再稍候…' },
+  { afterSec: 0, text: '整理本次答题数据…' },
+  { afterSec: 6, text: '检索历史同类题与错误模式…' },
+  { afterSec: 16, text: '定位薄弱点与断点…' },
+  { afterSec: 28, text: '撰写诊断报告…' },
+  { afterSec: 45, text: '润色与校验…' },
+  { afterSec: 70, text: '仍在生成，请再稍候…' },
 ];
 
 function getOpenid() {
@@ -32,7 +32,6 @@ Page({
     historyLoading: false,
     reportProgressVisible: false,
     reportProgressText: '',
-    reportProgressPercent: 0,
     reportElapsedSec: 0,
     reportStageIndex: 0,
     genStages: GEN_STAGES,
@@ -81,7 +80,6 @@ Page({
       }
       this.setData({
         reportElapsedSec: sec,
-        reportProgressPercent: stage.pct,
         reportProgressText: stage.text,
         reportStageIndex: stageIndex,
       });
@@ -134,7 +132,6 @@ Page({
       emptyMsg: '',
       reportProgressVisible: true,
       reportProgressText: GEN_STAGES[0].text,
-      reportProgressPercent: GEN_STAGES[0].pct,
       reportElapsedSec: 0,
       reportStageIndex: 0,
       retryable: false,
@@ -158,7 +155,6 @@ Page({
             reportId: d.data.reportId,
             loading: false,
             reportProgressVisible: false,
-            reportProgressPercent: 100,
             activeStep: 1,
             activeWpIndex: 0,
             currentWp: (report.weakpoints || [])[0] || null,

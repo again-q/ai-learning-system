@@ -32,17 +32,11 @@
     </view>
   </view>
 
-  <!-- 加载态（含生成阶段体感进度） -->
+  <!-- 加载态：按耗时推进阶段列表（无百分比假进度条） -->
   <view class="loading" wx:elif="{{loading}}">
     <view class="loading-spinner"></view>
     <text class="loading-text">{{reportProgressText || '报告生成中...'}}</text>
     <view class="report-progress-wrap" wx:if="{{reportProgressVisible}}">
-      <view class="report-progress-row">
-        <view class="report-progress-track">
-          <view class="report-progress-bar" style="width: {{reportProgressPercent}}%"></view>
-        </view>
-        <text class="report-progress-pct">{{reportProgressPercent}}%</text>
-      </view>
       <text class="report-elapsed">已等待 {{reportElapsedSec}} 秒</text>
       <view class="report-stages">
         <view
