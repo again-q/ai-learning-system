@@ -1,4 +1,5 @@
-// latex-demo：分包内本地 katex-mini（与官方示例同参：displayMode + throwError）
+// latex-demo：与原先正常版一致（displayMode + throwError）
+// 库放在 packageLatex 分包，样式用原 base64 自包含版（小程序本地字体路径易失效导致叠字）
 let parseLatex = null;
 try {
   const mod = require('../../libs/katex-mini/index.js');
@@ -43,8 +44,8 @@ Page({
     this.setData({ loading: true });
     try {
       const nodes = parseLatex(tex, {
-        throwError: true,
-        displayMode: true, // 块级大公式，缺此选项嵌套分数易挤叠
+        throwError: true, // katex-mini 选项：解析失败抛出错误，由下方 catch 展示错误信息
+        displayMode: true, // 块级展示（大公式居中）
       });
       this.setData({ nodes, error: '' });
     } catch (e) {
