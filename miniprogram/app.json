@@ -13,7 +13,13 @@
       "name": "diagnose",
       "pages": [
         "pages/review/review",
-        "pages/report/report",
+        "pages/report/report"
+      ]
+    },
+    {
+      "root": "packageLatex",
+      "name": "latex",
+      "pages": [
         "pages/latex-demo/latex-demo"
       ]
     },

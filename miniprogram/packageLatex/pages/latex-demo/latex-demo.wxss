@@ -1,4 +1,5 @@
-@import '/packageDiagnose/libs/katex-mini/index.wxss';
+/* 恢复原先可用的 base64 自包含 katex 样式（仅本分包引用，不占主包） */
+@import '/packageLatex/libs/katex-mini/index.wxss';
 
 .page {
   min-height: 100vh;
