@@ -1,3 +1,6 @@
+@import '/packageDiagnose/towxml/style/main.wxss';
+@import '/packageDiagnose/libs/katex-mini/index.wxss';
+
 /* 复核页样式 */
 .page {
   height: 100vh;

@@ -10,8 +10,4 @@ page {
   height: 0;
 }
 
-/* KaTeX Mini 全局样式（页面级 rich-text 使用）
-   注意：构建 npm 产物 miniprogram_npm/.../index.wxss 的 @font-face 被替换为
-   CDN 远程 URL（cdnjs，小程序 WXSS 不支持远程字体且域名被墙），因此改用
-   libs/katex-mini 下的 base64 自包含版（与 @rojer/katex-mini/dist/index.wxss 一致）。 */
-@import './libs/katex-mini/index.wxss';
+/* towxml / katex 样式已随 packageDiagnose 分包，勿在主包 app.wxss 引入 */

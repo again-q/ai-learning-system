@@ -1,5 +1,5 @@
 // 运行日志：查看本机拍照/诊断/报告链路日志（排查用）
-const log = require('../../utils/upload-log');
+const log = require('../../../utils/upload-log');
 
 Page({
   data: {

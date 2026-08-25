@@ -1,5 +1,6 @@
+const towxml = require('../../towxml/index.js');
+const log = require('../../../utils/upload-log');
 const app = getApp();
-const log = require('../../utils/upload-log');
 
 // 长请求无真实流式进度：按耗时推进阶段文案（不做百分比假进度条）
 const GEN_STAGES = [
