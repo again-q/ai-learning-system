@@ -1,0 +1,10 @@
+{
+  "name": "ai-learning-miniprogram",
+  "version": "1.0.0",
+  "description": "AI 学习助手小程序（微信原生 + CloudBase）",
+  "private": true,
+  "dependencies": {
+    "@rojer/katex-mini": "^1.3.4",
+    "katex": "^0.16.0"
+  }
+}

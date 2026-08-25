@@ -1,0 +1,11 @@
+/* LaTeX 渲染组件：引入 KaTeX Mini 样式（组件内生效，避免样式隔离） */
+@import '/libs/katex-mini/index.wxss';
+
+.latex-root {
+  display: inline-block;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.latex-root rich-text {
+  display: inline-block;
+}

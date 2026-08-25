@@ -1,0 +1,4 @@
+<!-- LaTeX 渲染：@rojer/katex-mini 生成 rich-text nodes -->
+<view class="latex-root" style="{{rootStyle}}">
+  <rich-text nodes="{{nodes}}" />
+</view>

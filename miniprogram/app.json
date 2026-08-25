@@ -11,7 +11,8 @@
     "pages/review/review",
     "pages/model-cards/model-cards",
     "pages/method-list/method-list",
-    "pages/admin/knowledge-admin/knowledge-admin"
+    "pages/admin/knowledge-admin/knowledge-admin",
+    "pages/latex-demo/latex-demo"
   ],
   "window": {
     "navigationStyle": "custom",

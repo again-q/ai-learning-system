@@ -1,0 +1,37 @@
+<view class="page">
+  <view class="nav">
+    <view class="nav-back" hover-class="nav-back-hover" bindtap="goBack">‹</view>
+    <text class="nav-title">LaTeX 渲染 Demo</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <view class="content">
+    <!-- 渲染结果 -->
+    <view class="card">
+      <view class="card-title">渲染效果</view>
+      <view class="preview-wrap">
+        <rich-text class="preview" nodes="{{nodes}}"></rich-text>
+      </view>
+      <view class="error" wx:if="{{error}}">{{error}}</view>
+    </view>
+
+    <!-- LaTeX 源码输入 -->
+    <view class="card">
+      <view class="card-title">LaTeX 源码</view>
+      <textarea
+        class="latex-input"
+        value="{{latex}}"
+        bindinput="onInput"
+        maxlength="1400"
+        placeholder="输入 LaTeX 公式，例如 \frac{1}{2}"
+        auto-height
+        cursor-spacing="16"
+      />
+      <view class="btn" hover-class="btn-hover" bindtap="renderLatex">
+        <text class="btn-text">{{loading ? '渲染中…' : '渲 染'}}</text>
+      </view>
+    </view>
+
+    <view class="tip">基于 @rojer/katex-mini（katex 小程序版），支持 \frac \sqrt \sum \int \lim 等常用 LaTeX 语法。</view>
+  </view>
+</view>

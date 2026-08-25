@@ -1,6 +1,7 @@
 *.DS_Store
 .DS_Store
 node_modules/
+miniprogram_npm/
 .venv_ocr/
 .reasonix/
 output/raw/ocr_page*.json

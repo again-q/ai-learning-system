@@ -1,0 +1,117 @@
+.page {
+  min-height: 100vh;
+  background: #f6f7f9;
+  padding-top: calc(88rpx + env(safe-area-inset-top));
+  box-sizing: border-box;
+}
+
+/* 顶栏（苹果风：毛玻璃 + 居中标题） */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(88rpx + env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  z-index: 20;
+}
+.nav-back {
+  width: 88rpx;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44rpx;
+  color: #007aff;
+}
+.nav-back-hover {
+  opacity: 0.5;
+}
+.nav-title {
+  flex: 1;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+.nav-placeholder {
+  width: 88rpx;
+}
+
+.content {
+  padding: 24rpx 24rpx calc(48rpx + env(safe-area-inset-bottom));
+}
+
+.card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.05);
+}
+.card-title {
+  font-size: 26rpx;
+  color: #8e8e93;
+  font-weight: 500;
+  margin-bottom: 20rpx;
+}
+
+.preview-wrap {
+  min-height: 120rpx;
+  padding: 8rpx 0;
+  overflow-x: auto;
+}
+.preview {
+  display: block;
+  font-size: 34rpx;
+  color: #1a1a1a;
+}
+
+.error {
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  color: #ff3b30;
+  line-height: 1.5;
+}
+
+.latex-input {
+  width: 100%;
+  min-height: 200rpx;
+  font-size: 28rpx;
+  color: #1a1a1a;
+  line-height: 1.6;
+  box-sizing: border-box;
+  word-break: break-all;
+}
+
+.btn {
+  margin-top: 24rpx;
+  height: 88rpx;
+  border-radius: 44rpx;
+  background: #007aff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
+.btn-hover {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+.btn-text {
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 6rpx;
+}
+
+.tip {
+  font-size: 24rpx;
+  color: #a0a0a6;
+  line-height: 1.6;
+  padding: 0 8rpx;
+}
