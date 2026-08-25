@@ -1,4 +1,4 @@
-// latex-demo：本地 katex-mini（分包内），勿 require npm 以免打进主包
+// latex-demo：分包内本地 katex-mini（与官方示例同参：displayMode + throwError）
 let parseLatex = null;
 try {
   const mod = require('../../libs/katex-mini/index.js');
@@ -28,30 +28,33 @@ Page({
   },
 
   renderLatex() {
-    const latex = (this.data.latex || '').trim();
-    if (!latex) {
+    const tex = (this.data.latex || '').trim();
+    if (!tex) {
       this.setData({ nodes: [], error: '' });
       return;
     }
     if (!parseLatex) {
       this.setData({
-        nodes: [],
+        nodes: [{ type: 'text', text: tex }],
         error: 'katex-mini 未加载',
       });
       return;
     }
-    this.setData({ loading: true, error: '' });
+    this.setData({ loading: true });
     try {
-      const nodes = parseLatex(latex, {
+      const nodes = parseLatex(tex, {
         throwError: true,
+        displayMode: true, // 块级大公式，缺此选项嵌套分数易挤叠
       });
-      this.setData({ nodes, loading: false, error: '' });
+      this.setData({ nodes, error: '' });
     } catch (e) {
+      console.error('[latex-demo] parse error:', e);
       this.setData({
-        nodes: [],
-        loading: false,
-        error: (e && e.message) || String(e),
+        nodes: [{ type: 'text', text: tex }],
+        error: '公式解析失败：' + ((e && e.message) || String(e)),
       });
+    } finally {
+      this.setData({ loading: false });
     }
   },
 
