@@ -1,4 +1,5 @@
 const towxml = require('/towxml/index.js'); // towxml 3.x：Markdown + LaTeX 公式渲染（复核页用）
+const { getCachedUser } = require('./utils/user-cache');
 
 App({
   // 转换函数：app.towxml(markdownText, 'markdown') → 渲染数据
@@ -10,9 +11,9 @@ App({
   },
 
   onLaunch() {
-    // 从本地缓存恢复登录状态（openid + 昵称齐全才算已登录）
-    const cached = wx.getStorageSync('userInfo');
-    if (cached && cached._openid && cached.nickName) {
+    // 本地 openid 缓存（超过 1 周自动清除）
+    const cached = getCachedUser();
+    if (cached) {
       this.globalData.userInfo = cached;
     }
 
