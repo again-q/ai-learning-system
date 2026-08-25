@@ -10,4 +10,6 @@ page {
   height: 0;
 }
 
-/* towxml / katex 样式已随 packageDiagnose 分包，勿在主包 app.wxss 引入 */
+/* KaTeX 样式（全局，base64 字体内联版：模拟器/真机都无需加载字体文件，效果稳定）
+   注意：1.4MB 因字体内联计入主包；上线前若主包超限，把 latex-demo 演示页移出或换 woff2 方案 */
+@import './styles/katex.wxss';
