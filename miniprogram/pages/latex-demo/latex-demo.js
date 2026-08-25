@@ -1,12 +1,5 @@
-// latex-demo：@rojer/katex-mini 官方示范页（输入 LaTeX → 渲染 rich-text）
-// 文档：https://github.com/rojer/katex-mini（npm install @rojer/katex-mini + katex → 构建 npm → app.wxss 引入样式）
-let parseLatex = null;
-try {
-  const mod = require('@rojer/katex-mini');
-  parseLatex = (mod && (mod.default || mod.parseLatex || mod)) || null;
-} catch (e) {
-  console.error('[latex-demo] katex-mini load failed:', e);
-}
+// latex-demo：验证 utils/latex 内核（输入 LaTeX / 混排 → rich-text）
+const { renderLatex, renderMathText } = require('../../utils/latex');
 
 // 官方 README 示例公式（拉马努金恒等式）
 const DEFAULT_LATEX =
@@ -21,32 +14,26 @@ Page({
   },
 
   onLoad() {
-    this.renderLatex();
+    this.doRender();
   },
 
   onInput(e) {
     this.setData({ latex: e.detail.value, error: '' });
   },
 
-  renderLatex() {
+  doRender() {
     const tex = (this.data.latex || '').trim();
     if (!tex) {
       this.setData({ nodes: [], error: '' });
       return;
     }
-    if (!parseLatex) {
-      this.setData({
-        nodes: [{ type: 'text', text: tex }],
-        error: 'katex-mini 未加载：请确认已构建 npm（工具 → 构建 npm）',
-      });
-      return;
-    }
     this.setData({ loading: true });
     try {
-      const nodes = parseLatex(tex, {
-        throwError: true, // katex-mini 选项：解析失败抛出错误，由下方 catch 展示错误信息
-        displayMode: true, // 块级展示（大公式居中）
-      });
+      // 含 $ / $$ 时按混排；否则按纯公式（块级展示）
+      const mixed = /\$|\\\(|\\\[/.test(tex);
+      const nodes = mixed
+        ? renderMathText(tex, { throwOnError: true })
+        : renderLatex(tex, { throwOnError: true, displayMode: true });
       this.setData({ nodes, error: '' });
     } catch (e) {
       console.error('[latex-demo] parse error:', e);
@@ -57,6 +44,11 @@ Page({
     } finally {
       this.setData({ loading: false });
     }
+  },
+
+  // 保留旧按钮绑定名
+  renderLatex() {
+    this.doRender();
   },
 
   goBack() {

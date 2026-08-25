@@ -32,6 +32,6 @@
       </view>
     </view>
 
-    <view class="tip">基于 @rojer/katex-mini（katex 小程序版），支持 \frac \sqrt \sum \int \lim 等常用 LaTeX 语法。</view>
+    <view class="tip">基于 utils/latex（katex-mini 内核）。纯公式直接渲染；混排可用 $...$ / $$...$$。</view>
   </view>
 </view>

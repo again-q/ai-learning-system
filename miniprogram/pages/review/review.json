@@ -2,7 +2,5 @@
   "navigationStyle": "custom",
   "backgroundColor": "#f5f5f7",
   "disableScroll": true,
-  "usingComponents": {
-    "towxml": "/towxml/towxml"
-  }
+  "usingComponents": {}
 }
