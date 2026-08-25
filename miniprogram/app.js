@@ -10,7 +10,7 @@ App({
   },
 
   onLaunch() {
-    // 从本地缓存恢复登录状态（必须有完整的用户数据才恢复）
+    // 从本地缓存恢复登录状态（openid + 昵称齐全才算已登录）
     const cached = wx.getStorageSync('userInfo');
     if (cached && cached._openid && cached.nickName) {
       this.globalData.userInfo = cached;
