@@ -11,6 +11,7 @@ Page({
     totalQuestions: 0,
     doneCount: 0,
     progressPercent: 0,
+    pipelineError: '',   // 流水线失败：页内提示，避免与 progress-mask 叠系统 toast
   },
 
   onLoad() {},
@@ -31,7 +32,7 @@ Page({
         sizeType: ['compressed'],
       });
       const newImages = res.tempFiles.map((f) => f.tempFilePath);
-      this.setData({ images: [...this.data.images, ...newImages].slice(0, 9) });
+      this.setData({ images: [...this.data.images, ...newImages].slice(0, 9), pipelineError: '' });
     } catch (e) {
       // 用户取消选择，忽略
     }
@@ -49,6 +50,10 @@ Page({
   previewImage(e) {
     const idx = e.currentTarget.dataset.index;
     wx.previewImage({ current: this.data.images[idx], urls: this.data.images });
+  },
+
+  clearPipelineError() {
+    this.setData({ pipelineError: '' });
   },
 
   // 提交分析
@@ -69,6 +74,7 @@ Page({
 
     this.setData({
       submitting: true,
+      pipelineError: '',
       progressText: '上传中...',
       estimatedText: '预计 ' + Math.ceil(this.data.images.length * 3) + ' 秒',
       progressPercent: 2,
@@ -123,8 +129,12 @@ Page({
 
       // 4. 跳转复核页（一次复核题目 → 二次复核参数，报告暂不输出）
       if (total === 0) {
-        wx.showToast({ title: '未识别到题目，请重试', icon: 'none' });
-        this.setData({ analyzing: false });
+        // 页内错误，勿 showToast——会与 progress-mask 叠层
+        this.setData({
+          analyzing: false,
+          submitting: false,
+          pipelineError: '未识别到题目，请换清晰照片后重试',
+        });
         return;
       }
       this.setData({ analyzing: false });
@@ -161,15 +171,21 @@ Page({
 
       // 5. 跳转报告页
       this.setData({ analyzing: false, progressPercent: 100 });
-      if (failed > 0) wx.showToast({ title: `${failed} 题判定失败，可在报告中重试`, icon: 'none' });
+      if (failed > 0) {
+        this.setData({ pipelineError: `${failed} 题判定失败，可在报告中重试` });
+      }
       setTimeout(() => {
         wx.navigateTo({ url: `/pages/report/report?batchId=${batchData.data.batchId}` });
       }, 300);
     } catch (e) {
       console.error('[photo] submit error:', e);
       log.append('submit_fail', { error: e.message || String(e), stack: (e.stack || '').slice(0, 500) });
-      this.setData({ analyzing: false, submitting: false });
-      wx.showToast({ title: e.message || '提交失败，请重试', icon: 'none' });
+      // 页内错误，勿 showToast——会与 progress-mask 叠层
+      this.setData({
+        analyzing: false,
+        submitting: false,
+        pipelineError: e.message || '提交失败，请重试',
+      });
     } finally {
       this.setData({ submitting: false });
     }

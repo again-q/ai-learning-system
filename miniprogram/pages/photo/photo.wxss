@@ -210,3 +210,37 @@ page {
   font-size: 26rpx;
   color: var(--text-secondary);
 }
+
+/* 流水线失败：页内提示（替代系统 toast，避免与 progress-mask 叠层） */
+.pipeline-error {
+  margin-top: 32rpx;
+  padding: 28rpx 32rpx;
+  background: #fff5f5;
+  border-radius: 20rpx;
+  border: 1rpx solid #f5c2c2;
+}
+.pipeline-error-text {
+  display: block;
+  font-size: 28rpx;
+  color: #c0392b;
+  line-height: 1.5;
+}
+.pipeline-error-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 24rpx;
+  justify-content: flex-end;
+}
+.pipeline-error-btn {
+  padding: 12rpx 28rpx;
+  font-size: 26rpx;
+  color: #666;
+  background: #fff;
+  border-radius: 999rpx;
+  border: 1rpx solid #ddd;
+}
+.pipeline-error-btn.primary {
+  color: #fff;
+  background: var(--accent, #007aff);
+  border-color: transparent;
+}
