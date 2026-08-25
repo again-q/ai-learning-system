@@ -17,6 +17,7 @@ Page({
       logs: logs.map((item, i) => ({
         id: logs.length - i,
         time: formatTime(item.t),
+        timing: formatTiming(item),
         step: item.step,
         dataText: formatData(item.data),
       })),
@@ -30,7 +31,11 @@ Page({
       wx.showToast({ title: '暂无日志', icon: 'none' });
       return;
     }
-    const text = logs.map(l => `[${l.t}] ${l.step} ${JSON.stringify(l.data || {})}`).join('\n');
+    const text = logs.map((l) => {
+      const timing = `+${l.deltaMs != null ? l.deltaMs : '?'}ms Σ${l.elapsedMs != null ? l.elapsedMs : '?'}ms`;
+      const dur = l.data && l.data.durationMs != null ? ` durationMs=${l.data.durationMs}` : '';
+      return `[${l.t}] ${timing} ${l.step}${dur} ${JSON.stringify(l.data || {})}`;
+    }).join('\n');
     wx.setClipboardData({
       data: text,
       success: () => wx.showToast({ title: '已复制 ' + logs.length + ' 条日志', icon: 'none' }),
@@ -63,7 +68,15 @@ function formatTime(iso) {
   const d = new Date(iso);
   if (isNaN(d.getTime())) return iso;
   const pad = (n) => String(n).padStart(2, '0');
-  return `${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return `${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${String(d.getMilliseconds()).padStart(3, '0')}`;
+}
+
+function formatTiming(item) {
+  const parts = [];
+  if (item.deltaMs != null) parts.push('+' + item.deltaMs + 'ms');
+  if (item.elapsedMs != null) parts.push('Σ' + item.elapsedMs + 'ms');
+  if (item.data && item.data.durationMs != null) parts.push('耗时' + item.data.durationMs + 'ms');
+  return parts.join(' ');
 }
 
 function formatData(data) {

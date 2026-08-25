@@ -187,6 +187,7 @@ Page({
     const pending = this.data.items;
     if (!pending.length) return;
     this.setData({ analyzing: true, progressText: '0/' + pending.length });
+    log.beginSession('review_analyze');
     log.append('analyze_start', { total: pending.length, questionIds: pending.map(q => q.questionId) });
     // 逐题判定（judgeOne judge），并发 2
     const queue = pending.slice();
@@ -194,18 +195,23 @@ Page({
     const worker = async () => {
       while (queue.length > 0) {
         const item = queue.shift();
+        const t0 = Date.now();
         try {
           await wx.cloud.callFunction({
             name: 'judgeOne',
             data: { questionId: item.questionId },
             timeout: 120000,
           });
+          log.append('judge_done', { questionId: item.questionId, durationMs: Date.now() - t0 });
         } catch (e) {
           failed++;
           console.error('[review] judgeOne failed:', item.questionId, e);
-          log.append('judge_fail', { questionId: item.questionId, error: e.message || String(e) });
+          log.append('judge_fail', {
+            questionId: item.questionId,
+            durationMs: Date.now() - t0,
+            error: e.message || String(e),
+          });
         }
-        log.append('judge_done', { questionId: item.questionId });
         done++;
         this.setData({ progressText: done + '/' + pending.length });
       }
@@ -221,6 +227,7 @@ Page({
   },
 
   loadQuestionsForParams() {
+    const t0 = Date.now();
     return wx.cloud.callFunction({
       name: 'judgeOne',
       data: { action: 'listQuestions', batchId: this.data.batchId },
@@ -232,10 +239,10 @@ Page({
         article: this.renderMd(q.questionText),
       }));
       this.setData({ items, stage: 'params', analyzing: false });
-      log.append('params_loaded', { count: items.length });
+      log.append('params_loaded', { count: items.length, durationMs: Date.now() - t0 });
     }).catch((e) => {
       console.error('[review] load params failed:', e);
-      log.append('params_load_fail', { error: e.message || String(e) });
+      log.append('params_load_fail', { error: e.message || String(e), durationMs: Date.now() - t0 });
       this.setData({ analyzing: false });
       wx.showToast({ title: '参数加载失败', icon: 'none' });
     });
@@ -326,6 +333,7 @@ Page({
       wx.showToast({ title: '缺少批次信息', icon: 'none' });
       return;
     }
+    log.append('navigate_report', { batchId: this.data.batchId });
     wx.navigateTo({ url: '/pages/report/report?batchId=' + this.data.batchId });
   },
 

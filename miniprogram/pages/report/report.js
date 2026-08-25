@@ -98,6 +98,8 @@ Page({
       retryable: false,
     });
     const openid = getOpenid();
+    const t0 = Date.now();
+    log.append('report_load_start', { batchId });
     try {
       const res = await wx.cloud.callFunction({
         name: 'reportService',
@@ -114,10 +116,13 @@ Page({
           activeWpIndex: 0,
           currentWp: (report.weakpoints || [])[0] || null,
         });
+        log.append('report_load_hit', { batchId, reportId: d.data.reportId, durationMs: Date.now() - t0 });
       } else {
+        log.append('report_load_miss', { batchId, durationMs: Date.now() - t0 });
         this.generate(batchId);
       }
     } catch (e) {
+      log.append('report_load_fail', { batchId, durationMs: Date.now() - t0, error: e.message || String(e) });
       this.setData({
         loading: false,
         emptyMsg: '报告读取失败：' + (e.message || '未知错误'),
@@ -137,14 +142,17 @@ Page({
       retryable: false,
     });
     this.startProgressTicker();
+    log.beginSession('report_generate');
     log.append('report_generate_start', { batchId });
     try {
       const openid = getOpenid();
-      const res = await wx.cloud.callFunction({
-        name: 'reportService',
-        data: { batchId, userId: openid },
-        timeout: 180000,
-      });
+      const res = await log.timed('reportService', { batchId }, () =>
+        wx.cloud.callFunction({
+          name: 'reportService',
+          data: { batchId, userId: openid },
+          timeout: 180000,
+        })
+      );
       this.stopProgressTicker();
       const d = res.result;
       if (d && d.code === 0) {
@@ -167,6 +175,7 @@ Page({
             emptyMsg: (d.data && d.data.message) || '本批暂无需要生成的报告内容',
             retryable: false,
           });
+          log.append('report_generate_empty', { batchId, message: (d.data && d.data.message) || '' });
         }
       } else {
         this.setData({
