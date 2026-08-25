@@ -38,6 +38,8 @@ Page({
   // 读该批次最新报告；无则触发生成
   async loadReport(batchId) {
     const openid = wx.getStorageSync('openid') || '';
+    const t0 = Date.now();
+    log.append('report_load_start', { batchId });
     try {
       const res = await wx.cloud.callFunction({
         name: 'reportService',
@@ -54,11 +56,14 @@ Page({
           activeWpIndex: 0,
           currentWp: (report.weakpoints || [])[0] || null,
         });
+        log.append('report_load_hit', { batchId, reportId: d.data.reportId, durationMs: Date.now() - t0 });
       } else {
         // 无报告 → 生成
+        log.append('report_load_miss', { batchId, durationMs: Date.now() - t0 });
         this.generate(batchId);
       }
     } catch (e) {
+      log.append('report_load_fail', { batchId, durationMs: Date.now() - t0, error: e.message || String(e) });
       this.setData({ loading: false, emptyMsg: '报告读取失败：' + (e.message || '未知错误') });
     }
   },
@@ -72,12 +77,15 @@ Page({
       reportProgressPercent: 15,
       retryable: false,
     });
+    log.beginSession('report_generate');
     try {
       const openid = wx.getStorageSync('openid') || '';
-      const res = await wx.cloud.callFunction({
-        name: 'reportService',
-        data: { batchId, userId: openid },
-      });
+      const res = await log.timed('reportService', { batchId }, () =>
+        wx.cloud.callFunction({
+          name: 'reportService',
+          data: { batchId, userId: openid },
+        })
+      );
       const d = res.result;
       if (d && d.code === 0) {
         if (d.data && d.data.report) {
@@ -91,14 +99,18 @@ Page({
             activeWpIndex: 0,
             currentWp: (report.weakpoints || [])[0] || null,
           });
+          log.append('report_generate_ok', { batchId, reportId: d.data.reportId });
         } else {
           this.setData({ loading: false, reportProgressVisible: false, emptyMsg: (d.data && d.data.message) || '本批无错题，暂不生成报告' });
+          log.append('report_generate_empty', { batchId, message: (d.data && d.data.message) || '' });
         }
       } else {
         this.setData({ loading: false, reportProgressVisible: false, emptyMsg: (d && d.message) || '报告生成失败，请重试', retryable: true });
+        log.append('report_generate_fail', { batchId, message: (d && d.message) || '' });
       }
     } catch (e) {
       this.setData({ loading: false, reportProgressVisible: false, emptyMsg: '报告生成失败：' + (e.message || '未知错误'), retryable: true });
+      log.append('report_generate_error', { batchId, error: e.message || String(e) });
     }
   },
 
