@@ -58,7 +58,7 @@
       <view class="qitem" wx:for="{{report.questions}}" wx:key="index" wx:for-item="qq">
         <text class="qitem-status {{qq.status === '错' ? 'bad' : 'ok'}}">{{qq.status === '错' ? '✗' : '✓'}}</text>
         <view class="qitem-body">
-          <towxml class="qitem-text" wx:if="{{qq.questionNodes.child}}" nodes="{{qq.questionNodes}}" />
+          <rich-text class="qitem-text" wx:if="{{qq.questionNodes.length}}" nodes="{{qq.questionNodes}}" />
           <text class="qitem-text" wx:else>{{qq.questionText}}</text>
           <text class="qitem-pattern" wx:if="{{qq.pattern}}">{{qq.pattern}}</text>
         </view>
@@ -79,12 +79,12 @@
           <text class="seg-status {{seg.status === '断' ? 'bad' : seg.status === '空白' ? 'gray' : 'ok'}}">{{seg.status === '断' ? '✗' : '✓'}}</text>
           <view class="seg-body">
             <text class="seg-step">{{seg.step}}</text>
-            <towxml class="seg-ev" wx:if="{{seg.evidenceNodes.child}}" nodes="{{seg.evidenceNodes}}" />
+            <rich-text class="seg-ev" wx:if="{{seg.evidenceNodes.length}}" nodes="{{seg.evidenceNodes}}" />
             <text class="seg-ev" wx:elif="{{seg.evidence}}">{{seg.evidence}}</text>
           </view>
         </view>
         <view class="sec" wx:if="{{wp.breakpoint.confirmed}}"><text class="sec-label">先确认你做对的部分</text><text>{{wp.breakpoint.confirmed}}</text></view>
-        <view class="sec" wx:if="{{wp.breakpoint.contradictionNodes.child}}"><text class="sec-label">卡点</text><towxml nodes="{{wp.breakpoint.contradictionNodes}}" /></view>
+        <view class="sec" wx:if="{{wp.breakpoint.contradictionNodes.length}}"><text class="sec-label">卡点</text><rich-text nodes="{{wp.breakpoint.contradictionNodes}}" /></view>
         <view class="sec" wx:elif="{{wp.breakpoint.contradiction}}"><text class="sec-label">卡点</text><text>{{wp.breakpoint.contradiction}}</text></view>
         <view class="sec" wx:if="{{wp.breakpoint.closing}}">{{wp.breakpoint.closing}}</view>
         <view class="step-next" wx:if="{{activeStep === 1}}" bindtap="unlockNext">继续：看原因 →</view>

@@ -28,9 +28,7 @@
         <text class="q-no">第 {{index + 1}} 题</text>
         <text class="q-tag {{item.transcriptionReviewed ? 'ok' : ''}}">{{item.transcriptionReviewed ? '已确认' : '待确认'}}</text>
       </view>
-      <view wx:if="{{item.article.child}}">
-        <towxml nodes="{{item.article}}" />
-      </view>
+      <rich-text class="q-plain" wx:if="{{item.article.length}}" nodes="{{item.article}}" />
       <text class="q-plain" wx:else>{{item.questionText}}</text>
       <view class="trace" wx:if="{{item.traceText}}">
         <view class="trace-head">
@@ -38,7 +36,7 @@
           <text class="trace-toggle" data-index="{{index}}" bindtap="onToggleTrace">{{item.traceOpen ? '收起' : '展开'}}</text>
         </view>
         <view class="trace-body" wx:if="{{item.traceOpen}}">
-          <towxml wx:if="{{item.traceArticle.child}}" nodes="{{item.traceArticle}}" />
+          <rich-text class="q-plain" wx:if="{{item.traceArticle.length}}" nodes="{{item.traceArticle}}" />
           <text class="q-plain" wx:else>{{item.traceText}}</text>
         </view>
       </view>
@@ -105,7 +103,7 @@
   <view class="mask" wx:if="{{editMode === 'question'}}" bindtap="closeEdit">
     <view class="sheet" catchtap="noop">
       <view class="sheet-title">修改题目转录</view>
-      <textarea class="edit-area" value="{{editValue}}" bindinput="onEditInput" auto-height maxlength="2000" placeholder="粘贴修正后的题目文本（支持 Markdown / LaTeX 公式）"></textarea>
+      <textarea class="edit-area" value="{{editValue}}" bindinput="onEditInput" auto-height maxlength="2000" placeholder="粘贴修正后的题目文本（公式用 $...$ / $$...$$）"></textarea>
       <text class="field-label">做题痕迹 / 作答</text>
       <textarea class="edit-area trace-area" value="{{editTrace}}" bindinput="onEditTraceInput" auto-height maxlength="3000" placeholder="可修改或补充学生的做题痕迹、作答过程"></textarea>
       <view class="sheet-actions">
