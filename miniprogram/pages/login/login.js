@@ -1,104 +1,130 @@
 const app = getApp();
+const { getCachedUser, setCachedUser, isValidUser } = require('../../utils/user-cache');
 
 Page({
   data: {
     canLogin: true,
     avatarUrl: '/images/avatar.png',
     nickName: '',
-    avatarChanged: false,   // 头像是否刚被更换（触发弹跳动画）
-    isLoading: false         // 登录中状态（按钮变 spinner）
+    avatarChanged: false,
+    isLoading: false,
   },
 
   onLoad() {
-    // 登录页始终显示，让用户手动确认
+    // 本地已有未过期的 openid 缓存 → 直接进首页
+    const cached = app.globalData.userInfo || getCachedUser();
+    if (isValidUser(cached)) {
+      app.globalData.userInfo = cached;
+      wx.switchTab({ url: '/pages/index/index' });
+      this.silentTouch(cached); // 后台刷新 lastLogin，并续期 1 周缓存
+      return;
+    }
   },
 
   onChooseAvatar(e) {
-    console.log('[login] chooseAvatar fired, url:', e.detail.avatarUrl);
     this.setData({
       avatarUrl: e.detail.avatarUrl,
-      avatarChanged: false
+      avatarChanged: false,
     }, () => {
-      // 下一帧触发动画（避免 setData 合并导致动画不执行）
       setTimeout(() => this.setData({ avatarChanged: true }), 16);
-      // 动画结束后重置标记
       setTimeout(() => this.setData({ avatarChanged: false }), 600);
     });
   },
 
   onNicknameInput(e) {
-    console.log('[login] nickname input fired, value:', e.detail.value);
     this.setData({ nickName: e.detail.value });
   },
 
   onLogin() {
     if (!this.data.canLogin || this.data.isLoading) return;
 
-    // 验证：必须填昵称和选头像
     if (!this.data.nickName || this.data.avatarUrl === '/images/avatar.png') {
       wx.showToast({
         title: !this.data.nickName ? '请先填写昵称' : '请先选择头像',
         icon: 'none',
-        duration: 2000
+        duration: 2000,
       });
       return;
     }
 
     this.setData({ canLogin: false, isLoading: true });
 
-    wx.login({
-      success: (res) => {
-        if (!res.code) {
-          this.loginFail('登录失败');
-          return;
-        }
-        console.log('[login] SENDING to cloud - nickName:', this.data.nickName, 'avatarUrl:', this.data.avatarUrl);
-        this.uploadAvatar((fileId) => {
-          console.log('[login] uploadAvatar callback, fileId:', fileId);
-          wx.cloud.callFunction({
-            name: 'userLogin',
-            data: {
-              nickName: this.data.nickName || '同学',
-              avatarUrl: fileId || this.data.avatarUrl
-            },
-            success: (cr) => {
-              console.log('[login] cloud function result:', cr.result);
-              const res = cr.result;
-              if (res.code === 0) {
-                app.globalData.userInfo = res.data;
-                wx.setStorageSync('userInfo', res.data);
-                this.setData({ isLoading: false });
-                wx.switchTab({ url: '/pages/index/index' });
-              } else {
-                this.loginFail(res.message || '登录失败');
-              }
-            },
-            fail: () => this.loginFail('网络连接失败')
-          });
-        });
+    // CloudBase 云函数上下文自带 OPENID，无需 wx.login 换 code
+    this.callUserLogin(this.data.avatarUrl)
+      .then((user) => {
+        app.globalData.userInfo = user;
+        setCachedUser(user); // 写入并开始 1 周 TTL
+        this.setData({ isLoading: false });
+        wx.switchTab({ url: '/pages/index/index' });
+        this.uploadAvatarInBackground(user);
+      })
+      .catch((err) => {
+        this.loginFail((err && err.message) || '登录失败');
+      });
+  },
+
+  callUserLogin(avatarUrl) {
+    return wx.cloud.callFunction({
+      name: 'userLogin',
+      data: {
+        nickName: this.data.nickName || '同学',
+        avatarUrl: avatarUrl || '',
       },
-      fail: () => this.loginFail('微信登录失败')
+    }).then((cr) => {
+      const res = cr.result;
+      if (!res || res.code !== 0) {
+        throw new Error((res && res.message) || '登录失败');
+      }
+      return res.data;
     });
   },
 
-  uploadAvatar(callback) {
+  // 已缓存用户：静默碰 lastLogin，成功则续期缓存
+  silentTouch(cached) {
+    if (!wx.cloud) return;
+    wx.cloud.callFunction({
+      name: 'userLogin',
+      data: {
+        nickName: cached.nickName,
+        avatarUrl: cached.avatarUrl || '',
+      },
+    }).then((cr) => {
+      const res = cr.result;
+      if (res && res.code === 0 && res.data) {
+        app.globalData.userInfo = res.data;
+        setCachedUser(res.data); // 续期 1 周
+      }
+    }).catch(() => {});
+  },
+
+  uploadAvatarInBackground(user) {
     const url = this.data.avatarUrl;
-    if (!url || url === '/images/avatar.png' || url.startsWith('cloud://')) {
-      callback(url);
+    if (!url || url === '/images/avatar.png' || url.startsWith('cloud://') || url.startsWith('http')) {
       return;
     }
-    const ext = url.match(/\.(\w+)(\?|$)/)?.[1] || 'png';
+    const ext = (url.match(/\.(\w+)(\?|$)/) || [])[1] || 'png';
     const cloudPath = `avatars/${Date.now()}.${Math.random().toString(36).slice(2)}.${ext}`;
     wx.cloud.uploadFile({
       cloudPath,
       filePath: url,
-      success: (res) => callback(res.fileID),
-      fail: () => callback(url)
+      success: (up) => {
+        const fileId = up.fileID;
+        wx.cloud.callFunction({
+          name: 'userLogin',
+          data: { nickName: user.nickName, avatarUrl: fileId },
+        }).then((cr) => {
+          const res = cr.result;
+          if (res && res.code === 0 && res.data) {
+            app.globalData.userInfo = res.data;
+            setCachedUser(res.data);
+          }
+        }).catch(() => {});
+      },
     });
   },
 
   loginFail(msg) {
     this.setData({ canLogin: true, isLoading: false });
     if (msg) wx.showToast({ title: msg, icon: 'none' });
-  }
+  },
 });
