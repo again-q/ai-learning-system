@@ -1,8 +1,5 @@
 const app = getApp();
-
-function hasCachedUser(user) {
-  return !!(user && user._openid && user.nickName);
-}
+const { getCachedUser, setCachedUser, isValidUser } = require('../../utils/user-cache');
 
 Page({
   data: {
@@ -14,12 +11,12 @@ Page({
   },
 
   onLoad() {
-    // 本地已有 openid 缓存 → 直接进首页（CloudBase 身份靠 openid，不必每次走完整登录）
-    const cached = app.globalData.userInfo || wx.getStorageSync('userInfo') || null;
-    if (hasCachedUser(cached)) {
+    // 本地已有未过期的 openid 缓存 → 直接进首页
+    const cached = app.globalData.userInfo || getCachedUser();
+    if (isValidUser(cached)) {
       app.globalData.userInfo = cached;
       wx.switchTab({ url: '/pages/index/index' });
-      this.silentTouch(cached); // 后台刷新 lastLogin，不挡跳转
+      this.silentTouch(cached); // 后台刷新 lastLogin，并续期 1 周缓存
       return;
     }
   },
@@ -53,14 +50,12 @@ Page({
     this.setData({ canLogin: false, isLoading: true });
 
     // CloudBase 云函数上下文自带 OPENID，无需 wx.login 换 code
-    // 先登录进首页，头像上传放到后台，避免上传堵死登录
     this.callUserLogin(this.data.avatarUrl)
       .then((user) => {
         app.globalData.userInfo = user;
-        wx.setStorageSync('userInfo', user);
+        setCachedUser(user); // 写入并开始 1 周 TTL
         this.setData({ isLoading: false });
         wx.switchTab({ url: '/pages/index/index' });
-        // 本地临时头像再异步上传并回写
         this.uploadAvatarInBackground(user);
       })
       .catch((err) => {
@@ -84,7 +79,7 @@ Page({
     });
   },
 
-  // 已缓存用户：静默碰一下 lastLogin，失败忽略
+  // 已缓存用户：静默碰 lastLogin，成功则续期缓存
   silentTouch(cached) {
     if (!wx.cloud) return;
     wx.cloud.callFunction({
@@ -97,7 +92,7 @@ Page({
       const res = cr.result;
       if (res && res.code === 0 && res.data) {
         app.globalData.userInfo = res.data;
-        wx.setStorageSync('userInfo', res.data);
+        setCachedUser(res.data); // 续期 1 周
       }
     }).catch(() => {});
   },
@@ -121,7 +116,7 @@ Page({
           const res = cr.result;
           if (res && res.code === 0 && res.data) {
             app.globalData.userInfo = res.data;
-            wx.setStorageSync('userInfo', res.data);
+            setCachedUser(res.data);
           }
         }).catch(() => {});
       },
