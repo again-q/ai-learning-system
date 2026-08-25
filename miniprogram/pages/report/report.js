@@ -247,15 +247,14 @@ Page({
     wx.navigateBack({ delta: 1 });
   },
 
-  // towxml 渲染（公式/LaTeX）：失败回退纯文本（同 review 页方案）
+  // 公式混排：utils/latex → rich-text nodes（失败回退纯文本节点）
   renderMd(text) {
-    if (!text) return {};
+    if (!text) return [];
     try {
-      const d = app.towxml(text, 'markdown');
-      return d && d.child ? d : {};
+      return app.renderMathText(text) || [];
     } catch (e) {
-      console.error('[report] towxml render failed:', e.message);
-      return {};
+      console.error('[report] renderMathText failed:', e.message);
+      return [{ type: 'text', text: String(text) }];
     }
   },
 
