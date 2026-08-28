@@ -32,7 +32,8 @@
       <text class="q-plain" wx:else>{{item.questionText}}</text>
       <view class="answer-line" wx:if="{{item.studentAnswer}}">
         <text class="answer-label">作答</text>
-        <text class="answer-val">{{item.studentAnswer}}</text>
+        <rich-text class="answer-val" wx:if="{{item.answerNodes.length}}" nodes="{{item.answerNodes}}" />
+        <text class="answer-val" wx:else>{{item.studentAnswer}}</text>
       </view>
       <view class="trace" wx:if="{{item.traceText}}">
         <view class="trace-head">
@@ -71,13 +72,15 @@
         </view>
         <view class="p-cell">
           <text class="p-label">知识点</text>
-          <text class="p-val">{{item.knowledgeNodeName || '未关联'}}</text>
+          <text class="p-val">{{item.knowledgeNodeName || (item.knowledgeUsageNames || '—')}}</text>
+          <text class="p-sub" wx:if="{{item.knowledgeUsageNames && item.knowledgeNodeName}}">含：{{item.knowledgeUsageNames}}</text>
         </view>
         <view class="p-cell">
-          <text class="p-label">判定</text>
-          <text class="p-val {{item.isCorrect === true ? 'right' : item.isCorrect === false ? 'wrong' : ''}}">
-            {{item.isCorrect === true ? '对' : item.isCorrect === false ? '错' : '未判定'}}
+          <text class="p-label">作答质量</text>
+          <text class="p-val {{item.processScore == null ? '' : (item.processScore >= 0.5 ? 'right' : 'wrong')}}">
+            {{item.processScore == null ? '—' : (item.processScore >= 0.5 ? '基本答对' : '答得不好')}}
           </text>
+          <text class="p-sub" wx:if="{{item.processScore != null}}">P = {{item.processScore}}</text>
         </view>
         <view class="p-cell wide" wx:if="{{item.errorAttribution}}">
           <text class="p-label">错误归因</text>

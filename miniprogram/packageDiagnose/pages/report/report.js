@@ -4,6 +4,7 @@ const { renderMathText } = require('../../utils/latex');
 const app = getApp();
 
 // 长请求无真实流式进度：按耗时推进阶段文案（不做百分比假进度条）
+// 网关 ~60s 会掐 callFunction，但前端不因超时失败：一直轮询直到拿到报告或离开页面
 const GEN_STAGES = [
   { afterSec: 0, text: '整理本次答题数据…' },
   { afterSec: 6, text: '检索历史同类题与错误模式…' },
@@ -11,13 +12,92 @@ const GEN_STAGES = [
   { afterSec: 28, text: '撰写诊断报告…' },
   { afterSec: 45, text: '润色与校验…' },
   { afterSec: 70, text: '仍在生成，请再稍候…' },
+  { afterSec: 100, text: '云端还在跑，继续等待…' },
+  { afterSec: 180, text: '生成时间较长，请勿退出…' },
+  { afterSec: 300, text: '仍在等待云端写完报告…' },
 ];
+
+const REPORT_POLL_MS = 4000;
+
+function parseScore(anchor) {
+  const s = String(anchor || '');
+  const m = s.match(/(\d+)\s*道.*?(\d+)\s*道.*?([\d.]+)\s*%/);
+  if (m) {
+    const last = s.match(/上次\s*([\d.]+)\s*%/);
+    return {
+      scoreMain: `${m[2]}/${m[1]}`,
+      scoreSub: last ? `${m[3]}% · 上次 ${last[1]}%` : `${m[3]}%`,
+    };
+  }
+  const m2 = s.match(/正确率\s*([\d.]+)\s*%/);
+  return { scoreMain: m2 ? `${m2[1]}%` : (s.slice(0, 12) || '本次'), scoreSub: '' };
+}
+
+/** 旧报告清洗：空白禁「未理解」；钩子最多 2 问；极长正文才截 */
+function clipText(s, max) {
+  const t = String(s || '').trim();
+  if (!t) return { text: '', clipped: false, full: '' };
+  if (t.length <= max) return { text: t, clipped: false, full: t };
+  return { text: t.slice(0, max) + '…', clipped: true, full: t };
+}
+
+function sanitizeReport(report) {
+  if (!report) return report;
+  const r = report;
+  (r.weakpoints || []).forEach((wp) => {
+    if (wp.hook && Array.isArray(wp.hook.questions) && wp.hook.questions.length > 2) {
+      wp.hook.questions = wp.hook.questions.slice(0, 2);
+    }
+    const bp = wp.breakpoint || {};
+    const noProcess = bp.processAvailable === false || !((bp.segments || []).length);
+    const rc = wp.rootcause;
+    if (rc && rc.directCause && /未理解|没理解/.test(rc.directCause)) {
+      if (noProcess) {
+        rc.directCause =
+          '整题未见下笔（起步即停）。同卷若有同类题做过，更可能是「这一次没启动」，原因待你对照——不宜直接当成「不会」。';
+      } else {
+        rc.directCause = String(rc.directCause).replace(/未理解[^。；\n]*/g, '该步未完成（原因待确认）');
+      }
+    }
+    // 卡点/根因：保留较完整正文（仅极长才截）
+    if (bp.confirmed) {
+      const c = clipText(bp.confirmed, 220);
+      bp.confirmedShort = c.text;
+      bp.confirmedClipped = c.clipped;
+    }
+    if (bp.contradiction) {
+      const c = clipText(bp.contradiction, 280);
+      bp.contradictionShort = c.text;
+      bp.contradictionClipped = c.clipped;
+    }
+    if (bp.closing) {
+      bp.closingShort = clipText(bp.closing, 120).text;
+    }
+    if (rc) {
+      if (rc.directCause) {
+        const c = clipText(rc.directCause, 200);
+        rc.directCauseShort = c.text;
+        rc.directCauseClipped = c.clipped;
+      }
+      if (rc.phenomenon) rc.phenomenonShort = clipText(rc.phenomenon, 160).text;
+      if (rc.closing) rc.closingShort = clipText(rc.closing, 120).text;
+      if (Array.isArray(rc.sources)) {
+        rc.sourcesShort = rc.sources.slice(0, 3).map((s) => clipText(s, 140).text);
+      }
+    }
+  });
+  return r;
+}
 
 function getOpenid() {
   const fromKey = wx.getStorageSync('openid');
   if (fromKey) return fromKey;
   const user = wx.getStorageSync('userInfo') || (getApp().globalData && getApp().globalData.userInfo) || {};
   return user._openid || '';
+}
+
+function isTimeoutError(msg) {
+  return /timeout|timed out|TIME_LIMIT|ESOCKETTIMEDOUT|-501002/i.test(msg || '');
 }
 
 Page({
@@ -43,6 +123,48 @@ Page({
     activeStep: 1,
     activeWpIndex: 0,
     currentWp: null,
+    qlistExpanded: false,
+    deepVisible: false,
+    bpMore: false,
+    scoreMain: '',
+    scoreSub: '',
+    wrongBriefs: [],
+    mainPatternName: '',
+  },
+
+  applyReport(raw, extra) {
+    const report = sanitizeReport(this.renderFormulas(raw));
+    const score = parseScore((report.overview && report.overview.dataAnchor) || '');
+    const patterns = (report.overview && report.overview.patterns) || [];
+    const main = patterns.find((p) => p && p.isMain) || patterns[0];
+    const wrongBriefs = (report.questions || [])
+      .map((q, idx) => ({
+        idx,
+        status: q.status,
+        pattern: q.pattern || '',
+        text: String(q.questionText || '').replace(/\$[^$]*\$/g, '…').slice(0, 40),
+      }))
+      .filter((q) => q.status === '错');
+    const base = {
+      report,
+      loading: false,
+      reportProgressVisible: false,
+      activeStep: 1,
+      activeWpIndex: 0,
+      qlistExpanded: false,
+      deepVisible: false,
+      bpMore: false,
+      scoreMain: score.scoreMain,
+      scoreSub: score.scoreSub,
+      wrongBriefs,
+      mainPatternName: (main && main.name) || ((report.weakpoints || [])[0] && (report.weakpoints || [])[0].name) || '',
+    };
+    const merged = Object.assign(base, extra || {});
+    const wps = report.weakpoints || [];
+    const wi = Math.min(Math.max(0, Number(merged.activeWpIndex) || 0), Math.max(0, wps.length - 1));
+    merged.activeWpIndex = wi;
+    merged.currentWp = wps[wi] || null;
+    this.setData(merged);
   },
 
   onLoad(options) {
@@ -57,6 +179,7 @@ Page({
   },
 
   onUnload() {
+    this._pollAborted = true;
     this.stopProgressTicker();
   },
 
@@ -109,15 +232,7 @@ Page({
       });
       const d = res.result;
       if (d && d.code === 0 && d.data && d.data.report) {
-        const report = this.renderFormulas(d.data.report);
-        this.setData({
-          report,
-          reportId: d.data.reportId,
-          loading: false,
-          activeStep: 1,
-          activeWpIndex: 0,
-          currentWp: (report.weakpoints || [])[0] || null,
-        });
+        this.applyReport(d.data.report, { reportId: d.data.reportId });
         log.append('report_load_hit', { batchId, reportId: d.data.reportId, durationMs: Date.now() - t0 });
       } else {
         log.append('report_load_miss', { batchId, durationMs: Date.now() - t0 });
@@ -134,6 +249,7 @@ Page({
   },
 
   async generate(batchId) {
+    this._pollAborted = false;
     this.setData({
       loading: true,
       emptyMsg: '',
@@ -148,27 +264,32 @@ Page({
     log.append('report_generate_start', { batchId });
     try {
       const openid = getOpenid();
-      const res = await log.timed('reportService', { batchId }, () =>
-        wx.cloud.callFunction({
-          name: 'reportService',
-          data: { batchId, userId: openid },
-          timeout: 180000,
-        })
-      );
+      let res;
+      try {
+        res = await log.timed('reportService', { batchId }, () =>
+          wx.cloud.callFunction({
+            name: 'reportService',
+            data: { batchId, userId: openid },
+            timeout: 600000,
+          })
+        );
+      } catch (callErr) {
+        const msg = callErr.message || String(callErr);
+        // 网关超时：不失败，进度条不中断，一直轮询到拿到报告（或离开页面）
+        if (isTimeoutError(msg)) {
+          log.append('report_generate_wait', { batchId, error: msg });
+          const polled = await this.pollReportUntilReady(batchId, openid);
+          if (polled || this._pollAborted) return;
+          // 只有页面已离开才会走到这；不当失败展示
+          return;
+        }
+        throw callErr;
+      }
       this.stopProgressTicker();
       const d = res.result;
       if (d && d.code === 0) {
         if (d.data && d.data.report) {
-          const report = this.renderFormulas(d.data.report);
-          this.setData({
-            report,
-            reportId: d.data.reportId,
-            loading: false,
-            reportProgressVisible: false,
-            activeStep: 1,
-            activeWpIndex: 0,
-            currentWp: (report.weakpoints || [])[0] || null,
-          });
+          this.applyReport(d.data.report, { reportId: d.data.reportId });
           log.append('report_generate_ok', { batchId, reportId: d.data.reportId });
         } else {
           this.setData({
@@ -191,17 +312,55 @@ Page({
     } catch (e) {
       this.stopProgressTicker();
       const msg = e.message || '未知错误';
-      const tip = /timeout|timed out|TIME_LIMIT/i.test(msg)
-        ? '生成超时了。网络或模型较慢时可能发生，点下方重试即可。'
-        : ('报告生成失败：' + msg);
+      // 超时类错误不应落到这里；若仍落到，也转去轮询而不是报失败
+      if (isTimeoutError(msg) && !this._pollAborted) {
+        log.append('report_generate_wait_fallback', { batchId, error: msg });
+        const polled = await this.pollReportUntilReady(batchId, getOpenid());
+        if (polled || this._pollAborted) return;
+        return;
+      }
       this.setData({
         loading: false,
         reportProgressVisible: false,
-        emptyMsg: tip,
+        emptyMsg: '报告生成失败：' + msg,
         retryable: true,
       });
       log.append('report_generate_error', { batchId, error: msg });
     }
+  },
+
+  // 一直轮询到拿到报告；仅离开页面时停止（不设超时上限）
+  async pollReportUntilReady(batchId, openid) {
+    const t0 = Date.now();
+    while (!this._pollAborted) {
+      await new Promise((r) => setTimeout(r, REPORT_POLL_MS));
+      if (this._pollAborted) return false;
+      try {
+        const res = await wx.cloud.callFunction({
+          name: 'reportService',
+          data: { action: 'getByBatch', batchId, userId: openid },
+        });
+        const d = res.result;
+        if (d && d.code === 0 && d.data && d.data.report) {
+          this.stopProgressTicker();
+          this.applyReport(d.data.report, { reportId: d.data.reportId });
+          log.append('report_generate_ok_poll', {
+            batchId,
+            reportId: d.data.reportId,
+            waitedMs: Date.now() - t0,
+          });
+          return true;
+        }
+        log.append('report_generate_poll_miss', { batchId, waitedMs: Date.now() - t0 });
+      } catch (e) {
+        log.append('report_generate_poll_err', {
+          batchId,
+          waitedMs: Date.now() - t0,
+          error: e.message || String(e),
+        });
+      }
+    }
+    return false;
   },
 
   onRetry() {
@@ -256,15 +415,9 @@ Page({
       });
       const d = res.result;
       if (d && d.code === 0 && d.data && d.data.report) {
-        const report = this.renderFormulas(d.data.report);
-        this.setData({
-          report,
+        this.applyReport(d.data.report, {
           reportId: d.data.reportId,
           batchId: batch || '',
-          loading: false,
-          activeStep: 1,
-          activeWpIndex: 0,
-          currentWp: (report.weakpoints || [])[0] || null,
         });
         log.append('history_report_opened', { reportId: d.data.reportId, batchId: batch || '' });
       } else {
@@ -277,18 +430,58 @@ Page({
 
   // ===== 报告渐进展示 =====
   unlockNext() {
-    if (this.data.activeStep >= 4) return;
-    this.setData({ activeStep: this.data.activeStep + 1 });
+    if (this.data.activeStep >= 3) return;
+    this.setData({ activeStep: this.data.activeStep + 1, bpMore: false });
+  },
+
+  unlockPrev() {
+    if (this.data.activeStep <= 1) return;
+    this.setData({ activeStep: this.data.activeStep - 1, bpMore: false });
+  },
+
+  collapseDeep() {
+    this.setData({ deepVisible: false, bpMore: false });
+    wx.pageScrollTo({ scrollTop: 0, duration: 240 });
+  },
+
+  toggleQlist() {
+    this.setData({ qlistExpanded: !this.data.qlistExpanded });
+  },
+
+  toggleBpMore() {
+    this.setData({ bpMore: !this.data.bpMore });
+  },
+
+  onStartDeep() {
+    if (!this.data.deepVisible) {
+      this.setData({ deepVisible: true, activeStep: 1, bpMore: false });
+    }
+    setTimeout(() => {
+      wx.pageScrollTo({ selector: '#report-deep', duration: 280 });
+    }, 50);
   },
 
   switchWp(e) {
     const idx = Number(e.currentTarget.dataset.index);
     const wp = (this.data.report && this.data.report.weakpoints) || [];
     if (idx < 0 || idx >= wp.length) return;
-    this.setData({ activeWpIndex: idx, currentWp: wp[idx], activeStep: 1 });
+    this.setData({
+      activeWpIndex: idx,
+      currentWp: wp[idx],
+      activeStep: 1,
+      bpMore: false,
+      deepVisible: true,
+    });
   },
 
   // ===== 异议 =====
+  onDisputeTap(e) {
+    const { module, index } = e.currentTarget.dataset;
+    this.setData({
+      disputeVisible: true,
+      disputeTarget: { moduleKey: module, index: Number(index) },
+    });
+  },
   onDispute(e) {
     this.setData({ disputeVisible: true, disputeTarget: e.detail });
   },
@@ -317,12 +510,12 @@ Page({
       });
       const d = res.result;
       if (d && d.code === 0 && d.data && d.data.report) {
-        const report = this.renderFormulas(d.data.report);
-        const wp = (report.weakpoints || []);
-        this.setData({
-          report,
-          currentWp: wp[this.data.activeWpIndex] || wp[0] || null,
+        this.applyReport(d.data.report, {
+          reportId: this.data.reportId,
           regenerating: false,
+          deepVisible: this.data.deepVisible,
+          activeStep: this.data.activeStep,
+          activeWpIndex: this.data.activeWpIndex,
         });
         wx.showToast({ title: '已重新生成', icon: 'success' });
       } else {
@@ -339,6 +532,16 @@ Page({
   onCheckDone(e) {
     const btn = e.currentTarget.dataset.btn;
     wx.showToast({ title: '已记录：「' + btn + '」', icon: 'none' });
+  },
+
+  goQuestionEvolution(e) {
+    const d = e.currentTarget.dataset || {};
+    const batch = this.data.batchId || '';
+    const url = '/packageDiagnose/pages/pattern-trajectory/pattern-trajectory?batch=' + encodeURIComponent(batch)
+      + '&qt=' + encodeURIComponent(d.qt || '')
+      + '&qtype=' + encodeURIComponent(d.type || '')
+      + '&score=' + encodeURIComponent(d.score == null ? '' : String(d.score));
+    wx.navigateTo({ url });
   },
 
   goBack() {

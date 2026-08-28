@@ -14,6 +14,7 @@
       "pages": [
         "pages/review/review",
         "pages/report/report",
+        "pages/pattern-trajectory/pattern-trajectory",
         "pages/latex-demo/latex-demo"
       ]
     },

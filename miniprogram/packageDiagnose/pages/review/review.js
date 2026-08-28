@@ -56,6 +56,7 @@ Page({
         traceText: q.traceReport || '',
         traceOpen: false,
         article: this.renderMd(q.questionText),
+        answerNodes: this.renderMd(q.studentAnswer),
         traceArticle: this.renderMd(q.traceReport),
       }));
       this.setData({ items, loading: false });
@@ -168,6 +169,7 @@ Page({
         traceText: trace,
         transcriptionReviewed: true,
         article: this.renderMd(text),
+        answerNodes: this.renderMd(answer),
         traceArticle: this.renderMd(trace),
       };
       this.setData({ items, editMode: '', editNL: '' });
@@ -238,6 +240,7 @@ Page({
       const items = (r.data || []).map((q) => ({
         ...q,
         article: this.renderMd(q.questionText),
+        knowledgeUsageNames: (q.knowledgeUsage || []).map((u) => u && u.name).filter(Boolean).join('、'),
       }));
       this.setData({ items, stage: 'params', analyzing: false });
       log.append('params_loaded', { count: items.length, durationMs: Date.now() - t0 });

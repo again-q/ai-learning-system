@@ -1,0 +1,30 @@
+.page { min-height: 100vh; background: #f5f5f7; padding: 0 32rpx 60rpx; box-sizing: border-box; }
+.nav-bar { display: flex; align-items: center; padding: 88rpx 0 24rpx; }
+.nav-back { display: flex; align-items: center; color: #007aff; font-size: 30rpx; }
+.nav-back-icon { font-size: 40rpx; margin-right: 6rpx; }
+.nav-title { flex: 1; text-align: center; font-size: 34rpx; font-weight: 600; color: #1c1c1e; }
+.nav-placeholder { width: 96rpx; }
+.loading, .empty { display: flex; flex-direction: column; align-items: center; padding: 160rpx 40rpx; color: #8e8e93; font-size: 28rpx; text-align: center; }
+.loading-spinner { width: 44rpx; height: 44rpx; border: 4rpx solid #d8d8dc; border-top-color: #007aff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 20rpx; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.card { background: #ffffff; border-radius: 24rpx; padding: 32rpx; margin-top: 24rpx; }
+.sec-h { font-size: 26rpx; color: #8e8e93; margin-bottom: 16rpx; }
+.q-text { display: block; font-size: 28rpx; color: #1c1c1e; line-height: 1.6; }
+.now-row { margin-top: 20rpx; }
+.attr { display: block; margin-top: 16rpx; font-size: 26rpx; color: #6b6b70; line-height: 1.5; }
+.first-msg { font-size: 28rpx; color: #1c1c1e; line-height: 1.6; }
+.evo-item { margin-top: 20rpx; }
+.evo-h { font-size: 24rpx; color: #007aff; font-weight: 600; margin-bottom: 8rpx; }
+.evo-t { font-size: 28rpx; color: #1c1c1e; line-height: 1.6; }
+.badge { display: inline-block; font-size: 24rpx; padding: 8rpx 20rpx; border-radius: 999rpx; color: #ffffff; }
+.b-ok { background: #34c759; }
+.b-end { background: #007aff; }
+.b-mid { background: #ff9500; }
+.b-start { background: #ff3b30; }
+.b-wrong { background: #ff3b30; }
+.b-none { background: #8e8e93; }
+.h-item { padding: 20rpx 0; border-top: 1rpx solid #f0f0f2; }
+.h-row { display: flex; align-items: center; justify-content: space-between; }
+.h-date { font-size: 26rpx; color: #1c1c1e; }
+.h-attr { display: block; margin-top: 10rpx; font-size: 26rpx; color: #6b6b70; line-height: 1.5; }
+.h-step { display: block; margin-top: 10rpx; font-size: 26rpx; color: #007aff; line-height: 1.5; }
