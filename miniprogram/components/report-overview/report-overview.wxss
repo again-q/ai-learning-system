@@ -1,15 +1,51 @@
-.ov { background: #fff; border-radius: 28rpx; padding: 40rpx 36rpx; margin-bottom: 28rpx; }
-.ov-anchor { font-size: 30rpx; font-weight: 600; color: #1a1a1a; line-height: 1.6; }
-.ov-mood { font-size: 28rpx; margin-top: 16rpx; line-height: 1.6; }
-.ov-mood.celebrate { color: #1a7a4c; }
-.ov-mood.empathize { color: #8a6d1a; }
-.ov-hint { font-size: 28rpx; margin-top: 16rpx; color: #333; line-height: 1.6; }
-.ov-block { font-size: 26rpx; color: #666; margin-top: 20rpx; line-height: 1.7; background: #f7f7f7; border-radius: 16rpx; padding: 20rpx 24rpx; }
-.ov-block.light { background: transparent; padding: 0; }
-.ov-patterns { margin-top: 24rpx; }
-.ov-pattern { display: flex; align-items: center; font-size: 26rpx; color: #666; padding: 12rpx 0; }
-.op-name { flex: 1; }
-.op-name.main { color: #1a1a1a; font-weight: 600; }
-.op-count { color: #999; margin-right: 16rpx; }
-.op-tag { font-size: 22rpx; color: #fff; background: #1a1a1a; border-radius: 999rpx; padding: 4rpx 16rpx; }
-.ov-guide { font-size: 26rpx; color: #999; margin-top: 24rpx; }
+.ov {
+  background: #fff;
+  border-radius: 28rpx;
+  padding: 36rpx 36rpx 28rpx;
+  margin-bottom: 16rpx;
+}
+
+.ov-score-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16rpx;
+}
+
+.ov-score {
+  font-size: 56rpx;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -1rpx;
+  line-height: 1.1;
+}
+
+.ov-score-sub {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.4;
+}
+
+.ov-chip {
+  margin-top: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.ov-chip-label {
+  font-size: 22rpx;
+  color: #fff;
+  background: #1a1a1a;
+  border-radius: 8rpx;
+  padding: 6rpx 14rpx;
+  flex-shrink: 0;
+}
+
+.ov-chip-name {
+  font-size: 26rpx;
+  color: #333;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

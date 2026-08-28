@@ -29,12 +29,69 @@ async function lastRate(userId, excludeBatchId) {
   return null;
 }
 
+// ============ 题型轨迹（patternTrajectory）：同类题历史判定聚合 ============
+// 认知科学依据：掌握经验（mastery experience）是自我效能最强来源；
+// 轨迹展示「断点位置在移动」（起步即停→中途断→收尾断→做对=在接近答案），不做错误黑账。
+const CLOSINESS = { '起步即停': 0, '中途断': 1, '收尾断': 2 };
+const RESULT_LABEL = { 0: '起步即停', 1: '中途断', 2: '收尾断', 3: '做对' };
+
+function fmtDate(v) {
+  if (!v) return '';
+  const d = v instanceof Date ? v : new Date(v.$date || v);
+  if (isNaN(d.getTime())) return '';
+  const p = (n) => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+
+async function patternTrajectory(userId, nodeFilter) {
+  const qs = await db.collection('questions')
+    .where({ userId, reviewed: true }).limit(1000).get();
+  const scored = qs.data.filter((q) => q.processScore != null);
+  const groups = {};
+  for (const q of scored) {
+    // 按知识点聚合（knowledgeNodeName 每题落库；pattern 未落库，见开发经验 §31）
+    const key = q.knowledgeNodeName || '未归类知识点';
+    if (nodeFilter && key !== nodeFilter) continue;
+    if (!groups[key]) groups[key] = [];
+    const correct = q.processScore >= 0.5;
+    const nature = (q.breakpoint && q.breakpoint.nature) || null;
+    const closeness = correct ? 3 : (CLOSINESS[nature] != null ? CLOSINESS[nature] : null);
+    groups[key].push({
+      batchId: q.batchId,
+      date: fmtDate(q.createdAt),
+      result: correct ? RESULT_LABEL[3] : (RESULT_LABEL[closeness] || '无过程'),
+      closeness,
+      _t: q.createdAt ? new Date(q.createdAt.$date || q.createdAt).getTime() : 0,
+    });
+  }
+  const patterns = Object.keys(groups).map((key) => {
+    const attempts = groups[key].sort((a, b) => a._t - b._t)
+      .map(({ batchId, date, result, closeness }) => ({ batchId, date, result, closeness }));
+    const known = attempts.filter((a) => a.closeness != null);
+    const latest = attempts[attempts.length - 1];
+    let trendLabel = '数据不足';
+    if (attempts.length >= 2 && known.length >= 1) {
+      const firstKnown = known[0], lastKnown = known[known.length - 1];
+      if (latest.result === '做对' && attempts.some((a) => a.result !== '做对')) trendLabel = '已突破';
+      else if (known.length >= 2 && lastKnown.closeness > firstKnown.closeness) trendLabel = '在接近答案';
+      else if (known.length >= 2 && lastKnown.closeness === firstKnown.closeness) trendLabel = '卡在同一位置';
+    }
+    return { pattern: key, count: attempts.length, attempts, latestResult: latest.result, trendLabel };
+  }).sort((a, b) => b.count - a.count);
+  return { patterns };
+}
+
 exports.main = async (event) => {
   try {
     // 身份：小程序调用 OPENID 必有；云函数互调/测试场景用调用方显式传入的 userId
     const wxContext = cloud.getWXContext();
     const openid = wxContext.OPENID || (event && event.userId) || null;
     if (!openid) return fail(401, '未登录');
+
+    // 题型轨迹：不依赖单批次，先分流
+    if (event.action === 'patternTrajectory') {
+      return success(await patternTrajectory(openid, event.pattern || null));
+    }
 
     const { batchId } = event;
     if (!batchId) return fail(400, '缺少 batchId');

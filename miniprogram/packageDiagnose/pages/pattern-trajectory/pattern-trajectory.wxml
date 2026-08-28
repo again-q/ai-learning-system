@@ -1,0 +1,70 @@
+<view class="page">
+  <view class="nav-bar">
+    <view class="nav-back" bindtap="goBack">
+      <text class="nav-back-icon">‹</text>
+      <text>返回</text>
+    </view>
+    <text class="nav-title">这道题的过去和现在</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在翻这道题的历史…</text>
+  </view>
+
+  <view class="empty" wx:elif="{{message}}">
+    <text>{{message}}</text>
+  </view>
+
+  <block wx:else>
+    <!-- 现在的题 -->
+    <view class="card" wx:if="{{current}}">
+      <view class="sec-h">现在的题</view>
+      <text class="q-text">{{current.questionText}}</text>
+      <view class="now-row">
+        <view class="badge b-{{current.cls}}">{{current.result}}</view>
+      </view>
+      <text class="attr" wx:if="{{current.attribution}}">{{current.attribution}}</text>
+    </view>
+
+    <!-- 首次出现 -->
+    <view class="card" wx:if="{{mode === 'first'}}">
+      <text class="first-msg">{{message}}</text>
+    </view>
+
+    <!-- 时间演化叙述 -->
+    <view class="card" wx:if="{{evolution}}">
+      <view class="sec-h">过去 → 现在</view>
+      <view class="evo-item">
+        <view class="evo-h">以前的你</view>
+        <text class="evo-t">{{evolution.past}}</text>
+      </view>
+      <view class="evo-item">
+        <view class="evo-h">现在的你</view>
+        <text class="evo-t">{{evolution.now}}</text>
+      </view>
+      <view class="evo-item">
+        <view class="evo-h">说明什么</view>
+        <text class="evo-t">{{evolution.insight}}</text>
+      </view>
+      <view class="evo-item">
+        <view class="evo-h">要注意什么</view>
+        <text class="evo-t">{{evolution.attention}}</text>
+      </view>
+    </view>
+
+    <!-- 历史明细 -->
+    <view class="card" wx:if="{{history.length}}">
+      <view class="sec-h">历史明细</view>
+      <view class="h-item" wx:for="{{history}}" wx:key="date">
+        <view class="h-row">
+          <text class="h-date">{{item.date}}</text>
+          <view class="badge b-{{item.cls}}">{{item.result}}</view>
+        </view>
+        <text class="h-attr" wx:if="{{item.attribution}}">{{item.attribution}}</text>
+        <text class="h-step" wx:if="{{item.lastStep}}">最后写到：{{item.lastStep}}</text>
+      </view>
+    </view>
+  </block>
+</view>

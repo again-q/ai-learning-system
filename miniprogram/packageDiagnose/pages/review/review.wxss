@@ -366,6 +366,9 @@
   font-size: 28rpx;
   color: #1c1c1e;
   font-weight: 600;
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
 }
 .field {
   display: flex;
