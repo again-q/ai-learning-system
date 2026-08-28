@@ -54,6 +54,24 @@ async function runWithTools(postJSON, url, apiKey, model, messages, tools, opts)
       }
       continue;
     }
+    // 空内容兜底（开发经验旧案：thinking 吃满 max_tokens 致 content 空）：降级 disabled 重试一次
+    if (!content.trim()) {
+      console.warn('[reportService] 最终轮 content 为空，降级 disabled 重试');
+      body.thinking = { type: 'disabled' };
+      const retry = await postJSON(url, body, apiKey);
+      const rmsg = (retry.choices && retry.choices[0].message) || {};
+      if (rmsg.tool_calls && rmsg.tool_calls.length) {
+        // 降级后仍请求工具：按正常轮次继续循环
+        messages.push(rmsg);
+        for (const tc of rmsg.tool_calls) {
+          loop.push(tc.function.name);
+          const result = await execTool(tc, opts.userId);
+          messages.push({ role: 'tool', tool_call_id: tc.id, content: result });
+        }
+        continue;
+      }
+      return { content: rmsg.content || '', loops: loop };
+    }
     return { content, loops: loop };
   }
   throw new Error('工具循环超限（>8 轮）');

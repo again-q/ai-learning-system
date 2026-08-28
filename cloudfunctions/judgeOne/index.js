@@ -77,6 +77,7 @@ const RUBRIC = `
 ■ η：只对解答题0.4~1.0；填空选择null
 ■ r：一律null
 ■ 归因：P<0.5 才给；P≥0.5 给 null；不编造
+■ **空白禁令**：整题空白/未下笔 ≠「没理解/不会」。禁止把空白默认写成「未理解××方法」。空白先标 breakpoint.nature=起步即停、errorDimension 优先考虑 S（执行/未下笔）；errorAttribution 只写可观察事实（如「整题空白未下笔」）；若同卷同类题做过，可写「空白但同卷同类题做过（原因待确认）」——禁止臆测「不会」
 `;
 
 // ============ 钳制 ============
@@ -336,6 +337,7 @@ L11(0.98-0.999) 纯原创，全球个位数能解
    · 单个维度特别突出（如陷阱密度很高）→ 至少向上浮动一档内位置
    最终给出一个精细 D 值；不要趋同、不要总取中间；D 必须落在本档区间内
 ■ P（§4.4 连续 0~1）：过程与正确答案的距离，**P 本身编码对错**（无独立对错字段）——完全正确且答案对=1.0；选填对=1.0、错=0；解答答案错但过程几乎完整=0.8~0.95；中途偏航但思路对=0.4~0.7；只有思路无结果=0.2~0.3；空白/完全跑偏=0。P<0.5 视为答得不好，P≥0.5 视为基本答对；归因：P<0.5 才给，P≥0.5 给 null，不编造
+■ **空白禁令**：整题空白/未下笔 ≠「没理解」。禁止「未理解××」作为空白默认归因；先标起步即停 + 可观察事实（整题空白未下笔）；原因不明就写「原因待确认」，不要猜「不会」
 `;
 
 // ============ 单题判定 ============
@@ -354,7 +356,7 @@ async function judgeQuestion(question, ragContext) {
 
 只输出 JSON：
 {"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"correctAnswer":"","P":0~1,"eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","fiveDim":{"K":0.5,"A":0.5,"T":0.5,"Q":0.5,"S":0.5},"isRecallQuestion":true,"isOutOfSyllabus":false,"errorDimension":null,"knowledgeUsage":[{"name":"知识点教材术语","P":0|0.5|1,"D":0~1}],"pattern":{"domain":"知识板块","pattern":"中粒度题型描述（同类题共用）","variant":"变体细节"},"segments":[{"step":"段内容摘要","status":"通|断|空白","evidence":"该段过程原文片段"}],"breakpoint":{"index":2,"nature":"起步即停|中途断|收尾断"},"processAvailable":true}
-约束：D 落在 level 区间（D 是题目固有难度，与学生熟练度无关）；knowledgeNodeName 必须用教材术语原词；fiveDim 是【能力五维】（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，各 0~1 连续值，对齐理论文档五维量纲；0 最低 1 最高）；isRecallQuestion 是【回忆类题标记】：默写公式/复述定义/判断对错=回忆类（true），解题应用=应用类（false）；isOutOfSyllabus 是【超纲标记】：超出高中课标范围才 true，默认 false；errorDimension 是【错题归因维度】：判错时归因 K=概念/公式/定义掌握问题、A=思路/变式/应用问题、T=跨单元迁移问题、S=计算/审题/执行失误，做对时 null；errorAttribution 是【错因一句话描述】（如"分类讨论遗漏B={-2}情形"），只写文本描述；knowledgeUsage 是【本题知识点使用清单】1~5 个：列出本题实际调用的知识点（含知识层/思想方法层），name 用教材术语原词，D=该知识点环节在本题的难度（0~1，与整题 D 无关），P=该知识点环节的作答质量三档（决策 026）：1=用对；0.5=用了但漏边界/不完整（如漏特殊值验证、多选漏特殊情况、知识边界掌握不清）；0=该环节缺失或全错。0.5 的判定看该知识点自身——涉及边界/陷阱/分类讨论的环节，漏了特殊情形给 0.5；环节根本没做给 0；pattern 是【题型三层结构】：domain 知识板块、pattern 中粒度题型（检索主键，必须能概括同类题，禁止用题目原文或知识点名）、variant 变体细节；segments 是【过程分段】（仅解答题）：按书写顺序把学生过程切成 N 段，每段 step=段内容摘要、status=通|断|空白、evidence=该段过程原文片段（引用转录原话，禁止编造）；breakpoint 是【断点】：{index 断点所在段号（1 起），nature=起步即停|中途断|收尾断}，没断（全通）给 null；processAvailable 是【过程可信标记】：转录清晰可引用过程=true，涂改乱/看不清/过程缺失=false。【选填题（选择/填空）无过程】：segments=[]、breakpoint=null、processAvailable=false；最后输出纯 JSON`;
+约束：D 落在 level 区间（D 是题目固有难度，与学生熟练度无关）；knowledgeNodeName 是核心知识点（教材术语）；knowledgeUsage 必须尽量列全本题实际调用的知识点（1~5 个，不要只交 1 个——有多个就都列）；fiveDim 是【能力五维】（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，各 0~1 连续值，对齐理论文档五维量纲；0 最低 1 最高）；isRecallQuestion 是【回忆类题标记】：默写公式/复述定义/判断对错=回忆类（true），解题应用=应用类（false）；isOutOfSyllabus 是【超纲标记】：超出高中课标范围才 true，默认 false；errorDimension 是【错题归因维度】：判错时归因 K=概念/公式/定义掌握问题、A=思路/变式/应用问题、T=跨单元迁移问题、S=计算/审题/执行失误，做对时 null；**整题空白优先 S，禁止默认 K/「未理解」**；errorAttribution 是【错因一句话描述】，只写可观察事实（如「整题空白未下笔」「分类讨论遗漏B={-2}」），**空白禁止写「未理解××方法」**，原因不明写「空白，原因待确认」；knowledgeUsage 是【本题知识点使用清单】1~5 个：列出本题实际调用的知识点（含知识层/思想方法层），name 用教材术语原词，D=该知识点环节在本题的难度（0~1，与整题 D 无关），P=该知识点环节的作答质量三档（决策 026）：1=用对；0.5=用了但漏边界/不完整（如漏特殊值验证、多选漏特殊情况、知识边界掌握不清）；0=该环节缺失或全错。0.5 的判定看该知识点自身——涉及边界/陷阱/分类讨论的环节，漏了特殊情形给 0.5；环节根本没做给 0；pattern 是【题型三层结构】：domain 知识板块、pattern 中粒度题型（检索主键，必须能概括同类题，禁止用题目原文或知识点名）、variant 变体细节；segments 是【过程分段】（仅解答题）：按书写顺序把学生过程切成 N 段，每段 step=段内容摘要、status=通|断|空白、evidence=该段过程原文片段（引用转录原话，禁止编造）；breakpoint 是【断点】：{index 断点所在段号（1 起），nature=起步即停|中途断|收尾断}，没断（全通）给 null；**整题空白 → nature=起步即停**；processAvailable 是【过程可信标记】：转录清晰可引用过程=true，涂改乱/看不清/过程缺失=false。【选填题（选择/填空）无过程】：segments=[]、breakpoint=null、processAvailable=false；最后输出纯 JSON`;
   const data = await postJSON(`${DS_BASE_URL}/chat/completions`, {
     model: DS_MODEL,
     thinking: { type: 'disabled' },       // 决策 023：thinking 开 + 难题 = content 空死锁，判档用 disabled
@@ -402,12 +404,13 @@ exports.main = async (event) => {
         reviewed: !!q.reviewed,
         transcriptionReviewed: !!q.transcriptionReviewed,
         paramsReviewed: !!q.paramsReviewed,
-        // 二次复核参数（学生可见：难度/知识点/对错/归因；不下发 fiveDim / P / η）
+        // 二次复核参数（学生可见：难度/知识点/作答质量 P/归因；不下发 fiveDim / η；决策025 已废 isCorrect）
         questionType: q.questionType || '', questionCategory: q.questionCategory || '',
         difficultyLevel: q.difficultyLevel || '', difficultyValue: q.difficultyValue != null ? q.difficultyValue : null,
-        isCorrect: q.isCorrect === undefined ? null : q.isCorrect,
+        processScore: q.processScore != null ? q.processScore : null,
         errorAttribution: q.errorAttribution || null,
         knowledgeNodeName: q.knowledgeNodeName || '',
+        knowledgeUsage: Array.isArray(q.knowledgeUsage) ? q.knowledgeUsage : [],
       })));
     }
     if (action === 'updateTranscription') {
@@ -546,6 +549,16 @@ exports.main = async (event) => {
 
     // P 由 AI 直接输出（连续 0~1），对错语义由 P 编码，无需独立钳制
 
+    // ===== 源头防毒（2026-08-28）：空白题归因由代码推导，不采信 LLM 自由解释 =====
+    // 空白只有「没有行为」这一个事实；从「没写」到「未理解」是模型先验的推测链。
+    // 空白判定：断点=起步即停，或（无学生答案且无过程分段）。
+    const segList = Array.isArray(raw.segments) ? raw.segments : [];
+    const hasAnswerText = !!(question.studentAnswer && String(question.studentAnswer).trim());
+    const isBlank = (raw.breakpoint && raw.breakpoint.nature === '起步即停') || (!hasAnswerText && segList.length === 0);
+    const derivedErrorAttribution = isBlank
+      ? '整题空白未下笔'
+      : ((clamped.P >= 0.5 || !raw.errorAttribution) ? null : String(raw.errorAttribution).trim() || null);
+
     // 更新题目
     await db.collection('questions').doc(questionId).update({
       data: {
@@ -556,8 +569,9 @@ exports.main = async (event) => {
         difficultyValue: clamped.D,
         processScore: clamped.P,
         pathQuality: clamped.eta,
-        errorAttribution: raw.errorAttribution || null,
+        errorAttribution: derivedErrorAttribution,
         knowledgeNodeName: raw.knowledgeNodeName || '',
+        knowledgeUsage: Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [],
         fiveDim: raw.fiveDim || null,
         // 报告数据输入（2026-08-17）：分段路径/断点/过程可信；选填题 segments=[] breakpoint=null processAvailable=false
         segments: Array.isArray(raw.segments) ? raw.segments : [],
@@ -593,7 +607,7 @@ exports.main = async (event) => {
         difficultyLevel: raw.level || 'L4',
         knowledgeNodeId: mainNodeId || '',
         knowledgeNodeName: (raw.knowledgeNodeName || '').trim(),
-        errorAttribution: raw.errorAttribution || null,
+        errorAttribution: derivedErrorAttribution,
         errorDimension: raw.errorDimension || null,
         breakpoint: raw.breakpoint || null,
         knowledgeUsage: Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [],
@@ -617,7 +631,7 @@ exports.main = async (event) => {
           isCorrect: pOk,
           processScore: Number(clamped.P) || 0,
           difficultyValue: Number(clamped.D) || 0,
-          errorAttribution: raw.errorAttribution || null,
+          errorAttribution: derivedErrorAttribution,
           errorDimension: raw.errorDimension || null,
           segments: Array.isArray(raw.segments) ? raw.segments : [],
           breakpoint: raw.breakpoint || null,
@@ -628,7 +642,7 @@ exports.main = async (event) => {
             questionText: question.questionText || '',
             isCorrect: pOk,
             knowledgeNodeName: (raw.knowledgeNodeName || '').trim() || null,
-            errorAttribution: raw.errorAttribution || null,
+            errorAttribution: derivedErrorAttribution,
             errorDimension: raw.errorDimension || null,
             segments: Array.isArray(raw.segments) ? raw.segments : [],
             breakpoint: raw.breakpoint || null,
