@@ -1,0 +1,5 @@
+{
+  "timeout": 900,
+  "memorySize": 512,
+  "runtime": "Nodejs18.15"
+}

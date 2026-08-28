@@ -6,6 +6,7 @@ const _ = db.command;
 const SYSTEM_V3 = require('./systemV3');
 const { assemble } = require('./assemble');
 const { runWithTools } = require('./toolLoop');
+const { sanitizeReport, sanitizeWeakpoint, isPoisonSentence } = require('./sanitize');
 
 const DS_API_KEY = process.env.DEEPSEEK_API_KEY;
 const DS_BASE_URL = process.env.DS_BASE_URL || 'https://api.deepseek.com';
@@ -101,7 +102,8 @@ async function disputeModule(event, openid) {
     body.thinking = { type: 'disabled' };
     data = await postJSON(`${DS_BASE_URL}/chat/completions`, body, DS_API_KEY);
   }
-  const newModule = extractJson(data.choices[0].message.content || '');
+  // 异议重生走同一清洗层，防止毒点经异议通道回流
+  const newModule = sanitizeWeakpoint(extractJson(data.choices[0].message.content || ''));
 
   // 4. 更新 reports：整个薄弱点替换（剥离 fix——连带数据用，不存进报告）+ revisions 异议历史
   const { fix, ...newWp } = newModule || {};
@@ -125,6 +127,124 @@ async function disputeModule(event, openid) {
   // 6. 返回更新后的报告
   const r2 = await db.collection('reports').doc(reportId).get();
   return success({ reportId, report: r2.data.report });
+}
+
+// ============ 单题历史演化：同类题以往分析 + 本次判定 → 时间演化叙述 ============
+// 认知科学定位：过程级/自我调节级反馈（Hattie & Timperley）——「过去的你 vs 现在的你」同题对比。
+// 硬约束：①只引用给定事实；②历史 <3 条禁止趋势话术（脚本分流保证）；③平实语气，无标语式表达。
+
+// 把一道判定题整理成「可观察事实」条目（供 LLM 引用，也供无 LLM 兜底直接展示）
+function toAttempt(q) {
+  const correct = q.processScore >= 0.5;
+  const nature = (q.breakpoint && q.breakpoint.nature) || null;
+  const wroteSteps = (Array.isArray(q.segments) ? q.segments : []).some((s) => s && s.status && s.status !== '空白');
+  const result = correct ? '做对'
+    : (nature === '起步即停' || (!nature && !wroteSteps) ? '空白未作答'
+    : (nature === '中途断' ? '中途断' : (nature === '收尾断' ? '收尾断' : (q.questionType === '选择' || q.questionType === '填空' ? '作答有误' : '有过程未走通'))));
+  // 归因只保留可观察事实：命中毒点句式的（旧数据）不投喂
+  let attribution = String(q.errorAttribution || '').trim();
+  if (!attribution || isPoisonSentence(attribution)) attribution = '';
+  // 学生真实写的最后一步（segments 的原文引用），空白题自然为空
+  const segs = Array.isArray(q.segments) ? q.segments.filter((s) => s && s.status !== '空白' && s.evidence) : [];
+  const lastStep = segs.length ? String(segs[segs.length - 1].evidence).slice(0, 60) : '';
+  const d = q.createdAt ? new Date(q.createdAt.$date || q.createdAt) : null;
+  const date = d && !isNaN(d.getTime()) ? (d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0')) : '';
+  return { date, result, attribution, lastStep };
+}
+
+// 单题历史演化（报告页每题入口）
+async function questionEvolution(event, openid) {
+  const { batchId, questionText, questionType, processScore } = event;
+  if (!batchId || !questionText) return fail(400, '缺少参数');
+
+  // 归属校验
+  const batchRes = await db.collection('batches').doc(batchId).get().catch(() => null);
+  if (!batchRes || !batchRes.data) return fail(404, '批次不存在');
+  if (batchRes.data.userId !== openid) return fail(403, '无权操作他人批次');
+
+  // 定位当前题：题干归一化匹配（AI 转写题干通常保留原文），失败退化为 题型+得分 唯一匹配
+  const norm = (s) => String(s || '').replace(/[\s\\{}$]/g, '');
+  const qs = await db.collection('questions')
+    .where({ batchId, userId: openid, reviewed: true }).limit(200).get();
+  const scored = qs.data.filter((q) => q.processScore != null);
+  const scoreNum = Number(processScore);
+  let current = scored.find((q) => norm(q.questionText) === norm(questionText))
+    || scored.find((q) => norm(q.questionText).includes(norm(questionText).slice(0, 24)) || norm(questionText).includes(norm(q.questionText).slice(0, 24)))
+    || (scored.filter((q) => q.questionType === questionType && Math.abs(q.processScore - scoreNum) < 0.01).length === 1
+      ? scored.find((q) => q.questionType === questionType && Math.abs(q.processScore - scoreNum) < 0.01) : null);
+  if (!current) return fail(404, '未能定位该题的判定记录');
+
+  // 同知识点历史（不含本题），时间升序
+  const node = current.knowledgeNodeName || '';
+  const past = scored
+    .filter((q) => q._id !== current._id && (q.knowledgeNodeName || '') === node)
+    .sort((a, b) => (a.createdAt?.$date || 0) - (b.createdAt?.$date || 0))
+    .map(toAttempt);
+
+  const currentInfo = toAttempt(current);
+  const currentBrief = {
+    questionText: String(current.questionText || '').slice(0, 120),
+    questionType: current.questionType || '',
+    result: currentInfo.result,
+    attribution: currentInfo.attribution,
+    lastStep: currentInfo.lastStep,
+  };
+
+  // 首次出现：无历史可比，不调 LLM
+  if (past.length === 0) {
+    return success({
+      mode: 'first',
+      current: currentBrief,
+      message: '这类知识点是你第一次拍进来，还没有历史可以对比。先把这次的断点消化掉，下一次它就会出现在这里。',
+    });
+  }
+
+  // 历史 >=3 条才允许趋势话术（用户规则，脚本强制）
+  const allowTrend = past.length >= 3;
+
+  const system = [
+    '你是学习诊断的「时间演化分析器」。输入是同一名学生、同一知识点的历次判定事实（含本次）。',
+    '规则：',
+    '1. 只引用给定事实（日期/结果/归因/最后书写步骤），禁止编造任何题目内容、日期或结论；',
+    allowTrend ? '2. 历史已达 3 次，可以描述规律；' : '2. 历史不足 3 次，禁止使用「一直/趋势/越来越/总是」等词，只能「上次/这次」；',
+    '3. 平实、平视、具体，面向高中生；禁止标签式口号（如「空白不等于不会」），禁止评判人格；',
+    '4. 断点性质是 AI 判断，引用时必须挂上当时的书写原文；',
+    '5. 只输出 JSON：{"past":"以前的你…","now":"这次…","insight":"前后对比说明什么…","attention":"接下来要注意什么（具体可操作）"}，每段 1-3 句。',
+  ].join('\n');
+
+  const user = [
+    '【本次（' + currentBrief.date + '）】' + JSON.stringify(currentBrief),
+    '【历史记录（旧→新）】',
+    JSON.stringify(past.map(({ date, result, attribution, lastStep }) => ({ date, result, attribution, lastStep })), null, 1),
+    '请生成时间演化分析 JSON。',
+  ].join('\n\n');
+
+  const body = {
+    model: DS_MODEL,
+    messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
+    max_tokens: 1500,
+    temperature: 0.4,
+    // 短文本综合不启用 thinking：思考会挤占窗口导致 MCP 客户端超时丢结果
+    thinking: { type: 'disabled' },
+  };
+  const data = await postJSON(DS_BASE_URL + '/chat/completions', body, DS_API_KEY);
+
+  let evolution;
+  try {
+    evolution = extractJson(data.choices[0].message.content || '');
+    if (!evolution.past || !evolution.now) throw new Error('字段缺失');
+  } catch (e) {
+    // 兜底：LLM 失败时用真实事实直接拼（不编造）
+    const lastPast = past[past.length - 1];
+    evolution = {
+      past: lastPast.date + ' 的同类题，你' + (lastPast.result === '做对' ? '完整做对了' : '卡在「' + lastPast.result + '」') + (lastPast.attribution ? '——' + lastPast.attribution : '') + '。',
+      now: '这次' + (currentInfo.result === '做对' ? '完整做对了' : '卡在「' + currentInfo.result + '」') + (currentBrief.attribution ? '——' + currentBrief.attribution : '') + '。',
+      insight: allowTrend ? '把几次放在一起看，卡点位置的移动方向说明了现在的状态。' : '两次放在一起对照，比单看一次更能说明问题。',
+      attention: '下次同类题落笔前，先把这次断掉的那一步单独写出来，写出来再往下走。',
+    };
+    return success({ mode: 'basic', current: currentBrief, past, evolution });
+  }
+  return success({ mode: 'llm', current: currentBrief, past, evolution });
 }
 
 exports.main = async (event) => {
@@ -186,6 +306,11 @@ exports.main = async (event) => {
       return await disputeModule(event, openid);
     }
 
+    // 单题历史演化：同类题以往分析 + 本次判定 → 时间演化叙述
+    if (event && event.action === 'questionEvolution') {
+      return await questionEvolution(event, openid);
+    }
+
     const { batchId } = event;
     if (!batchId) return fail(400, '缺少 batchId');
 
@@ -217,8 +342,8 @@ exports.main = async (event) => {
     const { content, loops } = await runWithTools(postJSON, `${DS_BASE_URL}/chat/completions`, DS_API_KEY, DS_MODEL, messages, tools, { userId: openid });
     await logDebug('reportService.generate', openid, batchId, { toolLoops: loops, contentLen: (content || '').length });
 
-    // ⑤ 解析 JSON 报告
-    const report = extractJson(content);
+    // ⑤ 解析 JSON 报告 + 确定性清洗（交接包 2026-08-27：prompt 禁令之上的代码兜底）
+    const report = sanitizeReport(extractJson(content));
 
     // ⑥ 持久化
     const ins = await db.collection('reports').add({
