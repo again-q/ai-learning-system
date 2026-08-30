@@ -54,13 +54,16 @@ Page({
         sizeType: ['compressed'],
       });
       const picked = res.tempFiles.map((f) => f.tempFilePath);
-      // 输入优化 A：拍摄质量实时检测（过暗/过曝拦截，检测失败不拦截）
+      // 输入优化 A：拍摄质量实时检测（过暗/过曝 → 缩略图标 ❌，上传时弹窗拦截）
       const checks = await Promise.all(picked.map((p) => imageQuality.analyzeImage(p)));
-      const bad = [];
-      const good = [];
-      checks.forEach((r, i) => (r.ok ? good : bad).push({ path: picked[i], issues: r.issues }));
+      const newImages = picked.map((p, i) => ({
+        path: p,
+        qualityOk: checks[i] ? checks[i].ok : true,
+        qualityIssues: checks[i] ? (checks[i].issues || []).join('、') : '',
+      }));
+      const bad = newImages.filter((im) => !im.qualityOk);
       if (bad.length) {
-        const why = bad.map((b) => b.issues.join('、')).join('；');
+        const why = bad.map((b) => b.qualityIssues).join('；');
         const remove = await new Promise((resolve) => {
           wx.showModal({
             title: '照片质量不佳',
@@ -71,16 +74,19 @@ Page({
             fail: () => resolve(false),
           });
         });
-        const keepPaths = (remove ? good.map((g) => g.path) : picked);
-        if (remove && good.length === 0) {
-          this.setData({ pipelineError: '刚才的照片' + why + '，已移除。请按拍摄建议重拍。' });
+        if (remove) {
+          const good = newImages.filter((im) => im.qualityOk);
+          if (good.length === 0) {
+            this.setData({ pipelineError: '刚才的照片' + why + '，已移除。请按拍摄建议重拍。' });
+            return;
+          }
+          this.setData({ images: [...this.data.images, ...good].slice(0, 9), pipelineError: '' });
+          log.append('quality_filtered', { removed: bad.length, kept: good.length });
           return;
         }
-        this.setData({ images: [...this.data.images, ...keepPaths].slice(0, 9), pipelineError: '' });
-        if (remove) log.append('quality_filtered', { removed: bad.length, kept: good.length });
-        return;
+        // 仍要使用：全部保留（不过关的带 ❌ 标记，上传时再拦截）
       }
-      this.setData({ images: [...this.data.images, ...picked].slice(0, 9), pipelineError: '' });
+      this.setData({ images: [...this.data.images, ...newImages].slice(0, 9), pipelineError: '' });
     } catch (e) {
       // 用户取消选择，忽略
     }
