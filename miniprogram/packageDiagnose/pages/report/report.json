@@ -1,6 +1,4 @@
 {
   "navigationStyle": "custom",
-  "usingComponents": {
-    "report-dispute-modal": "/components/report-dispute-modal/report-dispute-modal"
-  }
+  "usingComponents": {}
 }

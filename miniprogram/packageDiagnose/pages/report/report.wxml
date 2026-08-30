@@ -51,7 +51,8 @@
   </view>
 
   <!-- ===== 报告：总览 + 逐题内联详情 ===== -->
-  <view class="content" wx:elif="{{view === 'report'}}">
+  <view class="empty" wx:elif="{{view === 'report' && !report}}"><text class="empty-text">加载中…</text></view>
+  <view class="content" wx:elif="{{view === 'report' && report}}">
     <view class="nav-back2" bindtap="goBack"><text>‹ 返回</text></view>
     <view class="receipt">
       <view class="receipt-score-row">
