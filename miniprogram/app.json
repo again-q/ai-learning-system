@@ -57,7 +57,7 @@
         "pagePath": "pages/study/study",
         "iconPath": "images/study_icon.png",
         "selectedIconPath": "images/study_icon_a.png",
-        "text": "学习"
+        "text": "AI教练"
       },
       {
         "pagePath": "pages/graph/graph",
