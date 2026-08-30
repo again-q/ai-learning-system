@@ -68,9 +68,11 @@
               <view class="step-card-h"><text class="step-card-t">题目</text></view>
               <rich-text class="q-plain" nodes="{{detail.questionNodes}}"></rich-text>
             </view>
-            <view class="step-card" wx:if="{{detail.cropFileID || detail.segments.length}}">
+            <view class="step-card" wx:if="{{detail.cropFileID || detail.imageFileId || detail.segments.length}}">
               <view class="step-card-h"><text class="step-card-t">你的过程</text></view>
               <image class="crop-img" wx:if="{{detail.cropFileID}}" src="{{detail.cropFileID}}" mode="widthFix" />
+              <image class="crop-img" wx:elif="{{detail.imageFileId}}" src="{{detail.imageFileId}}" mode="widthFix" />
+              <text class="crop-note" wx:if="{{!detail.cropFileID && detail.imageFileId}}">整页原图（未单独放大本题，白色框内为你的作答）</text>
               <view class="seg" wx:for="{{detail.segments}}" wx:key="step" wx:for-item="sg">
                 <text class="seg-status {{sg.status === '断' ? 'bad' : sg.status === '空白' ? 'gray' : 'ok'}}">{{sg.status === '断' ? '✗' : (sg.status === '空白' ? '○' : '✓')}}</text>
                 <view class="seg-body"><text class="seg-step">{{sg.step}}</text></view>

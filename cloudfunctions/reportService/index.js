@@ -303,6 +303,7 @@ exports.main = async (event) => {
         questionText: d.questionText || '',
         questionType: d.questionType || '其他',
         cropFileID: d.cropFileID || null,
+        imageFileId: d.imageFileId || null,
         segments: d.segments || [],
         breakpoint: d.breakpoint || null,
         processScore: d.processScore,

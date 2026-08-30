@@ -364,4 +364,5 @@
 .dispute-verdict.no { color: #ff3b30; }
 .pat-val { font-size: 26rpx; color: #3a3a3c; }
 .crop-img { width: 100%; border-radius: 12rpx; }
+.crop-note { display: block; margin-top: 12rpx; font-size: 24rpx; color: #999; line-height: 1.5; }
 .nav-back2 { color: #007aff; font-size: 26rpx; padding: 12rpx 0 16rpx; }
