@@ -210,7 +210,12 @@ Page({
     }));
     const correct = qs.filter((q) => q.ok).length;
     this.setData(Object.assign({
-      report: { summary: report.summary || '', questions: qs },
+      report: {
+        summary: report.summary || '',
+        questions: qs,
+        masteryChange: (report.masteryChange || []).map((m) => ({ ...m, beforePct: Math.round((m.before || 0) * 100), afterPct: Math.round((m.after || 0) * 100) })),
+        pendingNodes: report.pendingNodes || [],
+      },
       scoreMain: correct + (qs.length ? ' / ' + qs.length : ''),
       scoreSub: qs.length ? '共 ' + qs.length + ' 道' : '',
       loading: false,

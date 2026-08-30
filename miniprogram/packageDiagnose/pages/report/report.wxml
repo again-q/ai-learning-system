@@ -103,6 +103,27 @@
       </block>
     </view>
 
+    <!-- 知识点掌握度变化（图谱节点 旧->新） -->
+    <view class="more-title" wx:if="{{report.masteryChange.length}}">掌握度变化</view>
+    <view class="qlist" wx:if="{{report.masteryChange.length}}">
+      <view class="qitem" wx:for="{{report.masteryChange}}" wx:key="nodeId" wx:for-item="mc">
+        <text class="qitem-status ok">↗</text>
+        <view class="qitem-body">
+          <text class="qitem-text">{{mc.name}}</text>
+          <text class="qitem-pattern">{{mc.beforePct}}% → {{mc.afterPct}}%</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 待建知识点（自建节点，暂不作参考） -->
+    <view class="more-title" wx:if="{{report.pendingNodes.length}}">待建知识点</view>
+    <view class="qlist" wx:if="{{report.pendingNodes.length}}">
+      <view class="qitem" wx:for="{{report.pendingNodes}}" wx:key="*this">
+        <text class="qitem-status gray">⏳</text>
+        <view class="qitem-body"><text class="qitem-text">{{item}}</text></view>
+      </view>
+    </view>
+
     <!-- 题型异议弹层 -->
     <view class="adv-mask" wx:if="{{disputeVisible}}" bindtap="closeDispute">
       <view class="adv-card" catchtap="noop">

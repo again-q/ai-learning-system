@@ -13,6 +13,41 @@ const DS_API_KEY = process.env.DEEPSEEK_API_KEY;
 const DS_BASE_URL = process.env.DS_BASE_URL || 'https://api.deepseek.com';
 const DS_MODEL = process.env.DS_MODEL || 'deepseek-v4-flash';
 
+// 报告底部：知识点掌握度变化（只用图谱节点 旧->新）+ 待建节点（custom_nodes，不当作参考）
+async function buildMasteryChange({ openid, questionIds }) {
+  if (!questionIds || !questionIds.length) return { masteryChange: [], pendingNodes: [] };
+  const logsRes = await db.collection('mastery_logs')
+    .where({ userId: openid, triggerQuestionId: _.in(questionIds) })
+    .orderBy('createdAt', 'asc')
+    .limit(1000)
+    .get();
+  const logs = logsRes.data || [];
+  const byNode = {};
+  for (const l of logs) {
+    const nid = l.knowledgeNodeId;
+    if (!nid) continue;
+    const e = byNode[nid] = byNode[nid] || { before: null, after: null };
+    if (e.before == null && l.oldMastery != null) e.before = l.oldMastery;
+    if (l.newMastery != null) e.after = l.newMastery;
+  }
+  const nodesRes = await db.collection('knowledge_nodes').where({ knowledgeId: _.exists(true) }).limit(1000).get();
+  const graphIdSet = new Set((nodesRes.data || []).map((n) => n.knowledgeId || n._id));
+  const graphName = new Map((nodesRes.data || []).map((n) => [n.knowledgeId || n._id, n.name]));
+  const customRes = await db.collection('custom_nodes').limit(1000).get();
+  const customName = new Map((customRes.data || []).map((n) => [n._id, n.name]));
+  const masteryChange = [], pendingSet = new Set();
+  for (const [nid, e] of Object.entries(byNode)) {
+    if (graphIdSet.has(nid)) {
+      if (e.before != null && e.after != null && Math.round(e.before * 100) !== Math.round(e.after * 100)) {
+        masteryChange.push({ nodeId: nid, name: graphName.get(nid) || nid, before: e.before, after: e.after });
+      }
+    } else {
+      pendingSet.add(customName.get(nid) || nid);
+    }
+  }
+  return { masteryChange, pendingNodes: Array.from(pendingSet) };
+}
+
 const success = (data = null) => ({ code: 0, data, message: 'ok' });
 const fail = (code, msg) => ({ code, data: null, message: msg });
 
@@ -483,8 +518,11 @@ exports.main = async (event) => {
     await Promise.all(Array.from({ length: Math.min(CONC, qs.length) }, () => worker()));
 
     // ③ 持久化首页报告
+    const mc = await buildMasteryChange({ openid, questionIds: qs.map((q) => q.questionId) });
     const report = {
       summary,
+      masteryChange: mc.masteryChange,
+      pendingNodes: mc.pendingNodes,
       questions: qs.map((q) => ({
         questionId: q.questionId,
         questionText: q.questionText,
