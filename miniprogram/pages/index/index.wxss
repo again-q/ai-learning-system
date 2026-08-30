@@ -3,6 +3,318 @@
  * 沿用 login 页设计 Token 与动画语言
  * ============================================ */
 
+page {
+  --bg:            #ffffff;
+  --bg-subtle:     #f5f5f7;
+
+  --text-primary:   #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary:  #a1a1a6;
+
+  --accent:        #007aff;
+  --accent-soft:   #4a9eff;
+  --accent-bg:     rgba(0,122,255,0.06);
+
+  --border:        #d2d2d7;
+  --border-soft:   #e5e5ea;
+
+  --shadow-sm: 0 1rpx 2rpx rgba(0,0,0,0.04);
+  --shadow-md: 0 4rpx 16rpx rgba(0,0,0,0.06);
+  --shadow-lg: 0 8rpx 32rpx rgba(0,122,255,0.18);
+
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.container {
+  min-height: 100vh;
+  background: var(--bg);
+  padding: 0 48rpx;
+  padding-top: calc(88rpx + env(safe-area-inset-top));
+  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+}
+
+/* 页面切换淡入 */
+.page-leaving {
+  opacity: 0;
+  transform: translateY(12rpx);
+}
+
+.page-enter {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+ * 顶部问候
+ * ============================================ */
+.top-section {
+  margin-bottom: 48rpx;
+}
+
+.greeting-row {
+  display: flex;
+  justify-content: center;
+}
+
+.greeting {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 1rpx;
+}
+
+/* ============================================
+ * 学科切换
+ * ============================================ */
+.subject-section {
+  margin-bottom: 48rpx;
+}
+
+.subject-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48rpx;
+}
+
+.arrow-btn {
+  font-size: 32rpx;
+  color: var(--text-tertiary);
+  padding: 20rpx;
+  transition: all 0.25s var(--ease-out);
+}
+
+.arrow-btn:active {
+  color: var(--accent);
+  transform: scale(1.2);
+}
+
+.subject-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.subject-name {
+  font-size: 56rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 2rpx;
+  transition: opacity 0.3s var(--ease-out);
+}
+
+/* ============================================
+ * 学习统计卡片
+ * ============================================ */
+.stats-card {
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+  border-radius: 24rpx;
+  padding: 32rpx 24rpx;
+  margin-bottom: 48rpx;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s var(--ease-out);
+}
+
+.stats-card:active {
+  transform: scale(0.98);
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.stat-value {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  font-family: -apple-system, "PingFang SC", sans-serif;
+}
+
+.stat-unit {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  margin-top: -2rpx;
+}
+
+.stat-label {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  margin-top: 4rpx;
+}
+
+.stat-divider {
+  width: 1rpx;
+  height: 64rpx;
+  background: var(--border-soft);
+}
+
+/* ============================================
+ * 环形图
+ * ============================================ */
+.mastery-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 48rpx;
+}
+
+.ring-container {
+  position: relative;
+  width: 320rpx;
+  height: 320rpx;
+}
+
+.ring-canvas {
+  width: 320rpx;
+  height: 320rpx;
+}
+
+.ring-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ring-pct {
+  font-size: 68rpx;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  font-family: -apple-system, "PingFang SC", sans-serif;
+}
+
+.ring-label {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  margin-top: 8rpx;
+}
+
+/* ============================================
+ * 今日建议
+ * ============================================ */
+.suggestion-section {
+  margin-bottom: 48rpx;
+}
+
+.suggestion-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16rpx;
+  letter-spacing: 1rpx;
+}
+
+.suggestion-card {
+  background: var(--bg);
+  padding: 32rpx;
+  border-radius: 24rpx;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s var(--ease-out);
+}
+
+.suggestion-card:active {
+  transform: scale(0.98);
+}
+
+.suggestion-text {
+  font-size: 28rpx;
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+/* ============================================
+ * 开始学习按钮
+ * ============================================ */
+.action-section {
+  margin-top: auto;
+  padding-top: 24rpx;
+}
+
+.start-btn {
+  background: var(--accent);
+  height: 96rpx;
+  border-radius: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+  transition: all 0.25s var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.start-btn::after {
+  border: none;
+}
+
+.start-btn:active {
+  transform: scale(0.98);
+  opacity: 0.92;
+  box-shadow: 0 4rpx 16rpx rgba(0,122,255,0.12);
+}
+
+.start-text {
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+
+/* 拍照诊断入口（P0 最小闭环）— 设计语言 v1.1 */
+.photo-btn {
+  margin-top: 24rpx;
+  background: var(--accent-bg, rgba(0, 122, 255, 0.06));
+  border: 2rpx solid rgba(0, 122, 255, 0.2);
+  border-radius: 24rpx;
+  padding: 28rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  transition: all 0.25s var(--ease-out);
+}
+.photo-btn:active {
+  transform: scale(0.98);
+  background: rgba(0, 122, 255, 0.1);
+}
+.photo-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--accent);
+}
+.photo-sub {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+ * 入场动画（压缩版，避免加载感慢）
+ * ============================================ */
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(16rpx); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal { animation: reveal-up 0.4s var(--ease-out) both; }
+.reveal-1 { animation-delay: 0.04s; }
+.reveal-2 { animation-delay: 0.10s; }
+.reveal-3 { animation-delay: 0.16s; }
+.reveal-4 { animation-delay: 0.22s; }
+.reveal-5 { animation-delay: 0.28s; }
 
 /* AI 助手（开发中） */
 .ai-btn {
@@ -12,3 +324,6 @@
 }
 .ai-text { font-size: 30rpx; color: #1d1d1f; }
 .ai-badge { font-size: 20rpx; color: #a1a1a6; background: #f5f5f7; border-radius: 999rpx; padding: 6rpx 18rpx; }
+
+/* 开始诊断副标题 */
+.start-sub { display: block; font-size: 22rpx; color: rgba(255,255,255,0.85); margin-top: 6rpx; }
