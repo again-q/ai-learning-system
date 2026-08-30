@@ -493,7 +493,9 @@ exports.main = async (event) => {
         const idx = qi++;
         const q = qs[idx];
         const patch = {};
-        // 诊断（v10）：过程点评 / 问题在哪儿 / 下一步 —— 每题都由诊断引擎生成
+        // 空白题：诊断不做解释（无过程可点评、不揣测）——跳过
+        const isBlank = !(Array.isArray(q.segments) && q.segments.length) && !(q.traceReport || '').trim() && (q.processScore != null && q.processScore < 1);
+        if (!isBlank) {
         try {
           const dg = await genV2.diagnosis(q);
           if (dg.comment || dg.inference || dg.hook) {
@@ -504,6 +506,7 @@ exports.main = async (event) => {
           }
         } catch (e) {
           console.warn('[reportService] 诊断失败:', q.questionId, e.message);
+        }
         }
         if (Object.keys(patch).length && q.questionId) {
           try {

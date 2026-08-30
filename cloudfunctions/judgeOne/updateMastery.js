@@ -7,7 +7,7 @@ async function updateMastery({ db, matchKnowledgeNode, findNode, unitNameOf, ope
   let mainNodeId = null;
   let pOk = false;
   try {
-    pOk = clamped.P >= 0.5;   // P 编码对错：P≥0.5 视为基本答对（isCorrect 已删除 2026-08-14）
+    pOk = clamped.P >= 1;   // P 编码对错：P==1 才算对（P不=1都算错, 2026-08-31）
     const isOut = raw.isOutOfSyllabus === true;
     const eta = clamped.eta;   // 仅解答题 0.4~1.0，选择/填空 null
 

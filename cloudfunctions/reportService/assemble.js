@@ -53,9 +53,9 @@ async function assemble(batchId, userId) {
     errorDimension: q.errorDimension || null,
     processScore: q.processScore,
     questionType: q.questionType || '其他',
-    status: q.processScore >= 0.5 ? '对' : '错',   // P 编码对错（决策 025）：P≥0.5 基本答对
+    status: q.processScore >= 1 ? '对' : '错',   // P 编码对错（决策 025）：P≥0.5 基本答对
   }));
-  const wrongQuestions = allQuestions.filter((q) => q.processScore < 0.5);
+  const wrongQuestions = allQuestions.filter((q) => q.processScore < 1);
 
   return {
     stats: { totalQuestions: total, correctCount: correct, correctRate: rate, trend, lastCorrectRate: lastRate },
