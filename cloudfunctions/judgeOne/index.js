@@ -602,6 +602,13 @@ exports.main = async (event) => {
     const derivedErrorType = (rawET === '结果错' || rawET === '过程风险') ? rawET
       : (clamped.P < 0.5 ? '结果错' : (clamped.P < 1 ? '过程风险' : '无'));
 
+    // ===== 题型三层（D-18）提前计算：questions 落库与 RAG 记录共用 =====
+    const rawPattern = (raw.pattern && typeof raw.pattern === 'object') ? raw.pattern : {};
+    const patternText = ((rawPattern.pattern || '').trim() || '').slice(0, 80);
+    const patternFull = [rawPattern.domain, rawPattern.pattern, rawPattern.variant]
+      .filter((s) => s && typeof s === 'string' && s.trim())
+      .map((s) => s.trim()).join(' / ').slice(0, 120);
+
     // 更新题目
     await db.collection('questions').doc(questionId).update({
       data: {
@@ -638,12 +645,7 @@ exports.main = async (event) => {
     // ============ RAG 记录入库（检索源，algorithm=diagnose_v1）——判定成功即写，失败降级不报错 ============
     // 契约：doc/architecture/RAG工具契约.md 第五节；embedding 失败时记录仍写（检索自动跳过无向量记录）
     try {
-      // 题型三层结构（D-18）：pattern 是中粒度题型，检索主键；模型未输出/输出异常时降级为空
-      const rawPattern = (raw.pattern && typeof raw.pattern === 'object') ? raw.pattern : {};
-      const patternText = ((rawPattern.pattern || '').trim() || '').slice(0, 80);
-      const patternFull = [rawPattern.domain, rawPattern.pattern, rawPattern.variant]
-        .filter((s) => s && typeof s === 'string' && s.trim())
-        .map((s) => s.trim()).join(' / ').slice(0, 120);
+      // 题型三层（D-18）：patternText/patternFull 已在上方计算（questions 落库共用）
       const ragReportText = buildReportText({
         questionText: question.questionText || '',
         studentAnswer: (question.traceReport || '').slice(0, 300),
