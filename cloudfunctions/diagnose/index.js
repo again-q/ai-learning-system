@@ -2,6 +2,7 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 const _ = db.command;
+const ic = require('./imageCrop');
 
 // ============ 配置 ============
 const QWEN_API_KEY = process.env.QWEN_API_KEY;
@@ -14,23 +15,21 @@ const DS_MODEL = process.env.DS_MODEL || 'deepseek-v4-flash'; // 新模型名（
 const success = (data = null) => ({ code: 0, data, message: 'ok' });
 const fail = (code, msg) => ({ code, data: null, message: msg });
 
-// ============ 视觉转录 prompt（决策 017：整体把握散文，每题独立成块便于 AI 拆题） ============
-const VISION_PROMPT = `你是数学学习诊断助手的图像理解阶段。任务：准确转录题目 + 如实描述做题痕迹。不要做诊断判断。
+// ============ 视觉转录 prompt（切题 v1：bbox 自定位 + 每题转录/痕迹，决策 017 整体把握散文原则保留） ============
+const VISION_PROMPT = `你是数学学习诊断助手的图像理解阶段。任务：定位每题区域 + 准确转录题目 + 如实描述做题痕迹。不要做诊断判断。
 
-输出 Markdown：
-# 题目转录
-（每题独立成块，以「1.」「2.」等题号开头，含完整题干、所有选项内容和题目形式；一题一段，块与块之间空行）
+输出 Markdown，每题一个块，格式严格如下：
+### bbox: [x1,y1,x2,y2]
+（该题在整个图片中的矩形框，坐标为 0-1000 归一化值，x1y1=左上，x2y2=右下，覆盖题干+作答区域，宁大勿小）
 
-# 做题痕迹观察
-（必须按题号分组，禁止把所有题的痕迹混成一段）
-## 第1题
-- 按书写顺序：步骤/位置/痕迹（涂改、草稿、最终答案）
-## 第2题
-- …
-（有几题写几节；某题完全无痕迹则写「无可见痕迹」）
+# 第N题转录
+（完整题干、所有选项内容和题目形式；公式尽量用 $...$ / $$...$$）
+
+# 第N题做题痕迹
+（按书写顺序：步骤/位置/痕迹（涂改、草稿、最终答案）；无痕迹写「无可见痕迹」）
 
 # 输出要求
-不确定处标(不确定)；看不清写(看不清)；最终答案逐字符精确（≥≤><=符号不能错）；不臆测；公式尽量用 $...$ / $$...$$`;
+有几题写几块；不确定处标(不确定)；看不清写(看不清)；最终答案逐字符精确（≥≤><=符号不能错）；不臆测；被截断看不全的题也要给 bbox 并在转录里标注(截断)`;
 
 // ============ 痕迹按题切开（禁止把整份视觉报告塞进每道题） ============
 function looksLikeFullVisionReport(trace, fullReport) {
@@ -144,16 +143,22 @@ function guessType(line) {
   return '其他';
 }
 
-// ============ Qwen 视觉转录 ============
-async function qwenVision(fileId) {
+// ============ 归一化下载 + Qwen 视觉转录（切题 v1：EXIF 转正 → bbox 坐标系与裁剪一致） ============
+async function downloadAndNormalize(fileId) {
   const file = await cloud.getTempFileURL({ fileList: [fileId] });
-  const url = file.fileList[0].tempFileURL;
+  const url = file.fileList[0] && file.fileList[0].tempFileURL;
+  if (!url) throw new Error('tempURL 为空');
   const imageResp = await fetch(url);
   const buffer = Buffer.from(await imageResp.arrayBuffer());
-  const base64 = buffer.toString('base64');
-  const ext = (fileId.split('.').pop() || 'jpg').toLowerCase();
-  const mimeMap = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' };
-  const mime = mimeMap[ext] || 'image/jpeg';
+  return ic.decodeNormalized(buffer);
+}
+
+function bmpToDataUrl(bmp, quality = 88) {
+  const jpg = ic.encodeJpeg(bmp, quality);
+  return `data:image/jpeg;base64,${jpg.toString('base64')}`;
+}
+
+async function qwenVisionDataUrl(dataUrl) {
   const resp = await fetch(`${QWEN_BASE_URL}/chat/completions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${QWEN_API_KEY}` },
@@ -162,17 +167,57 @@ async function qwenVision(fileId) {
       messages: [{
         role: 'user',
         content: [
-          { type: 'image_url', image_url: { url: `data:${mime};base64,${base64}` } },
+          { type: 'image_url', image_url: { url: dataUrl } },
           { type: 'text', text: VISION_PROMPT },
         ],
       }],
-      max_tokens: 3000,
+      max_tokens: 6000,
       enable_thinking: false,
     }),
   });
   if (!resp.ok) throw new Error('vision HTTP ' + resp.status);
   const data = await resp.json();
   return data.choices[0].message.content;
+}
+
+// 解析 bbox 结构化输出：### bbox 行 + # 第N题转录 + # 第N题做题痕迹
+function parseStructuredQuestions(report) {
+  const items = [];
+  const re = /###\s*bbox:\s*\[\s*(\d{1,4})\s*,\s*(\d{1,4})\s*,\s*(\d{1,4})\s*,\s*(\d{1,4})\s*\]/g;
+  const marks = [];
+  let m;
+  while ((m = re.exec(report))) marks.push({ start: m.index, bbox: [+m[1], +m[2], +m[3], +m[4]] });
+  for (let k = 0; k < marks.length; k++) {
+    const seg = report.slice(marks[k].start, k + 1 < marks.length ? marks[k + 1].start : report.length);
+    const pick = (label, stopLabel) => {
+      const r = new RegExp(`#\\s*第\\s*\\d+\\s*题${label}([\\s\\S]*?)(?=#\\s*第\\s*\\d+\\s*题${stopLabel}|$)`);
+      const mm = seg.match(r);
+      return mm ? mm[1].trim() : '';
+    };
+    const text = pick('转录', '做题痕迹');
+    const trace = pick('做题痕迹', '转录');
+    if (text && text.length > 5) {
+      const idxM = seg.match(/#\s*第\s*(\d+)\s*题/);
+      items.push({ index: idxM ? +idxM[1] : k + 1, text, traceReport: trace, bbox: marks[k].bbox, type: guessType(text) });
+    }
+  }
+  return items;
+}
+
+// 按 bbox（0-1000 归一化）裁剪归一化位图并上传云存储
+async function cropAndUpload(bmp, bbox, uid, batchId, photoIdx, qIndex) {
+  const W = bmp.width, H = bmp.height;
+  const x = Math.max(0, Math.round(bbox[0] / 1000 * W));
+  const y = Math.max(0, Math.round(bbox[1] / 1000 * H));
+  const w = Math.max(1, Math.min(Math.round((bbox[2] - bbox[0]) / 1000 * W), W - x));
+  const h = Math.max(1, Math.min(Math.round((bbox[3] - bbox[1]) / 1000 * H), H - y));
+  const crop = ic.cropBitmap(bmp, x, y, w, h);
+  const buf = ic.encodeJpeg(crop, 85);
+  const up = await cloud.uploadFile({
+    cloudPath: `photos/${uid}/crops/${batchId}_p${photoIdx}_q${qIndex}.jpg`,
+    fileContent: buf,
+  });
+  return up.fileID;
 }
 
 // ============ 主入口：转录 + AI 拆题 + 建 pending 题（判定由 judgeOne 逐题做） ============
@@ -223,11 +268,20 @@ exports.main = async (event) => {
     let totalQuestions = 0, failedCount = 0;
     const questions = [];
 
-    // ① 并行视觉转录
-    const visionTasks = photoFileIds.map(async (fileId) => {
+    // ① 并行：归一化下载 + 视觉转录（bbox 自切题，一次调用完成转录+痕迹+定位）
+    const visionTasks = photoFileIds.map(async (fileId, photoIdx) => {
       try {
-        const report = await qwenVision(fileId);
-        return { success: true, fileId, report };
+        const { bmp, orientation, angle } = await downloadAndNormalize(fileId);
+        if (angle) console.log(`[diagnose] ${fileId} EXIF orientation=${orientation}，预旋转 ${angle}°`);
+        const report = await qwenVisionDataUrl(bmpToDataUrl(bmp));
+        let items = parseStructuredQuestions(report);
+        if (items.length === 0) {
+          // 回退：无 bbox 结构 → 旧 DS 拆题路径（无裁剪图，痕迹从整页文本按题摘取）
+          const plain = report.replace(/^###\s*bbox:.*$/gm, '');
+          const splitItems = await aiSplitQuestions(plain); // 抛错则走下方 catch
+          items = splitItems.map((it) => ({ ...it, bbox: null }));
+        }
+        return { success: true, fileId, bmp, report, items, photoIdx };
       } catch (e) {
         return { success: false, fileId, error: e.message };
       }
@@ -278,14 +332,23 @@ exports.main = async (event) => {
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
         const index1 = item.index || i + 1;
-        const traceReport = pickTraceReport(item.traceReport, vr.report, index1);
+        let traceReport = item.traceReport || pickTraceReport(item.traceReport, vr.report, index1) || '';
+        // 切题 v1：按 bbox 裁剪单题图（judgeOne 精读痕迹用）；失败不阻断建题
+        let cropFileID = null;
+        if (item.bbox) {
+          try {
+            cropFileID = await cropAndUpload(vr.bmp, item.bbox, openid, batchId, vr.photoIdx, index1);
+          } catch (e) {
+            console.warn('[diagnose] 裁剪上传失败（继续无裁剪建题）:', e.message);
+          }
+        }
         totalQuestions++;
         const qIns = await db.collection('questions').add({
           data: {
             _openid: openid, userId: openid, batchId, imageFileId: vr.fileId,
             questionText: item.text, questionType: item.type || '其他',
             isCorrect: null, nodeStatus: 'unmapped', source: 'photo',
-            traceReport, revisions: [], createdAt: db.serverDate(),
+            traceReport, cropFileID, revisions: [], createdAt: db.serverDate(),
           },
         });
         questions.push({ questionId: qIns._id, status: 'pending' });

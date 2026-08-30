@@ -341,8 +341,46 @@ L11(0.98-0.999) 纯原创，全球个位数能解
 `;
 
 // ============ 单题判定 ============
+// 切题 v1：单题裁剪图 → Qwen 精读痕迹（失败回退整页文本痕迹，不阻断判定）
+const TRACE_CROP_PROMPT = `你是数学学习诊断助手的痕迹判读阶段。图中是一道数学题（含学生手写作答）。请精确描述学生手写痕迹：
+1) 手写答案/结论：逐字符精确（≥≤><=符号不能错），写在哪个位置（题末括号内/选项旁/过程中）；
+2) 涂改、圈画、划线：画在了什么对象上（哪个选项/哪个词/哪步算式），动作是什么（圈选=选择还是叉=排除）；
+3) 解题过程：书写到哪一步、有没有中途停顿或换思路；
+4) 完全无手写痕迹则写「整题空白未下笔」。
+不确定处标(不确定)。只输出痕迹描述，不要解题、不要评价难度。`;
+
+async function qwenTraceFromCrop(fileId) {
+  const file = await cloud.getTempFileURL({ fileList: [fileId] });
+  const url = file.fileList[0] && file.fileList[0].tempFileURL;
+  if (!url) throw new Error('crop tempURL 为空');
+  const imageResp = await fetch(url);
+  const buffer = Buffer.from(await imageResp.arrayBuffer());
+  const ext = (String(fileId).split('.').pop() || 'jpg').toLowerCase();
+  const mime = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png' }[ext] || 'image/jpeg';
+  const data = await postJSON(`${QWEN_BASE_URL}/chat/completions`, {
+    model: process.env.QWEN_VL_MODEL || 'qwen3.7-plus',
+    messages: [{ role: 'user', content: [
+      { type: 'image_url', image_url: { url: `data:${mime};base64,${buffer.toString('base64')}` } },
+      { type: 'text', text: TRACE_CROP_PROMPT },
+    ] }],
+    max_tokens: 1500,
+    enable_thinking: false,
+  }, QWEN_API_KEY);
+  return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
+}
+
 async function judgeQuestion(question, ragContext) {
   const ragSection = ragContext ? `\n\n【历史参考（仅供参考不强制）】\n${ragContext}` : '';
+  // 切题 v1：有单题裁剪图 → 精读痕迹替代整页文本痕迹
+  let traceInput = (question.traceReport || '').slice(0, 1500);
+  if (question.cropFileID) {
+    try {
+      const cropTrace = await qwenTraceFromCrop(question.cropFileID);
+      if (cropTrace && cropTrace.trim()) traceInput = cropTrace.trim().slice(0, 1500);
+    } catch (e) {
+      console.warn('[judgeOne] 裁剪图痕迹精读失败，回退整页痕迹:', e.message);
+    }
+  }
   // isRecallQuestion 字段保留输出（未来报告/统计可用），当前掌握度逻辑不再区分回忆/应用（2026-08-14 K 整题更新）
   const userMsg = `输入是一道题的视觉转录上下文（题目文本 + 整图痕迹，可能含转录误差）。对这道题做四件事：
 
@@ -363,7 +401,7 @@ async function judgeQuestion(question, ragContext) {
     temperature: 0.2,                      // 决策 023：低温稳定档位
     messages: [
       { role: 'system', content: '你是严谨的数学诊断推理引擎。先学生视角感受难度，再对照 L1-L11 标尺判档，最后判定作答。输出纯 JSON。' },
-      { role: 'user', content: userMsg + '\n\n===== L1-L11 标尺 =====\n' + RUBRIC_V2 + ragSection + '\n\n===== 本题上下文 =====\n题目：' + question.questionText + '\n\n【学生作答痕迹（仅用于判定对错/P/η/归因，严禁用于评估难度——难度是题目固有属性，与作答过程无关）】\n' + (question.traceReport || '').slice(0, 1500) },
+      { role: 'user', content: userMsg + '\n\n===== L1-L11 标尺 =====\n' + RUBRIC_V2 + ragSection + '\n\n===== 本题上下文 =====\n题目：' + question.questionText + '\n\n【学生作答痕迹（仅用于判定对错/P/η/归因，严禁用于评估难度——难度是题目固有属性，与作答过程无关）】\n' + traceInput },
     ],
     max_tokens: 8000,
   }, DS_API_KEY);

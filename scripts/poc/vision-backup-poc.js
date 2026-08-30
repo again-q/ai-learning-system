@@ -112,6 +112,12 @@ async function callVision(leg, imagePath) {
         const r = await callVision(leg, img);
         if (!r.ok) { console.log(` 失败(${r.ms}ms)\n  ${r.error}`); continue; }
         console.log(` ${(r.ms / 1000).toFixed(1)}s, ${r.chars} 字, 转录节:${r.hasTranscribe ? '有' : '无'}, 痕迹节:${r.hasTrace ? '有' : '无'}${r.usage ? `, tokens ${r.usage.prompt_tokens}/${r.usage.completion_tokens}` : ''}`);
+        const outDir = '/tmp/qbbox/comparison';
+        fs.mkdirSync(outDir, { recursive: true });
+        const tag = leg.name.includes('Qwen') ? 'qwen' : 'ds';
+        const outFile = path.join(outDir, `${path.basename(img).replace(/\\.[^.]+$/, '')}_${tag}.md`);
+        fs.writeFileSync(outFile, `模型: ${leg.model}\n耗时: ${r.ms}ms\nusage: ${JSON.stringify(r.usage)}\n\n${r.content}`);
+        console.log('  全文→ ' + outFile);
         console.log('  ——输出前 400 字——');
         console.log(r.content.slice(0, 400).split('\n').map((l) => '  ' + l).join('\n'));
       } catch (e) {
