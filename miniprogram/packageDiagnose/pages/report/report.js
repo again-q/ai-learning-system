@@ -1,5 +1,5 @@
 const log = require('../../../utils/upload-log');
-const { unescapeUnderscore } = require('../../utils/latex');
+const { renderMathText, unescapeUnderscore } = require('../../utils/latex');
 const app = getApp();
 
 const GEN_STAGES = [
@@ -21,6 +21,15 @@ function isTimeoutError(msg) {
   return /timeout|timed out|TIME_LIMIT|ESOCKETTIMEDOUT|-501002/i.test(msg || '');
 }
 
+// 题型三层：领域/模式/变体（domain / pattern / variant），只取中间粒度（去掉最宽最细两端）
+function midPattern(p) {
+  if (!p) return '';
+  const parts = String(p).split('/').map((s) => s.trim()).filter(Boolean);
+  if (parts.length <= 1) return parts[0] || '';
+  if (parts.length === 2) return parts[1];
+  return parts[Math.floor((parts.length - 1) / 2)] || parts[0] || '';
+}
+
 Page({
   data: {
     loading: true,
@@ -35,6 +44,20 @@ Page({
     reportElapsedSec: 0,
     reportStageIndex: 0,
     genStages: GEN_STAGES,
+    // 逐题内联详情
+    activeQid: null,
+    detail: null,
+    // 进阶分析（直接分析当前题）
+    advLoading: false,
+    advResult: null,
+    advInsufficient: false,
+    advCount: 0,
+    // 题型异议
+    disputeVisible: false,
+    disputeText: '',
+    disputeLoading: false,
+    disputeResult: null,
+    disputeAccepted: false,
   },
 
   async onLoad(options) {
@@ -182,6 +205,7 @@ Page({
       ...q,
       idx: i,
       text: unescapeUnderscore(String(q.questionText || '').replace(/\$[^$]*\$/g, '…')).slice(0, 42),
+      patternMid: midPattern(q.pattern),
       ok: q.status !== '错',
     }));
     const correct = qs.filter((q) => q.ok).length;
@@ -195,12 +219,79 @@ Page({
     }, extra || {}));
   },
 
-  // ============ 跳转单题详情 ============
-  openDetail(e) {
-    const qid = e.currentTarget.dataset.id || e.currentTarget.dataset.qid;
+  // ============ 逐题内联展开 ============
+  toggleQuestion(e) {
+    const qid = e.currentTarget.dataset.qid;
     if (!qid) return;
-    wx.navigateTo({ url: '/packageDiagnose/pages/question-detail/question-detail?questionId=' + qid });
+    if (this.data.activeQid === qid) { this.setData({ activeQid: null, detail: null }); return; }
+    this.setData({ activeQid: qid, detail: null, advResult: null, advInsufficient: false });
+    this.loadDetail(qid);
   },
+
+  async loadDetail(qid) {
+    try {
+      const res = await wx.cloud.callFunction({ name: 'reportService', data: { action: 'questionDetail', questionId: qid, userId: getOpenid() } });
+      const d = res.result;
+      if (this.data.activeQid !== qid) return; // 已切换/收起
+      if (d && d.code === 0 && d.data) {
+        const dd = d.data;
+        dd.questionNodes = renderMathText(unescapeUnderscore(dd.questionText || ''));
+        dd.progressNodes = renderMathText(dd.progressNarrative || '');
+        const da = dd.diffAnalysis || {};
+        dd.diffFact = da.fact || '';
+        dd.diffInference = da.inference || '';
+        dd.diffHook = da.hook || '';
+        dd.patternMid = midPattern(dd.pattern);
+        this.setData({ detail: dd });
+      } else {
+        this.setData({ activeQid: null });
+        wx.showToast({ title: '题目读取失败', icon: 'none' });
+      }
+    } catch (e) {
+      if (this.data.activeQid === qid) { this.setData({ activeQid: null }); }
+      wx.showToast({ title: '题目读取失败', icon: 'none' });
+    }
+  },
+
+  // ============ 题型异议 ============
+  openPatternDispute() { this.setData({ disputeVisible: true, disputeText: '', disputeResult: null }); },
+  closeDispute() { this.setData({ disputeVisible: false }); },
+  onDisputeInput(e) { this.setData({ disputeText: e.detail.value }); },
+
+  submitPatternDispute() {
+    const proposal = (this.data.disputeText || '').trim();
+    const questionId = this.data.detail && this.data.detail.questionId;
+    if (!proposal || !questionId) return;
+    this.setData({ disputeLoading: true, disputeResult: null });
+    wx.cloud.callFunction({ name: 'reportService', data: { action: 'disputePattern', questionId, proposal, userId: getOpenid() } })
+      .then((res) => {
+        const d = res.result;
+        if (d && d.code === 0) {
+          this.setData({ disputeLoading: false, disputeAccepted: !!d.data.accepted, disputeResult: d.data.comment || (d.data.accepted ? '已接受' : '未接受') });
+          if (d.data.accepted) { this.setData({ 'detail.patternMid': midPattern(proposal) }); }
+        } else {
+          this.setData({ disputeLoading: false, disputeResult: (d && d.message) || '判定失败，请重试' });
+        }
+      })
+      .catch(() => this.setData({ disputeLoading: false, disputeResult: '网络异常，请重试' }));
+  },
+
+  // ============ 进阶分析（唯一入口：直接分析本题） ============
+  runCurrentAdvanced() {
+    const questionId = this.data.detail && this.data.detail.questionId;
+    if (!questionId) return;
+    this.setData({ advLoading: true, advResult: null, advInsufficient: false });
+    wx.cloud.callFunction({ name: 'reportService', data: { action: 'advancedAnalysis', questionId, userId: getOpenid() } }).then((res) => {
+      const d = res.result;
+      if (d && d.code === 0) {
+        this.setData({ advLoading: false, advResult: d.data.insufficient ? null : d.data.analysis, advInsufficient: !!d.data.insufficient, advCount: d.data.count || 0 });
+      } else {
+        this.setData({ advLoading: false, advResult: null, advInsufficient: true, advCount: 0 });
+      }
+    }).catch(() => this.setData({ advLoading: false, advInsufficient: true, advCount: 0 }));
+  },
+
+  noop() {},
 
   retry() {
     if (this.data.batchId) { this.loadReport(this.data.batchId); }

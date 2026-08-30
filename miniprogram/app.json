@@ -15,8 +15,7 @@
         "pages/review/review",
         "pages/report/report",
         "pages/pattern-trajectory/pattern-trajectory",
-        "pages/latex-demo/latex-demo",
-        "pages/question-detail/question-detail"
+        "pages/latex-demo/latex-demo"
       ]
     },
     {
