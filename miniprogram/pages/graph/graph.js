@@ -29,6 +29,7 @@ Page({
     loading: true,
     isTab: true,         // app.json tabBar「图谱」页：恒为 tab，不可 navigateTo
     mode: 'tree',        // 'tree' | 'evo'
+    showMoreHint: false,
     crumb: [],
     showUp: false,
     isStructural: true,
@@ -228,6 +229,26 @@ Page({
       focus: this.buildFocus(kids, isStructural),
       rows: isStructural ? this.buildRows(kids) : [],
       groups: isStructural ? [] : this.buildGroups(kids)
+    });
+    wx.nextTick(() => this.initScrollHint());
+  },
+
+  // 底部下滑引导：内容超一屏显示，滚到底隐藏
+  onBodyScroll(e) {
+    const vh = this._bodyH || 0;
+    const total = (e.detail && e.detail.scrollHeight) || 0;
+    if (vh && total) this.setData({ showMoreHint: (e.detail.scrollTop + vh) < (total - 8) });
+  },
+  initScrollHint() {
+    const q = wx.createSelectorQuery();
+    q.select('.body').boundingClientRect();
+    q.select('.body').scrollOffset();
+    q.exec((r) => {
+      const rect = r && r[0], off = r && r[1];
+      const vh = rect && rect.height;
+      const total = off && off.scrollHeight;
+      this._bodyH = vh;
+      if (vh && total) this.setData({ showMoreHint: total > vh + 8 });
     });
   },
 

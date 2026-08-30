@@ -36,7 +36,7 @@
   </view>
 
   <!-- ===== 目录模式：焦点卡 + 列表/卡片网格 ===== -->
-  <scroll-view class="body" scroll-y wx:if="{{mode === 'tree'}}">
+  <scroll-view class="body" scroll-y wx:if="{{mode === 'tree'}}" bindscroll="onBodyScroll">
     <view class="focus-bar" wx:if="{{focus}}">
       <view class="up-pill" wx:if="{{showUp}}" bindtap="onUpTap">‹ 上一级</view>
       <text class="focus-name">{{focus.name}}</text>
@@ -90,6 +90,9 @@
       </view>
     </block>
   </scroll-view>
+
+  <!-- 底部下滑引导 -->
+  <view class="scroll-hint" wx:if="{{mode === 'tree' && showMoreHint}}">↓ 向下滑动，查看更多</view>
 
   <!-- ===== 演化模式：前置依赖链 ===== -->
   <view class="evo-view" wx:if="{{mode === 'evo'}}">

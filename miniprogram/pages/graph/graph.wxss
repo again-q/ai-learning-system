@@ -412,3 +412,13 @@ page {
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* 底部下滑引导 */
+.scroll-hint {
+  position: fixed; left: 0; right: 0;
+  bottom: calc(env(safe-area-inset-bottom) + 20rpx);
+  text-align: center; font-size: 24rpx; color: #999;
+  padding: 14rpx;
+  z-index: 10;
+  background: linear-gradient(180deg, rgba(246,247,249,0) 0%, rgba(246,247,249,0.92) 70%);
+}
