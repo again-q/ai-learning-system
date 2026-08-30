@@ -187,6 +187,7 @@
 .qitem.active { background: #f7f8fa; border-radius: 12rpx; }
 .qitem-evol { color: #007aff; font-size: 30rpx; font-weight: 600; margin-left: 12rpx; }
 .detail-loading { padding: 28rpx; text-align: center; font-size: 26rpx; color: #999; }
+.detail-collapse { text-align: center; font-size: 26rpx; color: #007aff; padding: 12rpx 0 4rpx; }
 .detail-inline { padding: 4rpx 0 8rpx; }
 .adv-inline { margin-top: 12rpx; }
 

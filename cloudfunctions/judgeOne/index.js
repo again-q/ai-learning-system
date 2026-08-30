@@ -615,6 +615,12 @@ exports.main = async (event) => {
     const rawET = String(raw.errorType || '').trim();
     const derivedErrorType = (rawET === '结果错' || rawET === '过程风险') ? rawET
       : (clamped.P < 0.5 ? '结果错' : (clamped.P < 1 ? '过程风险' : '无'));
+
+    // ===== 选填题无过程（选择/填空）：不允许"过程风险"（没有过程可扣分），按答案判 结果错/无 =====
+    const isNoProcess = raw.processAvailable !== true;
+    if (isNoProcess && derivedErrorType === '过程风险') {
+      derivedErrorType = clamped.P < 0.5 ? '结果错' : '无';
+    }
     // ===== 错误层级（skill/rule/concept）：优先 LLM，缺失按 errorDimension 映射防御回退 =====
     const rawEL = String(raw.errorLevel || '').trim();
     const derivedErrorLevel = (derivedErrorType === '无') ? null

@@ -244,6 +244,8 @@ Page({
     this.loadDetail(qid);
   },
 
+  collapseDetail() { this.setData({ activeQid: null, detail: null }); },
+
   async loadDetail(qid) {
     try {
       const res = await wx.cloud.callFunction({ name: 'reportService', data: { action: 'questionDetail', questionId: qid, userId: getOpenid() } });
@@ -256,6 +258,9 @@ Page({
         dd.diagComment = diag.comment || '';
         dd.diagInference = diag.inference || '';
         dd.diagHook = diag.hook || '';
+        dd.diagCommentNodes = renderMathText(dd.diagComment);
+        dd.diagInferenceNodes = renderMathText(dd.diagInference);
+        dd.diagHookNodes = renderMathText(dd.diagHook);
         dd.patternMid = midPattern(dd.pattern);
         this.setData({ detail: dd });
       } else {

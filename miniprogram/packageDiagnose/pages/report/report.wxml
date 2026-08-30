@@ -80,6 +80,7 @@
         <block wx:if="{{activeQid === qq.questionId}}">
           <view class="detail-loading" wx:if="{{!detail}}">加载中…</view>
           <view class="detail-inline" wx:else>
+            <view class="detail-collapse" bindtap="collapseDetail">▲ 收起本题</view>
             <view class="step-card">
               <view class="step-card-h"><text class="step-card-t">题目</text></view>
               <rich-text class="q-plain" nodes="{{detail.questionNodes}}"></rich-text>
@@ -96,15 +97,15 @@
             </view>
             <view class="step-card" wx:if="{{detail.diagComment}}">
               <view class="step-card-h"><text class="step-card-t">过程点评</text></view>
-              <view class="sec">{{detail.diagComment}}</view>
+              <view class="sec"><rich-text class="q-plain" nodes="{{detail.diagCommentNodes}}"></rich-text></view>
             </view>
             <view class="step-card" wx:if="{{detail.diagInference}}">
               <view class="step-card-h"><text class="step-card-t">问题在哪儿</text></view>
-              <view class="sec why">{{detail.diagInference}}</view>
+              <view class="sec why"><rich-text class="q-plain" nodes="{{detail.diagInferenceNodes}}"></rich-text></view>
             </view>
             <view class="step-card" wx:if="{{detail.diagHook}}">
               <view class="step-card-h"><text class="step-card-t">下一步</text></view>
-              <view class="sec mind">{{detail.diagHook}}</view>
+              <view class="sec mind"><rich-text class="q-plain" nodes="{{detail.diagHookNodes}}"></rich-text></view>
             </view>
             <view class="step-card">
               <view class="step-card-h"><text class="step-card-t">题型</text><view class="rm-dispute" bindtap="openPatternDispute">题型有异议</view></view>
@@ -128,15 +129,6 @@
           <text class="qitem-text">{{mc.name}}</text>
           <text class="qitem-pattern">{{mc.beforePct}}% → {{mc.afterPct}}%</text>
         </view>
-      </view>
-    </view>
-
-    <!-- 待建知识点（自建节点，暂不作参考） -->
-    <view class="more-title" wx:if="{{report.pendingNodes.length}}">待建知识点</view>
-    <view class="qlist" wx:if="{{report.pendingNodes.length}}">
-      <view class="qitem" wx:for="{{report.pendingNodes}}" wx:key="*this">
-        <text class="qitem-status gray">⏳</text>
-        <view class="qitem-body"><text class="qitem-text">{{item}}</text></view>
       </view>
     </view>
 

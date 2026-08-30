@@ -87,6 +87,8 @@ async function diagnosis(q) {
     '• 错误类型：' + (q.errorType || '无'),
     '• 错误层级 errorLevel：' + (q.errorLevel || '无'),
     '• 过程分 P：' + (q.processScore != null ? q.processScore : ''),
+    '• 是否整题空白：' + (((q.segments && !q.segments.length) && !(q.traceReport || '').trim() && q.processScore < 0.5) ? '是' : '否'),
+    '• 是否有过程（选填题无过程）：' + (q.processAvailable === false ? '无过程' : '有过程'),
     '• 正确路径：' + (q.correctAnswer || '无'),
   ].join('\n');
   const out = await callLLM(readPrompt('diagnosis.txt'), user, 600);
