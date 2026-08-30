@@ -308,6 +308,7 @@ exports.main = async (event) => {
         processScore: d.processScore,
         progressNarrative: d.progressNarrative || '',
         diffAnalysis: d.diffAnalysis || null,
+        diagnosis: d.diagnosis || null,
         pattern: d.pattern || null,
         correctAnswer: d.correctAnswer || '',
       });
@@ -434,7 +435,7 @@ exports.main = async (event) => {
       summary = `${input.stats.totalQuestions} 道题对了 ${input.stats.correctCount} 道${wrongTopics.length ? '，错题集中在' + wrongTopics.join('、') : ''}。`;
     }
 
-    // ② 每题批量并行：进度叙事 + 差异分析（errorType≠无 的题），并发 5
+    // ② 每题批量并行：诊断（过程点评/问题在哪儿/下一步），并发 5
     const qs = input.allQuestions;
     const detailCount = { done: 0, total: qs.length, diff: 0 };
     const CONC = 5;
@@ -444,22 +445,17 @@ exports.main = async (event) => {
         const idx = qi++;
         const q = qs[idx];
         const patch = {};
+        // 诊断（v10）：过程点评 / 问题在哪儿 / 下一步 —— 每题都由诊断引擎生成
         try {
-          const narrative = await genV2.progressNarrative(q);
-          if (narrative) patch.progressNarrative = narrative;
-        } catch (e) {
-          console.warn('[reportService] 进度叙事失败:', q.questionId, e.message);
-        }
-        if (q.errorType && q.errorType !== '无') {
-          try {
-            const da = await genV2.diffAnalysis(q);
-            if (da.fact || da.inference || da.hook) {
-              patch.diffAnalysis = da;
-              detailCount.diff++;
-            }
-          } catch (e) {
-            console.warn('[reportService] 差异分析失败:', q.questionId, e.message);
+          const dg = await genV2.diagnosis(q);
+          if (dg.comment || dg.inference || dg.hook) {
+            patch.diagnosis = dg;
+            detailCount.diff++;
+          } else {
+            console.warn('[reportService] 诊断为空:', q.questionId);
           }
+        } catch (e) {
+          console.warn('[reportService] 诊断失败:', q.questionId, e.message);
         }
         if (Object.keys(patch).length && q.questionId) {
           try {

@@ -76,6 +76,33 @@ function parseSections(text) {
   };
 }
 
+// 诊断（v10）：过程点评/问题在哪儿/下一步 —— 每段由诊断引擎按场景生成
+async function diagnosis(q) {
+  const user = [
+    '输入：',
+    '• 题面：' + (q.questionText || '').slice(0, 500),
+    '• 学生过程痕迹：' + (q.traceReport || '').slice(0, 500),
+    '• 分段：' + JSON.stringify((Array.isArray(q.segments) ? q.segments : []).slice(0, 8)),
+    '• 断点：' + (q.breakpoint ? '第 ' + q.breakpoint.index + ' 步，' + q.breakpoint.nature : '无'),
+    '• 错误类型：' + (q.errorType || '无'),
+    '• 过程分 P：' + (q.processScore != null ? q.processScore : ''),
+    '• 正确路径：' + (q.correctAnswer || '无'),
+  ].join('\n');
+  const out = await callLLM(readPrompt('diagnosis.txt'), user, 600);
+  return parseDiag(out);
+}
+
+function parseDiag(text) {
+  const comment = (text.match(/【过程点评】([\s\S]*?)(?=【问题在哪儿】|$)/) || [])[1];
+  const prob = (text.match(/【问题在哪儿】([\s\S]*?)(?=【下一步】|$)/) || [])[1];
+  const hook = (text.match(/【下一步】([\s\S]*?)$/) || [])[1];
+  return {
+    comment: (comment || '').trim(),
+    inference: (prob || '').trim(),
+    hook: (hook || '').trim(),
+  };
+}
+
 // 进阶分析：召回 hits → 时间线演变 + 重要结论
 async function advancedAnalysis(pattern, hits) {
   const user = JSON.stringify({
@@ -104,4 +131,4 @@ async function disputePattern(originalPattern, studentProposal) {
   }
 }
 
-module.exports = { batchSummary, progressNarrative, diffAnalysis, advancedAnalysis, disputePattern, parseSections };
+module.exports = { batchSummary, progressNarrative, diffAnalysis, diagnosis, parseDiag, advancedAnalysis, disputePattern, parseSections };

@@ -76,15 +76,17 @@
                 <view class="seg-body"><text class="seg-step">{{sg.step}}</text></view>
               </view>
             </view>
-            <view class="step-card" wx:if="{{detail.progressNarrative || detail.diffFact || detail.diffInference}}">
-              <view class="step-card-h"><text class="step-card-t">为什么</text></view>
-              <rich-text class="q-plain" wx:if="{{detail.progressNarrative}}" nodes="{{detail.progressNodes}}"></rich-text>
-              <view class="sec" wx:if="{{detail.diffFact}}">{{detail.diffFact}}</view>
-              <view class="sec" wx:if="{{detail.diffInference}}">{{detail.diffInference}}</view>
+            <view class="step-card" wx:if="{{detail.diagComment}}">
+              <view class="step-card-h"><text class="step-card-t">过程点评</text></view>
+              <view class="sec">{{detail.diagComment}}</view>
             </view>
-            <view class="step-card" wx:if="{{detail.diffHook}}">
-              <view class="step-card-h"><text class="step-card-t">想一想</text></view>
-              <view class="sec">{{detail.diffHook}}</view>
+            <view class="step-card" wx:if="{{detail.diagInference}}">
+              <view class="step-card-h"><text class="step-card-t">问题在哪儿</text></view>
+              <view class="sec why">{{detail.diagInference}}</view>
+            </view>
+            <view class="step-card" wx:if="{{detail.diagHook}}">
+              <view class="step-card-h"><text class="step-card-t">下一步</text></view>
+              <view class="sec mind">{{detail.diagHook}}</view>
             </view>
             <view class="step-card">
               <view class="step-card-h"><text class="step-card-t">题型</text><view class="rm-dispute" bindtap="openPatternDispute">题型有异议</view></view>

@@ -236,11 +236,10 @@ Page({
       if (d && d.code === 0 && d.data) {
         const dd = d.data;
         dd.questionNodes = renderMathText(unescapeUnderscore(dd.questionText || ''));
-        dd.progressNodes = renderMathText(dd.progressNarrative || '');
-        const da = dd.diffAnalysis || {};
-        dd.diffFact = da.fact || '';
-        dd.diffInference = da.inference || '';
-        dd.diffHook = da.hook || '';
+        const diag = dd.diagnosis || {};
+        dd.diagComment = diag.comment || '';
+        dd.diagInference = diag.inference || '';
+        dd.diagHook = diag.hook || '';
         dd.patternMid = midPattern(dd.pattern);
         this.setData({ detail: dd });
       } else {
