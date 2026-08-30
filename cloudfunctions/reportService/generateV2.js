@@ -13,6 +13,8 @@ const DS_MODEL = process.env.DS_MODEL || 'deepseek-v4-flash';
 
 const readPrompt = (name) => fs.readFileSync(path.join(__dirname, 'prompts', name), 'utf8');
 
+let LLM_COST = { prompt: 0, completion: 0, calls: 0 };
+function getCost() { return { prompt: LLM_COST.prompt, completion: LLM_COST.completion, calls: LLM_COST.calls }; }
 async function callLLM(systemPrompt, userMsg, maxTokens = 1500) {
   const resp = await fetch(`${DS_BASE_URL}/chat/completions`, {
     method: 'POST',
@@ -30,6 +32,10 @@ async function callLLM(systemPrompt, userMsg, maxTokens = 1500) {
   });
   if (!resp.ok) throw new Error('LLM HTTP ' + resp.status + ': ' + (await resp.text()).slice(0, 200));
   const data = await resp.json();
+  const u = (data && data.usage) || {};
+  const pt = u.prompt_tokens || 0, ct = u.completion_tokens || 0;
+  LLM_COST.prompt += pt; LLM_COST.completion += ct; LLM_COST.calls++;
+  console.log('[llm-cost] prompt=' + pt + ' completion=' + ct + ' | cum_prompt=' + LLM_COST.prompt + ' cum_completion=' + LLM_COST.completion + ' calls=' + LLM_COST.calls);
   return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
 }
 
@@ -137,4 +143,4 @@ async function disputePattern(originalPattern, studentProposal) {
   }
 }
 
-module.exports = { batchSummary, progressNarrative, diffAnalysis, diagnosis, parseDiag, advancedAnalysis, disputePattern, parseSections };
+module.exports = { batchSummary, progressNarrative, diffAnalysis, diagnosis, parseDiag, advancedAnalysis, disputePattern, parseSections, getCost };

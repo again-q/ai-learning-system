@@ -536,6 +536,9 @@ exports.main = async (event) => {
     });
     await logDebug('reportService.saved_v2', openid, batchId, { reportId: ins._id, questions: qs.length, diffCount: detailCount.diff });
     await writeProgress(batchId, 4, '报告已生成', 100);
+    const rc = genV2.getCost();
+    if (rc.calls) console.log('[report-cost-total] calls=' + rc.calls + ' prompt=' + rc.prompt + ' completion=' + rc.completion);
+    await logDebug('reportService.cost', openid, batchId, rc);
 
     return success({ reportId: ins._id, report });
   } catch (e) {
