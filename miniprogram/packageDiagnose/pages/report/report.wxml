@@ -96,9 +96,9 @@
       <rich-text class="q-plain" nodes="{{detail.questionNodes}}"></rich-text>
     </view>
 
-    <!-- ① 你的过程（图 + 分段，可回看） -->
+    <!-- 你的过程（图 + 分段，可回看） -->
     <view class="step-card" wx:if="{{detail.cropFileID || detail.segments.length}}">
-      <view class="step-card-h"><text class="step-card-t">① 你的过程</text></view>
+      <view class="step-card-h"><text class="step-card-t">你的过程</text></view>
       <image class="crop-img" wx:if="{{detail.cropFileID}}" src="{{detail.cropFileID}}" mode="widthFix" />
       <view class="seg" wx:for="{{detail.segments}}" wx:key="step" wx:for-item="sg">
         <text class="seg-status {{sg.status === '断' ? 'bad' : sg.status === '空白' ? 'gray' : 'ok'}}">{{sg.status === '断' ? '✗' : (sg.status === '空白' ? '○' : '✓')}}</text>
@@ -106,17 +106,17 @@
       </view>
     </view>
 
-    <!-- ② 为什么（流畅叙事，不标概念） -->
+    <!-- 为什么（流畅叙事，不标概念） -->
     <view class="step-card" wx:if="{{detail.progressNarrative || detail.diffFact || detail.diffInference}}">
-      <view class="step-card-h"><text class="step-card-t">② 为什么</text></view>
+      <view class="step-card-h"><text class="step-card-t">为什么</text></view>
       <rich-text class="q-plain" wx:if="{{detail.progressNarrative}}" nodes="{{detail.progressNodes}}"></rich-text>
       <view class="sec" wx:if="{{detail.diffFact}}">{{detail.diffFact}}</view>
       <view class="sec" wx:if="{{detail.diffInference}}">{{detail.diffInference}}</view>
     </view>
 
-    <!-- ③ 想一想（钩子/种子） -->
+    <!-- 想一想（钩子/种子） -->
     <view class="step-card" wx:if="{{detail.diffHook}}">
-      <view class="step-card-h"><text class="step-card-t">③ 想一想</text></view>
+      <view class="step-card-h"><text class="step-card-t">想一想</text></view>
       <view class="sec">{{detail.diffHook}}</view>
     </view>
 
