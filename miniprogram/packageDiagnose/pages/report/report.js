@@ -184,37 +184,67 @@ Page({
       clearInterval(this._progressTimer);
       this._progressTimer = null;
     }
+    if (this._elapsedTimer) {
+      clearInterval(this._elapsedTimer);
+      this._elapsedTimer = null;
+    }
+    if (this._watcher) {
+      try { this._watcher.close(); } catch (_) {}
+      this._watcher = null;
+    }
   },
 
-  // 真实进度轮询：reportService.getProgress 读 batches.reportProgress（生成端实时写入）
+  // 真实进度：优先实时数据推送（服务端写 batches.reportProgress 即推送，无需轮询）；watch 不可用回退 2.5s 轮询
   startProgressTicker(batchId) {
     this.stopProgressTicker();
     const started = Date.now();
+    const applyProgress = (p) => {
+      if (!p || typeof p.stageIndex !== 'number') return;
+      const stage = GEN_STAGES[Math.min(p.stageIndex, GEN_STAGES.length - 1)] || {};
+      this.setData({
+        reportProgressText: p.detail || stage.text || '生成中…',
+        reportStageIndex: Math.min(p.stageIndex, GEN_STAGES.length - 1),
+      });
+    };
+    try {
+      const db = wx.cloud.database();
+      this._watcher = db.collection('batches').doc(batchId).watch({
+        onChange: (snap) => {
+          const doc = snap && snap.docs && snap.docs[0];
+          if (doc) applyProgress(doc.reportProgress);
+        },
+        onError: (err) => {
+          console.warn('[report] 实时推送不可用，回退轮询:', (err && err.message) || err);
+          this._watcher = null;
+          this._startProgressPoll(batchId, applyProgress);
+        },
+      });
+    } catch (e) {
+      console.warn('[report] watch 启动失败，回退轮询:', e.message);
+      this._startProgressPoll(batchId, applyProgress);
+    }
+    // 等待秒数：独立 1s 计时，与进度来源解耦
+    this._elapsedTimer = setInterval(() => {
+      this.setData({ reportElapsedSec: Math.floor((Date.now() - started) / 1000) });
+    }, 1000);
+  },
+
+  // 回退：轮询 getProgress（watch 被集合权限拒绝等场景自动降级）
+  _startProgressPoll(batchId, applyProgress) {
+    if (this._progressTimer) return;
     const tick = async () => {
       if (this._progressBusy) return;
       this._progressBusy = true;
       try {
-        const sec = Math.floor((Date.now() - started) / 1000);
-        let next = { reportElapsedSec: sec };
-        try {
-          const res = await wx.cloud.callFunction({
-            name: 'reportService',
-            data: { action: 'getProgress', batchId, userId: getOpenid() },
-          });
-          const d = res.result;
-          const p = d && d.code === 0 && d.data ? d.data.progress : null;
-          if (p && typeof p.stageIndex === 'number') {
-            const stage = GEN_STAGES[Math.min(p.stageIndex, GEN_STAGES.length - 1)] || {};
-            next.reportProgressText = p.detail || stage.text || '生成中…';
-            next.reportStageIndex = Math.min(p.stageIndex, GEN_STAGES.length - 1);
-          } else {
-            next.reportProgressText = GEN_STAGES[0].text;
-            next.reportStageIndex = 0;
-          }
-        } catch (e) {
-          // 进度查询失败不打断生成：保底只更新计时
-        }
-        this.setData(next);
+        const res = await wx.cloud.callFunction({
+          name: 'reportService',
+          data: { action: 'getProgress', batchId, userId: getOpenid() },
+        });
+        const d = res.result;
+        const p = d && d.code === 0 && d.data ? d.data.progress : null;
+        if (p) applyProgress(p);
+      } catch (e) {
+        // 查询失败不打断生成
       } finally {
         this._progressBusy = false;
       }
