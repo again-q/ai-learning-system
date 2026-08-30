@@ -1,6 +1,7 @@
 const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
+const _ = db.command;
 
 const success = (data = null) => ({ code: 0, data, message: 'ok' });
 const fail = (code, msg) => ({ code, data: null, message: msg });
@@ -81,6 +82,36 @@ async function patternTrajectory(userId, nodeFilter) {
   return { patterns };
 }
 
+// ============ 掌握度总览（宪法 §4.4 加权得分法的全局推广） ============
+// K = ΣS_k / ΣD_k（等价于所有作答题目按难度 D 加权平均过程分 P）
+async function masteryOverview(userId) {
+  const res = await db.collection('knowledge_progress')
+    .where({ userId }).limit(1000).get();
+  const rows = res.data || [];
+  let S = 0, D = 0;
+  for (const r of rows) {
+    S += Number(r.sValue) || 0;
+    D += Number(r.dValue) || 0;
+  }
+  const k = D > 0 ? S / D : null; // 0~1，无数据时 null
+  // 最弱 3 个知识点（mastery 升序；名称回 knowledge_nodes 补）
+  const weak = [...rows]
+    .sort((a, b) => (a.mastery != null ? a.mastery : 1) - (b.mastery != null ? b.mastery : 1))
+    .slice(0, 3);
+  const ids = weak.map((w) => w.knowledgeNodeId).filter(Boolean);
+  let weakNodes = [];
+  if (ids.length) {
+    const nr = await db.collection('knowledge_nodes')
+      .where({ _id: _.in(ids) }).limit(5).get();
+    weakNodes = nr.data.map((n) => n.name).filter(Boolean);
+  }
+  return {
+    masteryPercent: k == null ? null : Math.round(k * 100),
+    nodeCount: rows.length,
+    weakNodes,
+  };
+}
+
 exports.main = async (event) => {
   try {
     // 身份：小程序调用 OPENID 必有；云函数互调/测试场景用调用方显式传入的 userId
@@ -91,6 +122,11 @@ exports.main = async (event) => {
     // 题型轨迹：不依赖单批次，先分流
     if (event.action === 'patternTrajectory') {
       return success(await patternTrajectory(openid, event.pattern || null));
+    }
+
+    // 掌握度总览：不依赖单批次
+    if (event.action === 'overview') {
+      return success(await masteryOverview(openid));
     }
 
     const { batchId } = event;

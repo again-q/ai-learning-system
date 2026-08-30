@@ -7,10 +7,10 @@ Page({
     subjectIndex: 0,
     currentSubject: '数学',
     userName: '同学',
-    mastery: 78,
+    mastery: 0,
     streak: 7,
     todayMinutes: 45,
-    suggestion: '今天建议先复习二次函数的顶点公式和判别式，这两个知识点目前的掌握度偏低，但它们是后续学习的基础。完成后可以尝试做3道练习题巩固。'
+    suggestion: '掌握度加载中...'
   },
 
   onLoad() {
@@ -22,6 +22,33 @@ Page({
       });
     }
     this.drawRing(this.data.mastery);
+  },
+
+  // 首页掌握度接真数据（宪法加权得分法：statService.overview，K=ΣS/ΣD）
+  loadMastery() {
+    wx.cloud.callFunction({
+      name: 'statService',
+      data: { action: 'overview' },
+    }).then((res) => {
+      const d = res.result && res.result.code === 0 ? res.result.data : null;
+      if (!d || d.masteryPercent == null) {
+        this._overview = { masteryPercent: 0, suggestion: '暂无掌握度数据——去拍一张作业照片，让 AI 帮你建立知识画像。' };
+      } else {
+        const weakText = (d.weakNodes && d.weakNodes.length)
+          ? '掌握度较低：' + d.weakNodes.join('、') + '，建议优先复习。'
+          : '继续练习，掌握度会随每次诊断自动更新。';
+        this._overview = {
+          masteryPercent: d.masteryPercent,
+          suggestion: '已积累 ' + d.nodeCount + ' 个知识点的掌握记录。' + weakText,
+        };
+      }
+      if (this.data.currentSubject === '数学') {
+        this.setData({ mastery: this._overview.masteryPercent, suggestion: this._overview.suggestion });
+        this.drawRing(this._overview.masteryPercent);
+      }
+    }).catch(() => {
+      this.setData({ suggestion: '掌握度加载失败，请稍后重试。' });
+    });
   },
 
   onShow() {
@@ -36,6 +63,8 @@ Page({
       // Canvas 是原生组件不跟随 CSS 过渡，需在淡入后重绘避免残留
       this.drawRing(this.data.mastery);
     }, 16);
+    // 每次回到首页刷新掌握度（诊断完成后返回即见最新）
+    this.loadMastery();
   },
 
   drawRing(pct) {
@@ -69,36 +98,19 @@ Page({
   },
 
   onSubjectChange() {
-    // 切换学科时更新数据和环形图
+    // 切换学科：真实掌握度目前仅数学有图谱数据，其余学科如实显示暂未接入
     const subject = this.data.subjects[this.data.subjectIndex];
-    const mockMastery = {
-      '数学': 78,
-      '英语': 65,
-      '物理': 45,
-      '语文': 82,
-      '化学': 33,
-      '生物': 40,
-      '政治': 60,
-      '历史': 70,
-      '地理': 55
-    };
-    const mockSuggest = {
-      '数学': '今天建议先复习二次函数的顶点公式和判别式，这两个知识点目前的掌握度偏低。',
-      '英语': '建议重点复习现在完成时和过去完成时的区别，这是你最近练习中容易混淆的。',
-      '物理': '牛顿第二定律的应用题错误率较高，建议先回顾 F=ma 的基本概念再做题。',
-      '语文': '文言文实词掌握度不错，今天可以开始练习句子翻译，建议从《论语》选段开始。',
-      '化学': '化学方程式配平是目前的薄弱环节，建议先掌握最小公倍数法再练习。',
-      '生物': '细胞分裂和遗传规律是基础，建议先梳理有丝分裂和减数分裂的区别。',
-      '政治': '唯物辩证法的主要内容需要强化，建议重点复习矛盾观和联系观。',
-      '历史': '近代史时间轴要理清，建议从鸦片战争到辛亥革命做一条完整的时间线。',
-      '地理': '自然地理中的大气环流是难点，建议结合图示理解三圈环流。'
-    };
-    this.setData({
-      currentSubject: subject,
-      mastery: mockMastery[subject],
-      suggestion: mockSuggest[subject]
-    });
-    this.drawRing(mockMastery[subject]);
+    if (subject === '数学' && this._overview) {
+      this.setData({ currentSubject: subject, mastery: this._overview.masteryPercent, suggestion: this._overview.suggestion });
+      this.drawRing(this._overview.masteryPercent);
+    } else if (subject === '数学') {
+      this.setData({ currentSubject: subject, mastery: 0, suggestion: '掌握度加载中...' });
+      this.drawRing(0);
+      this.loadMastery();
+    } else {
+      this.setData({ currentSubject: subject, mastery: 0, suggestion: '「' + subject + '」暂未接入掌握度统计，当前知识图谱覆盖数学。' });
+      this.drawRing(0);
+    }
   },
 
   prevSubject() {
