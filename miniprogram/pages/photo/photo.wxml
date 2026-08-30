@@ -13,7 +13,11 @@
   <view class="content">
     <view class="photo-grid">
       <view class="photo-item" wx:for="{{images}}" wx:key="index">
-        <image class="photo-img" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-index="{{index}}" />
+        <image class="photo-img" src="{{item.path}}" mode="aspectFill" bindtap="previewImage" data-index="{{index}}" />
+        <view class="quality-fail" wx:if="{{item.qualityOk === false}}">
+          <text class="quality-cross">❌</text>
+          <text class="quality-text">照片质量过低</text>
+        </view>
         <view class="photo-remove" catchtap="removeImage" data-index="{{index}}">
           <text class="remove-icon">×</text>
         </view>

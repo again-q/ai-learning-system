@@ -26,6 +26,7 @@ function loadDSKey() {
     '• 学生笔迹/过程：' + input.studentWork,
     '• 标准答案/正确路径：' + input.answer,
     '• 错误位置：' + input.errorPos,
+    '• 错误类型：' + (input.errorType || '结果错'),
   ].join('\n');
   const t0 = Date.now();
   const resp = await fetch('https://api.deepseek.com/chat/completions', {

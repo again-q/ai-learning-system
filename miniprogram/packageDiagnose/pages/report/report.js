@@ -248,6 +248,8 @@ Page({
       .catch(() => this.setData({ disputeLoading: false, disputeResult: '网络异常，请重试' }));
   },
 
+  noop() {},
+
   retry() {
     if (this.data.batchId) { this.loadReport(this.data.batchId); }
   },
