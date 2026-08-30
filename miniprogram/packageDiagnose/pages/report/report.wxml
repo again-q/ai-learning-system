@@ -28,6 +28,13 @@
     <view class="retry-btn" wx:if="{{retryable}}" bindtap="retry">重新生成</view>
   </view>
 
+  <!-- 还没有任何学习报告 -->
+  <view class="empty no-report" wx:elif="{{noReport}}">
+    <text class="empty-title">还没有学习报告</text>
+    <text class="empty-sub">拍下你的数学作业，马上生成一份专属诊断报告</text>
+    <view class="retry-btn" bindtap="goDiagnose">去诊断</view>
+  </view>
+
   <!-- ===== 报告首页：总览 ===== -->
   <view class="content" wx:else>
     <view class="receipt">

@@ -327,6 +327,9 @@
 
 .empty-text { display: block; line-height: 1.6; }
 .retry-btn { margin-top: 32rpx; display: inline-block; padding: 16rpx 48rpx; background: #007aff; color: #fff; border-radius: 999rpx; font-size: 28rpx; }
+.empty.no-report { padding-top: 36vh; }
+.empty-title { display: block; font-size: 34rpx; font-weight: 700; color: #1a1a1a; }
+.empty-sub { display: block; margin-top: 14rpx; font-size: 26rpx; color: #999; line-height: 1.6; }
 
 /* 异议重生成遮罩 */
 .regen-mask { position: fixed; left: 0; right: 0; top: 0; bottom: 0; z-index: 100; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; }

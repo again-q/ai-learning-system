@@ -25,6 +25,7 @@ Page({
   data: {
     loading: true,
     emptyMsg: '',
+    noReport: false,
     retryable: false,
     report: null,
     reportId: null,
@@ -36,11 +37,27 @@ Page({
     genStages: GEN_STAGES,
   },
 
-  onLoad(options) {
-    const batchId = options.batchId;
-    if (!batchId) { this.setData({ loading: false, emptyMsg: '缺少批次' }); return; }
+  async onLoad(options) {
+    let batchId = options.batchId;
+    if (!batchId) {
+      batchId = await this.findLatestBatchId();
+      if (!batchId) { this.setData({ loading: false, noReport: true }); return; }
+    }
     this.setData({ batchId });
     this.loadReport(batchId);
+  },
+
+  // 没有指定批次时，自动取该用户最近一批
+  async findLatestBatchId() {
+    try {
+      const db = wx.cloud.database();
+      const res = await db.collection('batches')
+        .where({ _openid: getOpenid(), userId: getOpenid() })
+        .orderBy('createdAt', 'desc')
+        .limit(1)
+        .get();
+      return (res.data && res.data[0] && res.data[0]._id) || '';
+    } catch (e) { return ''; }
   },
 
   onUnload() { this.stopProgressTicker(); },
@@ -190,4 +207,6 @@ Page({
   },
 
   goBack() { wx.navigateBack(); },
+
+  goDiagnose() { wx.navigateTo({ url: '/pages/photo/photo' }); },
 });
