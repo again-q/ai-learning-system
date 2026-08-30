@@ -30,6 +30,13 @@
     <view class="hint" wx:if="{{images.length === 0}}">
       <text>拍下你的数学作业/练习，AI 帮你判断每道题的对错、难度和问题所在</text>
     </view>
+    <view class="shoot-tips" wx:if="{{images.length === 0}}">
+      <text class="shoot-tips-title">拍摄建议</text>
+      <text class="shoot-tips-item">· 光线均匀，避开阴影和反光</text>
+      <text class="shoot-tips-item">· 手机正对纸面，整页拍全、字迹清晰</text>
+      <text class="shoot-tips-item">· 一页一拍，避免多页叠在一起</text>
+      <text class="shoot-tips-item">· 尽量不含老师红笔批改，避免干扰判定</text>
+    </view>
     <view class="count" wx:if="{{images.length > 0}}">
       <text>{{images.length}}/9 张</text>
     </view>

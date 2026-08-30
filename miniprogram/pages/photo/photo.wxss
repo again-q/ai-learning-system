@@ -1,3 +1,16 @@
+/* L1 拍摄引导 */
+.shoot-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-top: 20rpx;
+  padding: 24rpx;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-md);
+}
+.shoot-tips-title { font-size: 26rpx; font-weight: 600; color: var(--text-secondary); margin-bottom: 4rpx; }
+.shoot-tips-item { font-size: 24rpx; color: var(--text-tertiary); line-height: 1.6; }
+
 /* 拍照页 — 设计语言 v1.1（Apple/Notion 白色简约 + iOS 蓝） */
 page {
   background: #ffffff;

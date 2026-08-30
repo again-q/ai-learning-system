@@ -1,6 +1,27 @@
 const app = getApp();
 const log = require('../../utils/upload-log');
 
+// L2 压缩规范：长边 ≤2000px（超出等比缩；失败回退原图，不阻塞上传）
+const MAX_EDGE = 2000;
+async function compressIfNeeded(filePath) {
+  try {
+    const info = await wx.getImageInfo({ src: filePath });
+    const longEdge = Math.max(info.width, info.height);
+    if (longEdge <= MAX_EDGE) return filePath;
+    const scale = MAX_EDGE / longEdge;
+    const res = await wx.compressImage({
+      src: filePath,
+      quality: 85,
+      compressedWidth: Math.round(info.width * scale),
+      compressHeight: Math.round(info.height * scale),
+    });
+    return res.tempFilePath || filePath;
+  } catch (e) {
+    console.warn('[photo] compress failed, use original:', e && e.message);
+    return filePath;
+  }
+}
+
 Page({
   data: {
     images: [],
@@ -88,9 +109,10 @@ Page({
       const fileIds = [];
       const tUpload = Date.now();
       for (const file of this.data.images) {
-        const ext = file.split('.').pop() || 'jpg';
+        const path = await compressIfNeeded(file);
+        const ext = path.split('.').pop() || 'jpg';
         const cloudPath = `photos/${uid}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
-        const up = await wx.cloud.uploadFile({ cloudPath, filePath: file });
+        const up = await wx.cloud.uploadFile({ cloudPath, filePath: path });
         fileIds.push(up.fileID);
       }
       log.append('upload_done', { fileIds: fileIds.length, durationMs: Date.now() - tUpload });
