@@ -1,0 +1,10 @@
+@import '../report/report.wxss';
+
+/* 题干/叙事纯文本兜底（report.wxss 未定义，复制自 review 保持一致） */
+.q-plain {
+  font-size: 28rpx;
+  color: #1c1c1e;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
