@@ -599,6 +599,9 @@ exports.main = async (event) => {
 
     // ===== 默认：单题判定 =====
     const { questionId } = event;
+    // 预留接口（后续由前端按「图片题号」匹配标准答案后传入；现在若不传则仍用 LLM 计算的正确路径）
+    const providedAnswer = (event && typeof event.providedAnswer === 'string' && event.providedAnswer.trim())
+      ? event.providedAnswer.trim() : null;
     if (!questionId) return fail(400, '缺少题目ID');
 
     // 归属校验
@@ -611,6 +614,9 @@ exports.main = async (event) => {
     const historyHits = await searchHistory(question.questionText, openid);
     const ragContext = buildRagContext(historyHits);
     const raw = await judgeQuestion(question, ragContext);
+
+    // 预留接口：外部按「图片题号」提供的标准答案 > LLM 自行计算的 correctAnswer（覆盖，后续实现匹配逻辑）
+    if (providedAnswer) raw.correctAnswer = providedAnswer;
 
     const questionType = raw.questionType || question.questionType || '其他';
     const clamped = clampParams(raw, questionType);
