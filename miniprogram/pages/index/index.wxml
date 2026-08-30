@@ -52,15 +52,15 @@
     </view>
   </view>
 
-  <!-- 开始学习 -->
+  <!-- 开始诊断 + AI助手（开发中） -->
   <view class="action-section reveal reveal-5">
-    <view class="start-btn" bindtap="goStudy">
-      <text class="start-text">开始学习</text>
+    <view class="start-btn" bindtap="goPhoto">
+      <text class="start-text">开始诊断</text>
+      <text class="start-sub">拍下做题照片，AI 分析每道题</text>
     </view>
-    <!-- 拍照诊断入口（P0 最小闭环） -->
-    <view class="photo-btn" bindtap="goPhoto">
-      <text class="photo-text">📷 拍照诊断</text>
-      <text class="photo-sub">拍下做题照片，AI 分析每道题</text>
+    <view class="ai-btn" bindtap="openAIAssistant">
+      <text class="ai-text">🤖 AI 助手</text>
+      <text class="ai-badge">开发中</text>
     </view>
   </view>
 </view>

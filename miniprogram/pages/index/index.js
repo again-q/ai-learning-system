@@ -133,5 +133,9 @@ Page({
 
   goPhoto() {
     wx.navigateTo({ url: '/pages/photo/photo' });
+  },
+
+  openAIAssistant() {
+    wx.showToast({ title: 'AI 助手开发中，敬请期待', icon: 'none' });
   }
 });
