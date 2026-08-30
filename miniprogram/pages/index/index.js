@@ -29,8 +29,6 @@ Page({
     subjectIndex: 0,
     currentSubject: '数学',
     userName: '同学',
-    streak: 7,
-    todayMinutes: 45,
     quoteText: '',
     quoteBy: '',
   },
@@ -38,7 +36,7 @@ Page({
   onLoad() {
     const user = app.globalData.userInfo;
     if (user) {
-      this.setData({ userName: user.nickName || '同学', streak: user.streak || 1 });
+      this.setData({ userName: user.nickName || '同学' });
     }
     const q = pickDailyQuote();
     this.setData({ quoteText: q.text, quoteBy: q.by });

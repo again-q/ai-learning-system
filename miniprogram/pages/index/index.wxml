@@ -18,21 +18,6 @@
     </view>
   </view>
 
-  <!-- 学习统计卡片 -->
-  <view class="stats-card reveal reveal-3">
-    <view class="stat-item">
-      <text class="stat-value">{{todayMinutes}}</text>
-      <text class="stat-unit">分钟</text>
-      <text class="stat-label">今日学习</text>
-    </view>
-    <view class="stat-divider"></view>
-    <view class="stat-item">
-      <text class="stat-value">{{streak}}</text>
-      <text class="stat-unit">天</text>
-      <text class="stat-label">连续学习</text>
-    </view>
-  </view>
-
   <!-- 每日一句 -->
   <view class="suggestion-section reveal reveal-4">
     <text class="suggestion-title">📖 每日一句</text>
