@@ -37,6 +37,7 @@ async function assemble(batchId, userId) {
 
   // 所有已判定题（报告呈现全部题目情况；错题用于薄弱点分析）
   const allQuestions = reviewed.map((q) => ({
+    questionId: q._id,
     questionText: q.questionText || '',
     traceReport: (q.traceReport || '').slice(0, 2000),
     segments: q.segments || [],
@@ -44,6 +45,9 @@ async function assemble(batchId, userId) {
     processAvailable: !!q.processAvailable,
     knowledgeUsage: q.knowledgeUsage || [],
     pattern: q.pattern || null,
+    errorType: q.errorType || null,
+    correctAnswer: q.correctAnswer || '',
+    cropFileID: q.cropFileID || null,
     errorAttribution: q.errorAttribution || null,
     errorDimension: q.errorDimension || null,
     processScore: q.processScore,

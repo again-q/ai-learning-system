@@ -5,6 +5,7 @@ const _ = db.command;
 
 const SYSTEM_V3 = require('./systemV3');
 const { assemble } = require('./assemble');
+const genV2 = require('./generateV2');
 const { runWithTools } = require('./toolLoop');
 const { sanitizeReport, sanitizeWeakpoint, isPoisonSentence } = require('./sanitize');
 
@@ -279,7 +280,7 @@ exports.main = async (event) => {
       return success({ reportId: null, report: null });
     }
 
-    // 报告生成真实进度（前端 2.5s 轮询）：读 batches.reportProgress
+    // 报告生成真实进度（前端 watch/轮询）：读 batches.reportProgress
     if (event && event.action === 'getProgress') {
       const { batchId } = event;
       if (!batchId) return fail(400, '缺少 batchId');
@@ -287,6 +288,47 @@ exports.main = async (event) => {
       if (!b || !b.data) return fail(404, '批次不存在');
       if (b.data.userId !== openid) return fail(403, '无权操作他人批次');
       return success({ progress: b.data.reportProgress || null });
+    }
+
+    // 每题详情（读库渲染——批量生成已存 questions）
+    if (event && event.action === 'questionDetail') {
+      const { questionId } = event;
+      if (!questionId) return fail(400, '缺少 questionId');
+      const q = await db.collection('questions').doc(questionId).get().catch(() => null);
+      if (!q || !q.data) return fail(404, '题目不存在');
+      if (q.data.userId !== openid) return fail(403, '无权操作他人题目');
+      const d = q.data;
+      return success({
+        questionId,
+        questionText: d.questionText || '',
+        questionType: d.questionType || '其他',
+        cropFileID: d.cropFileID || null,
+        segments: d.segments || [],
+        breakpoint: d.breakpoint || null,
+        processScore: d.processScore,
+        progressNarrative: d.progressNarrative || '',
+        diffAnalysis: d.diffAnalysis || null,
+        pattern: d.pattern || null,
+        correctAnswer: d.correctAnswer || '',
+      });
+    }
+
+    // 进阶分析：任意一题 → 该题 pattern → 纯代码检索 → 样本够才 LLM（时间线+结论）
+    if (event && event.action === 'advancedAnalysis') {
+      const { questionId } = event;
+      if (!questionId) return fail(400, '缺少 questionId');
+      const q = await db.collection('questions').doc(questionId).get().catch(() => null);
+      if (!q || !q.data) return fail(404, '题目不存在');
+      if (q.data.userId !== openid) return fail(403, '无权操作他人题目');
+      const pattern = String(q.data.pattern || '').trim();
+      if (!pattern) return success({ insufficient: true, count: 0, message: '本题缺少题型信息，暂无法检索同类题' });
+      const rs = await cloud.callFunction({ name: 'ragService', data: { action: 'vectorSearch', userId: openid, query: pattern, topK: 8 } });
+      const hits = (rs.result && rs.result.code === 0 && rs.result.data && rs.result.data.hits) || [];
+      if (hits.length < 3) {
+        return success({ insufficient: true, count: hits.length, message: '样本不够：同类题只有 ' + hits.length + ' 条，多练几次再来看看' });
+      }
+      const analysis = await genV2.advancedAnalysis(pattern, hits);
+      return success({ insufficient: false, count: hits.length, analysis });
     }
 
     // 往期所有历史报告（按时间倒序）
@@ -342,55 +384,83 @@ exports.main = async (event) => {
     if (!batchRes || !batchRes.data) return fail(404, '批次不存在');
     if (batchRes.data.userId !== openid) return fail(403, '无权操作他人批次');
 
-    // ① 数据装配（确定事实，代码注入）——报告呈现所有题目情况；错题用于薄弱点分析（无错题也生成全对版）
+    // ============ 报告 v2 生成：首页一句话 + 每题进度叙事/差异分析（批量并行） ============
     await writeProgress(batchId, 0, '整理本次答题数据…', 10);
     const input = await assemble(batchId, openid);
-    await logDebug('reportService.assemble', openid, batchId, {
+    await logDebug('reportService.assemble_v2', openid, batchId, {
       total: input.stats.totalQuestions, correct: input.stats.correctCount,
-      wrongCount: input.wrongCount, wrongScores: input.wrongQuestions.map((q) => q.processScore),
+      wrongCount: input.wrongCount,
     });
 
-    // ② 取 ragService 工具 schema
-    await writeProgress(batchId, 1, '连接检索服务…', 20);
-    const schemaRes = await cloud.callFunction({ name: 'ragService', data: { action: 'getSchemas' } });
-    const tools = (schemaRes.result && schemaRes.result.data) || [];
+    // ① 首页一句话（LLM 批次总结）：错题知识点聚合取 1-2 个最集中
+    const topicCount = {};
+    for (const wq of input.wrongQuestions) {
+      const t = (wq.knowledgeNodeName || '').trim();
+      if (t) topicCount[t] = (topicCount[t] || 0) + 1;
+    }
+    const wrongTopics = Object.keys(topicCount).sort((a, b) => topicCount[b] - topicCount[a]).slice(0, 2);
+    let summary = '';
+    try {
+      summary = await genV2.batchSummary(input.stats, wrongTopics);
+    } catch (e) {
+      console.warn('[reportService] 批次总结失败（回退拼装）:', e.message);
+      summary = `${input.stats.totalQuestions} 道题对了 ${input.stats.correctCount} 道${wrongTopics.length ? '，错题集中在' + wrongTopics.join('、') : ''}。`;
+    }
 
-    // ③ 构造 Prompt：system（V3 规则）+ 注入的确定数据（所有题 + 统计）
-    const userMsg = `【本次答题统计】\n${JSON.stringify(input.stats, null, 1)}\n\n【所有题目情况（共 ${input.stats.totalQuestions} 道，报告中呈现每题状态；错题用于薄弱点分析）】\n${JSON.stringify(input.allQuestions, null, 1)}\n\n${input.wrongCount > 0 ? `【错题明细（${input.wrongCount} 道，薄弱点分析对象）】\n${JSON.stringify(input.wrongQuestions, null, 1)}\n\n` : '【本批无错题】报告呈现题目情况 + 肯定鼓励，薄弱点列表为空。\n\n'}请调用工具获取历史检索数据（vectorSearch 查历史同类题、getErrorPattern 查错误模式、getTrend/getNodeHistory 查趋势与节点状态），然后生成诊断报告 JSON。`;
-
-    const messages = [
-      { role: 'system', content: SYSTEM_V3 },
-      { role: 'user', content: userMsg },
-    ];
-
-    // ④ Function Calling 循环（真实进度：工具调用/进入撰写实时推送）
-    let toolRound = 0;
-    const onProgress = (ev) => {
-      if (ev.type === 'tools') {
-        toolRound++;
-        const names = (ev.names || []).map((n) => TOOL_DESC[n] || n).join('、') || '检索';
-        writeProgress(batchId, 2, `正在${names}…（第 ${ev.round} 轮）`, Math.min(35 + toolRound * 8, 65));
-      } else if (ev.type === 'writing') {
-        writeProgress(batchId, 3, 'AI 撰写诊断报告…', 75);
+    // ② 每题批量并行：进度叙事 + 差异分析（errorType≠无 的题），并发 5
+    const qs = input.allQuestions;
+    const detailCount = { done: 0, total: qs.length, diff: 0 };
+    const CONC = 5;
+    let qi = 0;
+    async function worker() {
+      while (qi < qs.length) {
+        const idx = qi++;
+        const q = qs[idx];
+        const patch = {};
+        try {
+          const narrative = await genV2.progressNarrative(q);
+          if (narrative) patch.progressNarrative = narrative;
+        } catch (e) {
+          console.warn('[reportService] 进度叙事失败:', q.questionId, e.message);
+        }
+        if (q.errorType && q.errorType !== '无') {
+          try {
+            const da = await genV2.diffAnalysis(q);
+            if (da.fact || da.inference || da.hook) {
+              patch.diffAnalysis = da;
+              detailCount.diff++;
+            }
+          } catch (e) {
+            console.warn('[reportService] 差异分析失败:', q.questionId, e.message);
+          }
+        }
+        if (Object.keys(patch).length && q.questionId) {
+          try {
+            await db.collection('questions').doc(q.questionId).update({ data: patch }).catch(() => {});
+          } catch (_) {}
+        }
+        detailCount.done++;
+        await writeProgress(batchId, 2, `生成题目详情 ${detailCount.done}/${detailCount.total}…`, Math.round(20 + (detailCount.done / detailCount.total) * 70));
       }
+    }
+    await Promise.all(Array.from({ length: Math.min(CONC, qs.length) }, () => worker()));
+
+    // ③ 持久化首页报告
+    const report = {
+      summary,
+      questions: qs.map((q) => ({
+        questionId: q.questionId,
+        questionText: q.questionText,
+        status: q.status,
+        questionType: q.questionType,
+        pattern: q.pattern || null,
+        knowledgeNodeName: q.knowledgeNodeName || '',
+      })),
     };
-    const { content, loops } = await runWithTools(postJSON, `${DS_BASE_URL}/chat/completions`, DS_API_KEY, DS_MODEL, messages, tools, { userId: openid, onProgress });
-    await logDebug('reportService.generate', openid, batchId, { toolLoops: loops, contentLen: (content || '').length });
-
-    // ⑤ 解析 JSON 报告 + 确定性清洗（交接包 2026-08-27：prompt 禁令之上的代码兜底）
-    await writeProgress(batchId, 4, '校验与清洗入库…', 90);
-    const report = sanitizeReport(extractJson(content));
-
-    // ⑥ 持久化
     const ins = await db.collection('reports').add({
-      data: {
-        userId: openid,
-        batchId,
-        report,
-        createdAt: db.serverDate(),
-      },
+      data: { userId: openid, batchId, report, createdAt: db.serverDate() },
     });
-    await logDebug('reportService.saved', openid, batchId, { reportId: ins._id, weakpoints: (report.weakpoints || []).length, hasQuestions: Array.isArray(report.questions) ? report.questions.length : 0 });
+    await logDebug('reportService.saved_v2', openid, batchId, { reportId: ins._id, questions: qs.length, diffCount: detailCount.diff });
     await writeProgress(batchId, 4, '报告已生成', 100);
 
     return success({ reportId: ins._id, report });
