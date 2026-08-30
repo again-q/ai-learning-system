@@ -1,5 +1,5 @@
 const log = require('../../../utils/upload-log');
-const { renderMathText } = require('../../utils/latex');
+const { renderMathText, unescapeUnderscore } = require('../../utils/latex');
 const app = getApp();
 
 const GEN_STAGES = [
@@ -180,7 +180,7 @@ Page({
     const qs = (report.questions || []).map((q, i) => ({
       ...q,
       idx: i,
-      text: String(q.questionText || '').replace(/\$[^$]*\$/g, '…').slice(0, 42),
+      text: unescapeUnderscore(String(q.questionText || '').replace(/\$[^$]*\$/g, '…')).slice(0, 42),
       ok: q.status !== '错',
     }));
     this.setData(Object.assign({ report: { summary: report.summary || '', questions: qs }, loading: false, reportProgressVisible: false, retryable: false }, extra || {}));

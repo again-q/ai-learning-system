@@ -141,5 +141,6 @@ function segmentFallback(raw) {
 module.exports = {
   renderLatex,
   renderMathText,
+  unescapeUnderscore,
   DEFAULT_DELIMITERS,
 };
