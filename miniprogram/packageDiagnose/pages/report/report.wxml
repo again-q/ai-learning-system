@@ -1,258 +1,113 @@
 <view class="page">
-  <!-- 顶栏 -->
   <view class="nav-bar">
-    <view class="nav-back" bindtap="goBack">
-      <text class="nav-back-icon">‹</text>
-      <text>返回</text>
-    </view>
+    <view class="nav-back" bindtap="goBack"><text class="nav-back-icon">‹</text><text>返回</text></view>
     <text class="nav-title">诊断报告</text>
-    <view class="nav-history" wx:if="{{!historyVisible && reportId}}" bindtap="showHistory">历史</view>
-    <view class="nav-history" wx:elif="{{historyVisible && report}}" bindtap="hideHistory">报告</view>
-    <view class="nav-placeholder" wx:else></view>
+    <view class="nav-placeholder"></view>
   </view>
 
-  <!-- 历史报告列表 -->
-  <view class="history" wx:if="{{historyVisible}}">
-    <view class="history-title">往期报告</view>
-    <view class="history-loading" wx:if="{{historyLoading}}">
-      <view class="loading-spinner"></view>
-      <text class="loading-text">加载中...</text>
-    </view>
-    <view class="empty" wx:elif="{{historyList.length === 0}}">
-      <text>{{emptyMsg || '暂无历史报告'}}</text>
-    </view>
-    <view class="history-list" wx:else>
-      <view class="history-item" wx:for="{{historyList}}" wx:key="reportId"
-            data-id="{{item.reportId}}" data-batch="{{item.batchId}}" bindtap="openHistory">
-        <view class="history-date">{{item.createdAt}}</view>
-        <view class="history-summary" wx:if="{{item.summary.dataAnchor}}">{{item.summary.dataAnchor}}</view>
-        <view class="history-summary" wx:else>诊断报告</view>
-        <view class="history-meta">{{item.weakpointCount}} 个薄弱点</view>
-      </view>
-    </view>
-  </view>
-
-  <!-- 加载态 -->
-  <view class="loading" wx:elif="{{loading}}">
-    <view class="loading-spinner"></view>
-    <text class="loading-text">{{reportProgressText || '报告生成中...'}}</text>
-    <view class="report-progress-wrap" wx:if="{{reportProgressVisible}}">
-      <text class="report-elapsed">已等待 {{reportElapsedSec}} 秒</text>
-      <view class="report-stages">
-        <view
-          class="report-stage {{index < reportStageIndex ? 'done' : ''}} {{index === reportStageIndex ? 'current' : ''}}"
-          wx:for="{{genStages}}"
-          wx:key="afterSec"
-          wx:for-index="index"
-        >
-          <text class="report-stage-mark">{{index < reportStageIndex ? '✓' : (index === reportStageIndex ? '●' : '○')}}</text>
-          <text class="report-stage-text">{{item.text}}</text>
-        </view>
-      </view>
-      <text class="report-hint">通常需要 1～2 分钟，请勿离开本页</text>
-    </view>
-  </view>
-
-  <!-- 无报告 / 失败可重试 -->
-  <view class="empty" wx:elif="{{emptyMsg}}">
-    <text class="empty-text">{{emptyMsg}}</text>
-    <view class="retry-btn" wx:if="{{retryable && batchId}}" bindtap="onRetry">重新生成</view>
-  </view>
-
-  <!-- 总结页要够厚（用户硬约束）；深读再讲证据链，不在此剧透卡点全文 -->
-  <view class="content" wx:else>
-    <view class="receipt">
-      <view class="receipt-top">
-        <view class="receipt-score-row">
-          <text class="receipt-score">{{scoreMain}}</text>
-          <text class="receipt-score-sub" wx:if="{{scoreSub}}">{{scoreSub}}</text>
-        </view>
-        <view
-          class="rm-dispute"
-          wx:if="{{report.weakpoints.length}}"
-          data-module="breakpoint"
-          data-index="{{0}}"
-          catchtap="onDisputeTap"
-        >我有异议</view>
+  <!-- 报告首页视图 -->
+  <block wx:if="{{view === 'list'}}">
+    <view class="content" wx:if="{{report}}">
+      <view class="summary-card">
+        <text class="summary-text">{{report.summary}}</text>
       </view>
 
-      <text class="receipt-hint" wx:if="{{report.overview.coreHint}}">{{report.overview.coreHint}}</text>
-      <text class="receipt-mood" wx:if="{{report.overview.moodText}}">{{report.overview.moodText}}</text>
-
-      <view class="receipt-chip" wx:if="{{mainPatternName}}">
-        <text class="receipt-chip-label">主攻</text>
-        <text class="receipt-chip-name">{{mainPatternName}}</text>
+      <view class="list-head">
+        <text class="list-title">题目</text>
+        <text class="list-sub">{{report.questions.length}} 道</text>
       </view>
-
-      <view class="receipt-dots" wx:if="{{report.questions.length}}" bindtap="toggleQlist">
-        <text
-          class="qdot {{item.status === '错' ? 'bad' : 'ok'}}"
-          wx:for="{{report.questions}}"
-          wx:key="index"
-        >{{item.status === '错' ? '✗' : '✓'}}</text>
-        <text class="receipt-dots-more">{{qlistExpanded ? '收起' : '题干'}}</text>
-      </view>
-
-      <block wx:if="{{qlistExpanded}}">
-        <view class="qitem" wx:for="{{report.questions}}" wx:key="index" wx:for-item="qq">
-          <text class="qitem-status {{qq.status === '错' ? 'bad' : 'ok'}}">{{qq.status === '错' ? '✗' : '✓'}}</text>
-          <view class="qitem-body">
-            <rich-text class="qitem-text" wx:if="{{qq.questionNodes.length}}" nodes="{{qq.questionNodes}}" />
-            <text class="qitem-text" wx:else>{{qq.questionText}}</text>
-            <text class="qitem-pattern" wx:if="{{qq.pattern}}">{{qq.pattern}}</text>
-            <text class="qitem-evol" catchtap="goQuestionEvolution" data-qt="{{qq.questionText}}" data-type="{{qq.questionType}}" data-score="{{qq.processScore}}">这道题的过去和现在 →</text>
-          </view>
-        </view>
-      </block>
-
-      <view class="receipt-block" wx:if="{{wrongBriefs.length}}">
-        <text class="receipt-block-h">错题速览</text>
-        <view class="receipt-wrong" wx:for="{{wrongBriefs}}" wx:key="idx" wx:for-item="w">
-          <text class="receipt-wrong-mark">✗</text>
-          <text class="receipt-wrong-t">{{w.pattern || w.text}}</text>
-        </view>
-      </view>
-
-      <view class="receipt-block" wx:if="{{report.secondaryPatterns.length}}">
-        <text class="receipt-block-h">已记下、下次优先</text>
-        <view class="receipt-sec" wx:for="{{report.secondaryPatterns}}" wx:key="name">
-          <text class="receipt-sec-name">{{item.name}}（{{item.count}} 次）</text>
-          <text class="receipt-sec-preview" wx:if="{{item.preview}}">{{item.preview}}</text>
-        </view>
-      </view>
-
-      <view class="receipt-block" wx:if="{{report.overview.expectedManagement}}">
-        <text class="receipt-block-h">怎么用这份报告</text>
-        <text class="receipt-note">{{report.overview.expectedManagement}}</text>
-      </view>
-
-      <view
-        class="receipt-go"
-        wx:if="{{!deepVisible && report.weakpoints.length}}"
-        bindtap="onStartDeep"
-      >看诊断</view>
-      <view class="receipt-go ghost" wx:elif="{{deepVisible}}" bindtap="onStartDeep">回到卡点</view>
-    </view>
-
-    <view id="report-deep" class="deep-anchor"></view>
-
-    <block wx:if="{{deepVisible}}">
-      <block wx:for="{{report.weakpoints}}" wx:key="patternId" wx:for-item="wp" wx:for-index="wpi" wx:if="{{wpi === activeWpIndex}}">
-        <view class="wp-head">
-          <text class="wp-name">{{wp.name}}</text>
-          <text class="wp-step">{{activeStep}}/3</text>
-        </view>
-
-        <view class="step-nav">
-          <text class="step-nav-back" wx:if="{{activeStep > 1}}" bindtap="unlockPrev">← 上一步</text>
-          <text class="step-nav-back" wx:else bindtap="collapseDeep">← 回总结</text>
-          <text class="step-nav-hint">可随时回看，不丢进度</text>
-        </view>
-
-        <view class="step-card" wx:if="{{activeStep === 1}}">
-          <view class="step-card-h">
-            <text class="step-card-t">卡点</text>
-            <view class="rm-dispute" data-module="breakpoint" data-index="{{wpi}}" catchtap="onDisputeTap">我有异议</view>
-          </view>
-          <view class="blank-note" wx:if="{{wp.breakpoint.processAvailable === false}}">空白 ≠ 不会 · 起步即停</view>
-
-          <view class="seg" wx:for="{{wp.breakpoint.segments}}" wx:key="step" wx:for-item="seg">
-            <text class="seg-status {{seg.status === '断' ? 'bad' : seg.status === '空白' ? 'gray' : 'ok'}}">{{seg.status === '断' ? '✗' : (seg.status === '空白' ? '○' : '✓')}}</text>
-            <view class="seg-body">
-              <text class="seg-step">{{seg.step}}</text>
-              <rich-text class="seg-ev" wx:if="{{seg.evidenceNodes.length}}" nodes="{{seg.evidenceNodes}}" />
-              <text class="seg-ev" wx:elif="{{seg.evidence}}">{{seg.evidence}}</text>
+      <view class="q-list">
+        <view class="q-item" wx:for="{{report.questions}}" wx:key="idx" wx:for-item="q" bindtap="openDetail" data-id="{{q.questionId}}">
+          <view class="q-mark {{q.ok ? 'ok' : 'no'}}">{{q.ok ? '✓' : '✗'}}</view>
+          <view class="q-body">
+            <text class="q-text">{{q.text}}</text>
+            <view class="q-meta">
+              <text class="q-tag">{{q.questionType}}</text>
+              <text class="q-tag" wx:if="{{q.knowledgeNodeName}}">{{q.knowledgeNodeName}}</text>
             </view>
           </view>
-
-          <view class="sec" wx:if="{{wp.breakpoint.confirmed}}">
-            <text class="sec-label">你已经会的</text>
-            <text>{{bpMore || !wp.breakpoint.confirmedClipped ? wp.breakpoint.confirmed : wp.breakpoint.confirmedShort}}</text>
-          </view>
-          <view class="sec key" wx:if="{{wp.breakpoint.contradiction || wp.breakpoint.contradictionShort}}">
-            <text class="sec-label">卡在哪</text>
-            <rich-text wx:if="{{(bpMore || !wp.breakpoint.contradictionClipped) && wp.breakpoint.contradictionNodes.length}}" nodes="{{wp.breakpoint.contradictionNodes}}" />
-            <text wx:else>{{bpMore || !wp.breakpoint.contradictionClipped ? (wp.breakpoint.contradiction || wp.breakpoint.contradictionShort) : wp.breakpoint.contradictionShort}}</text>
-          </view>
-          <view class="sec" wx:if="{{wp.breakpoint.closing}}">
-            <text>{{wp.breakpoint.closing}}</text>
-          </view>
-          <view class="more-link" wx:if="{{!bpMore && (wp.breakpoint.confirmedClipped || wp.breakpoint.contradictionClipped)}}" bindtap="toggleBpMore">显示全文</view>
-          <view class="step-next" bindtap="unlockNext">下一步：原因 →</view>
+          <text class="q-arrow">›</text>
         </view>
+      </view>
 
-        <view class="step-card" wx:if="{{activeStep === 2}}">
-          <view class="step-card-h">
-            <text class="step-card-t">原因</text>
-            <view class="rm-dispute" data-module="rootcause" data-index="{{wpi}}" catchtap="onDisputeTap">我有异议</view>
-          </view>
-          <view class="sec" wx:if="{{wp.rootcause.phenomenon}}">
-            <text class="sec-label">现象</text>
-            <text>{{wp.rootcause.phenomenon}}</text>
-          </view>
-          <view class="sec key" wx:if="{{wp.rootcause.directCause}}">
-            <text class="sec-label">直接原因</text>
-            <text>{{bpMore || !wp.rootcause.directCauseClipped ? wp.rootcause.directCause : wp.rootcause.directCauseShort}}</text>
-          </view>
-          <view class="sec" wx:if="{{wp.rootcause.sources.length}}">
-            <text class="sec-label">可以对照看看</text>
-            <view class="src" wx:for="{{wp.rootcause.sources}}" wx:key="*this" wx:for-item="src" wx:if="{{index < 3}}">{{index + 1}}. {{src}}</view>
-          </view>
-          <view class="sec" wx:if="{{wp.rootcause.history.length}}">
-            <text class="sec-label">近 30 天同类</text>
-            <view class="his" wx:for="{{wp.rootcause.history}}" wx:key="title" wx:for-item="h">{{h.title}}（{{h.date}}）</view>
-          </view>
-          <view class="sec" wx:if="{{wp.rootcause.closing}}">{{wp.rootcause.closing}}</view>
-          <view class="more-link" wx:if="{{!bpMore && wp.rootcause.directCauseClipped}}" bindtap="toggleBpMore">显示全文</view>
-          <view class="step-next" bindtap="unlockNext">下一步：想一想 →</view>
-        </view>
-
-        <view class="step-card" wx:if="{{activeStep === 3}}">
-          <view class="step-card-h">
-            <text class="step-card-t">想一想</text>
-            <view class="rm-dispute" data-module="hook" data-index="{{wpi}}" catchtap="onDisputeTap">我有异议</view>
-          </view>
-          <view class="q key-q" wx:for="{{wp.hook.questions}}" wx:key="*this" wx:for-item="qq">{{index + 1}}. {{qq}}</view>
-          <view class="sec" wx:if="{{wp.hook.scaffold}}">{{wp.hook.scaffold}}</view>
-          <view class="sec why-lite" wx:if="{{wp.hook.whyNotAnswer}}">{{wp.hook.whyNotAnswer}}</view>
-        </view>
-
-        <view class="mind" wx:if="{{activeStep === 3 && wp.mindPoint}}">{{wp.mindPoint}}</view>
-
-        <view class="opt-practice" wx:if="{{activeStep === 3 && wp.check.suggestions.length}}">
-          <text class="opt-practice-h">可选 · 强化信心（不做也行）</text>
-          <view class="opt-item" wx:for="{{wp.check.suggestions}}" wx:key="type" wx:for-item="sg">
-            <text class="opt-item-t">{{sg.type === 'teach' ? '讲给同学听' : '找一道新同类题'}}</text>
-            <text class="opt-item-b" wx:if="{{sg.type === 'teach'}}">约 {{sg.minutes || 5}} 分钟讲清一个点。卡住就回看「卡点」。</text>
-            <text class="opt-item-b" wx:if="{{sg.why}}">{{sg.why}}</text>
-          </view>
-        </view>
-
-        <block wx:if="{{activeStep === 3}}">
-          <view class="more-title" wx:if="{{report.weakpoints.length > 1}}">其他薄弱点</view>
-          <block wx:for="{{report.weakpoints}}" wx:key="patternId" wx:for-item="item" wx:for-index="idx">
-            <view class="more-item" wx:if="{{idx !== activeWpIndex}}" data-index="{{idx}}" bindtap="switchWp">
-              <text class="more-name">{{item.name}}</text>
-              <text class="more-count">{{item.count}} 次</text>
-            </view>
-          </block>
-          <view class="more-title" wx:if="{{report.secondaryPatterns.length}}">其他模式</view>
-          <view class="more-item" wx:for="{{report.secondaryPatterns}}" wx:key="name" wx:for-item="sp">
-            <text class="more-name">{{sp.name}}</text>
-            <text class="more-count">{{sp.count}} 次</text>
-          </view>
-          <view class="care-foot" wx:if="{{report.overview.stateCare}}">{{report.overview.stateCare}}</view>
-        </block>
-      </block>
-    </block>
-
-    <report-dispute-modal visible="{{disputeVisible}}" bind:cancel="onDisputeCancel" bind:submit="onDisputeSubmit" />
-
-    <view class="regen-mask" wx:if="{{regenerating}}">
-      <view class="regen-box">
-        <view class="loading-spinner"></view>
-        <text class="regen-text">正在根据异议重新生成…</text>
+      <view class="adv-entry" bindtap="openAdvPick">
+        <text class="adv-entry-title">进阶分析</text>
+        <text class="adv-entry-sub">选择本批次任意一题，查看它的演变趋势 →</text>
       </view>
     </view>
+
+    <!-- 进阶分析弹层：选任意一题 -->
+    <view class="adv-mask" wx:if="{{advVisible}}" bindtap="closeAdv">
+      <view class="adv-card" catchtap="noop">
+        <text class="adv-card-title">进阶分析 · 选择一题</text>
+        <scroll-view scroll-y class="adv-list">
+          <view class="adv-item" wx:for="{{report.questions}}" wx:key="idx" wx:for-item="q" bindtap="runAdvanced" data-id="{{q.questionId}}">
+            <text class="adv-item-text">{{q.text}}</text>
+          </view>
+        </scroll-view>
+        <view class="adv-result" wx:if="{{advLoading}}"><text>分析中…</text></view>
+        <view class="adv-result" wx:elif="{{advInsufficient}}"><text>样本不够：同类题仅 {{advCount}} 条，多练几次再来看看</text></view>
+        <view class="adv-result" wx:elif="{{advResult}}"><text class="adv-result-text">{{advResult}}</text></view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 每题详情视图 -->
+  <block wx:if="{{view === 'detail'}}">
+    <view class="content" wx:if="{{detail}}">
+      <view class="back-btn" bindtap="backToList"><text>‹ 返回报告</text></view>
+      <view class="detail-q"><rich-text nodes="{{detail.questionNodes}}" /></view>
+
+      <view class="detail-block" wx:if="{{detail.cropFileID}}">
+        <text class="detail-h">你的过程</text>
+        <image class="crop-img" src="{{detail.cropFileID}}" mode="widthFix" />
+      </view>
+
+      <view class="detail-block" wx:if="{{detail.segments.length}}">
+        <text class="detail-h">过程分段</text>
+        <view class="seg-list">
+          <view class="seg" wx:for="{{detail.segments}}" wx:key="index" wx:for-item="sg">
+            <text class="seg-status {{sg.status === '通' ? 'ok' : (sg.status === '断' ? 'no' : 'blank')}}">{{sg.status}}</text>
+            <text class="seg-step">{{sg.step}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="detail-block" wx:if="{{detail.progressNarrative}}">
+        <text class="detail-h">进度</text>
+        <text class="narrative">{{detail.progressNarrative}}</text>
+      </view>
+
+      <view class="detail-block diff" wx:if="{{detail.diffAnalysis}}">
+        <text class="detail-h">差异分析</text>
+        <text class="diff-fact" wx:if="{{detail.diffAnalysis.fact}}">{{detail.diffAnalysis.fact}}</text>
+        <text class="diff-infer" wx:if="{{detail.diffAnalysis.inference}}">{{detail.diffAnalysis.inference}}</text>
+        <text class="diff-hook" wx:if="{{detail.diffAnalysis.hook}}">{{detail.diffAnalysis.hook}}</text>
+      </view>
+
+      <view class="adv-btn" bindtap="openAdvPick">进阶分析 · 查看演变趋势</view>
+      <view class="adv-mask" wx:if="{{advVisible}}" bindtap="closeAdv">
+        <view class="adv-card" catchtap="noop">
+          <text class="adv-card-title">进阶分析 · 选择一题</text>
+          <scroll-view scroll-y class="adv-list">
+            <view class="adv-item" wx:for="{{report.questions}}" wx:key="idx" wx:for-item="q" bindtap="runAdvanced" data-id="{{q.questionId}}">
+              <text class="adv-item-text">{{q.text}}</text>
+            </view>
+          </scroll-view>
+          <view class="adv-result" wx:if="{{advLoading}}"><text>分析中…</text></view>
+          <view class="adv-result" wx:elif="{{advInsufficient}}"><text>样本不够：同类题仅 {{advCount}} 条，多练几次再来看看</text></view>
+          <view class="adv-result" wx:elif="{{advResult}}"><text class="adv-result-text">{{advResult}}</text></view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 加载/错误 -->
+  <view class="content" wx:if="{{loading && !report}}">
+    <view class="loading-box"><text class="loading-text">{{reportProgressText || '生成报告中…'}}</text></view>
+  </view>
+  <view class="content" wx:if="{{emptyMsg && !loading && !report}}">
+    <view class="empty-box"><text class="empty-text">{{emptyMsg}}</text></view>
+    <view class="retry-btn" wx:if="{{retryable}}" bindtap="retry">重试</view>
   </view>
 </view>

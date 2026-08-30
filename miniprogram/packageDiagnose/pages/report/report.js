@@ -1,94 +1,19 @@
-const towxml = require('../../towxml/index.js');
 const log = require('../../../utils/upload-log');
 const { renderMathText } = require('../../utils/latex');
 const app = getApp();
 
-// 长请求无真实流式进度：按耗时推进阶段文案（不做百分比假进度条）
-// 网关 ~60s 会掐 callFunction，但前端不因超时失败：一直轮询直到拿到报告或离开页面
 const GEN_STAGES = [
   { text: '整理答题数据…' },
-  { text: '连接检索服务…' },
-  { text: '检索历史同类题与错误模式…' },
-  { text: 'AI 撰写诊断报告…' },
-  { text: '校验与入库…' },
+  { text: '生成批次总结…' },
+  { text: '生成题目详情…' },
+  { text: '保存报告…' },
 ];
-
 const REPORT_POLL_MS = 4000;
-
-function parseScore(anchor) {
-  const s = String(anchor || '');
-  const m = s.match(/(\d+)\s*道.*?(\d+)\s*道.*?([\d.]+)\s*%/);
-  if (m) {
-    const last = s.match(/上次\s*([\d.]+)\s*%/);
-    return {
-      scoreMain: `${m[2]}/${m[1]}`,
-      scoreSub: last ? `${m[3]}% · 上次 ${last[1]}%` : `${m[3]}%`,
-    };
-  }
-  const m2 = s.match(/正确率\s*([\d.]+)\s*%/);
-  return { scoreMain: m2 ? `${m2[1]}%` : (s.slice(0, 12) || '本次'), scoreSub: '' };
-}
-
-/** 旧报告清洗：空白禁「未理解」；钩子最多 2 问；极长正文才截 */
-function clipText(s, max) {
-  const t = String(s || '').trim();
-  if (!t) return { text: '', clipped: false, full: '' };
-  if (t.length <= max) return { text: t, clipped: false, full: t };
-  return { text: t.slice(0, max) + '…', clipped: true, full: t };
-}
-
-function sanitizeReport(report) {
-  if (!report) return report;
-  const r = report;
-  (r.weakpoints || []).forEach((wp) => {
-    if (wp.hook && Array.isArray(wp.hook.questions) && wp.hook.questions.length > 2) {
-      wp.hook.questions = wp.hook.questions.slice(0, 2);
-    }
-    const bp = wp.breakpoint || {};
-    const noProcess = bp.processAvailable === false || !((bp.segments || []).length);
-    const rc = wp.rootcause;
-    if (rc && rc.directCause && /未理解|没理解/.test(rc.directCause)) {
-      if (noProcess) {
-        rc.directCause =
-          '整题未见下笔（起步即停）。同卷若有同类题做过，更可能是「这一次没启动」，原因待你对照——不宜直接当成「不会」。';
-      } else {
-        rc.directCause = String(rc.directCause).replace(/未理解[^。；\n]*/g, '该步未完成（原因待确认）');
-      }
-    }
-    // 卡点/根因：保留较完整正文（仅极长才截）
-    if (bp.confirmed) {
-      const c = clipText(bp.confirmed, 220);
-      bp.confirmedShort = c.text;
-      bp.confirmedClipped = c.clipped;
-    }
-    if (bp.contradiction) {
-      const c = clipText(bp.contradiction, 280);
-      bp.contradictionShort = c.text;
-      bp.contradictionClipped = c.clipped;
-    }
-    if (bp.closing) {
-      bp.closingShort = clipText(bp.closing, 120).text;
-    }
-    if (rc) {
-      if (rc.directCause) {
-        const c = clipText(rc.directCause, 200);
-        rc.directCauseShort = c.text;
-        rc.directCauseClipped = c.clipped;
-      }
-      if (rc.phenomenon) rc.phenomenonShort = clipText(rc.phenomenon, 160).text;
-      if (rc.closing) rc.closingShort = clipText(rc.closing, 120).text;
-      if (Array.isArray(rc.sources)) {
-        rc.sourcesShort = rc.sources.slice(0, 3).map((s) => clipText(s, 140).text);
-      }
-    }
-  });
-  return r;
-}
 
 function getOpenid() {
   const fromKey = wx.getStorageSync('openid');
   if (fromKey) return fromKey;
-  const user = wx.getStorageSync('userInfo') || (getApp().globalData && getApp().globalData.userInfo) || {};
+  const user = wx.getStorageSync('userInfo') || (app.globalData && app.globalData.userInfo) || {};
   return user._openid || '';
 }
 
@@ -98,229 +23,67 @@ function isTimeoutError(msg) {
 
 Page({
   data: {
+    view: 'list',
     loading: true,
     emptyMsg: '',
+    retryable: false,
     report: null,
     reportId: null,
     batchId: null,
-    disputeVisible: false,
-    disputeTarget: null,   // { moduleKey, index }
-    historyVisible: false,
-    historyList: [],
-    historyLoading: false,
     reportProgressVisible: false,
     reportProgressText: '',
     reportElapsedSec: 0,
     reportStageIndex: 0,
     genStages: GEN_STAGES,
-    regenerating: false,   // 异议重生成：页内提示，避免与系统 Loading 叠层
-    retryable: false,
-    // 报告渐进展示：先断点 → 根因 → 钩子 → 检验，避免一口气展示全部
-    activeStep: 1,
-    activeWpIndex: 0,
-    currentWp: null,
-    qlistExpanded: false,
-    deepVisible: false,
-    bpMore: false,
-    scoreMain: '',
-    scoreSub: '',
-    wrongBriefs: [],
-    mainPatternName: '',
-  },
-
-  applyReport(raw, extra) {
-    const report = sanitizeReport(this.renderFormulas(raw));
-    const score = parseScore((report.overview && report.overview.dataAnchor) || '');
-    const patterns = (report.overview && report.overview.patterns) || [];
-    const main = patterns.find((p) => p && p.isMain) || patterns[0];
-    const wrongBriefs = (report.questions || [])
-      .map((q, idx) => ({
-        idx,
-        status: q.status,
-        pattern: q.pattern || '',
-        text: String(q.questionText || '').replace(/\$[^$]*\$/g, '…').slice(0, 40),
-      }))
-      .filter((q) => q.status === '错');
-    const base = {
-      report,
-      loading: false,
-      reportProgressVisible: false,
-      activeStep: 1,
-      activeWpIndex: 0,
-      qlistExpanded: false,
-      deepVisible: false,
-      bpMore: false,
-      scoreMain: score.scoreMain,
-      scoreSub: score.scoreSub,
-      wrongBriefs,
-      mainPatternName: (main && main.name) || ((report.weakpoints || [])[0] && (report.weakpoints || [])[0].name) || '',
-    };
-    const merged = Object.assign(base, extra || {});
-    const wps = report.weakpoints || [];
-    const wi = Math.min(Math.max(0, Number(merged.activeWpIndex) || 0), Math.max(0, wps.length - 1));
-    merged.activeWpIndex = wi;
-    merged.currentWp = wps[wi] || null;
-    this.setData(merged);
+    // 详情
+    detail: null,
+    detailLoading: false,
+    // 进阶分析
+    advVisible: false,
+    advLoading: false,
+    advResult: null,
+    advInsufficient: false,
+    advCount: 0,
   },
 
   onLoad(options) {
-    const batchId = options.batchId || (app.globalData && app.globalData.currentBatchId) || '';
+    const batchId = options.batchId;
+    if (!batchId) { this.setData({ loading: false, emptyMsg: '缺少批次' }); return; }
     this.setData({ batchId });
-    if (!batchId) {
-      this.setData({ historyVisible: true });
-      this.loadHistory();
-      return;
-    }
     this.loadReport(batchId);
   },
 
-  onUnload() {
-    this._pollAborted = true;
-    this.stopProgressTicker();
-  },
+  onUnload() { this.stopProgressTicker(); },
 
-  stopProgressTicker() {
-    if (this._progressTimer) {
-      clearInterval(this._progressTimer);
-      this._progressTimer = null;
-    }
-    if (this._elapsedTimer) {
-      clearInterval(this._elapsedTimer);
-      this._elapsedTimer = null;
-    }
-    if (this._watcher) {
-      try { this._watcher.close(); } catch (_) {}
-      this._watcher = null;
-    }
-  },
-
-  // 真实进度：优先实时数据推送（服务端写 batches.reportProgress 即推送，无需轮询）；watch 不可用回退 2.5s 轮询
-  startProgressTicker(batchId) {
-    this.stopProgressTicker();
-    const started = Date.now();
-    const applyProgress = (p) => {
-      if (!p || typeof p.stageIndex !== 'number') return;
-      const stage = GEN_STAGES[Math.min(p.stageIndex, GEN_STAGES.length - 1)] || {};
-      this.setData({
-        reportProgressText: p.detail || stage.text || '生成中…',
-        reportStageIndex: Math.min(p.stageIndex, GEN_STAGES.length - 1),
-      });
-    };
-    try {
-      const db = wx.cloud.database();
-      this._watcher = db.collection('batches').doc(batchId).watch({
-        onChange: (snap) => {
-          const doc = snap && snap.docs && snap.docs[0];
-          if (doc) applyProgress(doc.reportProgress);
-        },
-        onError: (err) => {
-          console.warn('[report] 实时推送不可用，回退轮询:', (err && err.message) || err);
-          this._watcher = null;
-          this._startProgressPoll(batchId, applyProgress);
-        },
-      });
-    } catch (e) {
-      console.warn('[report] watch 启动失败，回退轮询:', e.message);
-      this._startProgressPoll(batchId, applyProgress);
-    }
-    // 等待秒数：独立 1s 计时，与进度来源解耦
-    this._elapsedTimer = setInterval(() => {
-      this.setData({ reportElapsedSec: Math.floor((Date.now() - started) / 1000) });
-    }, 1000);
-  },
-
-  // 回退：轮询 getProgress（watch 被集合权限拒绝等场景自动降级）
-  _startProgressPoll(batchId, applyProgress) {
-    if (this._progressTimer) return;
-    const tick = async () => {
-      if (this._progressBusy) return;
-      this._progressBusy = true;
-      try {
-        const res = await wx.cloud.callFunction({
-          name: 'reportService',
-          data: { action: 'getProgress', batchId, userId: getOpenid() },
-        });
-        const d = res.result;
-        const p = d && d.code === 0 && d.data ? d.data.progress : null;
-        if (p) applyProgress(p);
-      } catch (e) {
-        // 查询失败不打断生成
-      } finally {
-        this._progressBusy = false;
-      }
-    };
-    tick();
-    this._progressTimer = setInterval(tick, 2500);
-  },
-
-  // 读该批次最新报告；无则触发生成
+  // ============ 读取/生成报告 ============
   async loadReport(batchId) {
-    this.setData({
-      loading: true,
-      emptyMsg: '',
-      reportProgressVisible: false,
-      reportProgressText: '读取报告…',
-      retryable: false,
-    });
-    const openid = getOpenid();
     const t0 = Date.now();
-    log.append('report_load_start', { batchId });
     try {
-      const res = await wx.cloud.callFunction({
-        name: 'reportService',
-        data: { action: 'getByBatch', batchId, userId: openid },
-      });
+      const res = await wx.cloud.callFunction({ name: 'reportService', data: { action: 'getByBatch', batchId, userId: getOpenid() } });
       const d = res.result;
       if (d && d.code === 0 && d.data && d.data.report) {
         this.applyReport(d.data.report, { reportId: d.data.reportId });
-        log.append('report_load_hit', { batchId, reportId: d.data.reportId, durationMs: Date.now() - t0 });
-      } else {
-        log.append('report_load_miss', { batchId, durationMs: Date.now() - t0 });
-        this.generate(batchId);
+        return;
       }
-    } catch (e) {
-      log.append('report_load_fail', { batchId, durationMs: Date.now() - t0, error: e.message || String(e) });
-      this.setData({
-        loading: false,
-        emptyMsg: '报告读取失败：' + (e.message || '未知错误'),
-        retryable: true,
-      });
-    }
+    } catch (e) {}
+    this.generate(batchId);
   },
 
   async generate(batchId) {
     this._pollAborted = false;
-    this.setData({
-      loading: true,
-      emptyMsg: '',
-      reportProgressVisible: true,
-      reportProgressText: GEN_STAGES[0].text,
-      reportElapsedSec: 0,
-      reportStageIndex: 0,
-      retryable: false,
-    });
+    this.setData({ loading: true, emptyMsg: '', reportProgressVisible: true, reportProgressText: GEN_STAGES[0].text, reportStageIndex: 0, reportElapsedSec: 0, retryable: false });
     this.startProgressTicker(batchId);
-    log.beginSession('report_generate');
-    log.append('report_generate_start', { batchId });
+    log.beginSession('report_generate_v2');
     try {
-      const openid = getOpenid();
       let res;
       try {
         res = await log.timed('reportService', { batchId }, () =>
-          wx.cloud.callFunction({
-            name: 'reportService',
-            data: { batchId, userId: openid },
-            timeout: 600000,
-          })
+          wx.cloud.callFunction({ name: 'reportService', data: { batchId, userId: getOpenid() }, timeout: 600000 })
         );
       } catch (callErr) {
         const msg = callErr.message || String(callErr);
-        // 网关超时：不失败，进度条不中断，一直轮询到拿到报告（或离开页面）
         if (isTimeoutError(msg)) {
-          log.append('report_generate_wait', { batchId, error: msg });
-          const polled = await this.pollReportUntilReady(batchId, openid);
-          if (polled || this._pollAborted) return;
-          // 只有页面已离开才会走到这；不当失败展示
+          await this.pollReportUntilReady(batchId);
           return;
         }
         throw callErr;
@@ -330,295 +93,132 @@ Page({
       if (d && d.code === 0) {
         if (d.data && d.data.report) {
           this.applyReport(d.data.report, { reportId: d.data.reportId });
-          log.append('report_generate_ok', { batchId, reportId: d.data.reportId });
         } else {
-          this.setData({
-            loading: false,
-            reportProgressVisible: false,
-            emptyMsg: (d.data && d.data.message) || '本批暂无需要生成的报告内容',
-            retryable: false,
-          });
-          log.append('report_generate_empty', { batchId, message: (d.data && d.data.message) || '' });
+          this.setData({ loading: false, reportProgressVisible: false, emptyMsg: (d.data && d.data.message) || '本批暂无报告内容', retryable: false });
         }
       } else {
-        this.setData({
-          loading: false,
-          reportProgressVisible: false,
-          emptyMsg: (d && d.message) || '报告生成失败，请重试',
-          retryable: true,
-        });
-        log.append('report_generate_fail', { batchId, message: (d && d.message) || '' });
+        this.setData({ loading: false, reportProgressVisible: false, emptyMsg: (d && d.message) || '报告生成失败，请重试', retryable: true });
       }
     } catch (e) {
       this.stopProgressTicker();
       const msg = e.message || '未知错误';
-      // 超时类错误不应落到这里；若仍落到，也转去轮询而不是报失败
       if (isTimeoutError(msg) && !this._pollAborted) {
-        log.append('report_generate_wait_fallback', { batchId, error: msg });
-        const polled = await this.pollReportUntilReady(batchId, getOpenid());
-        if (polled || this._pollAborted) return;
+        await this.pollReportUntilReady(batchId);
         return;
       }
-      this.setData({
-        loading: false,
-        reportProgressVisible: false,
-        emptyMsg: '报告生成失败：' + msg,
-        retryable: true,
-      });
-      log.append('report_generate_error', { batchId, error: msg });
+      this.setData({ loading: false, reportProgressVisible: false, emptyMsg: '报告生成失败：' + msg, retryable: true });
     }
   },
 
-  // 一直轮询到拿到报告；仅离开页面时停止（不设超时上限）
-  async pollReportUntilReady(batchId, openid) {
+  async pollReportUntilReady(batchId) {
     const t0 = Date.now();
     while (!this._pollAborted) {
       await new Promise((r) => setTimeout(r, REPORT_POLL_MS));
-      if (this._pollAborted) return false;
+      if (this._pollAborted) return;
       try {
-        const res = await wx.cloud.callFunction({
-          name: 'reportService',
-          data: { action: 'getByBatch', batchId, userId: openid },
-        });
+        const res = await wx.cloud.callFunction({ name: 'reportService', data: { action: 'getByBatch', batchId, userId: getOpenid() } });
         const d = res.result;
         if (d && d.code === 0 && d.data && d.data.report) {
           this.stopProgressTicker();
           this.applyReport(d.data.report, { reportId: d.data.reportId });
-          log.append('report_generate_ok_poll', {
-            batchId,
-            reportId: d.data.reportId,
-            waitedMs: Date.now() - t0,
-          });
-          return true;
+          return;
         }
-        log.append('report_generate_poll_miss', { batchId, waitedMs: Date.now() - t0 });
-      } catch (e) {
-        log.append('report_generate_poll_err', {
-          batchId,
-          waitedMs: Date.now() - t0,
-          error: e.message || String(e),
-        });
-      }
+      } catch (e) {}
     }
-    return false;
   },
 
-  onRetry() {
-    if (this.data.batchId) this.generate(this.data.batchId);
+  // ============ 真实进度（watch 优先，降级轮询） ============
+  stopProgressTicker() {
+    if (this._progressTimer) { clearInterval(this._progressTimer); this._progressTimer = null; }
+    if (this._elapsedTimer) { clearInterval(this._elapsedTimer); this._elapsedTimer = null; }
+    if (this._watcher) { try { this._watcher.close(); } catch (_) {} this._watcher = null; }
   },
 
-  // ===== 历史报告 =====
-  showHistory() {
-    this.setData({ historyVisible: true });
-    if (!this.data.historyList.length) this.loadHistory();
-  },
-
-  hideHistory() {
-    this.setData({ historyVisible: false });
-  },
-
-  async loadHistory() {
-    this.setData({ historyLoading: true, emptyMsg: '' });
+  startProgressTicker(batchId) {
+    this.stopProgressTicker();
+    const started = Date.now();
+    const applyProgress = (p) => {
+      if (!p || typeof p.stageIndex !== 'number') return;
+      const stage = GEN_STAGES[Math.min(p.stageIndex, GEN_STAGES.length - 1)] || {};
+      this.setData({ reportProgressText: p.detail || stage.text || '生成中…', reportStageIndex: Math.min(p.stageIndex, GEN_STAGES.length - 1) });
+    };
     try {
-      const openid = getOpenid();
-      const res = await wx.cloud.callFunction({
-        name: 'reportService',
-        data: { action: 'listByUser', userId: openid },
+      const db = wx.cloud.database();
+      this._watcher = db.collection('batches').doc(batchId).watch({
+        onChange: (snap) => { const doc = snap && snap.docs && snap.docs[0]; if (doc) applyProgress(doc.reportProgress); },
+        onError: (err) => { console.warn('[report] watch 不可用，回退轮询:', (err && err.message) || err); this._watcher = null; this._startProgressPoll(batchId, applyProgress); },
       });
+    } catch (e) { this._startProgressPoll(batchId, applyProgress); }
+    this._elapsedTimer = setInterval(() => { this.setData({ reportElapsedSec: Math.floor((Date.now() - started) / 1000) }); }, 1000);
+  },
+
+  _startProgressPoll(batchId, applyProgress) {
+    if (this._progressTimer) return;
+    const tick = async () => {
+      if (this._progressBusy) return;
+      this._progressBusy = true;
+      try {
+        const res = await wx.cloud.callFunction({ name: 'reportService', data: { action: 'getProgress', batchId, userId: getOpenid() } });
+        const d = res.result;
+        const p = d && d.code === 0 && d.data ? d.data.progress : null;
+        if (p) applyProgress(p);
+      } catch (e) {}
+      finally { this._progressBusy = false; }
+    };
+    tick();
+    this._progressTimer = setInterval(tick, 2500);
+  },
+
+  // ============ 渲染 ============
+  applyReport(report, extra) {
+    const qs = (report.questions || []).map((q, i) => ({
+      ...q,
+      idx: i,
+      text: String(q.questionText || '').replace(/\$[^$]*\$/g, '…').slice(0, 42),
+      ok: q.status !== '错',
+    }));
+    this.setData(Object.assign({ report: { summary: report.summary || '', questions: qs }, loading: false, reportProgressVisible: false, retryable: false }, extra || {}));
+  },
+
+  openDetail(e) {
+    const questionId = e.currentTarget.dataset.id;
+    if (!questionId) return;
+    this.setData({ detailLoading: true, view: 'detail', detail: null });
+    wx.cloud.callFunction({ name: 'reportService', data: { action: 'questionDetail', questionId, userId: getOpenid() } }).then((res) => {
+      const d = res.result;
+      if (d && d.code === 0 && d.data) {
+        const dd = d.data;
+        dd.questionNodes = renderMathText(dd.questionText || '');
+        this.setData({ detail: dd, detailLoading: false });
+      } else {
+        this.setData({ detailLoading: false, emptyMsg: (d && d.message) || '题目读取失败' });
+      }
+    }).catch(() => this.setData({ detailLoading: false, emptyMsg: '题目读取失败' }));
+  },
+
+  backToList() { this.setData({ view: 'list', advVisible: false }); },
+
+  // ============ 进阶分析（任意一题） ============
+  openAdvPick() { this.setData({ advVisible: true, advResult: null, advInsufficient: false }); },
+  closeAdv() { this.setData({ advVisible: false }); },
+
+  runAdvanced(e) {
+    const questionId = e.currentTarget.dataset.id;
+    if (!questionId) return;
+    this.setData({ advLoading: true, advResult: null, advInsufficient: false });
+    wx.cloud.callFunction({ name: 'reportService', data: { action: 'advancedAnalysis', questionId, userId: getOpenid() } }).then((res) => {
       const d = res.result;
       if (d && d.code === 0) {
-        this.setData({
-          historyList: (d.data && d.data.reports) || [],
-          historyLoading: false,
-          loading: false,
-        });
-        if (!this.data.historyList.length) {
-          this.setData({ emptyMsg: '暂无历史报告' });
-        }
+        this.setData({ advLoading: false, advResult: d.data.insufficient ? null : d.data.analysis, advInsufficient: !!d.data.insufficient, advCount: d.data.count || 0 });
       } else {
-        this.setData({ historyLoading: false, emptyMsg: (d && d.message) || '历史报告加载失败' });
+        this.setData({ advLoading: false, advResult: null, advInsufficient: true, advCount: 0 });
       }
-    } catch (e) {
-      this.setData({ historyLoading: false, emptyMsg: '历史报告加载失败：' + (e.message || '未知错误') });
-    }
+    }).catch(() => this.setData({ advLoading: false, advInsufficient: true, advCount: 0 }));
   },
 
-  async openHistory(e) {
-    const { id, batch } = e.currentTarget.dataset;
-    if (!id) return;
-    this.setData({ loading: true, historyVisible: false, emptyMsg: '' });
-    try {
-      const openid = getOpenid();
-      const res = await wx.cloud.callFunction({
-        name: 'reportService',
-        data: { action: 'getById', reportId: id, userId: openid },
-      });
-      const d = res.result;
-      if (d && d.code === 0 && d.data && d.data.report) {
-        this.applyReport(d.data.report, {
-          reportId: d.data.reportId,
-          batchId: batch || '',
-        });
-        log.append('history_report_opened', { reportId: d.data.reportId, batchId: batch || '' });
-      } else {
-        this.setData({ loading: false, emptyMsg: (d && d.message) || '报告读取失败' });
-      }
-    } catch (e) {
-      this.setData({ loading: false, emptyMsg: '报告读取失败：' + (e.message || '未知错误') });
-    }
+  retry() {
+    if (this.data.batchId) { this.loadReport(this.data.batchId); }
   },
 
-  // ===== 报告渐进展示 =====
-  unlockNext() {
-    if (this.data.activeStep >= 3) return;
-    this.setData({ activeStep: this.data.activeStep + 1, bpMore: false });
-  },
-
-  unlockPrev() {
-    if (this.data.activeStep <= 1) return;
-    this.setData({ activeStep: this.data.activeStep - 1, bpMore: false });
-  },
-
-  collapseDeep() {
-    this.setData({ deepVisible: false, bpMore: false });
-    wx.pageScrollTo({ scrollTop: 0, duration: 240 });
-  },
-
-  toggleQlist() {
-    this.setData({ qlistExpanded: !this.data.qlistExpanded });
-  },
-
-  toggleBpMore() {
-    this.setData({ bpMore: !this.data.bpMore });
-  },
-
-  onStartDeep() {
-    if (!this.data.deepVisible) {
-      this.setData({ deepVisible: true, activeStep: 1, bpMore: false });
-    }
-    setTimeout(() => {
-      wx.pageScrollTo({ selector: '#report-deep', duration: 280 });
-    }, 50);
-  },
-
-  switchWp(e) {
-    const idx = Number(e.currentTarget.dataset.index);
-    const wp = (this.data.report && this.data.report.weakpoints) || [];
-    if (idx < 0 || idx >= wp.length) return;
-    this.setData({
-      activeWpIndex: idx,
-      currentWp: wp[idx],
-      activeStep: 1,
-      bpMore: false,
-      deepVisible: true,
-    });
-  },
-
-  // ===== 异议 =====
-  onDisputeTap(e) {
-    const { module, index } = e.currentTarget.dataset;
-    this.setData({
-      disputeVisible: true,
-      disputeTarget: { moduleKey: module, index: Number(index) },
-    });
-  },
-  onDispute(e) {
-    this.setData({ disputeVisible: true, disputeTarget: e.detail });
-  },
-  onDisputeCancel() {
-    this.setData({ disputeVisible: false, disputeTarget: null });
-  },
-  async onDisputeSubmit(e) {
-    const { reason } = e.detail;
-    const target = this.data.disputeTarget;
-    if (!target || !this.data.reportId) return;
-    this.setData({ disputeVisible: false, regenerating: true });
-    try {
-      const openid = getOpenid();
-      const res = await wx.cloud.callFunction({
-        name: 'reportService',
-        data: {
-          action: 'disputeModule',
-          reportId: this.data.reportId,
-          batchId: this.data.batchId,
-          moduleKey: target.moduleKey,
-          index: target.index,
-          reason,
-          userId: openid,
-        },
-        timeout: 120000,
-      });
-      const d = res.result;
-      if (d && d.code === 0 && d.data && d.data.report) {
-        this.applyReport(d.data.report, {
-          reportId: this.data.reportId,
-          regenerating: false,
-          deepVisible: this.data.deepVisible,
-          activeStep: this.data.activeStep,
-          activeWpIndex: this.data.activeWpIndex,
-        });
-        wx.showToast({ title: '已重新生成', icon: 'success' });
-      } else {
-        this.setData({ regenerating: false });
-        wx.showToast({ title: (d && d.message) || '重新生成失败', icon: 'none' });
-      }
-    } catch (err) {
-      this.setData({ regenerating: false });
-      wx.showToast({ title: '重新生成失败', icon: 'none' });
-    }
-  },
-
-  // 检验完成按钮 → 记录（MVP：toast 提示，回访记录后续接）
-  onCheckDone(e) {
-    const btn = e.currentTarget.dataset.btn;
-    wx.showToast({ title: '已记录：「' + btn + '」', icon: 'none' });
-  },
-
-  goQuestionEvolution(e) {
-    const d = e.currentTarget.dataset || {};
-    const batch = this.data.batchId || '';
-    const url = '/packageDiagnose/pages/pattern-trajectory/pattern-trajectory?batch=' + encodeURIComponent(batch)
-      + '&qt=' + encodeURIComponent(d.qt || '')
-      + '&qtype=' + encodeURIComponent(d.type || '')
-      + '&score=' + encodeURIComponent(d.score == null ? '' : String(d.score));
-    wx.navigateTo({ url });
-  },
-
-  goBack() {
-    // 从某份报告进入历史列表后，返回键先回到当前报告，而不是直接离开页面
-    if (this.data.historyVisible && this.data.batchId && this.data.report) {
-      this.hideHistory();
-      return;
-    }
-    wx.navigateBack({ delta: 1 });
-  },
-
-  // 公式混排：utils/latex → rich-text nodes（失败回退纯文本节点）
-  renderMd(text) {
-    if (!text) return [];
-    try {
-      return renderMathText(text) || [];
-    } catch (e) {
-      console.error('[report] renderMathText failed:', e.message);
-      return [{ type: 'text', text: String(text) }];
-    }
-  },
-
-  // 报告里含公式的字段转 nodes（题目情况/过程证据/断点矛盾；其余文案先纯文本）
-  renderFormulas(report) {
-    const r = report;
-    if (!r) return r;
-    (r.questions || []).forEach((q) => {
-      q.questionNodes = this.renderMd(q.questionText);
-    });
-    (r.weakpoints || []).forEach((wp) => {
-      ((wp.breakpoint && wp.breakpoint.segments) || []).forEach((seg) => {
-        seg.evidenceNodes = this.renderMd(seg.evidence);
-      });
-      if (wp.breakpoint && wp.breakpoint.contradiction) {
-        wp.breakpoint.contradictionNodes = this.renderMd(wp.breakpoint.contradiction);
-      }
-    });
-    return r;
-  },
+  goBack() { wx.navigateBack(); },
 });
