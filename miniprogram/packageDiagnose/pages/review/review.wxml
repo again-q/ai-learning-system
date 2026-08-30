@@ -5,19 +5,14 @@
   <view class="nav">
     <view class="back" bindtap="onBackTap">‹</view>
     <view class="title">题目复核</view>
-    <view class="nav-right">{{stage === 'transcribe' ? '①/②' : stage === 'params' ? '②/②' : '✓'}}</view>
+    <view class="nav-right">{{stage === 'transcribe' ? '①' : '✓'}}</view>
   </view>
 
-  <!-- 阶段指示 -->
+  <!-- 阶段指示（v2：只一次检查） -->
   <view class="steps">
     <view class="step {{stage === 'transcribe' ? 'on' : 'done'}}">
       <view class="dot">{{stage === 'transcribe' ? '1' : '✓'}}</view>
       <text>复核题目</text>
-    </view>
-    <view class="line {{stage === 'params' || stage === 'done' ? 'on' : ''}}"></view>
-    <view class="step {{stage === 'params' || stage === 'done' ? 'on' : ''}}">
-      <view class="dot">{{stage === 'params' ? '2' : stage === 'done' ? '✓' : '2'}}</view>
-      <text>复核参数</text>
     </view>
   </view>
 
@@ -57,52 +52,13 @@
     </button>
   </scroll-view>
 
-  <!-- ========== 二次复核：参数确认 ========== -->
-  <scroll-view class="list" wx:if="{{stage === 'params'}}" scroll-y>
-    <view class="card" wx:for="{{items}}" wx:key="questionId">
-      <view class="q-head">
-        <text class="q-no">第 {{index + 1}} 题</text>
-        <text class="q-tag {{item.paramsReviewed ? 'ok' : ''}}">{{item.paramsReviewed ? '已确认' : '待确认'}}</text>
-      </view>
-      <view class="param-grid">
-        <view class="p-cell">
-          <text class="p-label">难度</text>
-          <text class="p-val strong">{{item.difficultyLevel || '—'}}</text>
-          <text class="p-sub" wx:if="{{item.difficultyValue != null}}">D = {{item.difficultyValue}}</text>
-        </view>
-        <view class="p-cell">
-          <text class="p-label">知识点</text>
-          <text class="p-val">{{item.knowledgeNodeName || (item.knowledgeUsageNames || '—')}}</text>
-          <text class="p-sub" wx:if="{{item.knowledgeUsageNames && item.knowledgeNodeName}}">含：{{item.knowledgeUsageNames}}</text>
-        </view>
-        <view class="p-cell">
-          <text class="p-label">作答质量</text>
-          <text class="p-val {{item.processScore == null ? '' : (item.processScore >= 0.5 ? 'right' : 'wrong')}}">
-            {{item.processScore == null ? '—' : (item.processScore >= 0.5 ? '基本答对' : '答得不好')}}
-          </text>
-          <text class="p-sub" wx:if="{{item.processScore != null}}">P = {{item.processScore}}</text>
-        </view>
-        <view class="p-cell wide" wx:if="{{item.errorAttribution}}">
-          <text class="p-label">错误归因</text>
-          <text class="p-val">{{item.errorAttribution}}</text>
-        </view>
-      </view>
-      <view class="card-actions">
-        <view class="btn ghost" data-index="{{index}}" bindtap="onEditParams">✏️ 修改参数</view>
-      </view>
-    </view>
-
-    <button class="btn primary big" bindtap="onFinish" disabled="{{finishing}}">
-      {{finishing ? '保存中…' : '确认完成'}}
-    </button>
-    <view class="tip-note">确认完成后可查看本次诊断报告</view>
-  </scroll-view>
+  <!-- 二次复核已移除（v2：只一次检查） -->
 
   <!-- ========== 完成 ========== -->
   <view class="done-view" wx:if="{{stage === 'done'}}">
     <view class="done-icon">✓</view>
     <view class="done-title">分析完成</view>
-    <view class="done-sub">共 {{items.length}} 题，参数已保存</view>
+    <view class="done-sub">共 {{items.length}} 题，分析已完成</view>
     <button class="btn primary big" bindtap="onViewReport">查看诊断报告</button>
     <button class="btn ghost big" bindtap="onBackHome">返回首页</button>
   </view>
@@ -141,24 +97,7 @@
     </view>
   </view>
 
-  <!-- 修改参数弹层 -->
-  <view class="mask" wx:if="{{editMode === 'params'}}" bindtap="closeEdit">
-    <view class="sheet" catchtap="noop">
-      <view class="sheet-title">修改参数（难度 / 知识点）</view>
-      <view class="field">
-        <text class="field-label">难度（如 L7 0.82）</text>
-        <input class="field-input" value="{{editD}}" bindinput="onEditDInput" placeholder="Lx D值" />
-      </view>
-      <view class="field">
-        <text class="field-label">知识点（教材术语）</text>
-        <input class="field-input" value="{{editK}}" bindinput="onEditKInput" placeholder="如：函数的单调性" />
-      </view>
-      <view class="sheet-actions">
-        <view class="btn ghost" bindtap="closeEdit">取消</view>
-        <view class="btn primary" bindtap="onSaveParams">保存</view>
-      </view>
-    </view>
-  </view>
+  <!-- 修改参数弹层已移除（v2） -->
 
   <!-- 加载态 -->
   <view class="loading" wx:if="{{loading}}">

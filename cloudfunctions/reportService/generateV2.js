@@ -92,4 +92,16 @@ async function advancedAnalysis(pattern, hits) {
   return out.trim();
 }
 
-module.exports = { batchSummary, progressNarrative, diffAnalysis, advancedAnalysis, parseSections };
+// 题型异议判定：接受/拒绝学生的题型更改提议 + 简短看法
+async function disputePattern(originalPattern, studentProposal) {
+  const user = JSON.stringify({ originalPattern: originalPattern || '', studentProposal: studentProposal || '' });
+  const out = await callLLM(readPrompt('pattern-dispute.txt'), user, 300);
+  try {
+    const j = JSON.parse(out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1));
+    return { accepted: j.accepted === true, comment: String(j.comment || '').trim() };
+  } catch (_) {
+    return { accepted: false, comment: '抱歉，这次判定没看明白，请稍后再试。' };
+  }
+}
+
+module.exports = { batchSummary, progressNarrative, diffAnalysis, advancedAnalysis, disputePattern, parseSections };

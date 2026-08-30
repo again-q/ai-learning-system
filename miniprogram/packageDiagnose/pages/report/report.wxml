@@ -78,6 +78,14 @@
         <text class="narrative">{{detail.progressNarrative}}</text>
       </view>
 
+      <view class="detail-block" wx:if="{{detail.pattern}}">
+        <view class="pat-row">
+          <text class="detail-h pat-label">题型</text>
+          <text class="pat-val">{{detail.pattern}}</text>
+          <text class="pat-dispute" bindtap="openPatternDispute">题型有异议</text>
+        </view>
+      </view>
+
       <view class="detail-block diff" wx:if="{{detail.diffAnalysis}}">
         <text class="detail-h">差异分析</text>
         <text class="diff-fact" wx:if="{{detail.diffAnalysis.fact}}">{{detail.diffAnalysis.fact}}</text>
@@ -86,6 +94,20 @@
       </view>
 
       <view class="adv-btn" bindtap="openAdvPick">进阶分析 · 查看演变趋势</view>
+
+      <!-- 题型异议弹层 -->
+      <view class="adv-mask" wx:if="{{disputeVisible}}" bindtap="closeDispute">
+        <view class="adv-card" catchtap="noop">
+          <text class="adv-card-title">题型异议</text>
+          <text class="dispute-ori">当前题型：{{detail.pattern}}</text>
+          <textarea class="dispute-input" value="{{disputeText}}" bindinput="onDisputeInput" auto-height maxlength="200" placeholder="说说你认为的题型是什么，为什么（例如：这应该是恒成立求参数范围，因为题设是对任意x成立）" />
+          <view class="btn primary big dispute-submit" bindtap="submitPatternDispute" disabled="{{!disputeText.trim() || disputeLoading}}">{{disputeLoading ? '判定中…' : '提交，让 AI 判断'}}</view>
+          <view class="adv-result" wx:if="{{disputeResult}}">
+            <text class="dispute-verdict {{disputeAccepted ? 'ok' : 'no'}}">{{disputeAccepted ? '已接受你的更正 ✓' : '未接受更改'}}</text>
+            <text class="adv-result-text">{{disputeResult}}</text>
+          </view>
+        </view>
+      </view>
       <view class="adv-mask" wx:if="{{advVisible}}" bindtap="closeAdv">
         <view class="adv-card" catchtap="noop">
           <text class="adv-card-title">进阶分析 · 选择一题</text>

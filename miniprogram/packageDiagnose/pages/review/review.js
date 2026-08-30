@@ -224,8 +224,8 @@ Page({
       if (failed > 0) {
         wx.showToast({ title: failed + ' 题分析失败', icon: 'none' });
       }
-      // 进入二次复核：重新拉取参数
-      return this.loadQuestionsForParams();
+      // v2：去二次复核——一次检查完成直接进入完成态
+      this.setData({ analyzing: false, stage: 'done' });
     });
   },
 

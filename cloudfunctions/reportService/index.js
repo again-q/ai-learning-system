@@ -331,6 +331,33 @@ exports.main = async (event) => {
       return success({ insufficient: false, count: hits.length, analysis });
     }
 
+    // 题型异议：学生提出看法 → LLM 判定是否更改 + 简短看法；接受则更新 pattern
+    if (event && event.action === 'disputePattern') {
+      const { questionId, proposal } = event;
+      if (!questionId) return fail(400, '缺少 questionId');
+      const proposalText = String(proposal || '').trim();
+      if (!proposalText) return fail(400, '请先输入你的看法');
+      const q = await db.collection('questions').doc(questionId).get().catch(() => null);
+      if (!q || !q.data) return fail(404, '题目不存在');
+      if (q.data.userId !== openid) return fail(403, '无权操作他人题目');
+      const original = String(q.data.pattern || '').trim();
+      const verdict = await genV2.disputePattern(original, proposalText);
+      if (verdict.accepted) {
+        const newPattern = proposalText.slice(0, 120);
+        await db.collection('questions').doc(questionId).update({ data: { pattern: newPattern } });
+        // 同步最新 mastery_logs：更新 pattern + 清 patternEmbedding（回退整题 embedding 检索，后续可重算）
+        try {
+          const logs = await db.collection('mastery_logs').where({ questionId }).orderBy('createdAt', 'desc').limit(1).get();
+          if (logs.data.length) {
+            await db.collection('mastery_logs').doc(logs.data[0]._id).update({ data: { pattern: newPattern, patternEmbedding: db.command.remove() } });
+          }
+        } catch (e) {
+          console.warn('[reportService] 异议同步 mastery_logs 失败:', e.message);
+        }
+      }
+      return success({ accepted: verdict.accepted, comment: verdict.comment });
+    }
+
     // 往期所有历史报告（按时间倒序）
     if (event && event.action === 'listByUser') {
       const res = await db.collection('reports')

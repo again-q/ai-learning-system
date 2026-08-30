@@ -44,6 +44,12 @@ Page({
     advResult: null,
     advInsufficient: false,
     advCount: 0,
+    // 题型异议
+    disputeVisible: false,
+    disputeText: '',
+    disputeLoading: false,
+    disputeResult: null,
+    disputeAccepted: false,
   },
 
   onLoad(options) {
@@ -214,6 +220,32 @@ Page({
         this.setData({ advLoading: false, advResult: null, advInsufficient: true, advCount: 0 });
       }
     }).catch(() => this.setData({ advLoading: false, advInsufficient: true, advCount: 0 }));
+  },
+
+  // ============ 题型异议 ============
+  openPatternDispute() { this.setData({ disputeVisible: true, disputeText: '', disputeResult: null }); },
+  closeDispute() { this.setData({ disputeVisible: false }); },
+  onDisputeInput(e) { this.setData({ disputeText: e.detail.value }); },
+
+  submitPatternDispute() {
+    const proposal = (this.data.disputeText || '').trim();
+    const questionId = this.data.detail && this.data.detail.questionId;
+    if (!proposal || !questionId) return;
+    this.setData({ disputeLoading: true, disputeResult: null });
+    wx.cloud.callFunction({ name: 'reportService', data: { action: 'disputePattern', questionId, proposal, userId: getOpenid() } })
+      .then((res) => {
+        const d = res.result;
+        if (d && d.code === 0) {
+          this.setData({ disputeLoading: false, disputeAccepted: !!d.data.accepted, disputeResult: d.data.comment || (d.data.accepted ? '已接受' : '未接受') });
+          if (d.data.accepted) {
+            // 刷新详情（pattern 已更新）
+            this.setData({ 'detail.pattern': proposal.slice(0, 120) });
+          }
+        } else {
+          this.setData({ disputeLoading: false, disputeResult: (d && d.message) || '判定失败，请重试' });
+        }
+      })
+      .catch(() => this.setData({ disputeLoading: false, disputeResult: '网络异常，请重试' }));
   },
 
   retry() {
