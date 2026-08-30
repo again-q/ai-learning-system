@@ -50,7 +50,7 @@
         <view class="qitem" wx:for="{{report.questions}}" wx:key="questionId" wx:for-item="qq">
           <text class="qitem-status {{qq.status === '错' ? 'bad' : 'ok'}}">{{qq.status === '错' ? '✗' : '✓'}}</text>
           <view class="qitem-body">
-            <text class="qitem-text">{{qq.questionText}}</text>
+            <text class="qitem-text">{{qq.text}}</text>
             <text class="qitem-pattern" wx:if="{{qq.pattern}}">{{qq.pattern}}</text>
             <text class="qitem-evol" data-qid="{{qq.questionId}}" bindtap="openDetail">查看详情 →</text>
           </view>
@@ -96,29 +96,28 @@
       <rich-text class="q-plain" nodes="{{detail.questionNodes}}"></rich-text>
     </view>
 
-    <view class="step-card" wx:if="{{detail.cropFileID}}">
-      <view class="step-card-h"><text class="step-card-t">你的过程</text></view>
-      <image class="crop-img" src="{{detail.cropFileID}}" mode="widthFix" />
-    </view>
-
-    <view class="step-card" wx:if="{{detail.segments.length}}">
-      <view class="step-card-h"><text class="step-card-t">过程分段</text></view>
+    <!-- ① 你的过程（图 + 分段，可回看） -->
+    <view class="step-card" wx:if="{{detail.cropFileID || detail.segments.length}}">
+      <view class="step-card-h"><text class="step-card-t">① 你的过程</text></view>
+      <image class="crop-img" wx:if="{{detail.cropFileID}}" src="{{detail.cropFileID}}" mode="widthFix" />
       <view class="seg" wx:for="{{detail.segments}}" wx:key="step" wx:for-item="sg">
         <text class="seg-status {{sg.status === '断' ? 'bad' : sg.status === '空白' ? 'gray' : 'ok'}}">{{sg.status === '断' ? '✗' : (sg.status === '空白' ? '○' : '✓')}}</text>
         <view class="seg-body"><text class="seg-step">{{sg.step}}</text></view>
       </view>
     </view>
 
-    <view class="step-card" wx:if="{{detail.progressNarrative}}">
-      <view class="step-card-h"><text class="step-card-t">进度</text></view>
-      <rich-text class="q-plain" nodes="{{detail.progressNodes}}"></rich-text>
+    <!-- ② 为什么（流畅叙事，不标概念） -->
+    <view class="step-card" wx:if="{{detail.progressNarrative || detail.diffFact || detail.diffInference}}">
+      <view class="step-card-h"><text class="step-card-t">② 为什么</text></view>
+      <rich-text class="q-plain" wx:if="{{detail.progressNarrative}}" nodes="{{detail.progressNodes}}"></rich-text>
+      <view class="sec" wx:if="{{detail.diffFact}}">{{detail.diffFact}}</view>
+      <view class="sec" wx:if="{{detail.diffInference}}">{{detail.diffInference}}</view>
     </view>
 
-    <view class="step-card">
-      <view class="step-card-h"><text class="step-card-t">差异分析</text></view>
-      <view class="sec"><text class="sec-label">事实</text><text>{{detail.diffFact}}</text></view>
-      <view class="sec key"><text class="sec-label">最小推论</text><text>{{detail.diffInference}}</text></view>
-      <view class="q key-q" wx:if="{{detail.diffHook}}">{{detail.diffHook}}</view>
+    <!-- ③ 想一想（钩子/种子） -->
+    <view class="step-card" wx:if="{{detail.diffHook}}">
+      <view class="step-card-h"><text class="step-card-t">③ 想一想</text></view>
+      <view class="sec">{{detail.diffHook}}</view>
     </view>
 
     <view class="step-card">
