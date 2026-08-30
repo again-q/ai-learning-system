@@ -25,9 +25,6 @@ function pickDailyQuote() {
 Page({
   data: {
     pageReady: false,
-    subjects: ['数学', '英语', '物理', '语文', '化学', '生物', '政治', '历史', '地理'],
-    subjectIndex: 0,
-    currentSubject: '数学',
     userName: '同学',
     quoteText: '',
     quoteBy: '',
@@ -52,24 +49,7 @@ Page({
     setTimeout(() => { this.setData({ pageReady: true }); }, 16);
   },
 
-  onSubjectChange() {
-    const subject = this.data.subjects[this.data.subjectIndex];
-    this.setData({ currentSubject: subject });
-  },
 
-  prevSubject() {
-    let idx = this.data.subjectIndex;
-    idx = (idx - 1 + this.data.subjects.length) % this.data.subjects.length;
-    this.setData({ subjectIndex: idx });
-    this.onSubjectChange();
-  },
-
-  nextSubject() {
-    let idx = this.data.subjectIndex;
-    idx = (idx + 1) % this.data.subjects.length;
-    this.setData({ subjectIndex: idx });
-    this.onSubjectChange();
-  },
 
   goStudy() {
     wx.switchTab({ url: '/pages/study/study' });
