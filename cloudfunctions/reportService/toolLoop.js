@@ -47,6 +47,7 @@ async function runWithTools(postJSON, url, apiKey, model, messages, tools, opts)
 
     if (msg.tool_calls && msg.tool_calls.length) {
       messages.push(msg);
+      if (opts.onProgress) opts.onProgress({ type: 'tools', names: msg.tool_calls.map((tc) => (tc.function && tc.function.name) || ''), round: i + 1 });
       for (const tc of msg.tool_calls) {
         loop.push(tc.function.name);
         const result = await execTool(tc, opts.userId);
@@ -70,8 +71,10 @@ async function runWithTools(postJSON, url, apiKey, model, messages, tools, opts)
         }
         continue;
       }
+      if (opts.onProgress) opts.onProgress({ type: 'writing' });
       return { content: rmsg.content || '', loops: loop };
     }
+    if (opts.onProgress) opts.onProgress({ type: 'writing' });
     return { content, loops: loop };
   }
   throw new Error('工具循环超限（>8 轮）');

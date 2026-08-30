@@ -15,6 +15,19 @@ const DS_MODEL = process.env.DS_MODEL || 'deepseek-v4-flash';
 const success = (data = null) => ({ code: 0, data, message: 'ok' });
 const fail = (code, msg) => ({ code, data: null, message: msg });
 
+// ============ 报告生成真实进度（写 batches.reportProgress，前端 2.5s 轮询读取） ============
+const REPORT_STAGES = ['整理答题数据', '连接检索服务', '检索历史同类题与错误模式', 'AI 撰写诊断报告', '校验与入库'];
+const TOOL_DESC = { vectorSearch: '检索历史同类题', getErrorPattern: '聚合错误模式', getTrend: '计算趋势', getNodeHistory: '查询知识点掌握历史' };
+async function writeProgress(batchId, stageIndex, detail, percent) {
+  try {
+    await db.collection('batches').doc(batchId).update({
+      data: { reportProgress: { stageIndex, detail: detail || REPORT_STAGES[stageIndex] || '', percent: percent == null ? null : percent, updatedAt: Date.now() } },
+    });
+  } catch (e) {
+    console.warn('[reportService] 写进度失败（不影响生成）:', e.message);
+  }
+}
+
 // 调试日志（写 debug_logs 集合，MCP/控制台可查——排查链路用）
 async function logDebug(step, userId, batchId, info) {
   try {
@@ -266,6 +279,16 @@ exports.main = async (event) => {
       return success({ reportId: null, report: null });
     }
 
+    // 报告生成真实进度（前端 2.5s 轮询）：读 batches.reportProgress
+    if (event && event.action === 'getProgress') {
+      const { batchId } = event;
+      if (!batchId) return fail(400, '缺少 batchId');
+      const b = await db.collection('batches').doc(batchId).get().catch(() => null);
+      if (!b || !b.data) return fail(404, '批次不存在');
+      if (b.data.userId !== openid) return fail(403, '无权操作他人批次');
+      return success({ progress: b.data.reportProgress || null });
+    }
+
     // 往期所有历史报告（按时间倒序）
     if (event && event.action === 'listByUser') {
       const res = await db.collection('reports')
@@ -320,6 +343,7 @@ exports.main = async (event) => {
     if (batchRes.data.userId !== openid) return fail(403, '无权操作他人批次');
 
     // ① 数据装配（确定事实，代码注入）——报告呈现所有题目情况；错题用于薄弱点分析（无错题也生成全对版）
+    await writeProgress(batchId, 0, '整理本次答题数据…', 10);
     const input = await assemble(batchId, openid);
     await logDebug('reportService.assemble', openid, batchId, {
       total: input.stats.totalQuestions, correct: input.stats.correctCount,
@@ -327,6 +351,7 @@ exports.main = async (event) => {
     });
 
     // ② 取 ragService 工具 schema
+    await writeProgress(batchId, 1, '连接检索服务…', 20);
     const schemaRes = await cloud.callFunction({ name: 'ragService', data: { action: 'getSchemas' } });
     const tools = (schemaRes.result && schemaRes.result.data) || [];
 
@@ -338,11 +363,22 @@ exports.main = async (event) => {
       { role: 'user', content: userMsg },
     ];
 
-    // ④ Function Calling 循环
-    const { content, loops } = await runWithTools(postJSON, `${DS_BASE_URL}/chat/completions`, DS_API_KEY, DS_MODEL, messages, tools, { userId: openid });
+    // ④ Function Calling 循环（真实进度：工具调用/进入撰写实时推送）
+    let toolRound = 0;
+    const onProgress = (ev) => {
+      if (ev.type === 'tools') {
+        toolRound++;
+        const names = (ev.names || []).map((n) => TOOL_DESC[n] || n).join('、') || '检索';
+        writeProgress(batchId, 2, `正在${names}…（第 ${ev.round} 轮）`, Math.min(35 + toolRound * 8, 65));
+      } else if (ev.type === 'writing') {
+        writeProgress(batchId, 3, 'AI 撰写诊断报告…', 75);
+      }
+    };
+    const { content, loops } = await runWithTools(postJSON, `${DS_BASE_URL}/chat/completions`, DS_API_KEY, DS_MODEL, messages, tools, { userId: openid, onProgress });
     await logDebug('reportService.generate', openid, batchId, { toolLoops: loops, contentLen: (content || '').length });
 
     // ⑤ 解析 JSON 报告 + 确定性清洗（交接包 2026-08-27：prompt 禁令之上的代码兜底）
+    await writeProgress(batchId, 4, '校验与清洗入库…', 90);
     const report = sanitizeReport(extractJson(content));
 
     // ⑥ 持久化
@@ -355,11 +391,13 @@ exports.main = async (event) => {
       },
     });
     await logDebug('reportService.saved', openid, batchId, { reportId: ins._id, weakpoints: (report.weakpoints || []).length, hasQuestions: Array.isArray(report.questions) ? report.questions.length : 0 });
+    await writeProgress(batchId, 4, '报告已生成', 100);
 
     return success({ reportId: ins._id, report });
   } catch (e) {
     console.error('[reportService] error:', e);
     try {
+      if (event && event.batchId) await writeProgress(event.batchId, 4, '生成失败：' + (e.message || '未知错误'), null);
       await logDebug('reportService.error', event && event.userId, event && event.batchId, { message: e.message });
     } catch (_) {}
     return fail(500, '报告生成失败: ' + (e.message || '未知错误'));

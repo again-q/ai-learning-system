@@ -6,15 +6,11 @@ const app = getApp();
 // 长请求无真实流式进度：按耗时推进阶段文案（不做百分比假进度条）
 // 网关 ~60s 会掐 callFunction，但前端不因超时失败：一直轮询直到拿到报告或离开页面
 const GEN_STAGES = [
-  { afterSec: 0, text: '整理本次答题数据…' },
-  { afterSec: 6, text: '检索历史同类题与错误模式…' },
-  { afterSec: 16, text: '定位薄弱点与断点…' },
-  { afterSec: 28, text: '撰写诊断报告…' },
-  { afterSec: 45, text: '润色与校验…' },
-  { afterSec: 70, text: '仍在生成，请再稍候…' },
-  { afterSec: 100, text: '云端还在跑，继续等待…' },
-  { afterSec: 180, text: '生成时间较长，请勿退出…' },
-  { afterSec: 300, text: '仍在等待云端写完报告…' },
+  { text: '整理答题数据…' },
+  { text: '连接检索服务…' },
+  { text: '检索历史同类题与错误模式…' },
+  { text: 'AI 撰写诊断报告…' },
+  { text: '校验与入库…' },
 ];
 
 const REPORT_POLL_MS = 4000;
@@ -190,27 +186,41 @@ Page({
     }
   },
 
-  startProgressTicker() {
+  // 真实进度轮询：reportService.getProgress 读 batches.reportProgress（生成端实时写入）
+  startProgressTicker(batchId) {
     this.stopProgressTicker();
     const started = Date.now();
-    const tick = () => {
-      const sec = Math.floor((Date.now() - started) / 1000);
-      let stage = GEN_STAGES[0];
-      let stageIndex = 0;
-      for (let i = 0; i < GEN_STAGES.length; i++) {
-        if (sec >= GEN_STAGES[i].afterSec) {
-          stage = GEN_STAGES[i];
-          stageIndex = i;
+    const tick = async () => {
+      if (this._progressBusy) return;
+      this._progressBusy = true;
+      try {
+        const sec = Math.floor((Date.now() - started) / 1000);
+        let next = { reportElapsedSec: sec };
+        try {
+          const res = await wx.cloud.callFunction({
+            name: 'reportService',
+            data: { action: 'getProgress', batchId, userId: getOpenid() },
+          });
+          const d = res.result;
+          const p = d && d.code === 0 && d.data ? d.data.progress : null;
+          if (p && typeof p.stageIndex === 'number') {
+            const stage = GEN_STAGES[Math.min(p.stageIndex, GEN_STAGES.length - 1)] || {};
+            next.reportProgressText = p.detail || stage.text || '生成中…';
+            next.reportStageIndex = Math.min(p.stageIndex, GEN_STAGES.length - 1);
+          } else {
+            next.reportProgressText = GEN_STAGES[0].text;
+            next.reportStageIndex = 0;
+          }
+        } catch (e) {
+          // 进度查询失败不打断生成：保底只更新计时
         }
+        this.setData(next);
+      } finally {
+        this._progressBusy = false;
       }
-      this.setData({
-        reportElapsedSec: sec,
-        reportProgressText: stage.text,
-        reportStageIndex: stageIndex,
-      });
     };
     tick();
-    this._progressTimer = setInterval(tick, 1000);
+    this._progressTimer = setInterval(tick, 2500);
   },
 
   // 读该批次最新报告；无则触发生成
@@ -259,7 +269,7 @@ Page({
       reportStageIndex: 0,
       retryable: false,
     });
-    this.startProgressTicker();
+    this.startProgressTicker(batchId);
     log.beginSession('report_generate');
     log.append('report_generate_start', { batchId });
     try {
