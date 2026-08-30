@@ -1,5 +1,6 @@
 const app = getApp();
 const log = require('../../utils/upload-log');
+const imageQuality = require('../../utils/image-quality');
 
 // L2 压缩规范：长边 ≤2000px（超出等比缩；失败回退原图，不阻塞上传）
 const MAX_EDGE = 2000;
@@ -52,8 +53,34 @@ Page({
         sourceType: ['camera', 'album'],
         sizeType: ['compressed'],
       });
-      const newImages = res.tempFiles.map((f) => f.tempFilePath);
-      this.setData({ images: [...this.data.images, ...newImages].slice(0, 9), pipelineError: '' });
+      const picked = res.tempFiles.map((f) => f.tempFilePath);
+      // 输入优化 A：拍摄质量实时检测（过暗/过曝拦截，检测失败不拦截）
+      const checks = await Promise.all(picked.map((p) => imageQuality.analyzeImage(p)));
+      const bad = [];
+      const good = [];
+      checks.forEach((r, i) => (r.ok ? good : bad).push({ path: picked[i], issues: r.issues }));
+      if (bad.length) {
+        const why = bad.map((b) => b.issues.join('、')).join('；');
+        const remove = await new Promise((resolve) => {
+          wx.showModal({
+            title: '照片质量不佳',
+            content: why + '。建议重拍后再传，否则可能识别不准。',
+            cancelText: '仍要使用',
+            confirmText: '移除重拍',
+            success: (r2) => resolve(!!r2.confirm),
+            fail: () => resolve(false),
+          });
+        });
+        const keepPaths = (remove ? good.map((g) => g.path) : picked);
+        if (remove && good.length === 0) {
+          this.setData({ pipelineError: '刚才的照片' + why + '，已移除。请按拍摄建议重拍。' });
+          return;
+        }
+        this.setData({ images: [...this.data.images, ...keepPaths].slice(0, 9), pipelineError: '' });
+        if (remove) log.append('quality_filtered', { removed: bad.length, kept: good.length });
+        return;
+      }
+      this.setData({ images: [...this.data.images, ...picked].slice(0, 9), pipelineError: '' });
     } catch (e) {
       // 用户取消选择，忽略
     }
@@ -70,7 +97,8 @@ Page({
   // 预览大图
   previewImage(e) {
     const idx = e.currentTarget.dataset.index;
-    wx.previewImage({ current: this.data.images[idx], urls: this.data.images });
+    const urls = this.data.images.map((im) => im.path);
+    wx.previewImage({ current: urls[idx], urls });
   },
 
   clearPipelineError() {
@@ -93,6 +121,28 @@ Page({
       return;
     }
 
+    const badQuality = this.data.images.filter((im) => im.qualityOk === false);
+    if (badQuality.length) {
+      const removeBad = await new Promise((resolve) => {
+        wx.showModal({
+          title: '有照片质量过低',
+          content: badQuality.length + ' 张照片被标记为质量过低（❌）。继续上传可能识别不准——要移除它们，只上传其余照片吗？',
+          cancelText: '取消',
+          confirmText: '移除并继续',
+          success: (r2) => resolve(!!r2.confirm),
+          fail: () => resolve(false),
+        });
+      });
+      if (!removeBad) {
+        this.setData({ pipelineError: '已取消上传。建议删除 ❌ 标记的照片后重拍。' });
+        return;
+      }
+      this.setData({ images: this.data.images.filter((im) => im.qualityOk !== false) });
+      if (!this.data.images.length) {
+        this.setData({ pipelineError: '移除后没有可上传的照片了，请先重拍' });
+        return;
+      }
+    }
     this.setData({
       submitting: true,
       pipelineError: '',
@@ -108,8 +158,8 @@ Page({
       const uid = user._openid;
       const fileIds = [];
       const tUpload = Date.now();
-      for (const file of this.data.images) {
-        const path = await compressIfNeeded(file);
+      for (const item of this.data.images) {
+        const path = await compressIfNeeded(item.path);
         const ext = path.split('.').pop() || 'jpg';
         const cloudPath = `photos/${uid}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
         const up = await wx.cloud.uploadFile({ cloudPath, filePath: path });
