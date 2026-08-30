@@ -33,22 +33,12 @@
     </view>
   </view>
 
-  <!-- 掌握度环形图 -->
-  <view class="mastery-section reveal reveal-4">
-    <view class="ring-container">
-      <canvas class="ring-canvas" canvas-id="masteryRing" type="2d"></canvas>
-      <view class="ring-center">
-        <text class="ring-pct">{{mastery}}%</text>
-        <text class="ring-label">{{currentSubject}}掌握度</text>
-      </view>
-    </view>
-  </view>
-
-  <!-- 今日建议 -->
-  <view class="suggestion-section reveal reveal-5">
-    <text class="suggestion-title">📋 今日建议</text>
+  <!-- 每日一句 -->
+  <view class="suggestion-section reveal reveal-4">
+    <text class="suggestion-title">📖 每日一句</text>
     <view class="suggestion-card">
-      <text class="suggestion-text">{{suggestion}}</text>
+      <text class="suggestion-text">{{quoteText}}</text>
+      <text class="quote-by">—— {{quoteBy}}</text>
     </view>
   </view>
 

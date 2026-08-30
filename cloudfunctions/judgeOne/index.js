@@ -106,16 +106,30 @@ async function loadNodes() {
 }
 
 // 知识节点查找：先精确（name 全等），失败则子串容错（AI 常输出句子式描述，取最长命中的节点名=最具体），返回节点对象
+function simName(a, b) {
+  a = String(a || '').trim(); b = String(b || '').trim();
+  if (!a || !b) return 0;
+  if (a === b) return 1;
+  if (a.includes(b) || b.includes(a)) {
+    const short = Math.min(a.length, b.length), long = Math.max(a.length, b.length);
+    return Math.min(1, 0.6 + 0.4 * (short / long));
+  }
+  const sa = new Set(a), sb = new Set(b);
+  let inter = 0; for (const c of sa) if (sb.has(c)) inter++;
+  return (2 * inter) / (sa.size + sb.size);
+}
+
+// 知识点名匹配：相似度 ≥0.8 才用图谱节点，否则返回 null（由 matchKnowledgeNode 走 custom_nodes 兜底）
 async function findNode(kName) {
   const nodes = await loadNodes();
-  let best = null, bestLen = 0;
+  let best = null, bestScore = 0;
   for (const n of nodes) {
     const nm = n.name || '';
     if (!nm) continue;
-    if (nm === kName) return n;
-    if (kName.includes(nm) && nm.length > bestLen) { bestLen = nm.length; best = n; }
+    const s = simName(kName, nm);
+    if (s > bestScore) { bestScore = s; best = n; }
   }
-  return best;
+  return bestScore >= 0.8 ? best : null;
 }
 
 // 知识节点匹配：返回节点标识（A 单元级定位用 findNode 取 path[2]）

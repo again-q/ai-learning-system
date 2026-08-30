@@ -1,5 +1,27 @@
 const app = getApp();
 
+// 每日一句：真实名言（按日期轮换）
+const QUOTES = [
+  { text: '数学是科学的皇后，数论是数学的皇后。', by: '高斯' },
+  { text: '我唯一知道的就是我一无所知。', by: '苏格拉底' },
+  { text: '天才就是百分之一的灵感加上百分之九十九的汗水。', by: '爱迪生' },
+  { text: '学而不思则罔，思而不学则殆。', by: '孔子' },
+  { text: '不积跬步，无以至千里；不积小流，无以成江海。', by: '荀子' },
+  { text: '书山有路勤为径，学海无涯苦作舟。', by: '韩愈' },
+  { text: '给我一个支点，我可以撬动整个地球。', by: '阿基米德' },
+  { text: '我思故我在。', by: '笛卡尔' },
+  { text: '知识就是力量。', by: '培根' },
+  { text: '路漫漫其修远兮，吾将上下而求索。', by: '屈原' },
+  { text: '失败是成功之母。', by: '谚语' },
+  { text: '科学没有国界，但科学家有祖国。', by: '巴斯德' },
+];
+function pickDailyQuote() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const day = Math.floor((now - start) / 86400000);
+  return QUOTES[day % QUOTES.length];
+}
+
 Page({
   data: {
     pageReady: false,
@@ -7,48 +29,19 @@ Page({
     subjectIndex: 0,
     currentSubject: '数学',
     userName: '同学',
-    mastery: 0,
     streak: 7,
     todayMinutes: 45,
-    suggestion: '掌握度加载中...'
+    quoteText: '',
+    quoteBy: '',
   },
 
   onLoad() {
     const user = app.globalData.userInfo;
     if (user) {
-      this.setData({ 
-        userName: user.nickName || '同学',
-        streak: user.streak || 1
-      });
+      this.setData({ userName: user.nickName || '同学', streak: user.streak || 1 });
     }
-    this.drawRing(this.data.mastery);
-  },
-
-  // 首页掌握度接真数据（宪法加权得分法：statService.overview，K=ΣS/ΣD）
-  loadMastery() {
-    wx.cloud.callFunction({
-      name: 'statService',
-      data: { action: 'overview' },
-    }).then((res) => {
-      const d = res.result && res.result.code === 0 ? res.result.data : null;
-      if (!d || d.masteryPercent == null) {
-        this._overview = { masteryPercent: 0, suggestion: '暂无掌握度数据——去拍一张作业照片，让 AI 帮你建立知识画像。' };
-      } else {
-        const weakText = (d.weakNodes && d.weakNodes.length)
-          ? '掌握度较低：' + d.weakNodes.join('、') + '，建议优先复习。'
-          : '继续练习，掌握度会随每次诊断自动更新。';
-        this._overview = {
-          masteryPercent: d.masteryPercent,
-          suggestion: '已积累 ' + d.nodeCount + ' 个知识点的掌握记录。' + weakText,
-        };
-      }
-      if (this.data.currentSubject === '数学') {
-        this.setData({ mastery: this._overview.masteryPercent, suggestion: this._overview.suggestion });
-        this.drawRing(this._overview.masteryPercent);
-      }
-    }).catch(() => {
-      this.setData({ suggestion: '掌握度加载失败，请稍后重试。' });
-    });
+    const q = pickDailyQuote();
+    this.setData({ quoteText: q.text, quoteBy: q.by });
   },
 
   onShow() {
@@ -58,59 +51,12 @@ Page({
     }
     // 触发页面淡入过渡
     this.setData({ pageReady: false });
-    setTimeout(() => {
-      this.setData({ pageReady: true });
-      // Canvas 是原生组件不跟随 CSS 过渡，需在淡入后重绘避免残留
-      this.drawRing(this.data.mastery);
-    }, 16);
-    // 每次回到首页刷新掌握度（诊断完成后返回即见最新）
-    this.loadMastery();
-  },
-
-  drawRing(pct) {
-    const query = wx.createSelectorQuery();
-    query.select('.ring-canvas').node((res) => {
-      const canvas = res.node;
-      const ctx = canvas.getContext('2d');
-      const dpr = wx.getSystemInfoSync().pixelRatio;
-      canvas.width = 320 * dpr;
-      canvas.height = 320 * dpr;
-      ctx.scale(dpr, dpr);
-
-      const cx = 160, cy = 160, r = 120, lineW = 24;
-
-      // 背景圆
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.strokeStyle = '#f0f0f5';
-      ctx.lineWidth = lineW;
-      ctx.stroke();
-
-      // 进度圆
-      const endAngle = (pct / 100) * Math.PI * 2 - Math.PI / 2;
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, -Math.PI / 2, endAngle);
-      ctx.strokeStyle = '#007aff';
-      ctx.lineWidth = lineW;
-      ctx.lineCap = 'round';
-      ctx.stroke();
-    }).exec();
+    setTimeout(() => { this.setData({ pageReady: true }); }, 16);
   },
 
   onSubjectChange() {
-    // 切换学科：真实掌握度目前仅数学有图谱数据，其余学科如实显示暂未接入
     const subject = this.data.subjects[this.data.subjectIndex];
-    if (subject === '数学' && this._overview) {
-      this.setData({ currentSubject: subject, mastery: this._overview.masteryPercent, suggestion: this._overview.suggestion });
-      this.drawRing(this._overview.masteryPercent);
-    } else if (subject === '数学') {
-      this.setData({ currentSubject: subject, mastery: 0, suggestion: '掌握度加载中...' });
-      this.drawRing(0);
-      this.loadMastery();
-    } else {
-      this.setData({ currentSubject: subject, mastery: 0, suggestion: '「' + subject + '」暂未接入掌握度统计，当前知识图谱覆盖数学。' });
-      this.drawRing(0);
-    }
+    this.setData({ currentSubject: subject });
   },
 
   prevSubject() {

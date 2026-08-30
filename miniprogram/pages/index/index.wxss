@@ -236,6 +236,13 @@ page {
   color: var(--text-primary);
   line-height: 1.7;
 }
+.quote-by {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #999;
+  text-align: right;
+}
 
 /* ============================================
  * 开始学习按钮
