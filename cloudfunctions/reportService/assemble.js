@@ -46,6 +46,7 @@ async function assemble(batchId, userId) {
     knowledgeUsage: q.knowledgeUsage || [],
     pattern: q.pattern || null,
     errorType: q.errorType || null,
+    errorLevel: q.errorLevel || null,
     correctAnswer: q.correctAnswer || '',
     cropFileID: q.cropFileID || null,
     errorAttribution: q.errorAttribution || null,

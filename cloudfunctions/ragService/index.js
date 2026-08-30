@@ -96,6 +96,8 @@ async function vectorSearch(args) {
     knowledgeNodeName: log.knowledgeNodeName || (log.report ? log.report.knowledgeNodeName : null) || null,
     errorAttribution: log.errorAttribution || (log.report ? log.report.errorAttribution : null) || null,
     errorDimension: log.errorDimension || (log.report ? log.report.errorDimension : null) || null,
+    errorLevel: log.errorLevel || (log.report ? log.report.errorLevel : null) || null,
+    processScore: log.processScore != null ? log.processScore : (log.report && log.report.processScore != null ? log.report.processScore : null),
     segments: log.segments || (log.report ? log.report.segments : null) || [],
     breakpoint: log.breakpoint || (log.report ? log.report.breakpoint : null) || null,
     knowledgeUsage: log.knowledgeUsage || (log.report ? log.report.knowledgeUsage : null) || [],

@@ -85,6 +85,7 @@ async function diagnosis(q) {
     '• 分段：' + JSON.stringify((Array.isArray(q.segments) ? q.segments : []).slice(0, 8)),
     '• 断点：' + (q.breakpoint ? '第 ' + q.breakpoint.index + ' 步，' + q.breakpoint.nature : '无'),
     '• 错误类型：' + (q.errorType || '无'),
+    '• 错误层级 errorLevel：' + (q.errorLevel || '无'),
     '• 过程分 P：' + (q.processScore != null ? q.processScore : ''),
     '• 正确路径：' + (q.correctAnswer || '无'),
   ].join('\n');
@@ -111,6 +112,9 @@ async function advancedAnalysis(pattern, hits) {
       date: h.createdAt || null,
       isCorrect: h.isCorrect,
       breakpoint: h.breakpoint || null,
+      breakpointNature: (h.breakpoint && h.breakpoint.nature) || null,
+      errorCategory: h.errorLevel || h.errorCategory || null,
+      processScore: h.processScore != null ? h.processScore : null,
       errorAttribution: h.errorAttribution || null,
       knowledgeNodeName: h.knowledgeNodeName || null,
     })),

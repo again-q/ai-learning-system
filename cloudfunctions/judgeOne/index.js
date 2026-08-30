@@ -393,8 +393,8 @@ async function judgeQuestion(question, ragContext) {
 第四步【过程分段】：把学生作答过程按书写顺序切成若干段（仅解答题），逐段标记；选填题（选择/填空）无过程，segments 直接给空数组。
 
 只输出 JSON：
-{"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"correctAnswer":"","P":0~1,"errorType":"结果错|过程风险|无","eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","fiveDim":{"K":0.5,"A":0.5,"T":0.5,"Q":0.5,"S":0.5},"isRecallQuestion":true,"isOutOfSyllabus":false,"errorDimension":null,"knowledgeUsage":[{"name":"知识点教材术语","P":0|0.5|1,"D":0~1}],"pattern":{"domain":"知识板块","pattern":"中粒度题型描述（同类题共用）","variant":"变体细节"},"segments":[{"step":"段内容摘要","status":"通|断|空白","evidence":"该段过程原文片段"}],"breakpoint":{"index":2,"nature":"起步即停|中途断|收尾断"},"processAvailable":true}
-约束：D 落在 level 区间（D 是题目固有难度，与学生熟练度无关）；knowledgeNodeName 是核心知识点（教材术语）；knowledgeUsage 必须尽量列全本题实际调用的知识点（1~5 个，不要只交 1 个——有多个就都列）；fiveDim 是【能力五维】（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，各 0~1 连续值，对齐理论文档五维量纲；0 最低 1 最高）；isRecallQuestion 是【回忆类题标记】：默写公式/复述定义/判断对错=回忆类（true），解题应用=应用类（false）；isOutOfSyllabus 是【超纲标记】：超出高中课标范围才 true，默认 false；errorDimension 是【错题归因维度】：判错时归因 K=概念/公式/定义掌握问题、A=思路/变式/应用问题、T=跨单元迁移问题、S=计算/审题/执行失误，做对时 null；**整题空白优先 S，禁止默认 K/「未理解」**；errorAttribution 是【错因一句话描述】，只写可观察事实（如「整题空白未下笔」「分类讨论遗漏B={-2}」），**空白禁止写「未理解××方法」**，原因不明写「空白，原因待确认」；knowledgeUsage 是【本题知识点使用清单】1~5 个：列出本题实际调用的知识点（含知识层/思想方法层），name 用教材术语原词，D=该知识点环节在本题的难度（0~1，与整题 D 无关），P=该知识点环节的作答质量三档（决策 026）：1=用对；0.5=用了但漏边界/不完整（如漏特殊值验证、多选漏特殊情况、知识边界掌握不清）；0=该环节缺失或全错。0.5 的判定看该知识点自身——涉及边界/陷阱/分类讨论的环节，漏了特殊情形给 0.5；环节根本没做给 0；pattern 是【题型三层结构】：domain 知识板块、pattern 中粒度题型（检索主键，必须能概括同类题，禁止用题目原文或知识点名）、variant 变体细节；segments 是【过程分段】（仅解答题）：按书写顺序把学生过程切成 N 段，每段 step=段内容摘要、status=通|断|空白、evidence=该段过程原文片段（引用转录原话，禁止编造）；breakpoint 是【断点】：{index 断点所在段号（1 起），nature=起步即停|中途断|收尾断}，没断（全通）给 null；**整题空白 → nature=起步即停**；processAvailable 是【过程可信标记】：转录清晰可引用过程=true，涂改乱/看不清/过程缺失=false。【选填题（选择/填空）无过程】：segments=[]、breakpoint=null、processAvailable=false。errorType 是【错误类型】（三档）：结果错=作答结论与正确答案不符（答案错/方向反/漏选/漏情形，必扣）；过程风险=结论正确或基本正确，但关键步骤省略/过程不完整（阅卷能补出但严格可能扣分）；无=过程完整无风险。判定时按实际过程与答案对比判断，不按 P 简单分档（P 高但答案错 → 结果错）。最后输出纯 JSON`;
+{"index":1,"questionText":"","questionType":"选择|填空|解答|其他","questionCategory":"","level":"L1~L11","D":0~1,"correctAnswer":"","P":0~1,"errorType":"结果错|过程风险|无","errorLevel":"skill|rule|concept|null","eta":0.4~1.0|null,"r":null,"errorAttribution":null|"","knowledgeNodeName":"题目考察的核心知识点名称（教材术语，如'函数的单调性'）","fiveDim":{"K":0.5,"A":0.5,"T":0.5,"Q":0.5,"S":0.5},"isRecallQuestion":true,"isOutOfSyllabus":false,"errorDimension":null,"knowledgeUsage":[{"name":"知识点教材术语","P":0|0.5|1,"D":0~1}],"pattern":{"domain":"知识板块","pattern":"中粒度题型描述（同类题共用）","variant":"变体细节"},"segments":[{"step":"段内容摘要","status":"通|断|空白","evidence":"该段过程原文片段"}],"breakpoint":{"index":2,"nature":"起步即停|中途断|收尾断"},"processAvailable":true}
+约束：D 落在 level 区间（D 是题目固有难度，与学生熟练度无关）；knowledgeNodeName 是核心知识点（教材术语）；knowledgeUsage 必须尽量列全本题实际调用的知识点（1~5 个，不要只交 1 个——有多个就都列）；fiveDim 是【能力五维】（K知识储备/A分析推理/T技巧熟练/Q思维品质/S学习状态，各 0~1 连续值，对齐理论文档五维量纲；0 最低 1 最高）；isRecallQuestion 是【回忆类题标记】：默写公式/复述定义/判断对错=回忆类（true），解题应用=应用类（false）；isOutOfSyllabus 是【超纲标记】：超出高中课标范围才 true，默认 false；errorDimension 是【错题归因维度】：判错时归因 K=概念/公式/定义掌握问题、A=思路/变式/应用问题、T=跨单元迁移问题、S=计算/审题/执行失误，做对时 null；**整题空白优先 S，禁止默认 K/「未理解」**；errorAttribution 是【错因一句话描述】，只写可观察事实（如「整题空白未下笔」「分类讨论遗漏B={-2}」），**空白禁止写「未理解××方法」**，原因不明写「空白，原因待确认」；knowledgeUsage 是【本题知识点使用清单】1~5 个：列出本题实际调用的知识点（含知识层/思想方法层），name 用教材术语原词，D=该知识点环节在本题的难度（0~1，与整题 D 无关），P=该知识点环节的作答质量三档（决策 026）：1=用对；0.5=用了但漏边界/不完整（如漏特殊值验证、多选漏特殊情况、知识边界掌握不清）；0=该环节缺失或全错。0.5 的判定看该知识点自身——涉及边界/陷阱/分类讨论的环节，漏了特殊情形给 0.5；环节根本没做给 0；pattern 是【题型三层结构】：domain 知识板块、pattern 中粒度题型（检索主键，必须能概括同类题，禁止用题目原文或知识点名）、variant 变体细节；segments 是【过程分段】（仅解答题）：按书写顺序把学生过程切成 N 段，每段 step=段内容摘要、status=通|断|空白、evidence=该段过程原文片段（引用转录原话，禁止编造）；breakpoint 是【断点】：{index 断点所在段号（1 起），nature=起步即停|中途断|收尾断}，没断（全通）给 null；**整题空白 → nature=起步即停**；processAvailable 是【过程可信标记】：转录清晰可引用过程=true，涂改乱/看不清/过程缺失=false。【选填题（选择/填空）无过程】：segments=[]、breakpoint=null、processAvailable=false。errorType 是【错误类型】（三档）：结果错=作答结论与正确答案不符（答案错/方向反/漏选/漏情形，必扣）；过程风险=结论正确或基本正确，但关键步骤省略/过程不完整（阅卷能补出但严格可能扣分）；无=过程完整无风险。判定时按实际过程与答案对比判断，不按 P 简单分档（P 高但答案错 → 结果错）。errorLevel 是【错误层级】（三档，判错时填，做对/无风险填 null）：skill=计算/抄写/执行类失误（算错、抄错、竖式错、审题漏条件）；rule=步骤/顺序/方法错误（步骤颠倒、分类讨论遗漏、漏中间步骤）；concept=概念/定义/公式理解错误（概念混淆、适用条件不清、充要关系搞反）。最后输出纯 JSON`;
   const data = await postJSON(`${DS_BASE_URL}/chat/completions`, {
     model: DS_MODEL,
     thinking: { type: 'disabled' },       // 决策 023：thinking 开 + 难题 = content 空死锁，判档用 disabled
@@ -601,6 +601,11 @@ exports.main = async (event) => {
     const rawET = String(raw.errorType || '').trim();
     const derivedErrorType = (rawET === '结果错' || rawET === '过程风险') ? rawET
       : (clamped.P < 0.5 ? '结果错' : (clamped.P < 1 ? '过程风险' : '无'));
+    // ===== 错误层级（skill/rule/concept）：优先 LLM，缺失按 errorDimension 映射防御回退 =====
+    const rawEL = String(raw.errorLevel || '').trim();
+    const derivedErrorLevel = (derivedErrorType === '无') ? null
+      : (rawEL === 'skill' || rawEL === 'rule' || rawEL === 'concept') ? rawEL
+      : (raw.errorDimension === 'K' ? 'concept' : raw.errorDimension === 'A' ? 'rule' : raw.errorDimension === 'T' ? 'rule' : raw.errorDimension === 'S' ? 'skill' : 'skill');
 
     // ===== 题型三层（D-18）提前计算：questions 落库与 RAG 记录共用 =====
     const rawPattern = (raw.pattern && typeof raw.pattern === 'object') ? raw.pattern : {};
@@ -620,6 +625,7 @@ exports.main = async (event) => {
         processScore: clamped.P,
         pathQuality: clamped.eta,
         errorType: derivedErrorType,
+        errorLevel: derivedErrorLevel,
         errorAttribution: derivedErrorAttribution,
         pattern: patternFull || null,
         knowledgeNodeName: raw.knowledgeNodeName || '',
@@ -679,6 +685,7 @@ exports.main = async (event) => {
           processScore: Number(clamped.P) || 0,
           difficultyValue: Number(clamped.D) || 0,
           errorType: derivedErrorType,
+          errorLevel: derivedErrorLevel,
           errorAttribution: derivedErrorAttribution,
           errorDimension: raw.errorDimension || null,
           segments: Array.isArray(raw.segments) ? raw.segments : [],
@@ -691,6 +698,7 @@ exports.main = async (event) => {
             isCorrect: pOk,
             knowledgeNodeName: (raw.knowledgeNodeName || '').trim() || null,
             errorType: derivedErrorType,
+            errorLevel: derivedErrorLevel,
             errorAttribution: derivedErrorAttribution,
             errorDimension: raw.errorDimension || null,
             segments: Array.isArray(raw.segments) ? raw.segments : [],

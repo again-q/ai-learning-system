@@ -310,6 +310,8 @@ exports.main = async (event) => {
         progressNarrative: d.progressNarrative || '',
         diffAnalysis: d.diffAnalysis || null,
         diagnosis: d.diagnosis || null,
+        errorType: d.errorType || null,
+        errorLevel: d.errorLevel || null,
         pattern: d.pattern || null,
         correctAnswer: d.correctAnswer || '',
       });
@@ -423,17 +425,28 @@ exports.main = async (event) => {
 
     // ① 首页一句话（LLM 批次总结）：错题知识点聚合取 1-2 个最集中
     const topicCount = {};
+    const topicErr = {};
     for (const wq of input.wrongQuestions) {
       const t = (wq.knowledgeNodeName || '').trim();
-      if (t) topicCount[t] = (topicCount[t] || 0) + 1;
+      if (t) {
+        topicCount[t] = (topicCount[t] || 0) + 1;
+        const el = wq.errorLevel || 'skill';
+        topicErr[t] = topicErr[t] || {};
+        topicErr[t][el] = (topicErr[t][el] || 0) + 1;
+      }
     }
-    const wrongTopics = Object.keys(topicCount).sort((a, b) => topicCount[b] - topicCount[a]).slice(0, 2);
+    const wrongTopics = Object.keys(topicCount).sort((a, b) => topicCount[b] - topicCount[a]).slice(0, 2)
+      .map((t) => {
+        const errs = topicErr[t] || {};
+        const category = Object.keys(errs).sort((a, b) => errs[b] - errs[a])[0] || 'skill';
+        return { topic: t, errorCategory: category };
+      });
     let summary = '';
     try {
       summary = await genV2.batchSummary(input.stats, wrongTopics);
     } catch (e) {
       console.warn('[reportService] 批次总结失败（回退拼装）:', e.message);
-      summary = `${input.stats.totalQuestions} 道题对了 ${input.stats.correctCount} 道${wrongTopics.length ? '，错题集中在' + wrongTopics.join('、') : ''}。`;
+      summary = `${input.stats.totalQuestions} 道题对了 ${input.stats.correctCount} 道${wrongTopics.length ? '，错题集中在' + wrongTopics.map((t) => t.topic).join('、') : ''}。`;
     }
 
     // ② 每题批量并行：诊断（过程点评/问题在哪儿/下一步），并发 5
