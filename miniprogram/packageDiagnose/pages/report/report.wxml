@@ -35,8 +35,24 @@
     <view class="retry-btn" bindtap="goDiagnose">去诊断</view>
   </view>
 
+  <!-- ===== 批次列表（报告历史） ===== -->
+  <view class="content" wx:elif="{{view === 'list'}}">
+    <view class="nav-back2" bindtap="goBack"><text>‹ 返回</text></view>
+    <view class="more-title">我的报告</view>
+    <view class="qlist">
+      <view class="qitem" wx:for="{{reportList}}" wx:key="batchId" bindtap="openBatch" data-batchId="{{item.batchId}}">
+        <view class="qitem-body">
+          <text class="qitem-text">{{item.createdAt}} · {{item.correct}}/{{item.total}} 题对</text>
+          <text class="qitem-pattern">{{item.summary}}</text>
+        </view>
+        <text class="qitem-evol">›</text>
+      </view>
+    </view>
+  </view>
+
   <!-- ===== 报告：总览 + 逐题内联详情 ===== -->
-  <view class="content" wx:else>
+  <view class="content" wx:elif="{{view === 'report'}}">
+    <view class="nav-back2" bindtap="goBack"><text>‹ 返回</text></view>
     <view class="receipt">
       <view class="receipt-score-row">
         <text class="receipt-score">{{scoreMain}}</text>

@@ -406,17 +406,16 @@ exports.main = async (event) => {
         .get();
       const reports = (res.data || []).map((r) => {
         const report = r.report || {};
-        const overview = report.overview || {};
+        const qs = Array.isArray(report.questions) ? report.questions : [];
+        const correct = qs.filter((q) => q.status !== '错').length;
         return {
           reportId: r._id,
           batchId: r.batchId || '',
           createdAt: formatDate(r.createdAt),
-          weakpointCount: (report.weakpoints || []).length,
-          summary: {
-            dataAnchor: overview.dataAnchor || '',
-            moodText: overview.moodText || '',
-            coreHint: overview.coreHint || '',
-          },
+          summary: report.summary || '',
+          total: qs.length,
+          correct,
+          masteryChange: (report.masteryChange || []).length,
         };
       });
       return success({ reports });

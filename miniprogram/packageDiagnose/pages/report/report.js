@@ -39,6 +39,8 @@ Page({
     report: null,
     reportId: null,
     batchId: null,
+    view: 'list',
+    reportList: [],
     reportProgressVisible: false,
     reportProgressText: '',
     reportElapsedSec: 0,
@@ -61,26 +63,35 @@ Page({
   },
 
   async onLoad(options) {
-    let batchId = options.batchId;
-    if (!batchId) {
-      batchId = await this.findLatestBatchId();
-      if (!batchId) { this.setData({ loading: false, noReport: true }); return; }
+    const batchId = options.batchId || '';
+    if (batchId) {
+      this.setData({ batchId, view: 'report' });
+      this.loadReport(batchId);
+    } else {
+      this.loadBatchList();
     }
-    this.setData({ batchId });
-    this.loadReport(batchId);
   },
 
-  // 没有指定批次时，自动取该用户最近一批
-  async findLatestBatchId() {
+  // 无 batchId：显示该用户的批次列表（报告历史）
+  async loadBatchList() {
+    this.setData({ loading: true, emptyMsg: '', noReport: false });
     try {
-      const db = wx.cloud.database();
-      const res = await db.collection('batches')
-        .where({ _openid: getOpenid(), userId: getOpenid() })
-        .orderBy('createdAt', 'desc')
-        .limit(1)
-        .get();
-      return (res.data && res.data[0] && res.data[0]._id) || '';
-    } catch (e) { return ''; }
+      const res = await wx.cloud.callFunction({ name: 'reportService', data: { action: 'listByUser', userId: getOpenid() } });
+      const d = res.result;
+      if (d && d.code === 0 && d.data && d.data.reports && d.data.reports.length) {
+        this.setData({ loading: false, view: 'list', reportList: d.data.reports });
+      } else {
+        this.setData({ loading: false, noReport: true });
+      }
+    } catch (e) {
+      this.setData({ loading: false, noReport: true });
+    }
+  },
+
+  openBatch(e) {
+    const batchId = e.currentTarget.dataset.batchId;
+    if (!batchId) return;
+    wx.navigateTo({ url: '/packageDiagnose/pages/report/report?batchId=' + batchId });
   },
 
   onUnload() { this.stopProgressTicker(); },
