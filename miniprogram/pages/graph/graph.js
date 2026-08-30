@@ -66,8 +66,8 @@ Page({
         const data = (res.result && res.result.data) || {};
         const nodes = data.nodes || [];
         const progressMap = data.progressMap || {};
-        // 掌握度真实值：knowledge_progress 无记录 = 未学（0）
-        this._nodes = nodes.map((n) => ({ ...n, mastery: progressMap[n.knowledgeId] != null ? progressMap[n.knowledgeId] : 0 }));
+        // 掌握度真实值：knowledge_progress 无记录 = 未学（0）；库中是 0~1 比率，这里 ×100 转百分比 0~100（供 mColor/mStatus 阈值 75/50/0 用）
+        this._nodes = nodes.map((n) => ({ ...n, mastery: progressMap[n.knowledgeId] != null ? Math.round(progressMap[n.knowledgeId] * 100) : 0 }));
         this.buildIndex();
         this.enterSubject();
       })
