@@ -3,8 +3,7 @@
   <view class="nav-bar">
     <view class="nav-back" bindtap="goBack"><text class="nav-back-icon">‹</text><text>返回</text></view>
     <text class="nav-title">诊断报告</text>
-    <view class="nav-right" wx:if="{{report}}" bindtap="openAdvPick">进阶</view>
-    <view class="nav-placeholder" wx:else></view>
+    <view class="nav-placeholder"></view>
   </view>
 
   <!-- 加载态 -->
@@ -29,65 +28,33 @@
     <view class="retry-btn" wx:if="{{retryable}}" bindtap="retry">重新生成</view>
   </view>
 
-  <!-- ===== 报告首页：回执卡 ===== -->
+  <!-- ===== 报告首页：总览 ===== -->
   <view class="content" wx:else>
     <view class="receipt">
-      <view class="receipt-top">
-        <view class="receipt-score-row">
-          <text class="receipt-score">{{scoreMain}}</text>
-          <text class="receipt-score-sub" wx:if="{{scoreSub}}">{{scoreSub}}</text>
-        </view>
+      <view class="receipt-score-row">
+        <text class="receipt-score">{{scoreMain}}</text>
+        <text class="receipt-score-sub" wx:if="{{scoreSub}}">{{scoreSub}}</text>
       </view>
-
-      <text class="receipt-hint">{{report.summary}}</text>
-
-      <view class="receipt-dots" wx:if="{{report.questions.length}}" bindtap="toggleQlist">
+      <view class="receipt-dots" wx:if="{{report.questions.length}}">
         <text class="qdot {{q.status === '错' ? 'bad' : 'ok'}}" wx:for="{{report.questions}}" wx:key="questionId" wx:for-item="q">{{q.status === '错' ? '✗' : '✓'}}</text>
-        <text class="receipt-dots-more">{{qlistExpanded ? '收起' : '题干'}}</text>
       </view>
-
-      <block wx:if="{{qlistExpanded}}">
-        <view class="qitem" wx:for="{{report.questions}}" wx:key="questionId" wx:for-item="qq">
-          <text class="qitem-status {{qq.status === '错' ? 'bad' : 'ok'}}">{{qq.status === '错' ? '✗' : '✓'}}</text>
-          <view class="qitem-body">
-            <text class="qitem-text">{{qq.text}}</text>
-            <text class="qitem-pattern" wx:if="{{qq.pattern}}">{{qq.pattern}}</text>
-            <text class="qitem-evol" data-qid="{{qq.questionId}}" bindtap="openDetail">查看详情 →</text>
-          </view>
-        </view>
-      </block>
-
-      <view class="receipt-block" wx:if="{{wrongBriefs.length}}">
-        <text class="receipt-block-h">错题速览</text>
-        <view class="receipt-wrong" wx:for="{{wrongBriefs}}" wx:key="idx" wx:for-item="w">
-          <text class="receipt-wrong-mark">✗</text>
-          <text class="receipt-wrong-t">{{w.text}}</text>
-        </view>
-      </view>
-
-      <view class="adv-entry" bindtap="openAdvPick">
-        <text class="adv-entry-title">进阶分析</text>
-        <text class="adv-entry-sub">选择本批次任意一题，查看它的演变趋势 →</text>
-      </view>
+      <text class="receipt-hint" wx:if="{{report.summary}}">{{report.summary}}</text>
     </view>
 
-    <!-- 进阶分析弹层 -->
-    <view class="adv-mask" wx:if="{{advVisible}}" bindtap="closeAdv">
-      <view class="adv-card" catchtap="noop">
-        <text class="adv-card-title">进阶分析 · 选择一题</text>
-        <scroll-view scroll-y class="adv-list">
-          <view class="adv-item" wx:for="{{report.questions}}" wx:key="questionId" wx:for-item="q" bindtap="runAdvanced" data-id="{{q.questionId}}">
-            <text class="adv-item-text">{{q.text}}</text>
-          </view>
-        </scroll-view>
-        <view class="adv-result" wx:if="{{advLoading}}"><text>分析中…</text></view>
-        <view class="adv-result" wx:elif="{{advInsufficient}}"><text>样本不够：同类题仅 {{advCount}} 条，多练几次再来看看</text></view>
-        <view class="adv-result" wx:elif="{{advResult}}"><text class="adv-result-text">{{advResult}}</text></view>
+    <view class="more-title">逐题深读</view>
+    <view class="qlist">
+      <view class="qitem" wx:for="{{report.questions}}" wx:key="questionId" wx:for-item="qq" bindtap="openDetail" data-qid="{{qq.questionId}}">
+        <text class="qitem-status {{qq.status === '错' ? 'bad' : 'ok'}}">{{qq.status === '错' ? '✗' : '✓'}}</text>
+        <view class="qitem-body">
+          <text class="qitem-text">{{qq.text}}</text>
+          <text class="qitem-pattern" wx:if="{{qq.pattern}}">{{qq.pattern}}</text>
+        </view>
+        <text class="qitem-evol">›</text>
       </view>
     </view>
   </view>
 
-  <!-- ===== 每题详情视图（原深读卡视觉） ===== -->
+  <!-- ===== 每题详情 ===== -->
   <view class="content" wx:if="{{view === 'detail' && detail}}">
     <view class="nav-back2" bindtap="backToReceipt"><text>‹ 返回报告</text></view>
 
@@ -96,7 +63,6 @@
       <rich-text class="q-plain" nodes="{{detail.questionNodes}}"></rich-text>
     </view>
 
-    <!-- 你的过程（图 + 分段，可回看） -->
     <view class="step-card" wx:if="{{detail.cropFileID || detail.segments.length}}">
       <view class="step-card-h"><text class="step-card-t">你的过程</text></view>
       <image class="crop-img" wx:if="{{detail.cropFileID}}" src="{{detail.cropFileID}}" mode="widthFix" />
@@ -106,7 +72,6 @@
       </view>
     </view>
 
-    <!-- 为什么（流畅叙事，不标概念） -->
     <view class="step-card" wx:if="{{detail.progressNarrative || detail.diffFact || detail.diffInference}}">
       <view class="step-card-h"><text class="step-card-t">为什么</text></view>
       <rich-text class="q-plain" wx:if="{{detail.progressNarrative}}" nodes="{{detail.progressNodes}}"></rich-text>
@@ -114,7 +79,6 @@
       <view class="sec" wx:if="{{detail.diffInference}}">{{detail.diffInference}}</view>
     </view>
 
-    <!-- 想一想（钩子/种子） -->
     <view class="step-card" wx:if="{{detail.diffHook}}">
       <view class="step-card-h"><text class="step-card-t">想一想</text></view>
       <view class="sec">{{detail.diffHook}}</view>
@@ -125,7 +89,11 @@
       <text class="pat-val">{{detail.pattern}}</text>
     </view>
 
-    <view class="adv-btn" bindtap="openAdvPick">进阶分析 · 查看演变趋势</view>
+    <!-- 进阶分析：唯一入口，直接分析本题 -->
+    <view class="adv-btn" bindtap="runCurrentAdvanced">进阶分析 · 查看这道题的演变趋势</view>
+    <view class="adv-result adv-inline" wx:if="{{advLoading}}"><text>正在分析…</text></view>
+    <view class="adv-result adv-inline" wx:elif="{{advInsufficient}}"><text>同类题样本不够（{{advCount}} 条），多练几次再来看看</text></view>
+    <view class="adv-result adv-inline" wx:elif="{{advResult}}"><text class="adv-result-text">{{advResult}}</text></view>
 
     <!-- 题型异议弹层 -->
     <view class="adv-mask" wx:if="{{disputeVisible}}" bindtap="closeDispute">
@@ -138,21 +106,6 @@
           <text class="dispute-verdict {{disputeAccepted ? 'ok' : 'no'}}">{{disputeAccepted ? '已接受你的更正 ✓' : '未接受更改'}}</text>
           <text class="adv-result-text">{{disputeResult}}</text>
         </view>
-      </view>
-    </view>
-
-    <!-- 进阶分析弹层 -->
-    <view class="adv-mask" wx:if="{{advVisible}}" bindtap="closeAdv">
-      <view class="adv-card" catchtap="noop">
-        <text class="adv-card-title">进阶分析 · 选择一题</text>
-        <scroll-view scroll-y class="adv-list">
-          <view class="adv-item" wx:for="{{report.questions}}" wx:key="questionId" wx:for-item="q" bindtap="runAdvanced" data-id="{{q.questionId}}">
-            <text class="adv-item-text">{{q.text}}</text>
-          </view>
-        </scroll-view>
-        <view class="adv-result" wx:if="{{advLoading}}"><text>分析中…</text></view>
-        <view class="adv-result" wx:elif="{{advInsufficient}}"><text>样本不够：同类题仅 {{advCount}} 条，多练几次再来看看</text></view>
-        <view class="adv-result" wx:elif="{{advResult}}"><text class="adv-result-text">{{advResult}}</text></view>
       </view>
     </view>
   </view>

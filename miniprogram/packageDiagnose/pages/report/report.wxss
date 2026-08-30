@@ -181,6 +181,10 @@
 .qitem-body { flex: 1; min-width: 0; }
 .qitem-text { font-size: 26rpx; color: #333; line-height: 1.6; }
 .qitem-pattern { display: inline-block; font-size: 22rpx; color: #999; background: #f5f5f5; border-radius: 8rpx; padding: 2rpx 12rpx; margin-top: 8rpx; }
+.qlist { background: #fff; border-radius: 20rpx; padding: 4rpx 24rpx; }
+.qitem:first-child { border-top: none; margin-top: 0; }
+.qitem-evol { color: #007aff; font-size: 30rpx; font-weight: 600; margin-left: 12rpx; }
+.adv-inline { margin-top: 12rpx; }
 
 .deep-anchor { height: 1rpx; }
 
