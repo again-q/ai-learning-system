@@ -6,6 +6,9 @@ const https = require('https');
 const success = (data = null) => ({ code: 0, data, message: 'ok' });
 const fail = (code, msg) => ({ code, data: null, message: msg });
 
+// 删除隔离（2026-09-04 真机数据防护）：仅管理员 openid 可删除图谱节点
+const ADMIN_OPENIDS = ['owO3n4hUug1Dx7ePWQvP8ep2nl0o'];
+
 function download(url) {
   return new Promise((resolve, reject) => {
     https.get(url, (res) => {
@@ -88,6 +91,8 @@ exports.main = async (event) => {
     }
 
     if (action === 'deleteNode') {
+      const { OPENID } = cloud.getWXContext();
+      if (!ADMIN_OPENIDS.includes(OPENID)) return fail(403, '无权限：仅管理员可删除图谱节点');
       const { knowledgeId } = event;
       if (!knowledgeId) return fail(400, '缺少 knowledgeId');
       const exist = await db.collection('knowledge_nodes')

@@ -7,6 +7,9 @@ const _ = db.command;
 const success = (data = null) => ({ code: 0, data, message: 'ok' });
 const fail = (msg) => ({ code: -1, data: null, message: msg });
 
+// 删除隔离（2026-09-04 真机数据防护）：仅管理员 openid 可删除图谱节点
+const ADMIN_OPENIDS = ['owO3n4hUug1Dx7ePWQvP8ep2nl0o'];
+
 exports.main = async (event) => {
   const { action, nodeId, data, subjectId, type } = event;
   const wxContext = cloud.getWXContext();
@@ -73,8 +76,9 @@ exports.main = async (event) => {
       return success(null);
     }
 
-    // delete — 删除
+    // delete — 删除（仅管理员，见文件顶部 ADMIN_OPENIDS）
     if (action === 'delete') {
+      if (!ADMIN_OPENIDS.includes(wxContext.OPENID)) return fail('无权限：仅管理员可删除图谱节点');
       if (!nodeId) return fail('缺少 nodeId');
       await db.collection('knowledge_nodes').doc(nodeId).remove();
       return success(null);
