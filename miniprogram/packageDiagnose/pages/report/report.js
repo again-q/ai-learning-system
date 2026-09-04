@@ -262,6 +262,19 @@ Page({
         dd.diagInferenceNodes = renderMathText(dd.diagInference);
         dd.diagHookNodes = renderMathText(dd.diagHook);
         dd.patternMid = midPattern(dd.pattern);
+        // AI 参考解题过程（2026-09-04）：仅判错展示；每步 content 含 LaTeX → 富文本节点；note 为逻辑说明
+        const rawRef = Array.isArray(dd.referenceProcess) ? dd.referenceProcess : [];
+        const wrongQ = !(dd.processScore != null && dd.processScore >= 1);
+        dd.showRefProcess = wrongQ && rawRef.length > 0;
+        dd.refSteps = rawRef.map((s, i) => {
+          const step = (s && String(s.step || '').trim()) || ('第 ' + (i + 1) + ' 步');
+          return {
+            titleNodes: renderMathText(unescapeUnderscore(step)),
+            contentNodes: renderMathText(s && s.content ? unescapeUnderscore(String(s.content)) : ''),
+            noteNodes: renderMathText(s && s.note ? unescapeUnderscore(String(s.note)) : ''),
+            hasNote: !!(s && String(s.note || '').trim()),
+          };
+        });
         this.setData({ detail: dd });
       } else {
         this.setData({ activeQid: null });

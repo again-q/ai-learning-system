@@ -112,6 +112,17 @@
               <view class="step-card-h"><text class="step-card-t">题型</text><view class="rm-dispute" bindtap="openPatternDispute">题型有异议</view></view>
               <text class="pat-val">{{detail.patternMid}}</text>
             </view>
+            <view class="step-card ref-card" wx:if="{{detail.showRefProcess}}">
+              <view class="step-card-h">
+                <text class="step-card-t">AI 参考过程</text>
+                <text class="ref-tag">仅供参考 · AI 生成</text>
+              </view>
+              <view class="ref-step" wx:for="{{detail.refSteps}}" wx:for-index="idx" wx:key="idx">
+                <view class="ref-step-h"><view class="ref-step-no">{{idx + 1}}</view><view class="ref-step-t"><rich-text nodes="{{item.titleNodes}}"></rich-text></view></view>
+                <view class="sec" wx:if="{{item.contentNodes.length}}"><rich-text class="q-plain" nodes="{{item.contentNodes}}"></rich-text></view>
+                <view class="ref-note" wx:if="{{item.hasNote}}"><text class="ref-note-t">解析：</text><rich-text class="q-plain ref-note-r" nodes="{{item.noteNodes}}"></rich-text></view>
+              </view>
+            </view>
             <view class="adv-btn" bindtap="runCurrentAdvanced">进阶分析 · 查看这道题的演变趋势</view>
             <view class="adv-result adv-inline" wx:if="{{advLoading}}"><text>正在分析…</text></view>
             <view class="adv-result adv-inline" wx:elif="{{advInsufficient}}"><text>同类题样本不够（{{advCount}} 条），多练几次再来看看</text></view>

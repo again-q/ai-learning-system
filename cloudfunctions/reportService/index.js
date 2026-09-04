@@ -349,6 +349,7 @@ exports.main = async (event) => {
         errorLevel: d.errorLevel || null,
         pattern: d.pattern || null,
         correctAnswer: d.correctAnswer || '',
+        referenceProcess: Array.isArray(d.referenceProcess) ? d.referenceProcess : [],
       });
     }
 

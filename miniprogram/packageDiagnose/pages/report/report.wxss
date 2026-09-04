@@ -276,6 +276,22 @@
   margin-bottom: 16rpx;
 }
 .step-card-t { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
+
+/* AI 参考过程（2026-09-04 判错可视化）——延续原版卡片设计语言 */
+.ref-tag { font-size: 20rpx; color: #999; font-weight: 400; }
+.ref-step { padding: 16rpx 0; border-top: 1rpx solid #f0f0f2; }
+.ref-step:first-of-type { border-top: none; }
+.ref-step-h { display: flex; align-items: center; margin-bottom: 8rpx; }
+.ref-step-no {
+  width: 34rpx; height: 34rpx; border-radius: 50%; background: #eef4ff; color: #2b6cb0;
+  font-size: 22rpx; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  margin-right: 12rpx; flex-shrink: 0;
+}
+.ref-step-t { font-size: 27rpx; font-weight: 600; color: #1a1a1a; }
+.ref-step .sec { margin-top: 4rpx; }
+.ref-note { margin-top: 8rpx; padding: 12rpx 16rpx; background: #fafafc; border-radius: 12rpx; }
+.ref-note-t { font-size: 24rpx; color: #8a6d3b; font-weight: 600; }
+.ref-note-r { font-size: 25rpx; color: #555; line-height: 1.6; }
 .more-link {
   margin-top: 8rpx;
   font-size: 26rpx;
