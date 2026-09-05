@@ -1,0 +1,239 @@
+{
+  "model": "deepseek-v4-flash",
+  "cfg": {
+    "thinking": "disabled"
+  },
+  "rows": [
+    {
+      "id": "2025-I-1",
+      "type": "单选",
+      "seconds": "1.1",
+      "chapters": [],
+      "got": [],
+      "others": [],
+      "scopeOut": {
+        "outOfScope": true,
+        "domains": [
+          "复数"
+        ],
+        "scopeFix": []
+      }
+    },
+    {
+      "id": "2025-I-2",
+      "type": "单选",
+      "seconds": "1.6",
+      "chapters": [
+        "第一章 集合与常用逻辑用语"
+      ],
+      "got": [
+        {
+          "name": "集合",
+          "chapter": "第一章 集合与常用逻辑用语",
+          "dkp": 0.1
+        },
+        {
+          "name": "元素",
+          "chapter": "第一章 集合与常用逻辑用语",
+          "dkp": 0.1
+        },
+        {
+          "name": "全集的概念",
+          "chapter": "第一章 集合与常用逻辑用语",
+          "dkp": 0.2
+        },
+        {
+          "name": "补集的概念与定义",
+          "chapter": "第一章 集合与常用逻辑用语",
+          "dkp": 0.3
+        },
+        {
+          "name": "求集合补集的方法",
+          "chapter": "第一章 集合与常用逻辑用语",
+          "dkp": 0.3
+        },
+        {
+          "name": "集合中元素的个数（阅读与思考）",
+          "chapter": "第一章 集合与常用逻辑用语",
+          "dkp": 0.2
+        }
+      ],
+      "others": [],
+      "scopeOut": null
+    },
+    {
+      "id": "2025-I-3",
+      "type": "单选",
+      "seconds": "1.4",
+      "chapters": [],
+      "got": [],
+      "others": [],
+      "scopeOut": {
+        "outOfScope": true,
+        "domains": [
+          "解析几何"
+        ],
+        "scopeFix": []
+      }
+    },
+    {
+      "id": "2025-I-4",
+      "type": "单选",
+      "seconds": "1.8",
+      "chapters": [
+        "第五章 三角函数"
+      ],
+      "got": [
+        {
+          "name": "正切函数的周期性",
+          "chapter": "第五章 三角函数",
+          "dkp": 0.3
+        },
+        {
+          "name": "正切函数的奇偶性",
+          "chapter": "第五章 三角函数",
+          "dkp": 0.3
+        },
+        {
+          "name": "正切曲线",
+          "chapter": "第五章 三角函数",
+          "dkp": 0.4
+        },
+        {
+          "name": "正切函数的单调性",
+          "chapter": "第五章 三角函数",
+          "dkp": 0.3
+        },
+        {
+          "name": "正切函数的值域",
+          "chapter": "第五章 三角函数",
+          "dkp": 0.3
+        }
+      ],
+      "others": [
+        {
+          "name": "正切函数的对称中心",
+          "elementType": "概念",
+          "reason": "题目要求利用正切函数图象的对称中心性质求解参数，该知识点是解题的核心，但候选清单中未明确列出。",
+          "chapter": "第五章 三角函数"
+        }
+      ],
+      "scopeOut": null
+    },
+    {
+      "id": "2025-I-5",
+      "type": "单选",
+      "seconds": "1.4",
+      "chapters": [
+        "第三章 函数的概念与性质"
+      ],
+      "got": [
+        {
+          "name": "偶函数的概念",
+          "chapter": "第三章 函数的概念与性质",
+          "dkp": 0.3
+        },
+        {
+          "name": "函数奇偶性的判断方法",
+          "chapter": "第三章 函数的概念与性质",
+          "dkp": 0.4
+        },
+        {
+          "name": "求函数值——代入法",
+          "chapter": "第三章 函数的概念与性质",
+          "dkp": 0.3
+        }
+      ],
+      "others": [],
+      "scopeOut": null
+    },
+    {
+      "id": "2025-I-7",
+      "type": "单选",
+      "seconds": "1.1",
+      "chapters": [],
+      "got": [],
+      "others": [],
+      "scopeOut": {
+        "outOfScope": true,
+        "domains": [
+          "解析几何"
+        ],
+        "scopeFix": []
+      }
+    },
+    {
+      "id": "2025-I-8",
+      "type": "单选",
+      "seconds": "1.6",
+      "chapters": [
+        "第四章 指数函数与对数函数"
+      ],
+      "got": [
+        {
+          "name": "对数的定义",
+          "chapter": "第四章 指数函数与对数函数",
+          "dkp": 0.2
+        },
+        {
+          "name": "指数与对数的互化关系",
+          "chapter": "第四章 指数函数与对数函数",
+          "dkp": 0.3
+        },
+        {
+          "name": "对数的基本性质（特殊值与存在条件）",
+          "chapter": "第四章 指数函数与对数函数",
+          "dkp": 0.3
+        },
+        {
+          "name": "指数式与对数式的互化方法",
+          "chapter": "第四章 指数函数与对数函数",
+          "dkp": 0.3
+        },
+        {
+          "name": "利用定义求对数的值",
+          "chapter": "第四章 指数函数与对数函数",
+          "dkp": 0.4
+        },
+        {
+          "name": "利用对数函数单调性比较对数大小",
+          "chapter": "第四章 指数函数与对数函数",
+          "dkp": 0.5
+        },
+        {
+          "name": "对数函数的图象和性质",
+          "chapter": "第四章 指数函数与对数函数",
+          "dkp": 0.4
+        },
+        {
+          "name": "指数函数的性质",
+          "chapter": "第四章 指数函数与对数函数",
+          "dkp": 0.4
+        },
+        {
+          "name": "指数函数的单调性判断与应用",
+          "chapter": "第四章 指数函数与对数函数",
+          "dkp": 0.5
+        }
+      ],
+      "others": [],
+      "scopeOut": null
+    },
+    {
+      "id": "2025-I-9",
+      "type": "多选",
+      "seconds": "1.2",
+      "chapters": [],
+      "got": [],
+      "others": [],
+      "scopeOut": {
+        "outOfScope": true,
+        "domains": [
+          "立体几何"
+        ],
+        "scopeFix": []
+      }
+    }
+  ],
+  "totalCost": 0.013597056
+}
