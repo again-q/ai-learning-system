@@ -1,0 +1,18 @@
+{
+  "name": "graphEngine",
+  "version": "0.6.0-beta",
+  "description": "诊断引擎节点化新底座：可单独测试的盒子(nodes) + LangGraph 串联(graphs) + zod 契约(schemas)",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "wx-server-sdk": "latest",
+    "@langchain/langgraph": "^1.1.0",
+    "@langchain/core": "^1.1.8",
+    "zod": "^3.25.76"
+  }
+}
