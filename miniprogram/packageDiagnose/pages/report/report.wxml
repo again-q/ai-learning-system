@@ -116,12 +116,16 @@
               <view class="step-card-h">
                 <text class="step-card-t">AI 参考过程</text>
                 <text class="ref-tag">仅供参考 · AI 生成</text>
+                <view class="rm-dispute ref-dispute" wx:if="{{!refRegenerating}}" bindtap="openRefDispute">过程有异议</view>
               </view>
-              <view class="ref-step" wx:for="{{detail.refSteps}}" wx:for-index="idx" wx:key="idx">
-                <view class="ref-step-h"><view class="ref-step-no">{{idx + 1}}</view><view class="ref-step-t"><rich-text nodes="{{item.titleNodes}}"></rich-text></view></view>
-                <view class="sec" wx:if="{{item.contentNodes.length}}"><rich-text class="q-plain" nodes="{{item.contentNodes}}"></rich-text></view>
-                <view class="ref-note" wx:if="{{item.hasNote}}"><text class="ref-note-t">解析：</text><rich-text class="q-plain ref-note-r" nodes="{{item.noteNodes}}"></rich-text></view>
-              </view>
+              <view class="ref-regen" wx:if="{{refRegenerating}}"><text class="ref-regen-t">AI 正在重新生成中…</text></view>
+              <block wx:else>
+                <view class="ref-step" wx:for="{{detail.refSteps}}" wx:for-index="idx" wx:key="idx">
+                  <view class="ref-step-h"><view class="ref-step-no">{{idx + 1}}</view><view class="ref-step-t"><rich-text nodes="{{item.titleNodes}}"></rich-text></view></view>
+                  <view class="sec" wx:if="{{item.contentNodes.length}}"><rich-text class="q-plain" nodes="{{item.contentNodes}}"></rich-text></view>
+                  <view class="ref-note" wx:if="{{item.hasNote}}"><text class="ref-note-t">解析：</text><rich-text class="q-plain ref-note-r" nodes="{{item.noteNodes}}"></rich-text></view>
+                </view>
+              </block>
             </view>
             <view class="adv-btn" bindtap="runCurrentAdvanced">进阶分析 · 查看这道题的演变趋势</view>
             <view class="adv-result adv-inline" wx:if="{{advLoading}}"><text>正在分析…</text></view>
@@ -155,6 +159,16 @@
           <text class="dispute-verdict {{disputeAccepted ? 'ok' : 'no'}}">{{disputeAccepted ? '已接受你的更正 ✓' : '未接受更改'}}</text>
           <text class="adv-result-text">{{disputeResult}}</text>
         </view>
+      </view>
+    </view>
+
+    <!-- AI 参考过程异议弹层（过程有误 → 让 AI 重生成） -->
+    <view class="adv-mask" wx:if="{{refDisputeVisible}}" bindtap="closeRefDispute">
+      <view class="adv-card" catchtap="noop">
+        <text class="adv-card-title">过程有异议</text>
+        <text class="dispute-ori">你觉得 AI 参考过程的哪里不对？</text>
+        <textarea class="dispute-input" value="{{refDisputeText}}" bindinput="onRefDisputeInput" auto-height maxlength="300" placeholder="比如：第 2 步求导错了 / 漏了 x=0 这种情况 / 第 3 步跳步看不懂…"></textarea>
+        <view class="adv-btn dispute-submit" bindtap="submitRefDispute">提交，让 AI 重新生成</view>
       </view>
     </view>
   </view>

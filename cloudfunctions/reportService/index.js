@@ -398,6 +398,51 @@ exports.main = async (event) => {
       return success({ accepted: verdict.accepted, comment: verdict.comment });
     }
 
+    // AI 参考过程异议：学生认为 AI 给出的参考解题过程有误 → 重生成该过程（尊重学生指出的事实，但按数学正确性修正，不盲目迎合）
+    if (event && event.action === 'regenerateProcess') {
+      const { questionId, reason } = event;
+      if (!questionId) return fail(400, '缺少 questionId');
+      const reasonText = String(reason || '').trim();
+      if (!reasonText) return fail(400, '请先说明你觉得哪里不对');
+      const q = await db.collection('questions').doc(questionId).get().catch(() => null);
+      if (!q || !q.data) return fail(404, '题目不存在');
+      if (q.data.userId !== openid) return fail(403, '无权操作他人题目');
+      const qd = q.data;
+      const sys = '你是严谨的高中数学老师。学生认为 AI 之前给出的【参考解题过程】有误，并提出异议。请基于题目与学生异议，重新生成一份正确、完整、可读的分步解题过程。\n' +
+        '规则：1. 学生指出的若是真错误（步骤跳错/结论错/与题目条件不符/算错），按数学正确性修正；若学生异议本身有误，不迎合，给出正确解法。\n' +
+        '2. 教学友好：每步 step=步骤标题、content=该步推导（含 $...$ LaTeX）、note=这一步为什么这么做（可为空）。\n' +
+        '3. 只输出 JSON：{"process":[{"step":"","content":"","note":""}]}';
+      const user = '【题目】\n' + (qd.questionText || '') +
+        '\n\n【学生作答痕迹（参考）】\n' + String(qd.studentAnswer || qd.traceReport || '').slice(0, 600) +
+        '\n\n【原参考过程】\n' + JSON.stringify(Array.isArray(qd.referenceProcess) ? qd.referenceProcess : []) +
+        '\n\n【学生的异议】\n' + reasonText +
+        '\n\n请重新生成参考解题过程（JSON 对象，含 process 数组）。';
+      const body = {
+        model: DS_MODEL,
+        messages: [{ role: 'system', content: sys }, { role: 'user', content: user }],
+        max_tokens: 3000,
+        temperature: 0.2,
+        thinking: { type: 'disabled' },
+      };
+      let data;
+      try {
+        data = await postJSON(`${DS_BASE_URL}/chat/completions`, body, DS_API_KEY);
+      } catch (e) {
+        console.error('[reportService] regenerateProcess LLM 失败:', e.message);
+        return fail(500, 'AI 重生成失败，请重试');
+      }
+      const raw = extractJson(data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '');
+      const list = Array.isArray(raw && raw.process) ? raw.process : [];
+      const process = list.slice(0, 8).map((s) => ({
+        step: String((s && s.step) || '').trim().slice(0, 60),
+        content: String((s && s.content) || '').trim().slice(0, 2000),
+        note: String((s && s.note) || '').trim().slice(0, 500),
+      })).filter((s) => s.content);
+      if (!process.length) return fail(500, '重生成内容异常，请重试');
+      await db.collection('questions').doc(questionId).update({ data: { referenceProcess: process } });
+      return success({ process });
+    }
+
     // 往期所有历史报告（按时间倒序）
     if (event && event.action === 'listByUser') {
       const res = await db.collection('reports')

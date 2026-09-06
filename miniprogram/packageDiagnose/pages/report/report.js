@@ -60,6 +60,10 @@ Page({
     disputeLoading: false,
     disputeResult: null,
     disputeAccepted: false,
+    // AI 参考过程异议（过程有误 → 重生成）
+    refDisputeVisible: false,
+    refDisputeText: '',
+    refRegenerating: false,
   },
 
   async onLoad(options) {
@@ -240,7 +244,7 @@ Page({
     const qid = e.currentTarget.dataset.qid;
     if (!qid) return;
     if (this.data.activeQid === qid) { this.setData({ activeQid: null, detail: null }); return; }
-    this.setData({ activeQid: qid, detail: null, advResult: null, advInsufficient: false });
+    this.setData({ activeQid: qid, detail: null, advResult: null, advInsufficient: false, refRegenerating: false, refDisputeVisible: false });
     this.loadDetail(qid);
   },
 
@@ -266,15 +270,7 @@ Page({
         const rawRef = Array.isArray(dd.referenceProcess) ? dd.referenceProcess : [];
         const wrongQ = !(dd.processScore != null && dd.processScore >= 1);
         dd.showRefProcess = wrongQ && rawRef.length > 0;
-        dd.refSteps = rawRef.map((s, i) => {
-          const step = (s && String(s.step || '').trim()) || ('第 ' + (i + 1) + ' 步');
-          return {
-            titleNodes: renderMathText(unescapeUnderscore(step)),
-            contentNodes: renderMathText(s && s.content ? unescapeUnderscore(String(s.content)) : ''),
-            noteNodes: renderMathText(s && s.note ? unescapeUnderscore(String(s.note)) : ''),
-            hasNote: !!(s && String(s.note || '').trim()),
-          };
-        });
+        dd.refSteps = this.buildRefSteps(rawRef);
         this.setData({ detail: dd });
       } else {
         this.setData({ activeQid: null });
@@ -307,6 +303,50 @@ Page({
         }
       })
       .catch(() => this.setData({ disputeLoading: false, disputeResult: '网络异常，请重试' }));
+  },
+
+  // AI 参考过程 → 富文本节点（判错题展示用）
+  buildRefSteps(raw) {
+    return (Array.isArray(raw) ? raw : []).map((s, i) => {
+      const step = (s && String(s.step || '').trim()) || ('第 ' + (i + 1) + ' 步');
+      return {
+        titleNodes: renderMathText(unescapeUnderscore(step)),
+        contentNodes: renderMathText(s && s.content ? unescapeUnderscore(String(s.content)) : ''),
+        noteNodes: renderMathText(s && s.note ? unescapeUnderscore(String(s.note)) : ''),
+        hasNote: !!(s && String(s.note || '').trim()),
+      };
+    });
+  },
+
+  // ============ AI 参考过程异议（过程有误 → 重生成） ============
+  openRefDispute() {
+    if (this.data.refRegenerating) return;
+    this.setData({ refDisputeVisible: true, refDisputeText: '' });
+  },
+  closeRefDispute() { this.setData({ refDisputeVisible: false }); },
+  onRefDisputeInput(e) { this.setData({ refDisputeText: e.detail.value }); },
+  async submitRefDispute() {
+    const reason = (this.data.refDisputeText || '').trim();
+    const questionId = this.data.detail && this.data.detail.questionId;
+    if (!reason || !questionId) return;
+    this.setData({ refDisputeVisible: false, refRegenerating: true });
+    try {
+      const res = await wx.cloud.callFunction({ name: 'reportService', data: { action: 'regenerateProcess', questionId, reason, userId: getOpenid() } });
+      const d = res.result;
+      if (d && d.code === 0 && d.data && Array.isArray(d.data.process)) {
+        const dd = this.data.detail || {};
+        dd.refSteps = this.buildRefSteps(d.data.process);
+        dd.showRefProcess = true;
+        this.setData({ detail: dd, refRegenerating: false });
+        wx.showToast({ title: '已重新生成', icon: 'success' });
+      } else {
+        this.setData({ refRegenerating: false, refDisputeVisible: true });
+        wx.showToast({ title: (d && d.message) || '重生成失败', icon: 'none' });
+      }
+    } catch (e) {
+      this.setData({ refRegenerating: false, refDisputeVisible: true });
+      wx.showToast({ title: '网络异常，请重试', icon: 'none' });
+    }
   },
 
   // ============ 进阶分析（唯一入口：直接分析本题） ============

@@ -279,6 +279,10 @@
 
 /* AI 参考过程（2026-09-04 判错可视化）——延续原版卡片设计语言 */
 .ref-tag { font-size: 20rpx; color: #999; font-weight: 400; }
+.ref-dispute { margin-left: 16rpx; }
+.ref-regen { padding: 28rpx 8rpx; display: flex; justify-content: center; }
+.ref-regen-t { font-size: 25rpx; color: #888; animation: refPulse 1.2s ease-in-out infinite; }
+@keyframes refPulse { 0%,100% { opacity: 0.45; } 50% { opacity: 1; } }
 .ref-step { padding: 16rpx 0; border-top: 1rpx solid #f0f0f2; }
 .ref-step:first-of-type { border-top: none; }
 .ref-step-h { display: flex; align-items: center; margin-bottom: 8rpx; }
