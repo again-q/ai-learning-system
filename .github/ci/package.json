@@ -1,0 +1,9 @@
+{
+  "name": "wx-ci",
+  "private": true,
+  "version": "0.0.0",
+  "description": "微信上传流水线的 CI 专用依赖（与小程序业务依赖隔离）",
+  "dependencies": {
+    "miniprogram-ci": "2.1.31"
+  }
+}

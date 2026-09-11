@@ -1,0 +1,114 @@
+# 手机云 Agent 改码 → push 到 main → 自动上传微信 → 手机立刻看效果
+# 主路径（4）：CI 上传后微信后台出现新的「开发版」；手机「开发者助手」→ 版本查看 → 开发版 → 直接打开
+# 辅助通道（1）：生成预览二维码 → 推到 ci-preview 分支 → 运行摘要/通知 issue 里显示图片
+#              手机：长按图片存相册 → 微信「扫一扫 → 相册」→ 进预览版
+name: 部署到微信
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      functions:
+        description: 只部署这些云函数（逗号分隔，留空=默认白名单）
+        required: false
+
+concurrency:
+  group: wechat-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # 需要把二维码图推到 ci-preview 分支
+  issues: write     # 需要更新「最新预览二维码」通知 issue
+
+env:
+  WECHAT_APPID: wx256aa9c197b2e59e
+  WECHAT_ENV: cloud1-d8g0ty39wd73f430a
+  DEFAULT_FUNCTIONS: judgeOne,reportService,ragService,statService,dispute,graphService,userLogin,knowledgeAdmin,manageKnowledge,photoUpload
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 安装 CI 依赖（miniprogram-ci）
+        working-directory: .github/ci
+        run: npm install --no-audit --no-fund
+
+      # ① 主路径：上传代码包 → 微信后台生成新的「开发版」
+      - name: 上传小程序代码（生成开发版）
+        working-directory: .github/ci
+        env:
+          WECHAT_PRIVATE_KEY: ${{ secrets.WECHAT_PRIVATE_KEY }}
+          PROJECT_PATH: ${{ github.workspace }}
+          VERSION: 0.0.${{ github.run_number }}
+          DESC: ${{ github.event.head_commit.message }}
+        run: node upload.cjs
+
+      # ② 辅助通道：预览二维码 → ci-preview 分支 → 摘要 + 通知 issue
+      # 想改成"只在手动触发时生成二维码"？给下面 4 个 step 各加一行：
+      #   if: github.event_name == 'workflow_dispatch'
+      - name: 生成预览二维码
+        working-directory: .github/ci
+        env:
+          WECHAT_PRIVATE_KEY: ${{ secrets.WECHAT_PRIVATE_KEY }}
+          PROJECT_PATH: ${{ github.workspace }}
+        run: node preview.cjs
+
+      - name: 把二维码推到 ci-preview 分支
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/qr" && cd "$RUNNER_TEMP/qr"
+          cp "$GITHUB_WORKSPACE/.github/ci/qrcode.png" "qrcode-${{ github.run_number }}.png"
+          cp "$GITHUB_WORKSPACE/.github/ci/qrcode.png" "qrcode-latest.png"
+          git init -q && git checkout -qb ci-preview
+          git add -A
+          git -c user.email=ci@local -c user.name=ci commit -qm "preview #${{ github.run_number }}"
+          git push -q --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" ci-preview
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: preview-qrcode
+          path: .github/ci/qrcode.png
+          retention-days: 1
+
+      - name: 运行摘要显示二维码 + 更新通知 issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN: ${{ github.run_number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          URL="https://cdn.jsdelivr.net/gh/$REPO@ci-preview/qrcode-$RUN.png"
+          {
+            echo "## 📱 预览二维码（第 $RUN 次）"
+            echo ""
+            echo "长按图片 → 存到相册 → 微信「扫一扫 → 相册」→ 进预览版"
+            echo ""
+            echo "![preview]($URL)"
+            echo ""
+            echo "主路径：手机「开发者助手」→ 你的小程序 → 版本查看 → 开发版"
+          } >> "$GITHUB_STEP_SUMMARY"
+          BODY="部署完成：第 $RUN 次（commit \`${GITHUB_SHA:0:7}\`）"$'\n\n'"![preview]($URL)"
+          N=$(gh issue list --repo "$REPO" --search '最新预览二维码 in:title' --limit 1 --json number -q '.[0].number' || true)
+          if [ -n "$N" ]; then
+            gh issue edit "$N" --repo "$REPO" --body "$BODY"
+          else
+            gh issue create --repo "$REPO" --title "📱 最新预览二维码" --body "$BODY"
+          fi
+
+      # ③ 云函数：Step 1/2 阶段先关着；仓库变量 ENABLE_CLOUD_FUNCTIONS=true 后自动生效
+      - name: 部署云函数（开关：仓库变量 ENABLE_CLOUD_FUNCTIONS）
+        if: vars.ENABLE_CLOUD_FUNCTIONS == 'true'
+        working-directory: .github/ci
+        env:
+          WECHAT_PRIVATE_KEY: ${{ secrets.WECHAT_PRIVATE_KEY }}
+          PROJECT_PATH: ${{ github.workspace }}
+          FUNCTIONS: ${{ github.event.inputs.functions || env.DEFAULT_FUNCTIONS }}
+        run: node upload-functions.cjs
