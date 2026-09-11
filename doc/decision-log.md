@@ -770,17 +770,3 @@ process_evidence → 交给 diagnose / Flash（η、r、过程归因只吃这份
 | **拍板** | **过拆不修**：拆解阶段允许超集，宁可多拆不可少拆（漏拆 = 真问题，多拆 = 假问题）。消费端按**权重阈值**过滤：展示/报告只显示 dkp（或派生权重）≥ 阈值的考点。背景点 dkp≈0.1 → 在 S_k/D_k 加权里自然小，K 污染有限 |
 | **禁止** | 为降过拆率收紧拆解 prompt 导致漏拆 |
 | **联动** | F1 关闭；剩余修复清单：F2 候选池滤思想层节点 / F3 other 整题级去重 / F4 disabled 漏章→可疑深挖两段式 |
-
----
-
-## 决策 036：无电脑迭代通道 = GitHub Actions 自动上传（主路径「开发版」）（2026-09-12）
-
-| 字段 | 内容 |
-|------|------|
-| **时间** | 2026-09-12 |
-| **状态** | ✅ 已定（用户拍板「1、4 都做，4 为主路径」） |
-| **背景** | 目标：手边没电脑时也能迭代——手机云 Agent 改码 → 提交 GitHub → 自动上传微信 → 手机立刻看效果。核实：`miniprogram-ci` 只能 `upload`（生成**开发版**）和 `preview`（**预览二维码**）；「上传代码并生成体验版」属**第三方平台（服务商）API**，需开放平台 300 元认证 + 官网 + 小程序授权 + 模板库流程，个人主体不走；手机端官方「开发者助手」文档能力仅版本查看/成员管理/基础数据/性能分析，**无**设为体验版/提交审核/发布 |
-| **拍板** | ①**主路径（4）**：CI `upload` → 微信后台出现新「开发版」→ 手机「开发者助手」→ 版本查看 → 开发版 → 直接打开；②**辅助通道（1）**：`preview` 二维码推到 `ci-preview` 分支，经 jsDelivr 在 Actions 运行摘要 + 固定通知 issue 中显示图片 → 手机长按存相册 → 微信「扫一扫 → 相册」进预览版（二维码**短时效，拿到就扫**）；③体验版/发布**不做自动化**，学生侧仍由人工在公众平台点一次「选为体验版」 |
-| **范围** | 新增 `.github/`（workflow + CI 脚本 4 个），**不改**小程序业务代码；CI 依赖隔离在 `.github/ci`（精确锁 `miniprogram-ci@2.1.31`，不提交 lockfile）；云函数部署默认关闭（仓库变量 `ENABLE_CLOUD_FUNCTIONS=true` 后生效），白名单 = 10 个小函数（judgeOne/reportService/ragService/statService/dispute/graphService/userLogin/knowledgeAdmin/manageKnowledge/photoUpload），`graphEngine`(193M)/`diagnose`(41M) 因仓库内带 node_modules 排除 |
-| **前提** | 微信公众平台生成「代码上传密钥」→ GitHub Secret `WECHAT_PRIVATE_KEY`；**该页 IP 白名单必须关闭**（GitHub 托管 runner 出口 IP 不固定） |
-| **联动** | 经验 §51（npm 缓存 EPERM / npmjs 过慢 / miniprogram-ci 20002）；嫌通知频繁时给二维码 4 个 step 加 `if: github.event_name == 'workflow_dispatch'` 即可改回手动触发 |
