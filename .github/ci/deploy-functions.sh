@@ -46,7 +46,7 @@ post_issue() {   # $1 = 结论标题
 }
 
 log "→ tcb login"
-if ! "$TCB" login --apiKeyId "$TCB_SECRET_ID" --apiKey "$TCB_SECRET_KEY" >"$LOG" 2>&1; then
+if ! timeout 120 "$TCB" login --apiKeyId "$TCB_SECRET_ID" --apiKey "$TCB_SECRET_KEY" >"$LOG" 2>&1; then
   tail -25 "$LOG"
   post_issue "❌ **云函数部署失败：tcb 登录被拒（腾讯云密钥验证失败）**
 排查顺序：① Secret 名必须恰好是 \`TCB_SECRET_ID\` / \`TCB_SECRET_KEY\` ② 上面两行长度是否 36 / 32 ③ 密钥是否来自创建该云开发环境的腾讯云账号 ④ 密钥是否被禁用"
@@ -60,9 +60,9 @@ for fn in $LIST; do
   CMD="$(printf '%q ' "$TCB" fn deploy "$fn" --force --yes --json --install-dependency true -e "$ENV_ID" --dir "cloudfunctions/$fn")"
   run_deploy() {
     if command -v script >/dev/null 2>&1; then
-      printf '\n' | script -qec "$CMD" /dev/null >"$LOG" 2>&1
+      printf '\n' | timeout 240 script -qec "$CMD" /dev/null >"$LOG" 2>&1
     else
-      eval "$CMD" >"$LOG" 2>&1
+      timeout 240 bash -c "$CMD" >"$LOG" 2>&1
     fi
   }
   if ! run_deploy; then

@@ -15,7 +15,7 @@ on:
 
 concurrency:
   group: wechat-deploy
-  cancel-in-progress: false
+  cancel-in-progress: true      # 新的顶掉旧的：避免并发上传，也能踢掉卡在队列/僵尸的运行
 
 permissions:
   contents: write   # 需要把二维码图推到 ci-preview 分支
@@ -123,4 +123,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}                      # 失败时把日志贴到 issue 里
           REPO: ${{ github.repository }}
           COMMIT_MSG: ${{ github.event.head_commit.message }}   # 支持 [deploy:函数名] 显式指定
+        timeout-minutes: 10   # 兜底：防止 tcb 卡在交互式等待烧满 6 小时
         run: bash .github/ci/deploy-functions.sh
