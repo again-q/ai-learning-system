@@ -57,7 +57,7 @@ tail -3 "$LOG"
 for fn in $LIST; do
   log "→ 部署 $fn"
   # --yes/--json 都试上；再用 script 分配一个 PTY，万一 tcb 仍弹"请选择操作"也能自动回车选第一项（CI 无 TTY）
-  CMD="$(printf '%q ' "$TCB" fn deploy "$fn" --force --yes --json --install-dependency true -e "$ENV_ID" --dir "cloudfunctions/$fn")"
+  CMD="$(printf '%q ' "$TCB" fn deploy "$fn" --force --yes --json --deployMode zip --install-dependency true -e "$ENV_ID" --dir "cloudfunctions/$fn")"
   run_deploy() {
     if command -v script >/dev/null 2>&1; then
       printf '\n' | timeout 240 script -qec "$CMD" /dev/null >"$LOG" 2>&1

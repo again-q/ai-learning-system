@@ -122,3 +122,8 @@ tcb fn deploy <name> --force --install-dependency true -e <envId> --dir cloudfun
 - **本机测试的前提**：本机没有 tcb 登录态时，任何 `tcb` 命令都会弹设备码授权（浏览器打开链接）→ 想本地验证先 `tcb login -k` 登录。
 - **坑 9｜运行长期"排队/queued"**（2026-09-13 实测 #14 排了 18 分钟）：先在官方状态页确认是不是 GitHub 自己的问题 —— `https://www.githubstatus.com/api/v2/status.json`（当时返回 **Partial System Outage**）、`/components.json`（**Actions: degraded_performance**）、`/incidents/unresolved.json`（有 investigating 事件）。**别先怀疑自己的 workflow**。附带实测：`concurrency.cancel-in-progress: true` **不会**取消已排队（queued）的运行；排队是 GitHub 分配不出 runner，任何 workflow 设置都治不了。
 - **本机查 GitHub 的两个硬事实（09-13 实测）**：① `github.com` 直连超时 → 访问网页/HTML 必须 `export https_proxy=http://127.0.0.1:7890`；② 走这个代理出口 IP 不同 → **能绕开 GitHub API 的匿名限流**（匿名 60 次/小时按 IP 计），查运行状态时非常有用。
+- **坑 10｜`--yes` 有效 + 默认 COS 直传 60 秒超时（2026-09-13 本机实测）**：
+  - ✅ `--yes` **确实压住了**那个 "Please select an action" 菜单（本机带 `--yes` 跑时直接进入部署，没再弹菜单）→ CI 的修法方向正确；
+  - ❌ 紧接着报：`⠏ 云函数部署中...[judgeOne] 部署方式: COS 上传` → `✖ [judgeOne] COS 上传超时（60秒）` —— 默认走"签名 URL 直传 COS"，60 秒上限；
+  - **修法**：加 `--deployMode zip`（CLI help 里的参数：cos / zip / image，默认自动）→ 直接 ZIP 上传，绕开 COS 直传。我们的小函数只有 64K~128K，zip 完全够用；
+  - **诱因推测**：本机/CI 的出口若被代理绕道（本机 iKuuu、runner 在美国），直传腾讯云 COS 就要跨境往返 → 60 秒超时；zip 模式走 API 上传更稳。
