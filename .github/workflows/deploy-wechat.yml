@@ -109,12 +109,12 @@ jobs:
       #    想换前缀？改下面两处 if: 里的 '[deploy]' 即可（要多个前缀就 || contains(...)）
       #    想连"上传开发版"也受前缀控制？给前面的上传/二维码步骤也加同样的 if:
       - name: 安装 CloudBase CLI（仅部署时需要，不拖慢日常 push）
-        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy]')
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy')
         working-directory: .github/ci
         run: npm install --no-save --no-audit --no-fund @cloudbase/cli@3.8.0
 
       - name: 部署云函数（tcb fn deploy）
-        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy]')
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy')
         env:
           TCB_SECRET_ID: ${{ secrets.TCB_SECRET_ID }}
           TCB_SECRET_KEY: ${{ secrets.TCB_SECRET_KEY }}
@@ -122,4 +122,5 @@ jobs:
           FUNCTIONS: ${{ github.event.inputs.functions }}   # 手动触发时可填；留空=按 diff 自动判断
           GH_TOKEN: ${{ github.token }}                      # 失败时把日志贴到 issue 里
           REPO: ${{ github.repository }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}   # 支持 [deploy:函数名] 显式指定
         run: bash .github/ci/deploy-functions.sh

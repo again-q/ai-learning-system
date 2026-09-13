@@ -17,6 +17,10 @@ log "TCB_SECRET_ID 长度=${#TCB_SECRET_ID}（正常 36，AKID… 开头）"
 log "TCB_SECRET_KEY 长度=${#TCB_SECRET_KEY}（正常 32）"
 
 # 只部署「这次提交真正改动过」的云函数；手动触发填了 FUNCTIONS 就按它来
+# ① commit message 里显式写 [deploy:函数名,函数名] 时，以它为准（最直观，也能用来只测一个函数）
+if [[ "${COMMIT_MSG:-}" =~ \[deploy:([^]]+)\] ]]; then
+  FUNCTIONS="${BASH_REMATCH[1]//,/ }"
+fi
 if [ -n "${FUNCTIONS:-}" ]; then
   LIST="${FUNCTIONS//,/ }"
 else
@@ -52,7 +56,16 @@ tail -3 "$LOG"
 
 for fn in $LIST; do
   log "→ 部署 $fn"
-  if ! "$TCB" fn deploy "$fn" --force --json --install-dependency true -e "$ENV_ID" --dir "cloudfunctions/$fn" >"$LOG" 2>&1; then
+  # --yes/--json 都试上；再用 script 分配一个 PTY，万一 tcb 仍弹"请选择操作"也能自动回车选第一项（CI 无 TTY）
+  CMD="$(printf '%q ' "$TCB" fn deploy "$fn" --force --yes --json --install-dependency true -e "$ENV_ID" --dir "cloudfunctions/$fn")"
+  run_deploy() {
+    if command -v script >/dev/null 2>&1; then
+      printf '\n' | script -qec "$CMD" /dev/null >"$LOG" 2>&1
+    else
+      eval "$CMD" >"$LOG" 2>&1
+    fi
+  }
+  if ! run_deploy; then
     tail -25 "$LOG"
     post_issue "❌ **云函数部署失败：\`$fn\`**"
     if grep -q 'Please select an action' "$LOG"; then
