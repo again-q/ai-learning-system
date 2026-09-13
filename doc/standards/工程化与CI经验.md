@@ -120,3 +120,5 @@ tcb fn deploy <name> --force --install-dependency true -e <envId> --dir cloudfun
 - **坑 8｜`if:` 匹配前缀要少写右括号**：`contains(msg, '[deploy]')` 匹配不上 `[deploy:judgeOne]`（中间多了冒号）→ 必须写 `contains(msg, '[deploy')` 才能同时兼容两种写法。
 - **新能力**：commit message 支持 `[deploy:函数名,函数名]` 显式指定要部署的函数（优先于 git diff 推断），方便只测一个函数。
 - **本机测试的前提**：本机没有 tcb 登录态时，任何 `tcb` 命令都会弹设备码授权（浏览器打开链接）→ 想本地验证先 `tcb login -k` 登录。
+- **坑 9｜运行长期"排队/queued"**（2026-09-13 实测 #14 排了 18 分钟）：先在官方状态页确认是不是 GitHub 自己的问题 —— `https://www.githubstatus.com/api/v2/status.json`（当时返回 **Partial System Outage**）、`/components.json`（**Actions: degraded_performance**）、`/incidents/unresolved.json`（有 investigating 事件）。**别先怀疑自己的 workflow**。附带实测：`concurrency.cancel-in-progress: true` **不会**取消已排队（queued）的运行；排队是 GitHub 分配不出 runner，任何 workflow 设置都治不了。
+- **本机查 GitHub 的两个硬事实（09-13 实测）**：① `github.com` 直连超时 → 访问网页/HTML 必须 `export https_proxy=http://127.0.0.1:7890`；② 走这个代理出口 IP 不同 → **能绕开 GitHub API 的匿名限流**（匿名 60 次/小时按 IP 计），查运行状态时非常有用。
