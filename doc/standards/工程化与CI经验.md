@@ -112,3 +112,4 @@ tcb fn deploy <name> --force --install-dependency true -e <envId> --dir cloudfun
 - `envVariables` 只在配置里**显式写且非空**时才进请求（`if (envVariables && Object.keys(envVariables).length > 0)`）→ **不会清空云端已配的环境变量**（我们的 QWEN_API_KEY 等只配在控制台，仓库里没有任何 envVariables 配置）。
 - `fn deploy` 的**创建**路径会写 `DEFAULT_TIMEOUT` / `DEFAULT_MEMORY_SIZE`；**更新**路径是 `options.timeout && {Timeout}` 这种「显式才写」的形式 → 已存在的函数走更新路径。
 - **未实测（下次带 `[deploy]` 的真跑必须核对）**：① `reportService` 的 900s/512MB 与环境变量是否原样保留；② 只传代码 + `--install-dependency true` 云端装依赖是否够（`wx-server-sdk`）；③ 第一次只部署 `judgeOne`。
+- **2026-09-13 首次 `[deploy]` 真跑：失败（根因待定）**。观测手段受限（GitHub API 匿名调用被限流、日志需 admin），用**状态徽章**判断：`https://github.com/again-q/ai-learning-system/actions/workflows/deploy-wechat.yml/badge.svg` → 由 `passing` 变 `failing`；issue #16 已更新到「第 8 次（f92d0ca）」→ 说明**步骤 1–9 全过，失败发生在新加的两步**（安装 CloudBase CLI / tcb 部署）。已加"缺 Secret 时给明确报错"的守卫，待确认是 Secret 未配还是 tcb 本身报错。**技法：API 限流时用 badge.svg 看最新运行状态（不走 API）。**

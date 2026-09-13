@@ -124,6 +124,11 @@ jobs:
           set -euo pipefail
           cd "$GITHUB_WORKSPACE"
           TCB=".github/ci/node_modules/.bin/tcb"
+          # 先给出明确报错，避免 tcb 抛一句难懂的鉴权错
+          if [ -z "${TCB_SECRET_ID:-}" ] || [ -z "${TCB_SECRET_KEY:-}" ]; then
+            echo "::error::缺少 TCB_SECRET_ID / TCB_SECRET_KEY —— 请在仓库 Settings → Secrets and variables → Actions 添加这两个 Secret"
+            exit 1
+          fi
           # 只部署「这次提交真正改动过」的云函数；手动触发填了 functions 就用它
           if [ -n "${FUNCTIONS:-}" ]; then
             LIST="${FUNCTIONS//,/ }"
