@@ -14,13 +14,73 @@ async function compressIfNeeded(filePath) {
       src: filePath,
       quality: 85,
       compressedWidth: Math.round(info.width * scale),
-      compressHeight: Math.round(info.height * scale),
+      compressedHeight: Math.round(info.height * scale),
     });
     return res.tempFilePath || filePath;
   } catch (e) {
     console.warn('[photo] compress failed, use original:', e && e.message);
     return filePath;
   }
+}
+
+// 诊断结果抢救：diagnose 的结果有 TTL，小程序在后台待久了会拿到
+//   -404010 result expired / -501002 ESOCKETTIMEDOUT，但服务端通常已经跑完
+// 并把题目写进了 questions 集合 —— 轮询即可把批次救回来，不用让用户白等一场重来。
+const RECOVER_POLL_MS = 5000;
+const RECOVER_MAX_MS = 180000;
+
+// 只有"服务端可能已完成"的错误才值得抢救；上传被中断（uploadFile:fail）无法恢复
+function isRecoverableDiagnoseError(e) {
+  const msg = (e && e.message) || String(e || '');
+  return /-404010|result expired|-501002|ESOCKETTIMEDOUT|timeout/i.test(msg);
+}
+
+// 把云能力的技术错误翻译成学生看得懂的话（详细设计 §7：报错文案面向学生，不面向开发者）
+// 原始错误不丢：已由 log.append('submit_fail', { error }) 存进链路日志供排查
+function humanizeSubmitError(e) {
+  const msg = (e && e.message) || String(e || '');
+  if (/uploadFile/i.test(msg)) {
+    return '照片上传被中断了（可能小程序切到了后台）。照片还在，请保持小程序在前台，再点「重试」。';
+  }
+  if (/-404010|result expired/i.test(msg)) {
+    return '分析结果过期了（离开小程序太久），没能从云端取回。请点「重试」。';
+  }
+  if (/-501002|ESOCKETTIMEDOUT/i.test(msg)) {
+    return '分析超时了（题目较多或网络较慢）。请点「重试」。';
+  }
+  return '提交失败，请重试。';
+}
+
+// 轮询抢救：diagnose 是先把所有题目写进 questions、最后才更新 batches，
+// 所以要求"连续两次轮询到相同的题目组成"才算收完，避免拿到写了一半的题目。
+// 返回 {total, pending}；pending 按 status==='pending' 过滤，**与正常路径的 pendingQ 同口径**
+// （识别失败的题也会入库且 status 为 'failed'；只看题目总数会把"全部识别失败"误判成可进复核页）
+async function recoverDiagnoseBatch(batchId) {
+  const deadline = Date.now() + RECOVER_MAX_MS;
+  let lastKey = '';
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, RECOVER_POLL_MS));
+    let total = 0;
+    let pending = 0;
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'judgeOne',
+        data: { action: 'listQuestions', batchId },
+      });
+      const r = res.result;
+      if (r && r.code === 0 && Array.isArray(r.data) && r.data.length > 0) {
+        total = r.data.length;
+        pending = r.data.filter((q) => q.status === 'pending').length;
+      }
+    } catch (err) {
+      total = 0;   // 网络还没恢复 → 继续等
+      pending = 0;
+    }
+    const key = total + ':' + pending;
+    if (total > 0 && key === lastKey) return { total, pending };
+    lastKey = total > 0 ? key : '';
+  }
+  return null;
 }
 
 Page({
@@ -37,6 +97,10 @@ Page({
   },
 
   onLoad() {},
+
+  // 生命周期只留痕，绝不中止链路 —— 离开页面/小程序后上传与诊断要继续跑完（用户明确要求）
+  onHide() { log.append('photo_hide', { submitting: this.data.submitting, analyzing: this.data.analyzing }); },
+  onUnload() { log.append('photo_unload', { submitting: this.data.submitting, analyzing: this.data.analyzing }); },
 
   // 选图（相机或相册）
   async chooseImage() {
@@ -159,6 +223,7 @@ Page({
     log.beginSession('photo_submit');
     log.append('upload_start', { imageCount: this.data.images.length });
 
+    let batchId = '';
     try {
       // 1. 逐张上传到云存储（路径含 userId，实现照片隔离——CR-002 修复）
       const uid = user._openid;
@@ -182,7 +247,8 @@ Page({
       );
       const batchData = batchRes.result;
       if (batchData.code !== 0) throw new Error(batchData.message);
-      log.append('batch_created', { batchId: batchData.data.batchId });
+      batchId = batchData.data.batchId;
+      log.append('batch_created', { batchId });
 
       // 3. 拆分阶段：视觉转录 + 拆题 + 建题（不含判定，快）
       this.setData({
@@ -263,11 +329,35 @@ Page({
     } catch (e) {
       console.error('[photo] submit error:', e);
       log.append('submit_fail', { error: e.message || String(e), stack: (e.stack || '').slice(0, 500) });
+
+      // 诊断阶段"结果取不回"：服务端通常已完成，轮询抢救，保住"离开小程序后继续跑"
+      if (batchId && isRecoverableDiagnoseError(e)) {
+        this.setData({
+          analyzing: true,
+          submitting: true,
+          progressText: '正在从云端取回分析结果…',
+          estimatedText: '最多等 3 分钟',
+          progressPercent: 95,
+        });
+        const rec = await recoverDiagnoseBatch(batchId);
+        log.append('diagnose_recover', { batchId, total: rec ? rec.total : 0, pending: rec ? rec.pending : 0 });
+        if (rec && rec.pending > 0) {
+          this.setData({ analyzing: false });
+          wx.navigateTo({ url: '/packageDiagnose/pages/review/review?batchId=' + batchId });
+          return;
+        }
+        if (rec && rec.total > 0) {
+          // 题目都入库了却没有一个 pending = 全部识别失败：与正常路径同口径提示
+          this.setData({ analyzing: false, submitting: false, pipelineError: '未识别到题目，请换清晰照片后重试' });
+          return;
+        }
+      }
+
       // 页内错误，勿 showToast——会与 progress-mask 叠层
       this.setData({
         analyzing: false,
         submitting: false,
-        pipelineError: e.message || '提交失败，请重试',
+        pipelineError: humanizeSubmitError(e),
       });
     } finally {
       this.setData({ submitting: false });

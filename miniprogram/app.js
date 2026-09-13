@@ -1,4 +1,5 @@
 const { getCachedUser } = require('./utils/user-cache');
+const log = require('./utils/upload-log');
 
 App({
   globalData: {
@@ -21,5 +22,9 @@ App({
         traceUser: true
       });
     }
-  }
+  },
+
+  // 链路日志留痕：区分"离开的是页面"还是"整个小程序切后台"（排查云能力中断的关键依据）
+  onHide() { log.append('app_hide', {}); },
+  onShow() { log.append('app_show', {}); }
 });
