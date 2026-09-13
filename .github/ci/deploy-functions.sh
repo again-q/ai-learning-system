@@ -52,9 +52,12 @@ tail -3 "$LOG"
 
 for fn in $LIST; do
   log "→ 部署 $fn"
-  if ! "$TCB" fn deploy "$fn" --force --install-dependency true -e "$ENV_ID" --dir "cloudfunctions/$fn" >"$LOG" 2>&1; then
+  if ! "$TCB" fn deploy "$fn" --force --json --install-dependency true -e "$ENV_ID" --dir "cloudfunctions/$fn" >"$LOG" 2>&1; then
     tail -25 "$LOG"
     post_issue "❌ **云函数部署失败：\`$fn\`**"
+    if grep -q 'Please select an action' "$LOG"; then
+      log "提示：日志里出现了交互式选择（Please select an action）→ tcb 又在等输入，需要补非交互参数"
+    fi
     fail "部署 $fn 失败"
   fi
   tail -2 "$LOG"

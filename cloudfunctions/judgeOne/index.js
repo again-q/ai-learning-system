@@ -1,3 +1,4 @@
+// [ci-smoke] 云函数部署链路验证用，验证通过后删除（2026-09-13）
 const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
