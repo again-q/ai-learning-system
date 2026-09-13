@@ -1,26 +1,21 @@
 #!/usr/bin/env bash
-# 部署云函数（CloudBase CLI / tcb）——只部署本次提交改动过的函数
-# 需要 env：TCB_SECRET_ID / TCB_SECRET_KEY / ENV_ID / [FUNCTIONS] / GH_TOKEN / REPO
-# 失败时把日志尾部贴到「📱 最新预览二维码」issue 下 —— 手机上也能直接看到原因
+# 部署云函数 —— 走 miniprogram-ci 的 cloud.uploadFunction
+#   为什么不用 tcb：① 默认 COS 直传有 60 秒硬超时（跨境必挂）② --deployMode zip 有 1.5MB 上限（依赖会被打包进去）
+#   本机实测：uploadFunction 上传包仅 20KB（3 文件），云端装依赖，status: Updating → Active ✅
+# 需要 env：WECHAT_APPID / WECHAT_PRIVATE_KEY / ENV_ID / [FUNCTIONS] / [COMMIT_MSG] / GH_TOKEN / REPO
 set -uo pipefail
 
 log() { printf '%s\n' "$*"; }
 fail() { log "::error::$*"; exit 1; }
 
-[ -n "${TCB_SECRET_ID:-}" ] || fail "缺少 TCB_SECRET_ID —— 请在 Settings → Secrets and variables → Actions 里添加这两个 Secret"
-[ -n "${TCB_SECRET_KEY:-}" ] || fail "缺少 TCB_SECRET_KEY —— 同上"
+[ -n "${WECHAT_PRIVATE_KEY:-}" ] || fail "缺少 WECHAT_PRIVATE_KEY（Settings → Secrets and variables → Actions 里添加）"
+[ -n "${ENV_ID:-}" ] || fail "缺少 ENV_ID（云开发环境 ID）"
 
-# 粘贴时常见多空格/换行 → 去掉再用
-TCB_SECRET_ID="$(printf '%s' "$TCB_SECRET_ID" | tr -d '[:space:]')"
-TCB_SECRET_KEY="$(printf '%s' "$TCB_SECRET_KEY" | tr -d '[:space:]')"
-log "TCB_SECRET_ID 长度=${#TCB_SECRET_ID}（正常 36，AKID… 开头）"
-log "TCB_SECRET_KEY 长度=${#TCB_SECRET_KEY}（正常 32）"
-
-# 只部署「这次提交真正改动过」的云函数；手动触发填了 FUNCTIONS 就按它来
-# ① commit message 里显式写 [deploy:函数名,函数名] 时，以它为准（最直观，也能用来只测一个函数）
+# ① commit message 里写 [deploy:函数名,函数名] → 以它为准
 if [[ "${COMMIT_MSG:-}" =~ \[deploy:([^]]+)\] ]]; then
-  FUNCTIONS="${BASH_REMATCH[1]//,/ }"
+  FUNCTIONS="${BASH_REMATCH[1]}"
 fi
+# ② 手动触发时填的 functions 输入；③ 否则按 git diff，只部署这次改动过的云函数
 if [ -n "${FUNCTIONS:-}" ]; then
   LIST="${FUNCTIONS//,/ }"
 else
@@ -29,14 +24,11 @@ fi
 log "本次要部署：${LIST:-（无）}"
 [ -n "${LIST:-}" ] || { log "本次提交没有改动云函数 → 跳过部署"; exit 0; }
 
-TCB=".github/ci/node_modules/.bin/tcb"
 LOG="$(mktemp)"
-
-post_issue() {   # $1 = 结论标题
+post_issue() {
   [ -n "${GH_TOKEN:-}" ] || return 0
-  local body
+  local body n
   body="$1"$'\n\n'"部署日志尾部："$'\n\n'"\`\`\`"$'\n'"$(tail -25 "$LOG")"$'\n'"\`\`\`"
-  local n
   n="$(gh issue list --repo "$REPO" --search '最新预览二维码 in:title' --limit 1 --json number -q '.[0].number' 2>/dev/null || true)"
   if [ -n "$n" ]; then
     gh issue comment "$n" --repo "$REPO" --body "$body" >/dev/null 2>&1 || true
@@ -45,34 +37,13 @@ post_issue() {   # $1 = 结论标题
   fi
 }
 
-log "→ tcb login"
-if ! timeout 120 "$TCB" login --apiKeyId "$TCB_SECRET_ID" --apiKey "$TCB_SECRET_KEY" >"$LOG" 2>&1; then
-  tail -25 "$LOG"
-  post_issue "❌ **云函数部署失败：tcb 登录被拒（腾讯云密钥验证失败）**
-排查顺序：① Secret 名必须恰好是 \`TCB_SECRET_ID\` / \`TCB_SECRET_KEY\` ② 上面两行长度是否 36 / 32 ③ 密钥是否来自创建该云开发环境的腾讯云账号 ④ 密钥是否被禁用"
-  fail "tcb 登录失败（原因见上方日志 / issue 评论）"
-fi
-tail -3 "$LOG"
-
 for fn in $LIST; do
-  log "→ 部署 $fn"
-  # --yes/--json 都试上；再用 script 分配一个 PTY，万一 tcb 仍弹"请选择操作"也能自动回车选第一项（CI 无 TTY）
-  CMD="$(printf '%q ' "$TCB" fn deploy "$fn" --force --yes --json --deployMode zip --install-dependency true -e "$ENV_ID" --dir "cloudfunctions/$fn")"
-  run_deploy() {
-    if command -v script >/dev/null 2>&1; then
-      printf '\n' | timeout 240 script -qec "$CMD" /dev/null >"$LOG" 2>&1
-    else
-      timeout 240 bash -c "$CMD" >"$LOG" 2>&1
-    fi
-  }
-  if ! run_deploy; then
+  log "→ 部署 $fn（miniprogram-ci cloud.uploadFunction，云端装依赖）"
+  if ! timeout 300 node .github/ci/upload-functions.cjs "$fn" >"$LOG" 2>&1; then
     tail -25 "$LOG"
-    post_issue "❌ **云函数部署失败：\`$fn\`**"
-    if grep -q 'Please select an action' "$LOG"; then
-      log "提示：日志里出现了交互式选择（Please select an action）→ tcb 又在等输入，需要补非交互参数"
-    fi
-    fail "部署 $fn 失败"
+    post_issue "❌ **云函数部署失败：\`$fn\`**（miniprogram-ci cloud.uploadFunction）"
+    fail "部署 $fn 失败（原因见上方日志 / issue 评论）"
   fi
-  tail -2 "$LOG"
+  tail -3 "$LOG"
 done
 log "✅ 全部部署完成：$LIST"

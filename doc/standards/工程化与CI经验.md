@@ -127,3 +127,11 @@ tcb fn deploy <name> --force --install-dependency true -e <envId> --dir cloudfun
   - ❌ 紧接着报：`⠏ 云函数部署中...[judgeOne] 部署方式: COS 上传` → `✖ [judgeOne] COS 上传超时（60秒）` —— 默认走"签名 URL 直传 COS"，60 秒上限；
   - **修法**：加 `--deployMode zip`（CLI help 里的参数：cos / zip / image，默认自动）→ 直接 ZIP 上传，绕开 COS 直传。我们的小函数只有 64K~128K，zip 完全够用；
   - **诱因推测**：本机/CI 的出口若被代理绕道（本机 iKuuu、runner 在美国），直传腾讯云 COS 就要跨境往返 → 60 秒超时；zip 模式走 API 上传更稳。
+- **⚠️ 最终结论（2026-09-13 定案）：云函数部署改回 miniprogram-ci 的 `ci.cloud.uploadFunction`。** 三道坎实测如下：
+  | 尝试 | 结果 |
+  |---|---|
+  | `tcb fn deploy`（默认 COS 直传） | ❌ `COS 上传超时（60秒）` —— CLI 里 60 秒是**写死的** `setTimeout(..., 60000)`，不可配；本机（福州）与 CI（美国）跨境上传都超时 |
+  | `tcb fn deploy --deployMode zip` | ❌ `ZipFile 上传不能大于 1.5MB` —— zip 模式会把**依赖一起打包**（源码本身才 64K），源码里 `MAX_ZIP_SIZE = 1.5*1024*1024` 写死；`--install-dependency` 大小写都试过无效 |
+  | `tcb fn deploy --yes` | ✅ 有效（压住"请选择操作"菜单），但前两条堵死 → 无意义 |
+  | **`ci.cloud.uploadFunction`** | ✅✅ **本机实跑通过**：`{"filesCount":3,"packSize":20236}`，云端装依赖，`Updating → Active`，且 1.7MB 的小程序包上传早已在 CI 验证过 → 跨境不是问题 |
+  **最终实现**：`.github/ci/upload-functions.cjs`（每个函数一次调用）+ `.github/ci/deploy-functions.sh`（门控/只部署改动过的/失败自动贴 issue）。**不再需要 `TCB_SECRET_ID` / `TCB_SECRET_KEY`**（可留可删），云函数与小程序共用 `WECHAT_PRIVATE_KEY`。

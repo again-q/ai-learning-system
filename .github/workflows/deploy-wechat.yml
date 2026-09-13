@@ -113,11 +113,10 @@ jobs:
         working-directory: .github/ci
         run: npm install --no-save --no-audit --no-fund @cloudbase/cli@3.8.0
 
-      - name: 部署云函数（tcb fn deploy）
+      - name: 部署云函数（miniprogram-ci uploadFunction）
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy')
         env:
-          TCB_SECRET_ID: ${{ secrets.TCB_SECRET_ID }}
-          TCB_SECRET_KEY: ${{ secrets.TCB_SECRET_KEY }}
+          WECHAT_PRIVATE_KEY: ${{ secrets.WECHAT_PRIVATE_KEY }}   # 与上传小程序同一把密钥，不需要腾讯云密钥
           ENV_ID: cloud1-d8g0ty39wd73f430a
           FUNCTIONS: ${{ github.event.inputs.functions }}   # 手动触发时可填；留空=按 diff 自动判断
           GH_TOKEN: ${{ github.token }}                      # 失败时把日志贴到 issue 里
