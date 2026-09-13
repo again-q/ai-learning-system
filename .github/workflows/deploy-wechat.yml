@@ -65,17 +65,18 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/qr" && cd "$RUNNER_TEMP/qr"
-          cp "$GITHUB_WORKSPACE/.github/ci/qrcode.png" "qrcode-${{ github.run_number }}.png"
-          cp "$GITHUB_WORKSPACE/.github/ci/qrcode.png" "qrcode-latest.png"
+          cp "$GITHUB_WORKSPACE/.github/ci/qrcode.jpg" "qrcode-${{ github.run_number }}.jpg"
+          cp "$GITHUB_WORKSPACE/.github/ci/qrcode.jpg" "qrcode-latest.jpg"
           git init -q && git checkout -qb ci-preview
           git add -A
           git -c user.email=ci@local -c user.name=ci commit -qm "preview #${{ github.run_number }}"
+          echo "CI_PREVIEW_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
           git push -q --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" ci-preview
 
       - uses: actions/upload-artifact@v4
         with:
           name: preview-qrcode
-          path: .github/ci/qrcode.png
+          path: .github/ci/qrcode.jpg
           retention-days: 1
 
       - name: 运行摘要显示二维码 + 更新通知 issue
@@ -85,7 +86,8 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          URL="https://cdn.jsdelivr.net/gh/$REPO@ci-preview/qrcode-$RUN.png"
+          # 用 ci-preview 的 commit SHA 而不是分支名：SHA 不可变 → 绝不吃 CDN 缓存
+          URL="https://cdn.jsdelivr.net/gh/$REPO@$CI_PREVIEW_SHA/qrcode-$RUN.jpg"
           {
             echo "## 📱 预览二维码（第 $RUN 次）"
             echo ""

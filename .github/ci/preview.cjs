@@ -28,7 +28,9 @@ const project = new ci.Project({
   ignores: ['cloudfunctions/**/*', 'node_modules/**/*', 'doc/**/*', 'output/**/*'],
 });
 
-const dest = process.env.QR_DEST || path.join(__dirname, 'qrcode.png');
+// 注意：qrcodeFormat:'image' 产出的是 JPEG，扩展名必须写 .jpg，否则 CDN 会按 .png 回 image/png，
+// 内容与 Content-Type 不一致，GitHub camo / 微信可能拒绝渲染
+const dest = process.env.QR_DEST || path.join(__dirname, 'qrcode.jpg');
 
 (async () => {
   await ci.preview({
