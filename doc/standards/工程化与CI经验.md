@@ -145,3 +145,30 @@ tcb fn deploy <name> --force --install-dependency true -e <envId> --dir cloudfun
 - **坑 11｜退出码陷阱**：miniprogram-ci 上传成功后**残留句柄导致 node 不退出** → 被脚本里 `timeout 300` 杀掉 → **明明部署成功却报红**（#17）。解法：成功/失败分支都显式 `process.exit(0/1)`。**排查要点：日志里最后一句是成功，但步骤是红的 → 先怀疑进程没退出**
 - **本轮代价（同一会话累计）**：30 turn / 223 step / 193 次工具调用；上下文重复处理量 ≈ **9.85 亿字符**（单步均值 ≈ 442 万字符，随上下文变长而急剧上升）；输出 ≈ 92 万字符 → 粗估输入 ≈ 3.9 亿 token、输出 ≈ 37 万 token，按 deepseek-flash 价约**十几美元量级**，精确值看平台用量页
 - **待办（可选）**：① workflow 加 `paths-ignore`，纯文档提交不上传；② 删掉不再需要的 `TCB_SECRET_ID`/`TCB_SECRET_KEY`；③ 清掉故障期遗留的 queued 运行 #14/#15
+
+---
+
+## 九、手机链路自启守护：launchd 与受限沙箱（2026-09-13）
+
+**链路实貌（用 `pgrep -lf node` + daemon 日志反推，未改任何代码）**
+```
+手机 App(设备 7h-2c3fJ…) → 云中继 wss://pocket.ark-nexus.cc → cc-pocket-daemon
+   → ACP(~/.dsh/profiles/acp) → dsh web (node, 127.0.0.1:3080) → 会话 54c2e76a
+```
+**关键发现：daemon 只「挂靠」不「拉起」。** 日志 `SessionRegistry - open <session> → reattach`、`Convo - acked prompt → agent (firstSpawn=false relaunch=false)` 证明 daemon 只寻找已存在的 agent。而唯一在跑的 agent 是**手动在 Terminal(ttys000) 起的 `dsh web`**（launchd 侧只有 daemon 有守护）。→ **睡眠能扛、重启扛不住**：`dsh web` 自 09-11 21:04 起跨过 **64 次睡眠/68 次唤醒**仍存活（睡眠是挂起不是退出），但重启/关机后无人拉起它 → 手机连上却没有 agent。
+
+- **坑 12｜受限沙箱下 `dsh <profile>` 连 `--help` 都跑不起来（EPERM）**：`dsh web --help` 报 `EPERM: operation not permitted, open '/Users/apple/.dsh/profiles/web/cordis.yml'`（栈顶 `prepareProfile → writeFileSync`）。**根因**：dsh 启动时**先重写 profile 的 `cordis.yml` 再解析 app 参数**，而 `~/.dsh` 在工作区外、被 workspace-write 沙箱拒绝。**教训**：`dsh web --help` 不是纯读操作，别拿它当无害探测；同理 `--dump-config` 之外任何 boot 动作都会写 `~/.dsh`。
+- **坑 13｜写工作区外文件必须一次性申请 `danger-full-access`**：`~/.local/bin/xxx: Operation not permitted` + `[sandbox: file access denied under workspace-write mode]`。**修**：同一条命令原样重试 + `sandbox_permissions: danger-full-access` 并在 `justification` 里说明「该路径由 launchd 约定，无法放进工作区」。**注意**：用户可能**拒绝**该申请（本会话第一次申请自启脚本就被拒）——被拒是终局，不得绕过，应改为给出可粘贴命令。
+- **坑 14｜`launchctl bootstrap/load` 在受限上下文一律 `EIO(5)`，且伪装成"配置错误"**：`Bootstrap failed: 5: Input/output error`，`launchctl load -w` 同样。**排除法**（关键）：① `launchctl print gui/$UID/<已有服务>` 正常 → 通道通；② `launchctl enable` 正常 → 写操作也通；③ **把最小 plist（`/bin/echo`）放 `/tmp` 再 bootstrap 也 EIO** → 与本项目 plist 无关。**修**：同命令 + `danger-full-access` → `rc=0`。**教训**：遇到 `EIO(5)` 先用**最小 plist 做对照实验**，别急着怀疑自己的 plist/权限/路径。
+
+**自启守护实现（已落地并实测）**：`~/.local/bin/dsh-web-guard.sh`（**端口守卫**：`lsof -iTCP:3080 -sTCP:LISTEN` 命中就直接 `exit 0`，避免双实例抢端口）+ `~/Library/LaunchAgents/dev.dsh.web.plist`（`RunAtLoad` + `KeepAlive{SuccessfulExit:false}` + `ThrottleInterval:30`）。
+- **⚠️ 铁律：验证自启时绝不能重启 `dsh web`** —— 它就是在服务本次会话的进程，重启等于切断手机链路（agent 自杀）。本会话全程只装不重启。
+- **安全验证法**（三重印证，无需重启）：`launchctl print gui/$UID/dev.dsh.web` 看 `runs=1` / `last exit code=0`（守卫走了"端口被占→退出"分支）+ `pgrep -lf "dsh web"` 确认**没冒第二个实例** + `lsof -iTCP:3080` 原 PID 仍在。
+- **残留窗口期**：当前实例仍挂在 Terminal 窗口上，关掉窗口它会死，而 LaunchAgent 当时已"跑完"（退出码 0，`SuccessfulExit:false` 不重启）→ 需等下次登录。**重启后**由 launchd 直接拉起、无 tty 依赖，即自愈。
+- **`log show` 在沙箱内被拒**（`log: Cannot run while sandboxed`）→ 守卫用 `logger` 写的系统日志读不到，只能靠上面前两条证据定性。
+
+**决策反转记录（被否决的方案：`pmset disablesleep`）**：曾计划 `sudo pmset -a disablesleep 1` + LaunchDaemon 做「合盖不睡」。用户澄清需求是「**正常休眠、醒来能用**」→ **取消**（既已由 64 次睡眠实测满足，且一直不睡伤电池）。**教训：先确认需求口径再选方案**——"远程可用"有「常驻在线」和「睡眠+唤醒自愈」两种截然不同的实现，成本与代价差一个数量级。
+- 顺带核实：**Amphetamine 的特权助手从未安装**（`/Library/PrivilegedHelperTools/` 为空）→ 其 closed-display 模式根本没生效，那个 `Single-Use` 断言只是防空闲睡眠、**防不住合盖**；`Never Sleep.app` 只用 `AssertionType`（同 `caffeinate` 机制）同样无效。
+- **原理性结论**：**「定时唤醒」App 做不到** —— 睡眠中 App 不运行，而排电源事件（`pmset schedule/repeat`）**需要 root**；且合盖状态下唤醒后很快会再次入睡，故合盖场景只能靠 `disablesleep`（=常驻在线，与本需求矛盾）。
+
+**方法论沉淀**：排查"链路为什么断"时，先**区分「睡眠」与「重启」**——睡眠是挂起（进程活着、网络断），重启是进程消失（需守护）。把两者混为一谈会选错方案（本轮就是先按"常驻在线"设计，后被需求纠正）。
