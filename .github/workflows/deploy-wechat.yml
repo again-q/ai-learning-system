@@ -105,14 +105,9 @@ jobs:
             gh issue create --repo "$REPO" --title "📱 最新预览二维码" --body "$BODY"
           fi
 
-      # ④ 云函数部署（CloudBase CLI / tcb）—— 只有 commit message 带 [deploy] 或手动触发时才跑
+      # ④ 云函数部署（miniprogram-ci cloud.uploadFunction）—— 只有 commit message 带 [deploy] 或手动触发时才跑
       #    想换前缀？改下面两处 if: 里的 '[deploy]' 即可（要多个前缀就 || contains(...)）
       #    想连"上传开发版"也受前缀控制？给前面的上传/二维码步骤也加同样的 if:
-      - name: 安装 CloudBase CLI（仅部署时需要，不拖慢日常 push）
-        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy')
-        working-directory: .github/ci
-        run: npm install --no-save --no-audit --no-fund @cloudbase/cli@3.8.0
-
       - name: 部署云函数（miniprogram-ci uploadFunction）
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy')
         env:

@@ -31,6 +31,7 @@ const project = new ci.Project({ appid, type: 'miniProgram', projectPath, privat
   const r = await ci.cloud.uploadFunction({ project, env, name, path: dir, remoteNpmInstall: true });
   console.log('✅ ' + name + ' 已部署：' + JSON.stringify(r));
 })().then(
-  () => fs.rmSync(tmp, { recursive: true, force: true }),
-  (e) => { fs.rmSync(tmp, { recursive: true, force: true }); console.error('❌ ' + name + ' 失败：' + (e && e.message)); process.exitCode = 1; }
+  // 必须显式退出：miniprogram-ci 上传后有残留句柄，node 不会自己结束 → CI 里会被 timeout 杀掉，白报失败
+  () => { fs.rmSync(tmp, { recursive: true, force: true }); process.exit(0); },
+  (e) => { fs.rmSync(tmp, { recursive: true, force: true }); console.error('❌ ' + name + ' 失败：' + (e && e.message)); process.exit(1); }
 );
