@@ -21,12 +21,14 @@
 
 ---
 
-## 二、落地的 4 个坑（2026-09-12）
+## 二、落地的 5 个坑（2026-09-12 ~ 09-13）
 
 - **坑 1｜npm 缓存 EPERM**：`npm install` 报 `EPERM open /Users/apple/.npm/_cacache/tmp/...`，npm 提示的 "root-owned files" 是**误导**——真因是 `~/.npm` 在工作区外，被沙箱拒绝写入。**修**：`npm install --cache /tmp/<dir>`。
 - **坑 2｜npmjs 直连过慢**：`curl registry.npmjs.org` ≈5.9s/请求，装 miniprogram-ci（1103 包）8 分钟仍无 node_modules；`registry.npmmirror.com` ≈0.73s/请求，3 分钟装完。**修**：本地验证用 mirror；**但不提交 mirror 生成的 lockfile**（resolved 指向 mirror，而 CI runner 在美国用 npmjs 更快）→ workflow 用 `npm install` + package.json 精确锁 `miniprogram-ci: 2.1.31`，不用 `npm ci`。
 - **坑 3｜miniprogram-ci 20002**：`generate local signature fail ... DECODER routines::unsupported` = 私钥内容/编码不对。注意 `project.attr()` 也会**先用私钥本地签名**，所以没有真密钥无法本地冒烟（只能验证到签名这一步）；密钥若以字面 `\n` 存储（GitHub Secret 常见）必须 `replace(/\\n/g,'\n')` 还原。
 - **坑 4｜macOS 没有 `timeout`**：探测远端鉴权写成 `timeout 25 git ls-remote ...` 报 `command not found`；替代：`GIT_SSH_COMMAND='ssh -o BatchMode=yes -o ConnectTimeout=15' git ls-remote origin -h refs/heads/main`（本机已实测通过，说明这台机器有 push 权限）。
+
+- **坑 5｜20003 `invalid ip` = IP 白名单开着（2026-09-13 第一次真跑撞上）**：上传请求被微信拒：`{"errCode":-10008,"errMsg":"invalid ip: 112.51.227.113"}`。本机与 GitHub runner 的出口 IP 都不在白名单里 → **「小程序代码上传」页的 IP 白名单必须关闭**（托管 runner 出口 IP 不固定，加白名单没意义）。附带实测：本项目打包后 zip = **1,798,520 B（≈1.7MB，未超主包 2MB）**；一次 upload 会逐文件打印约 **600 条**编译进度 → CI 日志很吵（后续可给 `onProgressUpdate` 加节流）。
 
 ### 附：代码上传密钥实测结论（2026-09-13）
 - 微信公众平台下载的密钥是 **PKCS#1 PEM**：首尾行为 `-----BEGIN RSA PRIVATE KEY-----` / `-----END RSA PRIVATE KEY-----`，**2048 位、LF 换行**（不是 PKCS#8 的 `BEGIN PRIVATE KEY`，也不带 CRLF）。
@@ -58,13 +60,16 @@
 
 ---
 
-## 四、收尾状态：未验证项（2026-09-12 当日收工，下次从这里接）
+## 四、收尾状态（2026-09-13 更新）
 
-- **已完成**：方案 + 5 个 CI 文件（本地 commit `cb76107`）+ 文档（本文件、`开发经验.md` 分工、`coding-rules.md` 收尾铁律）
-- **未推送**：6 个 commit 仍在本地，远端 `origin/main` 还是 `0a7048e`
-- **⚠️ 未验证（关键）**：**真实上传到微信一次都没跑过**（GitHub Actions 运行数 = 0）。缺两样输入：①微信公众平台「代码上传密钥」→ GitHub Secret `WECHAT_PRIVATE_KEY`；②该页 **IP 白名单必须关闭**
-- **下次第一步**：用户给密钥（放本机、勿贴聊天）→ push → 手机 `Actions → 部署到微信 → Run workflow` → 验「开发者助手里开发版已刷新」+「📱 最新预览二维码 issue 出现二维码」
-- **Step 2/3 未开始**：云函数开关默认关（仓库变量 `ENABLE_CLOUD_FUNCTIONS` 未设），Step 1 只跑前端包 + 二维码
+- **已完成并已推送**：5 个 CI 文件 + 文档（远端 `origin/main` 已到 `572d321`）
+- **真跑记录**：已触发 3 次 GitHub Actions 运行，**都在「上传小程序代码（生成开发版）」这一步失败**：
+  - 运行 1 `34744594441`：Secret 当时还没配 → 必红（预期内）
+  - 运行 2 `34744709271`：Secret 已配，**根因 = IP 白名单未关**（见坑 5）
+  - 本机同参数复现同一错误：`20003 {"errCode":-10008,"errMsg":"invalid ip: 112.51.227.113"}`
+- **已排除的可能**：密钥格式（PKCS#1/2048，Node 能加载 → 不会 20002）、依赖安装（CI 第 4 步 success）、主包体积（zip ≈1.7MB < 2MB）
+- **下次第一步**：用户在公众平台**关闭 IP 白名单** → 点那次运行的 **Re-run all jobs**（或我 push 触发）→ 期望：上传步 green + 开发者助手出现新开发版 + issue 出现二维码
+- **Step 2/3 未开始**：云函数开关默认关（仓库变量 `ENABLE_CLOUD_FUNCTIONS` 未设）
 - **已归档结论**：`miniprogram-ci` 无体验版/发布能力（服务商 API 门槛 300 元认证 + 官网），学生侧仍需人工点一次「选为体验版」
 
 ---
