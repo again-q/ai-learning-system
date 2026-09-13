@@ -23,8 +23,6 @@ permissions:
 
 env:
   WECHAT_APPID: wx256aa9c197b2e59e
-  WECHAT_ENV: cloud1-d8g0ty39wd73f430a
-  DEFAULT_FUNCTIONS: judgeOne,reportService,ragService,statService,dispute,graphService,userLogin,knowledgeAdmin,manageKnowledge,photoUpload
 
 jobs:
   deploy:
@@ -105,12 +103,27 @@ jobs:
             gh issue create --repo "$REPO" --title "📱 最新预览二维码" --body "$BODY"
           fi
 
-      # ③ 云函数：Step 1/2 阶段先关着；仓库变量 ENABLE_CLOUD_FUNCTIONS=true 后自动生效
-      - name: 部署云函数（开关：仓库变量 ENABLE_CLOUD_FUNCTIONS）
-        if: vars.ENABLE_CLOUD_FUNCTIONS == 'true'
+      # ④ 云函数部署（CloudBase CLI / tcb）—— 只有 commit message 带 [deploy] 或手动触发时才跑
+      #    想换前缀？改下面两处 if: 里的 '[deploy]' 即可（要多个前缀就 || contains(...)）
+      #    想连"上传开发版"也受前缀控制？给前面的上传/二维码步骤也加同样的 if:
+      - name: 安装 CloudBase CLI（仅部署时需要，不拖慢日常 push）
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy]')
         working-directory: .github/ci
+        run: npm install --no-save --no-audit --no-fund @cloudbase/cli@3.8.0
+
+      - name: 部署云函数（tcb fn deploy）
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy]')
         env:
-          WECHAT_PRIVATE_KEY: ${{ secrets.WECHAT_PRIVATE_KEY }}
-          PROJECT_PATH: ${{ github.workspace }}
-          FUNCTIONS: ${{ github.event.inputs.functions || env.DEFAULT_FUNCTIONS }}
-        run: node upload-functions.cjs
+          TCB_SECRET_ID: ${{ secrets.TCB_SECRET_ID }}
+          TCB_SECRET_KEY: ${{ secrets.TCB_SECRET_KEY }}
+          ENV_ID: cloud1-d8g0ty39wd73f430a
+          FUNCTIONS: ${{ github.event.inputs.functions || 'judgeOne,reportService,ragService,statService,dispute,graphService,userLogin,knowledgeAdmin,manageKnowledge,photoUpload' }}
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          TCB=".github/ci/node_modules/.bin/tcb"
+          "$TCB" login --apiKeyId "$TCB_SECRET_ID" --apiKey "$TCB_SECRET_KEY"
+          for fn in ${FUNCTIONS//,/ }; do
+            echo "→ 部署 $fn"
+            "$TCB" fn deploy "$fn" --force --install-dependency true -e "$ENV_ID" --dir "cloudfunctions/$fn"
+          done

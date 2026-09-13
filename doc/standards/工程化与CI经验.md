@@ -91,3 +91,24 @@
 3. **该换路的没换**：跨域重定向那条只需换成最终 URL，成本最低却放弃了。
 4. **默认策略**：境外域名（arxiv / Google Patents / 多数 .com 学术站）**视为不可达**；需要内容时走 ① `web_search` 摘要（本轮专利原文关键句就是摘要给的）② 国内可达站 ③ 国内转载镜像。**不要**再拿 fetch 去撞。
 5. 影响可控的前提：**结论不吃失败来源** —— 本轮核心证据来自 HTTP 200 的国内站 + 搜索摘要，arXiv 仅作旁证并已标注"只拿到标题"。查资料时优先选能拿到的证据，而不是先列理想来源清单。
+
+---
+
+## 六、云函数部署：改用 CloudBase CLI（tcb）+ 前缀门控（2026-09-13）
+
+**决策**：云函数不走 miniprogram-ci 的 `cloud.uploadFunction`，改用用户习惯的 **CloudBase CLI（tcb）**；原 `.github/ci/upload-functions.cjs` 已删除。
+
+**CI 命令（先查 CLI help 确认过参数）**
+```bash
+npm install --no-save --no-audit --no-fund @cloudbase/cli@3.8.0   # 只在需要部署时才装，不拖慢日常 push
+tcb login --apiKeyId "$TCB_SECRET_ID" --apiKey "$TCB_SECRET_KEY"  # ⚠️ 是 --apiKey，不是 --apiKeyKey
+tcb fn deploy <name> --force --install-dependency true -e <envId> --dir cloudfunctions/<name>
+```
+凭据 = **腾讯云 API 密钥**（SecretID/SecretKey）→ GitHub Secrets `TCB_SECRET_ID` / `TCB_SECRET_KEY`（建议 CAM 子账号最小授权）。云环境 ID = `cloud1-d8g0ty39wd73f430a`。
+
+**前缀门控**：commit message **含 `[deploy]`**（或手动 workflow_dispatch）才跑云函数部署；日常提交仍只上传开发版 + 生成二维码（保证手机随时能看效果）。换前缀改两处 `if:`；想让"上传开发版"也受前缀控制，给前面几个步骤加同样的 `if:`。
+
+**风险与依据（读 CLI 打包产物 `dist/standalone/cli.js` 得到）**
+- `envVariables` 只在配置里**显式写且非空**时才进请求（`if (envVariables && Object.keys(envVariables).length > 0)`）→ **不会清空云端已配的环境变量**（我们的 QWEN_API_KEY 等只配在控制台，仓库里没有任何 envVariables 配置）。
+- `fn deploy` 的**创建**路径会写 `DEFAULT_TIMEOUT` / `DEFAULT_MEMORY_SIZE`；**更新**路径是 `options.timeout && {Timeout}` 这种「显式才写」的形式 → 已存在的函数走更新路径。
+- **未实测（下次带 `[deploy]` 的真跑必须核对）**：① `reportService` 的 900s/512MB 与环境变量是否原样保留；② 只传代码 + `--install-dependency true` 云端装依赖是否够（`wx-server-sdk`）；③ 第一次只部署 `judgeOne`。
