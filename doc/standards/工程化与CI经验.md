@@ -135,3 +135,13 @@ tcb fn deploy <name> --force --install-dependency true -e <envId> --dir cloudfun
   | `tcb fn deploy --yes` | ✅ 有效（压住"请选择操作"菜单），但前两条堵死 → 无意义 |
   | **`ci.cloud.uploadFunction`** | ✅✅ **本机实跑通过**：`{"filesCount":3,"packSize":20236}`，云端装依赖，`Updating → Active`，且 1.7MB 的小程序包上传早已在 CI 验证过 → 跨境不是问题 |
   **最终实现**：`.github/ci/upload-functions.cjs`（每个函数一次调用）+ `.github/ci/deploy-functions.sh`（门控/只部署改动过的/失败自动贴 issue）。**不再需要 `TCB_SECRET_ID` / `TCB_SECRET_KEY`**（可留可删），云函数与小程序共用 `WECHAT_PRIVATE_KEY`。
+
+---
+
+## 八、收尾：全链路验证完成 + 本轮代价（2026-09-13）
+
+- **CI 端到端 ✅**：运行 **#18（`1ccc110`）全绿** —— 步骤 9（运行摘要/更新 issue）与**步骤 10（部署云函数 miniprogram-ci uploadFunction）均 success**；小程序包/二维码此前已由 #13/#16 验证 → **手机 push 一步即可同时更新小程序与云函数**
+- **云函数最终定案**：`ci.cloud.uploadFunction`（与小程序共用 `WECHAT_PRIVATE_KEY`、`remoteNpmInstall: true` 云端装依赖、不走 COS）；**本机 + CI 双重验证**
+- **坑 11｜退出码陷阱**：miniprogram-ci 上传成功后**残留句柄导致 node 不退出** → 被脚本里 `timeout 300` 杀掉 → **明明部署成功却报红**（#17）。解法：成功/失败分支都显式 `process.exit(0/1)`。**排查要点：日志里最后一句是成功，但步骤是红的 → 先怀疑进程没退出**
+- **本轮代价（同一会话累计）**：30 turn / 223 step / 193 次工具调用；上下文重复处理量 ≈ **9.85 亿字符**（单步均值 ≈ 442 万字符，随上下文变长而急剧上升）；输出 ≈ 92 万字符 → 粗估输入 ≈ 3.9 亿 token、输出 ≈ 37 万 token，按 deepseek-flash 价约**十几美元量级**，精确值看平台用量页
+- **待办（可选）**：① workflow 加 `paths-ignore`，纯文档提交不上传；② 删掉不再需要的 `TCB_SECRET_ID`/`TCB_SECRET_KEY`；③ 清掉故障期遗留的 queued 运行 #14/#15
