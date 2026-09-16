@@ -95,7 +95,15 @@ Page({
   openBatch(e) {
     const batchId = e.currentTarget.dataset.batchId;
     if (!batchId) return;
-    wx.navigateTo({ url: '/packageDiagnose/pages/report/report?batchId=' + batchId });
+    // 列表 → 详情：同页面切换视图，用 redirectTo 不叠栈（防 navigateTo 超 10 层后静默失效）；
+    // 加 fail 回调，真机上失败可见、可排查
+    wx.redirectTo({
+      url: '/packageDiagnose/pages/report/report?batchId=' + batchId,
+      fail: (err) => {
+        console.error('[report] openBatch 跳转失败', err);
+        wx.showModal({ title: '打开失败', content: JSON.stringify(err), showCancel: false });
+      },
+    });
   },
 
   onUnload() { this.stopProgressTicker(); },
