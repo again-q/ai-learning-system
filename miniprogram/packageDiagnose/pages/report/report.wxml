@@ -40,7 +40,7 @@
     <view class="nav-back2" bindtap="goBack"><text>‹ 返回</text></view>
     <view class="more-title">我的报告</view>
     <view class="qlist">
-      <view class="qitem" wx:for="{{reportList}}" wx:key="batchId" bindtap="openBatch" data-batchId="{{item.batchId}}">
+      <view class="qitem" wx:for="{{reportList}}" wx:key="batchId" bindtap="openBatch" data-batch-id="{{item.batchId}}">
         <view class="qitem-body">
           <text class="qitem-text">{{item.createdAt}} · {{item.correct}}/{{item.total}} 题对</text>
           <text class="qitem-pattern">{{item.summary}}</text>

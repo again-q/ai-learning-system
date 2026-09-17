@@ -93,11 +93,18 @@ Page({
   },
 
   openBatch(e) {
-    const batchId = e.currentTarget.dataset.batchId;
-    if (!batchId) return;
-    // 列表 → 详情：同页面切换视图，用 redirectTo 不叠栈（防 navigateTo 超 10 层后静默失效）；
-    // 加 fail 回调，真机上失败可见、可排查
-    wx.redirectTo({
+    // WXML 用连字符 data-batch-id（→ dataset.batchId）；注意 data-batchId 驼峰会被微信转成全小写 batchid 而取不到
+    const dataset = (e.currentTarget && e.currentTarget.dataset) || {};
+    const batchId = dataset.batchId;
+    log.append('report_openBatch', { batchId: batchId || '', datasetKeys: Object.keys(dataset) });
+    if (!batchId) {
+      // 不再静默早退：真机上要看得见（dataset 取错/老记录缺 batchId 都走这里）
+      console.warn('[report] openBatch 缺少 batchId', dataset);
+      wx.showToast({ title: '打开失败，请重试', icon: 'none' });
+      return;
+    }
+    // 列表 → 详情：同页面两种视图，压一个带 batchId 的自己，返回时弹回列表
+    wx.navigateTo({
       url: '/packageDiagnose/pages/report/report?batchId=' + batchId,
       fail: (err) => {
         console.error('[report] openBatch 跳转失败', err);
