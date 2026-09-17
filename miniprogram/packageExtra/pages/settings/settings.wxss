@@ -1,11 +1,11 @@
 /* 设置页 */
 .page { min-height: 100vh; background: #f6f7f9; padding-top: calc(88rpx + env(safe-area-inset-top)); padding-bottom: calc(40rpx + env(safe-area-inset-bottom)); box-sizing: border-box; display: flex; flex-direction: column; }
-.nav { position: fixed; top: 0; left: 0; right: 0; height: calc(88rpx + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); display: flex; align-items: center; background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); z-index: 20; }
+.nav { position: fixed; top: 0; left: 0; right: 0; height: calc(88rpx + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); box-sizing: border-box; display: flex; align-items: center; background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); z-index: 20; }
 .nav-back { width: 88rpx; font-size: 44rpx; color: #007aff; text-align: center; }
 .nav-title { flex: 1; text-align: center; font-size: 32rpx; font-weight: 600; color: #1a1a1a; }
 .nav-spacer { width: 88rpx; }
 
-.content { padding: 16rpx 24rpx 0; }
+.content { padding: 40rpx 24rpx 0; }
 
 .menu-list { background: #fff; border-radius: 24rpx; overflow: hidden; box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06); }
 .menu-item { display: flex; align-items: center; padding: 28rpx; gap: 20rpx; transition: background 0.2s ease; }
