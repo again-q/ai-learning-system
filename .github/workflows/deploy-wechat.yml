@@ -41,6 +41,12 @@ jobs:
         working-directory: .github/ci
         run: npm install --no-audit --no-fund
 
+      # 把本次构建版本写进代码（设置页底部显示用）。
+      # 微信官方：开发版/体验版拿不到 wx.getAccountInfoSync 的 version，只能构建期注入。
+      - name: 写入构建版本号
+        run: |
+          echo "module.exports = { buildVersion: '0.0.${{ github.run_number }}' };" > miniprogram/version.js
+
       # ① 主路径：上传代码包 → 微信后台生成新的「开发版」
       - name: 上传小程序代码（生成开发版）
         working-directory: .github/ci

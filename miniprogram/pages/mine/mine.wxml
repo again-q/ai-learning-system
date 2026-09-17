@@ -62,9 +62,9 @@
       <text class="menu-text">成就墙</text>
       <text class="menu-arrow">▸</text>
     </view>
-    <view class="menu-item" bindtap="goLogs">
+    <view class="menu-item" bindtap="goSettings">
       <image class="menu-icon" src="/images/shezhi.png"></image>
-      <text class="menu-text">运行日志</text>
+      <text class="menu-text">设置</text>
       <text class="menu-arrow">▸</text>
     </view>
   </view>

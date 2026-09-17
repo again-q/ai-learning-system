@@ -22,6 +22,7 @@
       "root": "packageExtra",
       "name": "extra",
       "pages": [
+        "pages/settings/settings",
         "pages/logs/logs",
         "pages/dimension-detail/dimension-detail",
         "pages/model-cards/model-cards",

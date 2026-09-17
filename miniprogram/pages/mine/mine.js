@@ -75,7 +75,7 @@ Page({
     wx.showToast({ title: '开发中', icon: 'none' });
   },
 
-  goLogs() {
-    wx.navigateTo({ url: '/packageExtra/pages/logs/logs' });
+  goSettings() {
+    wx.navigateTo({ url: '/packageExtra/pages/settings/settings' });
   }
 });
