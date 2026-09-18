@@ -336,12 +336,16 @@ exports.main = async (event) => {
         let traceReport = item.traceReport || pickTraceReport(item.traceReport, vr.report, index1) || '';
         // 切题 v1：按 bbox 裁剪单题图（judgeOne 精读痕迹用）；失败不阻断建题
         let cropFileID = null;
+        let cropError = null;
         if (item.bbox) {
           try {
             cropFileID = await cropAndUpload(vr.bmp, item.bbox, openid, batchId, vr.photoIdx, index1);
           } catch (e) {
-            console.warn('[diagnose] 裁剪上传失败（继续无裁剪建题）:', e.message);
+            cropError = String((e && e.message) || e).slice(0, 300);
+            console.warn('[diagnose] 裁剪上传失败（继续无裁剪建题）:', cropError);
           }
+        } else {
+          cropError = 'no-bbox';
         }
         totalQuestions++;
         const qIns = await db.collection('questions').add({
@@ -349,7 +353,7 @@ exports.main = async (event) => {
             _openid: openid, userId: openid, batchId, imageFileId: vr.fileId,
             questionText: item.text, questionType: item.type || '其他',
             isCorrect: null, nodeStatus: 'unmapped', source: 'photo',
-            traceReport, cropFileID, revisions: [], createdAt: db.serverDate(),
+            traceReport, cropFileID, cropError, cropBbox: item.bbox || null, revisions: [], createdAt: db.serverDate(),
           },
         });
         questions.push({ questionId: qIns._id, status: 'pending' });
