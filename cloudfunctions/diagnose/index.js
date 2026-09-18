@@ -300,20 +300,24 @@ exports.main = async (event) => {
         // bbox 缺失（模型偶尔不输出）→ 补一次"只输出 bbox"的廉价调用；裁切与单题精读都依赖它
         if (!items.length || items.some((it) => !it.bbox)) {
           let bboxMap = {};
+          let cropNote = 'main:no-bbox';
           try {
             const bboxText = await qwenVisionDataUrl(bmpToDataUrl(bmp), BBOX_PROMPT);
             bboxMap = parseBboxList(bboxText);
+            cropNote = 'main-nobbox+retry:' + Object.keys(bboxMap).length + '|raw=' + String(bboxText || '').replace(/\s+/g, ' ').slice(0, 140);
             console.log('[diagnose] bbox 补调用得到', Object.keys(bboxMap).length, '个框');
           } catch (e) {
+            cropNote = 'main-nobbox+retry-error:' + String((e && e.message) || e).slice(0, 140);
             console.warn('[diagnose] bbox 补调用失败:', e.message);
           }
+          items = items.map((it) => ({ ...it, _cropNote: cropNote }));
           if (items.length) {
             items = items.map((it, i) => ({ ...it, bbox: it.bbox || bboxMap[it.index] || bboxMap[i + 1] || null }));
           } else {
             // 完全没解析出结构化块 → 旧 DS 拆题路径，但尽量把补到的 bbox 挂上
             const plain = report.replace(/^###\s*bbox:.*$/gm, '');
             const splitItems = await aiSplitQuestions(plain); // 抛错则走下方 catch
-            items = splitItems.map((it) => ({ ...it, bbox: bboxMap[it.index] || null }));
+            items = splitItems.map((it) => ({ ...it, bbox: bboxMap[it.index] || null, _cropNote: cropNote }));
           }
         }
         return { success: true, fileId, bmp, report, items, photoIdx };
@@ -379,7 +383,7 @@ exports.main = async (event) => {
             console.warn('[diagnose] 裁剪上传失败（继续无裁剪建题）:', cropError);
           }
         } else {
-          cropError = 'no-bbox';
+          cropError = item._cropNote || 'no-bbox';
         }
         totalQuestions++;
         const qIns = await db.collection('questions').add({
