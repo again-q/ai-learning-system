@@ -224,7 +224,8 @@ async function cropAndUpload(bmp, bbox, uid, batchId, photoIdx, qIndex) {
 exports.main = async (event) => {
   try {
     const wxContext = cloud.getWXContext();
-    const openid = wxContext.OPENID;
+    // 身份：小程序调用 OPENID 必有；管理/测试场景（CLI invoke、云函数互调）OPENID 为空，用调用方显式传入的 userId
+    const openid = wxContext.OPENID || (event && event.userId) || null;
     if (!openid) return fail(401, '未登录');
 
     const { batchId } = event;
