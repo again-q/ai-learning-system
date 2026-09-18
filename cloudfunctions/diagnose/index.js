@@ -345,10 +345,11 @@ exports.main = async (event) => {
         continue;
       }
 
-      let items = [];
+      // 优先用视觉阶段已经解析好的 items（带 bbox，裁切依赖它）；只有它为空才回退去重新拆题
+      let items = Array.isArray(vr.items) ? vr.items : [];
       let splitError = null;
       try {
-        items = await aiSplitQuestions(vr.report);
+        if (!items.length) items = await aiSplitQuestions(vr.report);
       } catch (e) {
         splitError = e.message;
         console.warn('[diagnose] aiSplit failed:', e.message);
