@@ -78,9 +78,11 @@ function cropBitmap(bmp, x, y, w, h) {
   w = Math.max(1, Math.min(w, bmp.width - x));
   h = Math.max(1, Math.min(h, bmp.height - y));
   const out = { width: w, height: h, data: Buffer.alloc(w * h * 4) };
+  // 注意：jpeg-js 在 useTArray:true 下 data 是 Uint8Array（没有 Buffer.copy），必须用 set/subarray
+  const src = bmp.data;
   for (let row = 0; row < h; row++) {
     const si = ((y + row) * bmp.width + x) * 4;
-    bmp.data.copy(out.data, row * w * 4, si, si + w * 4);
+    out.data.set(src.subarray(si, si + w * 4), row * w * 4);
   }
   return out;
 }
