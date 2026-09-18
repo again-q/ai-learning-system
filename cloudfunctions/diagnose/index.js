@@ -158,7 +158,7 @@ function bmpToDataUrl(bmp, quality = 88) {
   return `data:image/jpeg;base64,${jpg.toString('base64')}`;
 }
 
-async function qwenVisionDataUrl(dataUrl) {
+async function qwenVisionDataUrl(dataUrl, prompt = VISION_PROMPT) {
   const resp = await fetch(`${QWEN_BASE_URL}/chat/completions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${QWEN_API_KEY}` },
@@ -168,7 +168,7 @@ async function qwenVisionDataUrl(dataUrl) {
         role: 'user',
         content: [
           { type: 'image_url', image_url: { url: dataUrl } },
-          { type: 'text', text: VISION_PROMPT },
+          { type: 'text', text: prompt },
         ],
       }],
       max_tokens: 6000,
@@ -178,6 +178,27 @@ async function qwenVisionDataUrl(dataUrl) {
   if (!resp.ok) throw new Error('vision HTTP ' + resp.status);
   const data = await resp.json();
   return data.choices[0].message.content;
+}
+
+// bbox 是本链路的硬依赖（单题裁切 / 单题精读都要它）；模型偶尔不输出，故备一个"只输出 bbox"的廉价补调用
+const BBOX_PROMPT = `这是一页数学作业或试卷照片。只做一件事：逐题给出该题在整张图中的矩形框。
+
+输出格式（每题一行，严格照抄，不要输出任何其它内容）：
+第1题: [x1,y1,x2,y2]
+第2题: [x1,y1,x2,y2]
+
+坐标系：整图左上角为 (0,0)、右下角为 (1000,1000) 的归一化坐标，取整数；矩形要覆盖该题的题干 + 作答区域（宁大勿小）。有几题就写几行。`;
+
+/** 解析 bbox：兼容「第N题: [x,y,x,y]」与「### bbox: [x,y,x,y]」两种写法 → { 题号: bbox } */
+function parseBboxList(text) {
+  const map = {};
+  const re = /(?:第\s*(\d+)\s*题[^\[]*|###\s*bbox[^\[]*)\[\s*(\d{1,4})\s*,\s*(\d{1,4})\s*,\s*(\d{1,4})\s*,\s*(\d{1,4})\s*\]/g;
+  let m, seq = 0;
+  while ((m = re.exec(text || ''))) {
+    const idx = m[1] ? +m[1] : ++seq;
+    map[idx] = [+m[2], +m[3], +m[4], +m[5]];
+  }
+  return map;
 }
 
 // 解析 bbox 结构化输出：### bbox 行 + # 第N题转录 + # 第N题做题痕迹
@@ -276,11 +297,24 @@ exports.main = async (event) => {
         if (angle) console.log(`[diagnose] ${fileId} EXIF orientation=${orientation}，预旋转 ${angle}°`);
         const report = await qwenVisionDataUrl(bmpToDataUrl(bmp));
         let items = parseStructuredQuestions(report);
-        if (items.length === 0) {
-          // 回退：无 bbox 结构 → 旧 DS 拆题路径（无裁剪图，痕迹从整页文本按题摘取）
-          const plain = report.replace(/^###\s*bbox:.*$/gm, '');
-          const splitItems = await aiSplitQuestions(plain); // 抛错则走下方 catch
-          items = splitItems.map((it) => ({ ...it, bbox: null }));
+        // bbox 缺失（模型偶尔不输出）→ 补一次"只输出 bbox"的廉价调用；裁切与单题精读都依赖它
+        if (!items.length || items.some((it) => !it.bbox)) {
+          let bboxMap = {};
+          try {
+            const bboxText = await qwenVisionDataUrl(bmpToDataUrl(bmp), BBOX_PROMPT);
+            bboxMap = parseBboxList(bboxText);
+            console.log('[diagnose] bbox 补调用得到', Object.keys(bboxMap).length, '个框');
+          } catch (e) {
+            console.warn('[diagnose] bbox 补调用失败:', e.message);
+          }
+          if (items.length) {
+            items = items.map((it, i) => ({ ...it, bbox: it.bbox || bboxMap[it.index] || bboxMap[i + 1] || null }));
+          } else {
+            // 完全没解析出结构化块 → 旧 DS 拆题路径，但尽量把补到的 bbox 挂上
+            const plain = report.replace(/^###\s*bbox:.*$/gm, '');
+            const splitItems = await aiSplitQuestions(plain); // 抛错则走下方 catch
+            items = splitItems.map((it) => ({ ...it, bbox: bboxMap[it.index] || null }));
+          }
         }
         return { success: true, fileId, bmp, report, items, photoIdx };
       } catch (e) {
