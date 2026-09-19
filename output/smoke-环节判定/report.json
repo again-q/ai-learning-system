@@ -1,0 +1,260 @@
+{
+  "meta": {
+    "node": "D3 环节判定",
+    "model": "deepseek-v4-flash",
+    "points": [
+      "一元二次不等式",
+      "因式分解",
+      "交集与并集",
+      "子集与真子集"
+    ],
+    "ts": "2026-09-19T07:03:23.048Z"
+  },
+  "rows": [
+    {
+      "id": "T1",
+      "title": "解答做对（过程完整）",
+      "round": 1,
+      "expect": "两章点大多 judged；因式分解 judged=1",
+      "derivedBlank": false,
+      "llmCalls": 1,
+      "got": [
+        {
+          "name": "一元二次不等式",
+          "state": "judged",
+          "P_kp": 1,
+          "basis": "因式分解得 (x−2)(x−3)>0，所以 x<2 或 x>3——由二次项系数为正、开口向上的抛物线，正确得出两根之外取",
+          "isAhead": false
+        },
+        {
+          "name": "因式分解",
+          "state": "judged",
+          "P_kp": 1,
+          "basis": "因式分解得 (x−2)(x−3)>0——x²−5x+6 分解为 (x−2)(x−3)，分解正确",
+          "isAhead": false
+        },
+        {
+          "name": "交集与并集",
+          "state": "judged",
+          "P_kp": 1,
+          "basis": "解集为 (−∞,2)∪(3,+∞)——用并集符号 ∪ 连接两段解集，使用正确",
+          "isAhead": false
+        },
+        {
+          "name": "子集与真子集",
+          "state": "noEvidence",
+          "P_kp": null,
+          "basis": "整段痕迹只求解不等式并写区间，未出现任何集合包含、子集或真子集的判断与符号",
+          "isAhead": false
+        }
+      ],
+      "judged": 3,
+      "noEvidence": 1,
+      "eta": 1,
+      "note": "因式分解+开口方向直接得解集，是本题最本质的解法，路径干净无冗余。",
+      "issues": [],
+      "C1_blankShortCircuit": "n/a",
+      "C2_clamp": true,
+      "C3_noInvent": true,
+      "C4_noMissing": true
+    },
+    {
+      "id": "T2",
+      "title": "解答做错（解集方向错）",
+      "round": 1,
+      "expect": "因式分解 judged（用上）、一元二次不等式 judged 但 0（用错）",
+      "derivedBlank": false,
+      "llmCalls": 1,
+      "got": [
+        {
+          "name": "一元二次不等式",
+          "state": "judged",
+          "P_kp": 0,
+          "basis": "(x−2)(x−3)>0，所以 2<x<3——由两根2、3且开口向上，正确结论应为 x<2 或 x>3，学生把大于0误判",
+          "isAhead": false
+        },
+        {
+          "name": "因式分解",
+          "state": "judged",
+          "P_kp": 1,
+          "basis": "(x−2)(x−3)>0，分解正确且完整",
+          "isAhead": false
+        },
+        {
+          "name": "交集与并集",
+          "state": "noEvidence",
+          "P_kp": null,
+          "basis": "痕迹中未出现取交集或并集的任何表述，解集直接写成 (2,3)",
+          "isAhead": false
+        },
+        {
+          "name": "子集与真子集",
+          "state": "noEvidence",
+          "P_kp": null,
+          "basis": "痕迹中未涉及子集、真子集概念的任何内容",
+          "isAhead": false
+        }
+      ],
+      "judged": 2,
+      "noEvidence": 2,
+      "eta": 0.2,
+      "note": "因式分解到位，但把二次不等式大于零的解集误判为两根之间，本质解法（开口方向+根外取正）未掌握，属典型法则性错误。",
+      "issues": [],
+      "C1_blankShortCircuit": "n/a",
+      "C2_clamp": true,
+      "C3_noInvent": true,
+      "C4_noMissing": true,
+      "C5_wrong": true
+    },
+    {
+      "id": "T3",
+      "title": "整题空白（断言短路）",
+      "round": 1,
+      "expect": "LLM 调用=0；全 blank；derived.blank=true",
+      "derivedBlank": true,
+      "llmCalls": 0,
+      "got": [
+        {
+          "name": "一元二次不等式",
+          "state": "blank",
+          "P_kp": 0,
+          "basis": "整题空白（代码短路）",
+          "isAhead": false,
+          "auto": true
+        },
+        {
+          "name": "因式分解",
+          "state": "blank",
+          "P_kp": 0,
+          "basis": "整题空白（代码短路）",
+          "isAhead": false,
+          "auto": true
+        },
+        {
+          "name": "交集与并集",
+          "state": "blank",
+          "P_kp": 0,
+          "basis": "整题空白（代码短路）",
+          "isAhead": false,
+          "auto": true
+        },
+        {
+          "name": "子集与真子集",
+          "state": "blank",
+          "P_kp": 0,
+          "basis": "整题空白（代码短路）",
+          "isAhead": false,
+          "auto": true
+        }
+      ],
+      "judged": 0,
+      "noEvidence": 0,
+      "eta": null,
+      "note": "整题空白，未调用模型",
+      "issues": [],
+      "C1_blankShortCircuit": true,
+      "C2_clamp": true,
+      "C3_noInvent": true,
+      "C4_noMissing": true
+    },
+    {
+      "id": "T4",
+      "title": "选填（无过程）",
+      "round": 1,
+      "expect": "无过程 → 交集并集可能 noEvidence 或 judged(0.5)，但不许编造",
+      "derivedBlank": false,
+      "llmCalls": 1,
+      "got": [
+        {
+          "name": "一元二次不等式",
+          "state": "noEvidence",
+          "P_kp": null,
+          "basis": "学生痕迹仅写“答案是 D”，未出现任何一元二次不等式相关步骤",
+          "isAhead": false
+        },
+        {
+          "name": "因式分解",
+          "state": "noEvidence",
+          "P_kp": null,
+          "basis": "学生痕迹仅写“答案是 D”，未出现任何因式分解相关步骤",
+          "isAhead": false
+        },
+        {
+          "name": "交集与并集",
+          "state": "judged",
+          "P_kp": 0,
+          "basis": "学生写“答案是 D”，即认为 A∩B={2,3,4}，把交集误当作并集（或直接取 B），交集法则用错",
+          "isAhead": false
+        },
+        {
+          "name": "子集与真子集",
+          "state": "noEvidence",
+          "P_kp": null,
+          "basis": "学生痕迹仅写“答案是 D”，未出现任何子集或真子集相关判断",
+          "isAhead": false
+        }
+      ],
+      "judged": 1,
+      "noEvidence": 3,
+      "eta": 0.2,
+      "note": "本题本质是求交集，正确应为 B={2,3}；学生直接给出错误选项 D，未展示任何集合运算过程，属于概念混淆导致的硬选。",
+      "issues": [],
+      "C1_blankShortCircuit": "n/a",
+      "C2_clamp": true,
+      "C3_noInvent": true,
+      "C4_noMissing": true
+    },
+    {
+      "id": "T5",
+      "title": "替代路径（画图未写因式分解）",
+      "round": 1,
+      "expect": "决策 038：因式分解 应 noEvidence（心算未落笔）；一元二次不等式 judged=1",
+      "derivedBlank": false,
+      "llmCalls": 1,
+      "got": [
+        {
+          "name": "一元二次不等式",
+          "state": "judged",
+          "P_kp": 1,
+          "basis": "画出 y=x²−5x+6 的抛物线，开口向上，与 x 轴交于 2 和 3，看图得 x<2 或 x>3",
+          "alignedFrom": "一元二次不等式（第二章 一元二次函数、方程和不等式）",
+          "isAhead": false
+        },
+        {
+          "name": "因式分解",
+          "state": "noEvidence",
+          "P_kp": null,
+          "basis": "学生用抛物线与 x 轴交点（2 和 3）求解，未写出 x²−5x+6=(x−2)(x−3) 的因式分解过程",
+          "alignedFrom": "因式分解（第二章 一元二次函数、方程和不等式）",
+          "isAhead": false
+        },
+        {
+          "name": "交集与并集",
+          "state": "judged",
+          "P_kp": 1,
+          "basis": "解集 (−∞,2)∪(3,+∞)，正确用并集连接两段解集",
+          "alignedFrom": "交集与并集（第一章 集合与常用逻辑用语）",
+          "isAhead": false
+        },
+        {
+          "name": "子集与真子集",
+          "state": "noEvidence",
+          "P_kp": null,
+          "basis": "整段痕迹未涉及集合间的包含关系，无子集或真子集相关表述",
+          "alignedFrom": "子集与真子集（第一章 集合与常用逻辑用语）",
+          "isAhead": false
+        }
+      ],
+      "judged": 2,
+      "noEvidence": 2,
+      "eta": 0.9,
+      "note": "用抛物线图像法直接读出解集，思路本质且完整，仅未显式写出因式分解步骤。",
+      "issues": [],
+      "C1_blankShortCircuit": "n/a",
+      "C2_clamp": true,
+      "C3_noInvent": true,
+      "C4_noMissing": true,
+      "C6_altPath": true
+    }
+  ]
+}

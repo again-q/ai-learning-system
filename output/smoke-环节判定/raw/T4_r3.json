@@ -1,0 +1,70 @@
+{
+  "expect": "无过程 → 交集并集可能 noEvidence 或 judged(0.5)，但不许编造",
+  "trace": "（选填题）答案是 D。",
+  "out": {
+    "points": [
+      {
+        "name": "一元二次不等式",
+        "state": "noEvidence",
+        "P_kp": null,
+        "basis": "痕迹中只有答案D，未出现任何一元二次不等式相关步骤"
+      },
+      {
+        "name": "因式分解",
+        "state": "noEvidence",
+        "P_kp": null,
+        "basis": "痕迹中只有答案D，未出现任何因式分解相关步骤"
+      },
+      {
+        "name": "交集与并集",
+        "state": "judged",
+        "P_kp": 0,
+        "basis": "学生写“答案是 D”，而 A∩B={2,3} 应为 B，学生选了 D={2,3,4}，把交集当成并集/取错集合，交集运算用错"
+      },
+      {
+        "name": "子集与真子集",
+        "state": "noEvidence",
+        "P_kp": null,
+        "basis": "痕迹中只有答案D，未出现任何子集或真子集相关步骤"
+      }
+    ],
+    "eta": 0.2,
+    "note": "本题本质是求交集，学生直接给出错误答案D，未展示任何推理过程，属于概念混淆（交集与并集），路径质量低。"
+  },
+  "verified": {
+    "got": [
+      {
+        "name": "一元二次不等式",
+        "state": "noEvidence",
+        "raw": null,
+        "P_kp": null,
+        "basis": "痕迹中只有答案D，未出现任何一元二次不等式相关步骤"
+      },
+      {
+        "name": "因式分解",
+        "state": "noEvidence",
+        "raw": null,
+        "P_kp": null,
+        "basis": "痕迹中只有答案D，未出现任何因式分解相关步骤"
+      },
+      {
+        "name": "交集与并集",
+        "state": "judged",
+        "raw": 0,
+        "P_kp": 0,
+        "basis": "学生写“答案是 D”，而 A∩B={2,3} 应为 B，学生选了 D={2,3,4}，把交集当成并集/取错集合，交集运算"
+      },
+      {
+        "name": "子集与真子集",
+        "state": "noEvidence",
+        "raw": null,
+        "P_kp": null,
+        "basis": "痕迹中只有答案D，未出现任何子集或真子集相关步骤"
+      }
+    ],
+    "issues": [],
+    "judged": 1,
+    "noEv": 3,
+    "missing": 0
+  }
+}

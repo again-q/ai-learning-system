@@ -1,0 +1,50 @@
+{
+  "expect": "无过程 → 交集并集可能 noEvidence 或 judged(0.5)，但不许编造",
+  "trace": "（选填题）答案是 D。",
+  "node": {
+    "ok": true,
+    "blank": false,
+    "points": [
+      {
+        "name": "一元二次不等式",
+        "chapter": "第二章 一元二次函数、方程和不等式",
+        "dkp": null,
+        "basis": "学生痕迹仅写“答案是 D”，未出现任何一元二次不等式相关步骤",
+        "state": "noEvidence",
+        "P_kp": null,
+        "isAhead": false
+      },
+      {
+        "name": "因式分解",
+        "chapter": "第二章 一元二次函数、方程和不等式",
+        "dkp": null,
+        "basis": "学生痕迹仅写“答案是 D”，未出现任何因式分解相关步骤",
+        "state": "noEvidence",
+        "P_kp": null,
+        "isAhead": false
+      },
+      {
+        "name": "交集与并集",
+        "chapter": "第一章 集合与常用逻辑用语",
+        "dkp": null,
+        "basis": "学生写“答案是 D”，即认为 A∩B={2,3,4}，把交集误当作并集（或直接取 B），交集法则用错",
+        "state": "judged",
+        "P_kp": 0,
+        "isAhead": false
+      },
+      {
+        "name": "子集与真子集",
+        "chapter": "第一章 集合与常用逻辑用语",
+        "dkp": null,
+        "basis": "学生痕迹仅写“答案是 D”，未出现任何子集或真子集相关判断",
+        "state": "noEvidence",
+        "P_kp": null,
+        "isAhead": false
+      }
+    ],
+    "eta": 0.2,
+    "note": "本题本质是求交集，正确应为 B={2,3}；学生直接给出错误选项 D，未展示任何集合运算过程，属于概念混淆导致的硬选。",
+    "llmCalls": 1,
+    "issues": []
+  }
+}

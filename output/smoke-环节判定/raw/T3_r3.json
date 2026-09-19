@@ -1,0 +1,70 @@
+{
+  "expect": "LLM 调用=0；全 blank；derived.blank=true",
+  "trace": "",
+  "out": {
+    "points": [
+      {
+        "name": "一元二次不等式",
+        "state": "blank",
+        "P_kp": null,
+        "basis": "整题空白"
+      },
+      {
+        "name": "因式分解",
+        "state": "blank",
+        "P_kp": null,
+        "basis": "整题空白"
+      },
+      {
+        "name": "交集与并集",
+        "state": "blank",
+        "P_kp": null,
+        "basis": "整题空白"
+      },
+      {
+        "name": "子集与真子集",
+        "state": "blank",
+        "P_kp": null,
+        "basis": "整题空白"
+      }
+    ],
+    "eta": null,
+    "note": "空白短路"
+  },
+  "verified": {
+    "got": [
+      {
+        "name": "一元二次不等式",
+        "state": "blank",
+        "raw": null,
+        "P_kp": null,
+        "basis": "整题空白"
+      },
+      {
+        "name": "因式分解",
+        "state": "blank",
+        "raw": null,
+        "P_kp": null,
+        "basis": "整题空白"
+      },
+      {
+        "name": "交集与并集",
+        "state": "blank",
+        "raw": null,
+        "P_kp": null,
+        "basis": "整题空白"
+      },
+      {
+        "name": "子集与真子集",
+        "state": "blank",
+        "raw": null,
+        "P_kp": null,
+        "basis": "整题空白"
+      }
+    ],
+    "issues": [],
+    "judged": 0,
+    "noEv": 0,
+    "missing": 0
+  }
+}

@@ -8,6 +8,10 @@ output/raw/ocr_page*.json
 output/_failed.log
 output/_test_1.3.log
 output/_needs_review.log
+# 高考真题等有版权题源，仅本地评测用，禁止入库/推送（决策 037、评测数据集预研）
+output/golden/_src/
+output/golden/dataset-*.json
+output/golden/traces/
 doc/.gate/
 
 # 本地密钥,禁止提交
@@ -17,6 +21,13 @@ doc/.gate/
 
 # cursor.md 仅本地协作,不进仓库
 cursor.md
+
+# 第三方平台（智学网）自动化接入：含接口逆向/登录加密细节，仅本地自用，禁止入库/推送（决策 042）
+doc/standards/智学网接入.md
+cloudfunctions/zhixue*/
+scripts/zhixue/
+design-preview/
+miniprogram/packageSync/
 
 # babel 辅助函数编译产物（工具自动生成）
 @babel/runtime/

@@ -1,0 +1,50 @@
+{
+  "expect": "因式分解 judged（用上）、一元二次不等式 judged 但 0（用错）",
+  "trace": "求 x²−5x+6>0。\n\n解：(x−2)(x−3)>0，\n所以 2<x<3，\n解集为 (2,3)。",
+  "node": {
+    "ok": true,
+    "blank": false,
+    "points": [
+      {
+        "name": "一元二次不等式",
+        "chapter": "第二章 一元二次函数、方程和不等式",
+        "dkp": null,
+        "basis": "(x−2)(x−3)>0，所以 2<x<3——由两根2、3且开口向上，正确结论应为 x<2 或 x>3，学生把大于0误判为两根之间，法则用错",
+        "state": "judged",
+        "P_kp": 0,
+        "isAhead": false
+      },
+      {
+        "name": "因式分解",
+        "chapter": "第二章 一元二次函数、方程和不等式",
+        "dkp": null,
+        "basis": "(x−2)(x−3)>0，分解正确且完整",
+        "state": "judged",
+        "P_kp": 1,
+        "isAhead": false
+      },
+      {
+        "name": "交集与并集",
+        "chapter": "第一章 集合与常用逻辑用语",
+        "dkp": null,
+        "basis": "痕迹中未出现取交集或并集的任何表述，解集直接写成 (2,3)",
+        "state": "noEvidence",
+        "P_kp": null,
+        "isAhead": false
+      },
+      {
+        "name": "子集与真子集",
+        "chapter": "第一章 集合与常用逻辑用语",
+        "dkp": null,
+        "basis": "痕迹中未涉及子集、真子集概念的任何内容",
+        "state": "noEvidence",
+        "P_kp": null,
+        "isAhead": false
+      }
+    ],
+    "eta": 0.2,
+    "note": "因式分解到位，但把二次不等式大于零的解集误判为两根之间，本质解法（开口方向+根外取正）未掌握，属典型法则性错误。",
+    "llmCalls": 1,
+    "issues": []
+  }
+}
