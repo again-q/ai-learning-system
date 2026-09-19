@@ -7,7 +7,7 @@ const SYSTEM_V3 = require('./systemV3');
 const { assemble } = require('./assemble');
 const genV2 = require('./generateV2');
 const { runWithTools } = require('./toolLoop');
-const { sanitizeReport, sanitizeWeakpoint, isPoisonSentence } = require('./sanitize');
+const { sanitizeWeakpoint, isPoisonSentence } = require('./sanitize');   // sanitizeReport 从未被调用，去掉死引用（2026-09-19 审计）
 
 const DS_API_KEY = process.env.DEEPSEEK_API_KEY;
 const DS_BASE_URL = process.env.DS_BASE_URL || 'https://api.deepseek.com';
@@ -184,7 +184,7 @@ async function disputeModule(event, openid) {
 
 // 把一道判定题整理成「可观察事实」条目（供 LLM 引用，也供无 LLM 兜底直接展示）
 function toAttempt(q) {
-  const correct = q.processScore >= 0.5;
+  const correct = q.processScore >= 1;   // 口径统一（决策 026）
   const nature = (q.breakpoint && q.breakpoint.nature) || null;
   const wroteSteps = (Array.isArray(q.segments) ? q.segments : []).some((s) => s && s.status && s.status !== '空白');
   const result = correct ? '做对'
@@ -453,7 +453,8 @@ exports.main = async (event) => {
       const reports = (res.data || []).map((r) => {
         const report = r.report || {};
         const qs = Array.isArray(report.questions) ? report.questions : [];
-        const correct = qs.filter((q) => q.status !== '错').length;
+        // 列表页「对 X / 总 Y」也要跟三态口径一致：半对不算对、漏判不算对（原为 status !== '错'）
+        const correct = qs.filter((q) => q.status === '对').length;
         return {
           reportId: r._id,
           batchId: r.batchId || '',
@@ -526,7 +527,8 @@ exports.main = async (event) => {
       summary = await genV2.batchSummary(input.stats, wrongTopics);
     } catch (e) {
       console.warn('[reportService] 批次总结失败（回退拼装）:', e.message);
-      summary = `${input.stats.totalQuestions} 道题对了 ${input.stats.correctCount} 道${wrongTopics.length ? '，错题集中在' + wrongTopics.map((t) => t.topic).join('、') : ''}。`;
+      const halfN = input.stats.halfCount || 0;
+      summary = `${input.stats.totalQuestions} 道题对了 ${input.stats.correctCount} 道${halfN ? `，另有 ${halfN} 道过程不完整（半对）` : ''}${wrongTopics.length ? '，错题集中在' + wrongTopics.map((t) => t.topic).join('、') : ''}。`;
     }
 
     // ② 每题批量并行：诊断（过程点评/问题在哪儿/下一步），并发 5

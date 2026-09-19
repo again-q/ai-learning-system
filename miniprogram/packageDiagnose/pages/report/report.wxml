@@ -60,7 +60,7 @@
         <text class="receipt-score-sub" wx:if="{{scoreSub}}">{{scoreSub}}</text>
       </view>
       <view class="receipt-dots" wx:if="{{report.questions.length}}">
-        <text class="qdot {{q.status === '错' ? 'bad' : 'ok'}}" wx:for="{{report.questions}}" wx:key="questionId" wx:for-item="q">{{q.status === '错' ? '✗' : '✓'}}</text>
+        <text class="qdot {{q.dotCls}}" wx:for="{{report.questions}}" wx:key="questionId" wx:for-item="q">{{q.dot}}</text>
       </view>
       <text class="receipt-hint" wx:if="{{report.summary}}">{{report.summary}}</text>
     </view>
@@ -69,7 +69,7 @@
     <view class="qlist">
       <block wx:for="{{report.questions}}" wx:key="questionId" wx:for-item="qq">
         <view class="qitem {{activeQid === qq.questionId ? 'active' : ''}}" bindtap="toggleQuestion" data-qid="{{qq.questionId}}">
-          <text class="qitem-status {{qq.status === '错' ? 'bad' : 'ok'}}">{{qq.status === '错' ? '✗' : '✓'}}</text>
+          <text class="qitem-status {{qq.dotCls}}">{{qq.dot}}</text>
           <view class="qitem-body">
             <text class="qitem-text">{{qq.text}}</text>
             <text class="qitem-pattern" wx:if="{{qq.patternMid}}">{{qq.patternMid}}</text>

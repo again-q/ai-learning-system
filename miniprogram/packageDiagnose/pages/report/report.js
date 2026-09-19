@@ -231,14 +231,24 @@ Page({
 
   // ============ 渲染 ============
   applyReport(report, extra) {
-    const qs = (report.questions || []).map((q, i) => ({
-      ...q,
-      idx: i,
-      text: unescapeUnderscore(String(q.questionText || '').replace(/\$[^$]*\$/g, '…')).slice(0, 42),
-      patternMid: midPattern(q.pattern),
-      ok: q.status !== '错',
-    }));
+    // 三态：对（P=1）/ 半对（写了过程但不完整）/ 错（P=0）
+    // status 缺失一律显示「—」并且不计入「对」——旧逻辑 `status !== '错'` 会把漏判的题显示成 ✓
+    const DOT = { 对: { t: '✓', c: 'ok' }, 半对: { t: '△', c: 'mid' }, 错: { t: '✗', c: 'bad' }, 待判: { t: '–', c: 'na' } };
+    const qs = (report.questions || []).map((q, i) => {
+      const st = DOT[q.status] ? q.status : '待判';
+      return {
+        ...q,
+        idx: i,
+        status: st,
+        dot: DOT[st].t,
+        dotCls: DOT[st].c,
+        text: unescapeUnderscore(String(q.questionText || '').replace(/\$[^$]*\$/g, '…')).slice(0, 42),
+        patternMid: midPattern(q.pattern),
+        ok: st === '对',
+      };
+    });
     const correct = qs.filter((q) => q.ok).length;
+    const halfN = qs.filter((q) => q.status === '半对').length;
     this.setData(Object.assign({
       report: {
         summary: report.summary || '',
@@ -247,7 +257,7 @@ Page({
         pendingNodes: report.pendingNodes || [],
       },
       scoreMain: correct + (qs.length ? ' / ' + qs.length : ''),
-      scoreSub: qs.length ? '共 ' + qs.length + ' 道' : '',
+      scoreSub: qs.length ? ('共 ' + qs.length + ' 道' + (halfN ? ' · 半对 ' + halfN + ' 道' : '')) : '',
       loading: false,
       reportProgressVisible: false,
       retryable: false,
