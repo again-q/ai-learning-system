@@ -881,3 +881,17 @@ process_evidence → 交给 diagnose / Flash（η、r、过程归因只吃这份
 | **两处有意差异** | 新图修正 `judgeOne:638 const 重赋值`（选填题会整题判失败）；无 `batchId` 时 N7 跳过 | 记录在案，D5 对比按「修正项」排除；旧函数不动（D5 后统一删除） |
 
 **影响面**：`cloudfunctions/graphEngine/**`（新增 `src/nodes/*`、`src/lib/*`、`src/graphs/judgeGraph.js`）、`doc/architecture/判定节点设计-单题判定图（D4）.md` §9；线上 `judgeOne` **零改动**。
+
+## 决策 045：对错口径统一为「P=1 才算对」+ 报告三态呈现 + 五维越界整组作废（2026-09-19）
+
+| 项 | 结论 | 依据 |
+|---|---|---|
+| **对错口径** | 全链路统一 **P=1 才算对**（原 reportService/statService/judgeOne 部分按 P≥0.5） | 决策 026 已定「P 不=1 都算错」；不统一会出现「摘要说对 4 道、圆点只有 3 个 ✓」——真实复现 **11 个批次里 6 个打架** |
+| **报告圆点** | 三态：对 ✓ / **半对 △** / 错 ✗；`status` 缺失显示「—」且不计入对 | 半对是「写了过程但不完整」，显示成 ✗ 会打击学生、显示成 ✓ 是撒谎；漏判不能默认算对 |
+| **五维越界** | 越界或缺维度的 fiveDim **整组作废为 null**，**不做钳制**；原始值留档 `fiveDimRaw` | 生产库 4 道题出现 `K=3/Q=4`（模型按 0~5 给）——钳成 1 等于把 3/5 说成 100%，是编数据；宁缺勿假 |
+| **选填题过程字段** | 落库守卫：选择/填空一律 `segments=[]`、`breakpoint=null`、`processAvailable=false` | 库内审计发现 2/28 违规（填空题带着「断点」落库），学生端会看到不存在的步骤 |
+| **错误层级兜底** | （待定）模型漏给 errorLevel 时不再固定回退 `skill` | 现在会把「不知道什么错」说成「粗心/算错」，与「空白禁止写未理解」是同一类毛病；见审计文档 P5 |
+
+**影响面**：`reportService/assemble.js`、`reportService/index.js`、`statService/index.js`、`judgeOne/index.js`、`graphEngine/src/lib/normalize.js`、报告页 `report.{js,wxml,wxss}`；存量数据修 2 题 + 2 条 mastery_logs + 4 行 fiveDim。
+**未修（要拍板）**：历史 15 份报告是否按新口径重跑；P 的展示是否从连续分数改档位；η 钳制与决策 043 判据落地（放 D5/D6 一起做，因为会改判定数值本身）。
+**参考**：`doc/architecture/诊断质量审计-2026-09-19.md`（完整证据与 P1–P9 清单）。
