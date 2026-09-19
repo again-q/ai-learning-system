@@ -68,13 +68,47 @@ function deriveAll(raw, question, clamped) {
   return { isBlank, errorAttribution, errorType, errorLevel, patternText, patternFull, segList };
 }
 
+/**
+ * 选填题无过程（设计红线）：选择/填空一律 segments=[]、breakpoint=null、processAvailable=false。
+ * 生产数据里出现过 2/28 道选填题带着 segments 落库（模型给了过程），学生会在填空题上看到「断点」。
+ */
+function normalizeProcessFields(raw, questionType) {
+  const r = raw || {};
+  const isNoProcess = questionType !== '解答';
+  return {
+    isNoProcess,
+    segments: isNoProcess ? [] : (Array.isArray(r.segments) ? r.segments : []),
+    breakpoint: isNoProcess ? null : (r.breakpoint || null),
+    processAvailable: isNoProcess ? false : r.processAvailable === true,
+  };
+}
+
+/**
+ * 五维校验 0~1：fiveDim 是模型自由生成的，此前**零校验**。
+ * 生产库里已经出现越界值（K=3 / Q=4 / S=3）——说明模型有时按 0~5 给，量纲都不统一。
+ * 处理原则：**越界或缺失即整组作废（null），绝不钳成 1**——钳制等于把 3/5 说成 100%，是编数据。
+ * （五个维度必须齐全且都在 0~1 才保留；生产库 37/37 都是齐全的）
+ */
+function clampFiveDim(fd) {
+  if (!fd || typeof fd !== 'object') return null;
+  const out = {};
+  for (const k of ['K', 'A', 'T', 'Q', 'S']) {
+    const v = Number(fd[k]);
+    if (!Number.isFinite(v) || v < 0 || v > 1) return null;
+    out[k] = v;
+  }
+  return out;
+}
+
 /** 组装写库字段（照抄 judgeOne:660-684 的字段清单，缺一不可） */
 function buildQuestionPatch(raw, question, clamped, derived) {
   const r = raw || {};
   const c = clamped || {};
   const d = derived || {};
+  const questionType = r.questionType || question.questionType || '其他';
+  const proc = normalizeProcessFields(r, questionType);
   return {
-    questionType: r.questionType || question.questionType || '其他',
+    questionType,
     correctAnswer: r.correctAnswer || '',
     referenceProcess: Array.isArray(r.referenceProcess) ? r.referenceProcess : [],
     questionCategory: r.questionCategory || '无法归类',
@@ -88,12 +122,12 @@ function buildQuestionPatch(raw, question, clamped, derived) {
     pattern: d.patternFull || null,
     knowledgeNodeName: r.knowledgeNodeName || '',
     knowledgeUsage: Array.isArray(r.knowledgeUsage) ? r.knowledgeUsage : [],
-    fiveDim: r.fiveDim || null,
-    segments: Array.isArray(r.segments) ? r.segments : [],
-    breakpoint: r.breakpoint || null,
-    processAvailable: r.processAvailable === true,
+    fiveDim: clampFiveDim(r.fiveDim),
+    segments: proc.segments,
+    breakpoint: proc.breakpoint,
+    processAvailable: proc.processAvailable,
     reviewed: true,
   };
 }
 
-module.exports = { LR, clampParams, deriveAll, buildQuestionPatch };
+module.exports = { LR, clampParams, deriveAll, buildQuestionPatch, normalizeProcessFields, clampFiveDim };

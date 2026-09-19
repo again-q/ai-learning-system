@@ -1,7 +1,7 @@
 // ============ D4 · N3 整理归一 单测（纯函数，无 IO） ============
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { clampParams, deriveAll, buildQuestionPatch } = require('../src/lib/normalize');
+const { clampParams, deriveAll, buildQuestionPatch, normalizeProcessFields, clampFiveDim } = require('../src/lib/normalize');
 
 test('clampParams：D 落在等级区间内，未知等级用兜底区间', () => {
   assert.equal(clampParams({ level: 'L4', D: 0.9 }, '解答').D, 0.6, 'L4 上沿 0.6');
@@ -90,4 +90,34 @@ test('buildQuestionPatch：19 个字段齐全（与线上 questions.update 对�
   assert.equal(patch.errorType, '无');
   assert.equal(patch.errorLevel, null);
   assert.equal(patch.errorAttribution, null);
+});
+
+// ============ 2026-09-19 审计后补的两道守卫（都来自生产数据暴露的问题） ============
+
+test('选填题：即使模型给了过程分段/断点，落库也必须清空（生产里 2/28 违规）', () => {
+  const raw = {
+    questionType: '填空', P: 0.3, errorType: '结果错',
+    segments: [{ step: '写了演算', status: '通', evidence: 'x=1' }],
+    breakpoint: { index: 1, nature: '中途断' },
+    processAvailable: true,
+  };
+  const patch = buildQuestionPatch(raw, { questionType: '填空' }, { D: 0.5, P: 0.3, eta: null }, { errorType: '结果错', errorLevel: 'skill', errorAttribution: 'x', patternFull: 'a / b / c' });
+  assert.deepEqual(patch.segments, [], '选填题不允许带过程分段');
+  assert.equal(patch.breakpoint, null, '选填题不允许有断点');
+  assert.equal(patch.processAvailable, false, '选填题标记为无过程');
+  // 解答题：原样保留
+  const patch2 = buildQuestionPatch({ ...raw, questionType: '解答' }, { questionType: '解答' }, { D: 0.5, P: 0.3, eta: 0.7 }, { errorType: '结果错', errorLevel: 'skill', errorAttribution: 'x', patternFull: 'a / b / c' });
+  assert.equal(patch2.segments.length, 1);
+  assert.deepEqual(patch2.breakpoint, { index: 1, nature: '中途断' });
+  assert.equal(patch2.processAvailable, true);
+  assert.equal(normalizeProcessFields(raw, '选择').segments.length, 0);
+});
+
+test('fiveDim 越界/缺失一律整组作废（宁缺勿假）', () => {
+  assert.deepEqual(clampFiveDim({ K: 0.5, A: 0.8, T: 0.4, Q: 0.25, S: 0.6 }), { K: 0.5, A: 0.8, T: 0.4, Q: 0.25, S: 0.6 }, '五个都在 0~1 → 原样保留');
+  assert.equal(clampFiveDim({ K: 0.5, A: 2, T: -1, Q: 0.25, S: 3 }), null, '越界不能钳成 1（那就等于把 3/5 说成 100%）');
+  assert.equal(clampFiveDim({ K: 0.5, A: 0.8, T: 0.4, Q: 0.25, S: 3 }), null, '只要有一个越界，整组作废');
+  assert.equal(clampFiveDim({ K: 0.7 }), null, '维度不全 → 作废');
+  assert.equal(clampFiveDim(null), null);
+  assert.equal(buildQuestionPatch({ fiveDim: null }, {}, { D: 0.5, P: 1, eta: null }, {}).fiveDim, null);
 });

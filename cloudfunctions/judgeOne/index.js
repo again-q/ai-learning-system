@@ -212,7 +212,7 @@ async function migrateProgress(openid, oldName, newName, D, P) {
       dValue: Math.round(Dsum * 10000) / 10000,
       mastery: Math.round((S / Dsum) * 100) / 100,
       attempts: (doc.attempts || 0) + 1,
-      correctCount: (doc.correctCount || 0) + (p >= 0.5 ? 1 : 0),
+      correctCount: (doc.correctCount || 0) + (p >= 1 ? 1 : 0),   // 口径统一：决策 026「P 不=1 都算错」（原为 >=0.5，与 updateMastery.pOk 冲突）
       lastUpdated: db.serverDate(),
     };
     if (pRes.data.length) {
@@ -232,6 +232,19 @@ function clampParams(raw, questionType) {
   let P = Math.min(1, Math.max(0, Number(raw.P) || 0));
   P = Math.round(P * 100) / 100;
   return { D, eta, P };
+}
+
+// 五维校验 0~1：fiveDim 是模型自由生成的、此前零校验（生产库里出现过 K=3 / Q=4 / S=3 这种越界值，
+// 说明模型有时按 0~5 给）。处理原则：**越界或缺失即整组作废（null），绝不钳成 1**——钳制等于编数据。
+function clampFiveDim(fd) {
+  if (!fd || typeof fd !== 'object') return null;
+  const out = {};
+  for (const k of ['K', 'A', 'T', 'Q', 'S']) {
+    const v = Number(fd[k]);
+    if (!Number.isFinite(v) || v < 0 || v > 1) return null;
+    out[k] = v;
+  }
+  return out;
 }
 
 // ============ 网络 ============
@@ -619,6 +632,12 @@ exports.main = async (event) => {
     if (providedAnswer) raw.correctAnswer = providedAnswer;
 
     const questionType = raw.questionType || question.questionType || '其他';
+    // 选填题无过程（设计红线）：选择/填空一律 segments=[] / breakpoint=null / processAvailable=false。
+    // 生产库审计发现 2/28 道选填题带着 segments 落库 → 学生会在填空题上看到「断点」。
+    const qIsNoProcess = questionType !== '解答';
+    const segOut = qIsNoProcess ? [] : (Array.isArray(raw.segments) ? raw.segments : []);
+    const bpOut = qIsNoProcess ? null : (raw.breakpoint || null);
+    const paOut = qIsNoProcess ? false : raw.processAvailable === true;
     const clamped = clampParams(raw, questionType);
 
     // P 由 AI 直接输出（连续 0~1），对错语义由 P 编码，无需独立钳制
@@ -626,20 +645,21 @@ exports.main = async (event) => {
     // ===== 源头防毒（2026-08-28）：空白题归因由代码推导，不采信 LLM 自由解释 =====
     // 空白只有「没有行为」这一个事实；从「没写」到「未理解」是模型先验的推测链。
     // 空白判定：断点=起步即停，或（无学生答案且无过程分段）。
-    const segList = Array.isArray(raw.segments) ? raw.segments : [];
+    const segList = segOut;
     const hasAnswerText = !!(question.studentAnswer && String(question.studentAnswer).trim());
-    const isBlank = (raw.breakpoint && raw.breakpoint.nature === '起步即停') || (!hasAnswerText && segList.length === 0);
+    const isBlank = (bpOut && bpOut.nature === '起步即停') || (!hasAnswerText && segList.length === 0);
     const derivedErrorAttribution = isBlank
       ? '整题空白未下笔'
       : ((clamped.P >= 0.5 || !raw.errorAttribution) ? null : String(raw.errorAttribution).trim() || null);
 
     // ===== errorType（结果错/过程风险/无）：LLM 按实际过程判定，缺失/非法时按 P 防御回退 =====
     const rawET = String(raw.errorType || '').trim();
-    const derivedErrorType = (rawET === '结果错' || rawET === '过程风险') ? rawET
+    // 注：这里必须是 let —— 原来写成 const，选填题遇到模型给「过程风险」时下一行重新赋值会抛 TypeError，整题判定失败（2026-09-19 审计发现）
+    let derivedErrorType = (rawET === '结果错' || rawET === '过程风险') ? rawET
       : (clamped.P < 0.5 ? '结果错' : (clamped.P < 1 ? '过程风险' : '无'));
 
     // ===== 选填题无过程（选择/填空）：不允许"过程风险"（没有过程可扣分），按答案判 结果错/无 =====
-    const isNoProcess = raw.processAvailable !== true;
+    const isNoProcess = paOut !== true;
     if (isNoProcess && derivedErrorType === '过程风险') {
       derivedErrorType = clamped.P < 0.5 ? '结果错' : '无';
     }
@@ -674,11 +694,11 @@ exports.main = async (event) => {
         pattern: patternFull || null,
         knowledgeNodeName: raw.knowledgeNodeName || '',
         knowledgeUsage: Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [],
-        fiveDim: raw.fiveDim || null,
+        fiveDim: clampFiveDim(raw.fiveDim),
         // 报告数据输入（2026-08-17）：分段路径/断点/过程可信；选填题 segments=[] breakpoint=null processAvailable=false
-        segments: Array.isArray(raw.segments) ? raw.segments : [],
-        breakpoint: raw.breakpoint || null,
-        processAvailable: raw.processAvailable === true,
+        segments: segOut,
+        breakpoint: bpOut,
+        processAvailable: paOut,
         reviewed: true,
       },
     });
@@ -706,7 +726,7 @@ exports.main = async (event) => {
         knowledgeNodeName: (raw.knowledgeNodeName || '').trim(),
         errorAttribution: derivedErrorAttribution,
         errorDimension: raw.errorDimension || null,
-        breakpoint: raw.breakpoint || null,
+        breakpoint: bpOut,
         knowledgeUsage: Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [],
       });
       let embedding = null;
@@ -732,10 +752,10 @@ exports.main = async (event) => {
           errorLevel: derivedErrorLevel,
           errorAttribution: derivedErrorAttribution,
           errorDimension: raw.errorDimension || null,
-          segments: Array.isArray(raw.segments) ? raw.segments : [],
-          breakpoint: raw.breakpoint || null,
+          segments: segOut,
+          breakpoint: bpOut,
           knowledgeUsage: Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [],
-          processAvailable: raw.processAvailable === true,
+          processAvailable: paOut,
           pattern: patternFull || null,
           report: {
             questionText: question.questionText || '',
@@ -745,10 +765,10 @@ exports.main = async (event) => {
             errorLevel: derivedErrorLevel,
             errorAttribution: derivedErrorAttribution,
             errorDimension: raw.errorDimension || null,
-            segments: Array.isArray(raw.segments) ? raw.segments : [],
-            breakpoint: raw.breakpoint || null,
+            segments: segOut,
+            breakpoint: bpOut,
             knowledgeUsage: Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [],
-            processAvailable: raw.processAvailable === true,
+            processAvailable: paOut,
           },
           reportText: ragReportText,
           embedding,
@@ -790,11 +810,11 @@ exports.main = async (event) => {
         processScore: clamped.P,
         pathQuality: clamped.eta,
         knowledgeNodeName: raw.knowledgeNodeName || '',
-        fiveDim: raw.fiveDim || null,
+        fiveDim: clampFiveDim(raw.fiveDim),
         // 报告数据输入（2026-08-17）
-        segments: Array.isArray(raw.segments) ? raw.segments : [],
-        breakpoint: raw.breakpoint || null,
-        processAvailable: raw.processAvailable === true,
+        segments: segOut,
+        breakpoint: bpOut,
+        processAvailable: paOut,
       },
     });
   } catch (e) {

@@ -12,7 +12,8 @@ async function batchStats(batchId, userId) {
     .where({ batchId, userId }).limit(100).get();
   const reviewed = qs.data.filter((q) => q.reviewed && q.processScore != null);
   const total = reviewed.length;
-  const correct = reviewed.filter((q) => q.processScore >= 0.5).length;
+  // 口径统一（决策 026：「P 不=1 都算错」）——与报告圆点、掌握度 pOk 保持一致
+  const correct = reviewed.filter((q) => q.processScore >= 1).length;
   const rate = total > 0 ? Math.round((correct / total) * 10000) / 10000 : null;
   return { total, correct, rate };
 }
@@ -54,7 +55,7 @@ async function patternTrajectory(userId, nodeFilter) {
     const key = q.knowledgeNodeName || '未归类知识点';
     if (nodeFilter && key !== nodeFilter) continue;
     if (!groups[key]) groups[key] = [];
-    const correct = q.processScore >= 0.5;
+    const correct = q.processScore >= 1;   // 口径统一（决策 026）：否则 P=0.6 会在题型轨迹上显示「做对」而报告里显示 ✗
     const nature = (q.breakpoint && q.breakpoint.nature) || null;
     const closeness = correct ? 3 : (CLOSINESS[nature] != null ? CLOSINESS[nature] : null);
     groups[key].push({

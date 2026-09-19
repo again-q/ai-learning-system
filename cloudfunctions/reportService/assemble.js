@@ -10,7 +10,10 @@ async function assemble(batchId, userId) {
 
   // 本次统计（与 statService 逻辑一致；函数内联避免跨函数调用延迟）
   const total = reviewed.length;
-  const correct = reviewed.filter((q) => q.processScore >= 0.5).length;
+  // 口径统一（决策 026：「P 不=1 都算错」）：原为 >=0.5，与报告圆点（>=1）打架——
+  // 11 个批次里 6 个出现「摘要说对 N 道、圆点只有 N-1 个 ✓」。半对单独计数，不再冒充「对」。
+  const correct = reviewed.filter((q) => q.processScore >= 1).length;
+  const half = reviewed.filter((q) => q.processScore > 0 && q.processScore < 1).length;
   const rate = total > 0 ? Math.round((correct / total) * 10000) / 10000 : null;
 
   // 上次统计（排除当前批次）
@@ -24,7 +27,7 @@ async function assemble(batchId, userId) {
       const lq = await db.collection('questions')
         .where({ batchId: b._id, userId }).limit(100).get();
       const lr = lq.data.filter((x) => x.reviewed && x.processScore != null);
-      if (lr.length) { lastRate = lr.filter((x) => x.processScore >= 0.5).length / lr.length; break; }
+      if (lr.length) { lastRate = lr.filter((x) => x.processScore >= 1).length / lr.length; break; }
     }
   } catch (e) { console.warn('[reportService] 上次统计失败:', e.message); }
 
@@ -53,12 +56,13 @@ async function assemble(batchId, userId) {
     errorDimension: q.errorDimension || null,
     processScore: q.processScore,
     questionType: q.questionType || '其他',
-    status: q.processScore >= 1 ? '对' : '错',   // P 编码对错（决策 025）：P≥0.5 基本答对
+    // 三态：对（P=1）/ 半对（写了过程但不完整）/ 错（P=0）——不再把半对显示成 ✗ 打击人，也不再冒充做对
+    status: q.processScore >= 1 ? '对' : (q.processScore > 0 ? '半对' : '错'),
   }));
   const wrongQuestions = allQuestions.filter((q) => q.processScore < 1);
 
   return {
-    stats: { totalQuestions: total, correctCount: correct, correctRate: rate, trend, lastCorrectRate: lastRate },
+    stats: { totalQuestions: total, correctCount: correct, halfCount: half, correctRate: rate, trend, lastCorrectRate: lastRate },
     allQuestions,
     wrongQuestions,
     wrongCount: wrongQuestions.length,

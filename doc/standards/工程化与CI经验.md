@@ -193,3 +193,11 @@ tcb fn deploy <name> --force --install-dependency true -e <envId> --dir cloudfun
 - **可靠的替代路径**：workflow 里已声明 `workflow_dispatch` —— 可在仓库 Actions 页面点 **Run workflow** 手动触发，**完全不受提交消息关键字影响**。本机没有 `gh` CLI 也没有 GitHub token，走不了 API，所以这条只能人工点。
 - **待清理（与本坑无关，但长期挂着）**：#14 / #15 两个运行自 09:09Z / 09:27Z 起一直卡在 `queued`（平台 degraded 期间遗留）；同并发组 `wechat-deploy`。**它们并没有阻断后续运行**——证据是 #16~#19 在它们卡住之后仍被正常创建，故不要把它当成"不触发"的替罪羊。
 - **⚠️ 方法论教训（本轮真实的教训）**：我**先入为主认定"空提交是真因"，并把它当成结论写进了本文件**，下一轮即被推翻。**未经验证的假设不得写进经验文档**；确需记录时必须显式标注「待确证」，否则错误经验会污染后续所有判断。排查正确姿势仍是用只读 API 把变量逐个证伪（推送事件 / workflow state / 平台状态 / 仓库可见性 / 按 `head_sha` 反查）。
+
+## 教训：提交消息里写了「不带 [deploy]」→ 反而触发了云函数部署（2026-09-19，已实证）
+
+- **现象**：这次提交本意**不部署云函数**（graphEngine 已手动部署且与本地一致），提交正文里写了一句「本次不带 [deploy]（graphEngine 已用 CI 脚本手动部署…）」。结果 Actions 里「部署云函数（miniprogram-ci uploadFunction）」这一步**真的执行了**，按 diff 把 graphEngine 重新部署了一遍 —— 实测 `getFunctionDetail('graphEngine').ModTime = 2026-09-19 16:44:16`，正是这次 run 的时间点。
+- **根因**：workflow 的判断是 `contains(github.event.head_commit.message, '[deploy')` —— **纯子串匹配，且匹配整个提交消息（含正文）**。正文里那句「不带 [deploy]」自身就把条件写成了真。
+- **修复/用法**：① 不想部署时，提交消息**任何位置都不要出现 `[deploy`**（要自述请写「不带部署标记」）；② 只部署单个函数用 `[deploy:函数名]`；③ 手动触发走 `workflow_dispatch`，不受消息关键字影响。
+- **经验**：用**子串匹配**当开关的 CL/CI 设计很常见 —— 描述这个开关的文字本身就可能触发它；同理适用于日志过滤、日志脱敏、任务跳过的关键字开关。
+- **附带结论**：CI 的部署步骤**按 diff 判断要部署哪些函数**，所以「误触发」的后果通常是把**同一份代码**再传一次（幂等、无害）；但若本地有未提交的实验性改动被误当 diff 也会一并上去，提交前仍应 `git status` 复核。
