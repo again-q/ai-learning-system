@@ -634,7 +634,8 @@ exports.main = async (event) => {
     const questionType = raw.questionType || question.questionType || '其他';
     // 选填题无过程（设计红线）：选择/填空一律 segments=[] / breakpoint=null / processAvailable=false。
     // 生产库审计发现 2/28 道选填题带着 segments 落库 → 学生会在填空题上看到「断点」。
-    const qIsNoProcess = questionType !== '解答';
+    // 只有「明确是选择/填空」才算无过程；题型未知时按「可能有过程」处理（智学网官方导入的题不带题型）
+    const qIsNoProcess = questionType === '选择' || questionType === '填空';
     const segOut = qIsNoProcess ? [] : (Array.isArray(raw.segments) ? raw.segments : []);
     const bpOut = qIsNoProcess ? null : (raw.breakpoint || null);
     const paOut = qIsNoProcess ? false : raw.processAvailable === true;
