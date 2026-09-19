@@ -111,6 +111,10 @@ test('选填题：即使模型给了过程分段/断点，落库也必须清空�
   assert.deepEqual(patch2.breakpoint, { index: 1, nature: '中途断' });
   assert.equal(patch2.processAvailable, true);
   assert.equal(normalizeProcessFields(raw, '选择').segments.length, 0);
+  // 题型未知（智学网官方导入）→ 按「可能有过程」处理，不能清空
+  const unknown = normalizeProcessFields(raw, '未知');
+  assert.equal(unknown.segments.length, 1, '题型未知时不能清过程');
+  assert.equal(unknown.processAvailable, true);
 });
 
 test('fiveDim 越界/缺失一律整组作废（宁缺勿假）', () => {

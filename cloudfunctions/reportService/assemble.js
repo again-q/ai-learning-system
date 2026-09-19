@@ -8,12 +8,22 @@ async function assemble(batchId, userId) {
     .where({ batchId, userId }).limit(100).get();
   const reviewed = qs.data.filter((q) => q.reviewed && q.processScore != null);
 
+  // 官方口径优先（智学网 plan b 批次带 officialTally）：plan b 只导入未满分的题，
+  // 若拿题目行数当分母，会得出「5 道题对 0 道」这种错话；官方数据在手就以官方为准。
+  let tally = null;
+  try {
+    const b = await db.collection('batches').doc(batchId).get();
+    const bd = b && (b.data || (Array.isArray(b) ? b[0] : null));
+    if (bd && bd.officialTally) tally = bd.officialTally;
+  } catch (e) { /* 没有批次文档（或旧批次）时退回 AI 口径 */ }
+  const officialTotal = tally ? ['对', '半对', '错', '未判'].reduce((n, k) => n + (Number(tally[k]) || 0), 0) : 0;
+
   // 本次统计（与 statService 逻辑一致；函数内联避免跨函数调用延迟）
-  const total = reviewed.length;
+  const total = officialTotal > 0 ? officialTotal : reviewed.length;
   // 口径统一（决策 026：「P 不=1 都算错」）：原为 >=0.5，与报告圆点（>=1）打架——
   // 11 个批次里 6 个出现「摘要说对 N 道、圆点只有 N-1 个 ✓」。半对单独计数，不再冒充「对」。
-  const correct = reviewed.filter((q) => q.processScore >= 1).length;
-  const half = reviewed.filter((q) => q.processScore > 0 && q.processScore < 1).length;
+  const correct = officialTotal > 0 ? (Number(tally['对']) || 0) : reviewed.filter((q) => q.processScore >= 1).length;
+  const half = officialTotal > 0 ? (Number(tally['半对']) || 0) : (reviewed.filter((q) => q.processScore > 0 && q.processScore < 1).length);
   const rate = total > 0 ? Math.round((correct / total) * 10000) / 10000 : null;
 
   // 上次统计（排除当前批次）
@@ -56,13 +66,18 @@ async function assemble(batchId, userId) {
     errorDimension: q.errorDimension || null,
     processScore: q.processScore,
     questionType: q.questionType || '其他',
-    // 三态：对（P=1）/ 半对（写了过程但不完整）/ 错（P=0）——不再把半对显示成 ✗ 打击人，也不再冒充做对
-    status: q.processScore >= 1 ? '对' : (q.processScore > 0 ? '半对' : '错'),
+    // 三态：官方有判定就用官方（零抖动），否则用 AI 过程分 P 推
+    status: ['对', '半对', '错'].includes(q.officialStatus) ? q.officialStatus : (q.processScore >= 1 ? '对' : (q.processScore > 0 ? '半对' : '错')),
+    officialStatus: q.officialStatus || null,
+    officialScore: q.officialScore != null ? q.officialScore : null,
+    officialStandardScore: q.officialStandardScore != null ? q.officialStandardScore : null,
+    officialClassScoreRate: q.officialClassScoreRate != null ? q.officialClassScoreRate : null,
+    officialKnowledge: Array.isArray(q.officialKnowledge) ? q.officialKnowledge : [],
   }));
   const wrongQuestions = allQuestions.filter((q) => q.processScore < 1);
 
   return {
-    stats: { totalQuestions: total, correctCount: correct, halfCount: half, correctRate: rate, trend, lastCorrectRate: lastRate },
+    stats: { totalQuestions: total, correctCount: correct, halfCount: half, correctRate: rate, trend, lastCorrectRate: lastRate, scoreSource: officialTotal > 0 ? 'official' : 'ai' },
     allQuestions,
     wrongQuestions,
     wrongCount: wrongQuestions.length,

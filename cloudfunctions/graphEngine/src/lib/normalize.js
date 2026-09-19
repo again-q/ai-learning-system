@@ -74,7 +74,9 @@ function deriveAll(raw, question, clamped) {
  */
 function normalizeProcessFields(raw, questionType) {
   const r = raw || {};
-  const isNoProcess = questionType !== '解答';
+  // 只有「明确是选择/填空」才算无过程；题型未知（如智学网官方导入）时按「可能有过程」处理，
+  // 否则会把解答题的过程分段整段清掉。
+  const isNoProcess = questionType === '选择' || questionType === '填空';
   return {
     isNoProcess,
     segments: isNoProcess ? [] : (Array.isArray(r.segments) ? r.segments : []),
