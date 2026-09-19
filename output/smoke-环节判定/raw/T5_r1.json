@@ -1,0 +1,54 @@
+{
+  "expect": "决策 038：因式分解 应 noEvidence（心算未落笔）；一元二次不等式 judged=1",
+  "trace": "求 x²−5x+6>0。\n\n解：画出 y=x²−5x+6 的抛物线，开口向上，与 x 轴交于 2 和 3，\n看图得 x<2 或 x>3，解集 (−∞,2)∪(3,+∞)。",
+  "node": {
+    "ok": true,
+    "blank": false,
+    "points": [
+      {
+        "name": "一元二次不等式",
+        "chapter": "第二章 一元二次函数、方程和不等式",
+        "dkp": null,
+        "basis": "画出 y=x²−5x+6 的抛物线，开口向上，与 x 轴交于 2 和 3，看图得 x<2 或 x>3",
+        "alignedFrom": "一元二次不等式（第二章 一元二次函数、方程和不等式）",
+        "state": "judged",
+        "P_kp": 1,
+        "isAhead": false
+      },
+      {
+        "name": "因式分解",
+        "chapter": "第二章 一元二次函数、方程和不等式",
+        "dkp": null,
+        "basis": "学生用抛物线与 x 轴交点（2 和 3）求解，未写出 x²−5x+6=(x−2)(x−3) 的因式分解过程",
+        "alignedFrom": "因式分解（第二章 一元二次函数、方程和不等式）",
+        "state": "noEvidence",
+        "P_kp": null,
+        "isAhead": false
+      },
+      {
+        "name": "交集与并集",
+        "chapter": "第一章 集合与常用逻辑用语",
+        "dkp": null,
+        "basis": "解集 (−∞,2)∪(3,+∞)，正确用并集连接两段解集",
+        "alignedFrom": "交集与并集（第一章 集合与常用逻辑用语）",
+        "state": "judged",
+        "P_kp": 1,
+        "isAhead": false
+      },
+      {
+        "name": "子集与真子集",
+        "chapter": "第一章 集合与常用逻辑用语",
+        "dkp": null,
+        "basis": "整段痕迹未涉及集合间的包含关系，无子集或真子集相关表述",
+        "alignedFrom": "子集与真子集（第一章 集合与常用逻辑用语）",
+        "state": "noEvidence",
+        "P_kp": null,
+        "isAhead": false
+      }
+    ],
+    "eta": 0.9,
+    "note": "用抛物线图像法直接读出解集，思路本质且完整，仅未显式写出因式分解步骤。",
+    "llmCalls": 1,
+    "issues": []
+  }
+}

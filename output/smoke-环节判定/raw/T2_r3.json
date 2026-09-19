@@ -1,0 +1,66 @@
+{
+  "expect": "因式分解 judged（用上）、一元二次不等式 judged 但 0（用错）",
+  "trace": "求 x²−5x+6>0。\n\n解：(x−2)(x−3)>0，\n所以 2<x<3，\n解集为 (2,3)。",
+  "out": {
+    "points": [
+      {
+        "name": "一元二次不等式",
+        "state": "judged",
+        "P_kp": 0,
+        "basis": "所以 2<x<3——把 (x−2)(x−3)>0 的解错判为两根之间，实际应为 x<2 或 x>3"
+      },
+      {
+        "name": "因式分解",
+        "state": "judged",
+        "P_kp": 1,
+        "basis": "(x−2)(x−3)>0，分解正确且完整"
+      },
+      {
+        "name": "交集与并集",
+        "state": "noEvidence",
+        "basis": "痕迹中未出现任何交集或并集运算"
+      },
+      {
+        "name": "子集与真子集",
+        "state": "noEvidence",
+        "basis": "痕迹中未涉及子集或真子集概念"
+      }
+    ],
+    "eta": 0.5,
+    "note": "因式分解正确，但把二次不等式解集方向判反（应为两根之外），属法则性错误，导致最终区间错误。"
+  },
+  "verified": {
+    "got": [
+      {
+        "name": "一元二次不等式",
+        "state": "judged",
+        "raw": 0,
+        "P_kp": 0,
+        "basis": "所以 2<x<3——把 (x−2)(x−3)>0 的解错判为两根之间，实际应为 x<2 或 x>3"
+      },
+      {
+        "name": "因式分解",
+        "state": "judged",
+        "raw": 1,
+        "P_kp": 1,
+        "basis": "(x−2)(x−3)>0，分解正确且完整"
+      },
+      {
+        "name": "交集与并集",
+        "state": "noEvidence",
+        "P_kp": null,
+        "basis": "痕迹中未出现任何交集或并集运算"
+      },
+      {
+        "name": "子集与真子集",
+        "state": "noEvidence",
+        "P_kp": null,
+        "basis": "痕迹中未涉及子集或真子集概念"
+      }
+    ],
+    "issues": [],
+    "judged": 2,
+    "noEv": 2,
+    "missing": 0
+  }
+}

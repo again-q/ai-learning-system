@@ -1,0 +1,54 @@
+{
+  "expect": "LLM 调用=0；全 blank；derived.blank=true",
+  "trace": "",
+  "node": {
+    "ok": true,
+    "blank": true,
+    "points": [
+      {
+        "name": "一元二次不等式",
+        "chapter": "第二章 一元二次函数、方程和不等式",
+        "dkp": null,
+        "state": "blank",
+        "P_kp": 0,
+        "auto": true,
+        "basis": "整题空白（代码短路）",
+        "isAhead": false
+      },
+      {
+        "name": "因式分解",
+        "chapter": "第二章 一元二次函数、方程和不等式",
+        "dkp": null,
+        "state": "blank",
+        "P_kp": 0,
+        "auto": true,
+        "basis": "整题空白（代码短路）",
+        "isAhead": false
+      },
+      {
+        "name": "交集与并集",
+        "chapter": "第一章 集合与常用逻辑用语",
+        "dkp": null,
+        "state": "blank",
+        "P_kp": 0,
+        "auto": true,
+        "basis": "整题空白（代码短路）",
+        "isAhead": false
+      },
+      {
+        "name": "子集与真子集",
+        "chapter": "第一章 集合与常用逻辑用语",
+        "dkp": null,
+        "state": "blank",
+        "P_kp": 0,
+        "auto": true,
+        "basis": "整题空白（代码短路）",
+        "isAhead": false
+      }
+    ],
+    "eta": null,
+    "note": "整题空白，未调用模型",
+    "llmCalls": 0,
+    "issues": []
+  }
+}

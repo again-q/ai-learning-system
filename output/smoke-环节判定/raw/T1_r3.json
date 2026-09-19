@@ -1,0 +1,70 @@
+{
+  "expect": "两章点大多 judged；因式分解 judged=1",
+  "trace": "求 x²−5x+6>0。\n\n解：因式分解得 (x−2)(x−3)>0，\n所以 x<2 或 x>3，\n解集为 (−∞,2)∪(3,+∞)。",
+  "out": {
+    "points": [
+      {
+        "name": "一元二次不等式",
+        "state": "judged",
+        "P_kp": 1,
+        "basis": "(x−2)(x−3)>0，所以 x<2 或 x>3"
+      },
+      {
+        "name": "因式分解",
+        "state": "judged",
+        "P_kp": 1,
+        "basis": "因式分解得 (x−2)(x−3)>0"
+      },
+      {
+        "name": "交集与并集",
+        "state": "judged",
+        "P_kp": 1,
+        "basis": "解集为 (−∞,2)∪(3,+∞)"
+      },
+      {
+        "name": "子集与真子集",
+        "state": "noEvidence",
+        "P_kp": null,
+        "basis": "痕迹中未出现任何子集或真子集相关表述"
+      }
+    ],
+    "eta": 1,
+    "note": "因式分解后按两根外区间取解，路径直接本质，无冗余。"
+  },
+  "verified": {
+    "got": [
+      {
+        "name": "一元二次不等式",
+        "state": "judged",
+        "raw": 1,
+        "P_kp": 1,
+        "basis": "(x−2)(x−3)>0，所以 x<2 或 x>3"
+      },
+      {
+        "name": "因式分解",
+        "state": "judged",
+        "raw": 1,
+        "P_kp": 1,
+        "basis": "因式分解得 (x−2)(x−3)>0"
+      },
+      {
+        "name": "交集与并集",
+        "state": "judged",
+        "raw": 1,
+        "P_kp": 1,
+        "basis": "解集为 (−∞,2)∪(3,+∞)"
+      },
+      {
+        "name": "子集与真子集",
+        "state": "noEvidence",
+        "raw": null,
+        "P_kp": null,
+        "basis": "痕迹中未出现任何子集或真子集相关表述"
+      }
+    ],
+    "issues": [],
+    "judged": 3,
+    "noEv": 1,
+    "missing": 0
+  }
+}
