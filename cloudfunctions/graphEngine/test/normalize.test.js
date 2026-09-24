@@ -55,6 +55,25 @@ test('deriveAll：选填题（processAvailable=false）不允许过程风险', (
   assert.equal(deriveAll({ errorType: '过程风险', processAvailable: false }, { studentAnswer: 'D' }, c2).errorType, '结果错', 'P<0.5 → 结果错');
 });
 
+// ⚠️ D5 对拍回归（2026-09-19）：原 deriveAll 直接用 raw.processAvailable 判「有无过程」，
+//    选填题只要模型写了 processAvailable:true 就能被判「过程风险」→ 与线上不一致（线上是先归一、再推导）。
+test('deriveAll：选填题即使模型声称 processAvailable=true，也不允许「过程风险」（D5 对拍回归）', () => {
+  const q = { questionType: '选择' };
+  const raw = { questionType: '选择', level: 'L1', P: 1, eta: 0.5, processAvailable: true, errorType: '过程风险', errorLevel: 'skill' };
+  const d = deriveAll(raw, q, clampParams(raw, '选择'));
+  assert.equal(d.errorType, '无', 'P=1 → 无，而不是过程风险');
+  assert.equal(d.errorLevel, null, 'errorType=无 → errorLevel 必须 null');
+  const raw2 = { ...raw, P: 0.3 };
+  assert.equal(deriveAll(raw2, q, clampParams(raw2, '选择')).errorType, '结果错', 'P<0.5 → 结果错，而不是过程风险');
+});
+
+test('deriveAll：填空题无作答但模型给了过程分段 → 仍算空白（D5 对拍回归）', () => {
+  const raw = { questionType: '填空', level: 'L3', P: 0, segments: [{ index: 1, content: 'x', status: '通' }], processAvailable: true };
+  const d = deriveAll(raw, { questionType: '填空', studentAnswer: '' }, clampParams(raw, '填空'));
+  assert.equal(d.isBlank, true, '选填题过程字段被归一清空 → 无答案即空白');
+  assert.equal(d.errorAttribution, '整题空白未下笔');
+});
+
 test('deriveAll：errorLevel 缺失时按 errorDimension 映射', () => {
   const mk = (dim) => deriveAll({ errorType: '结果错', errorDimension: dim, processAvailable: true, segments: [{ step: 'x' }] }, { studentAnswer: '答' }, clampParams({ level: 'L4', P: 0.3 }, '解答'));
   assert.equal(mk('K').errorLevel, 'concept');

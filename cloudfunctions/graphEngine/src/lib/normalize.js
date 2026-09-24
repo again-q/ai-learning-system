@@ -39,9 +39,14 @@ function deriveAll(raw, question, clamped) {
   const r = raw || {};
   const q = question || {};
   const c = clamped || {};
-  const segList = Array.isArray(r.segments) ? r.segments : [];
+  // 与线上同序：先做「选填题无过程」归一，再用【归一后】的过程字段推导（对应 judgeOne:639-663 的顺序）
+  // ⚠️ 2026-09-19 D5 对拍发现：直接用 raw 的 segments/breakpoint/processAvailable 会让选填题被判「过程风险」、
+  //    让「无答案但有模型过程」的填空题漏判空白 —— 与线上不一致，属壳 bug，已按闸门修掉（非有意修正）
+  const questionType = r.questionType || q.questionType || '其他';
+  const proc = normalizeProcessFields(r, questionType);
+  const segList = proc.segments;
   const hasAnswerText = !!(q.studentAnswer && String(q.studentAnswer).trim());
-  const isBlank = (r.breakpoint && r.breakpoint.nature === '起步即停') || (!hasAnswerText && segList.length === 0);
+  const isBlank = (proc.breakpoint && proc.breakpoint.nature === '起步即停') || (!hasAnswerText && segList.length === 0);
 
   const errorAttribution = isBlank
     ? '整题空白未下笔'
@@ -51,7 +56,7 @@ function deriveAll(raw, question, clamped) {
   let errorType = (rawET === '结果错' || rawET === '过程风险') ? rawET
     : (c.P < 0.5 ? '结果错' : (c.P < 1 ? '过程风险' : '无'));
   // 选填题没有过程可扣：不允许「过程风险」
-  const isNoProcess = r.processAvailable !== true;
+  const isNoProcess = proc.processAvailable !== true;
   if (isNoProcess && errorType === '过程风险') errorType = c.P < 0.5 ? '结果错' : '无';
 
   const rawEL = String(r.errorLevel || '').trim();

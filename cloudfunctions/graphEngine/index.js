@@ -92,6 +92,8 @@ exports.main = async (event) => {
             ragContext: (s.ragContext || '').slice(0, 500),
             mastery: s.mastery,
             rawSummary: s.raw ? { questionType: s.raw.questionType, level: s.raw.level, D: s.raw.D, P: s.raw.P, eta: s.raw.eta, errorType: s.raw.errorType, errorLevel: s.raw.errorLevel, knowledgeNodeName: s.raw.knowledgeNodeName, pattern: s.raw.pattern, processAvailable: s.raw.processAvailable } : null,
+            // D5 影子对比：回传【完整 raw】，供本机用同一份 raw 喂线上壳（derivePure）做同 raw 回放
+            raw: event.includeRaw === true ? s.raw : undefined,
           },
         });
       }
