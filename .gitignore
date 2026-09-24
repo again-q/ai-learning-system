@@ -8,6 +8,9 @@ output/raw/ocr_page*.json
 output/_failed.log
 output/_test_1.3.log
 output/_needs_review.log
+# 高考真题等有版权题源，仅本地评测用，禁止入库/推送（决策 037、评测数据集预研）
+output/golden/_src/
+output/golden/dataset-*.json
 output/golden/traces/
 # D5 影子对拍产物：含学生真实题干与作答痕迹，禁止入库/推送（2026-09-25）
 output/shadow-判定/
