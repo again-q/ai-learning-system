@@ -21,9 +21,18 @@ const LABEL = arg('label', 'old');
 const ROUNDS = Number(arg('rounds', 2));      // 默认 2 轮（用户 2026-09-25：别跑太多，费钱费时）
 const LIMIT = Number(arg('limit', 6)) || 6;   // 默认 6 例；要全量显式传 --limit=0
 const CONC = Number(arg('concurrency', 6));   // 并发数：串行跑 38×3 要 35 分钟，并发 6 约 6 分钟
+const SOURCE = arg('source', 'traces');   // traces=合成痕迹（全 syllabus，与图谱覆盖不对齐）| db=线上真题（多为必修一，与图谱对齐）
 const IDS = arg('ids', '') ? String(arg('ids')).split(',') : null;
 const VARIANT = arg('variant', 'old');   // old=线上原版一口气 | split=D6 两段
 const D6 = await import(new URL('./d6-prompts.mjs', import.meta.url).href);
+// 线上会把【知识点节点清单】注入 prompt（judgeAI.js: nodeList = kg.buildNodeNames()）；
+// 本 harness 之前漏了这一步 → name 一致率基线失真（2026-09-25 修）。清单取自云端 knowledge_nodes 导出。
+const NODE_LIST = (() => {
+  const p = path.join(ROOT, 'output/golden/nodes-dump.json');
+  if (!fs.existsSync(p)) { console.warn('⚠️ 缺 nodes-dump.json → 本次不注入清单（与线上不一致）'); return ''; }
+  const j = JSON.parse(fs.readFileSync(p, 'utf8'));
+  return '【知识点节点清单】' + (j.names || []).join('、');
+})();
 
 // ---------- 模型配置（与 scripts/synth-traces.mjs 同款） ----------
 const env = {};
@@ -95,7 +104,7 @@ async function chatJSON(system, user) {
 }
 
 async function judge(questionText, traceText) {
-  const user = P.userMsg + '\n\n' + '\n\n===== L1-L11 标尺 =====\n' + P.RUBRIC_V2 + '\n\n===== 本题上下文 =====\n题目：' + questionText
+  const user = P.userMsg + '\n\n' + NODE_LIST + '\n\n===== L1-L11 标尺 =====\n' + P.RUBRIC_V2 + '\n\n===== 本题上下文 =====\n题目：' + questionText
     + '\n\n【学生作答痕迹（仅用于判定对错/P/η/归因，严禁用于评估难度——难度是题目固有属性，与作答过程无关）】\n' + String(traceText || '').slice(0, 1500);
   return chatJSON(SYSTEM_MSG, user);
 }
@@ -118,9 +127,16 @@ function median(a) { const s = a.slice().sort((x, y) => x - y); const n = s.leng
 function spread(a) { const v = a.map(Number).filter((x) => Number.isFinite(x)); return v.length ? Math.max.apply(null, v) - Math.min.apply(null, v) : null; }
 
 (async () => {
-  if (!fs.existsSync(TRACES)) throw new Error('缺少 ' + TRACES + '（先跑 node scripts/synth-traces.mjs）');
+  if (SOURCE !== 'db' && !fs.existsSync(TRACES)) throw new Error('缺少 ' + TRACES + '（先跑 node scripts/synth-traces.mjs）');
   const store = JSON.parse(fs.readFileSync(TRACES, 'utf8'));
-  let cases = store.traces.filter((t) => !t.quality && t.traceText !== undefined);
+  let cases;
+  if (SOURCE === 'db') {
+    const DUMP2 = path.join(ROOT, 'output/shadow-判定/questions-dump.json');
+    const qs = JSON.parse(fs.readFileSync(DUMP2, 'utf8')).filter((q) => q.reviewed === true && String(q.traceReport || '').trim());
+    cases = qs.map((q) => ({ id: q._id, role: 'real', type: q.questionType || '', question: q.questionText || '', traceText: q.traceReport || '' }));
+  } else {
+    cases = store.traces.filter((t) => !t.quality && t.traceText !== undefined);
+  }
   if (IDS) cases = cases.filter((t) => IDS.includes(t.id));
   if (LIMIT) cases = cases.slice(0, LIMIT);
   fs.mkdirSync(RAWDIR, { recursive: true });
@@ -182,7 +198,7 @@ function spread(a) { const v = a.map(Number).filter((x) => Number.isFinite(x)); 
   const rate = (k) => valid.length ? valid.filter((r) => r[k]).length / valid.length : null;
   const rep = {
     meta: { label: LABEL, ts: new Date().toISOString(), model: cfg.model, rounds: ROUNDS, cases: rows.length,
-      note: '本地不注入图谱节点清单与 RAG 历史（线上会注入）；prompt 与参数同线上',
+      note: NODE_LIST ? '已按线上注入【知识点节点清单】；本地不接 RAG 历史与裁剪图精读' : '⚠️ 未注入节点清单（与线上不一致）',
       tokens: { calls: USAGE.length, in: USAGE.reduce((s, u) => s + u.in, 0), out: USAGE.reduce((s, u) => s + u.out, 0) } },
     summary: {
       levelRate: rate('levelSame'), statusRate: rate('statusSame'), errorTypeRate: rate('errorTypeSame'),
