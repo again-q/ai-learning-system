@@ -20,13 +20,14 @@
 | 8 | **🆕 已废规则残留** | `RUBRIC_V2` 里的 `■ 5维锁定` 表 + 必填 `fiveDim`，是**决策 024「不给五维逐项打分」的残留**；且表用 1~5、决策 026 已定 0~1 → 库里 20/54 题五值全同、7 题整组作废 | 决策 024 / 026；`graphEngine/src/lib/prompts.js:21` | 待用户拍 a/b/c 后：prompt、D6 设计、审计 P5、本表 |
 | 9 | **审计 P1–P9** | 045 已修：对错口径统一 / 报告三态 / 五维越界作废 / 选填题字段守卫；**未修**：P1 展示改档位、P2 η 钳制、P3 043 判据落地、P5 errorLevel 兜底、历史 15 份报告是否重跑 | 审计文档 §3、决策 045 | 本表、决策日志 |
 | 10 | **知识图谱** | **269 节点** + 61 extras（8/17 治理后）；覆盖**仅必修一**（含第 0 章初高衔接） | `knowledge-graph/nodes/`；`doc/STATUS-MANIFEST.md` 图谱专项 | STATUS-MANIFEST、本表 |
-| 11 | **评测资产** | 题面 **436 题**（`dataset-v2.json`）；合成痕迹 **6 条**（2 题 × 4 角色，瓶颈）；人工断言 **10 条** | `output/golden/`（**gitignore，版权原因不入库**）、`doc/architecture/评测数据集预研.md` | 评测预研 §七/八、D6 设计、本表 |
+| 11 | **评测资产** | 题面 **436 题**（`dataset-v2.json`）；合成痕迹 **43 条 / 11 题**（4 角色，剔除 quality 后 38 条可用）；人工断言 **10 条**；稳定性脚本 `scripts/eval-stability.mjs` | `output/golden/`（**gitignore，版权原因不入库**）、`doc/architecture/评测数据集预研.md` | 评测预研 §七/八、D6 设计、本表 |
 | 12 | **模型选型** | 转录 Qwen3.7-plus；判定主模型 `deepseek-v4-flash`（thinking disabled + temp 0.2）；GLM 作影子 AB | `doc/模型选型路由决策.md`、`cloudfunctions/*/index.js` 配置区 | 本表、ROADMAP 选型结论 |
 | 13 | **流程门禁** | prd ✅ / arch ✅ / detailed ✅ / review ✅ / **code 未完成**（流程遗留）；理解确认 ✅（9/19） | `bash gate.sh status` | GATE_SUMMARY、本表 |
 | 14 | **工程版本线** | 0.5.x = 线上 beta（9/1 校内起）；**0.6.0 = D1–D10 全完成**；0.7.0 = 复盘 Q/S；1.0 需审批（长期不做） | `doc/architecture/节点化迁移计划.md` §版本线 | 本表、决策日志 |
 | 15 | **真实使用规模** | 2 个账号（1 个是作者本人）→ 「对某个学生有用」**缺证据** | 审计文档 §1 | 本表 |
 | 16 | **版权数据风险** | `output/golden/_src/`、`dataset-*.json` 已正确忽略；**但 3 个 golden 文件已被 git 跟踪**（含 `2025新高考I卷-数学-题面+解析.txt`）→ 与「版权内容不进 public 仓库」冲突，**待决定是否清理** | 本表 §1-16；`.gitignore` | 待拍板后：`.gitignore` + `git rm --cached` 或 filter-repo |
 | 17 | **凭据与登录** | 腾讯云 API 密钥对在 `~/.zsh_history`（**仓库内无泄露**，已扫）；`tcb login --apiKeyId/--apiKey` 已可用；**本机无微信私钥** → 云函数部署只能走 CI 或开发者工具 | `doc/standards/开发经验.md` §五-12 | 经验文档、本表 |
+| 18 | **D6 基线（旧版稳定性）** | 三态一致率 **91.4%**、level 一致率 **85.7%**、errorLevel **77.1%**、知识点名 **60.0%**、题型 pattern **22.9%**、不稳定用例 **8/35**、解析失败 **3/38** | `output/golden/results/stability-old.json`、D6 设计 §5.1 | D6 设计、本表 |
 
 ---
 
