@@ -12,6 +12,8 @@ output/_needs_review.log
 output/golden/_src/
 output/golden/dataset-*.json
 output/golden/traces/
+# 评测结果（stability-raw 内含真题干/痕迹引用，版权原因不入库）
+output/golden/results/
 # D5 影子对拍产物：含学生真实题干与作答痕迹，禁止入库/推送（2026-09-25）
 output/shadow-判定/
 doc/.gate/
