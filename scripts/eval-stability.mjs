@@ -33,6 +33,22 @@ const NODE_LIST = (() => {
   const j = JSON.parse(fs.readFileSync(p, 'utf8'));
   return '【知识点节点清单】' + (j.names || []).join('、');
 })();
+const NODE_NAMES = (() => { const p = path.join(ROOT, 'output/golden/nodes-dump.json'); return fs.existsSync(p) ? (JSON.parse(fs.readFileSync(p, 'utf8')).names || []) : []; })();
+// 编号清单：让模型回编号，名字由代码回填（2026-09-25 实验：消灭「近义词漂移」）
+const NUMBERED = '【知识点节点清单（编号）】' + NODE_NAMES.map((n, i) => (i + 1) + '.' + n).join('、');
+const IDS_RULE = '\n\n【本次额外要求】除原有字段外，必须再输出两个数组：knowledgeNodeIds、knowledgeUsageIds（与 knowledgeUsage 一一对应）。它们只能取上面【知识点节点清单（编号）】里的编号（整数）。knowledgeNodeName 与 knowledgeUsage[].name 必须写对应编号的规范名，不得改写、不得造近义词。';
+function pickName(i) { const n = Number(i); return (Number.isInteger(n) && n >= 1 && n <= NODE_NAMES.length) ? NODE_NAMES[n - 1] : null; }
+function normalizeIds(raw) {
+  const ids = Array.isArray(raw.knowledgeNodeIds) ? raw.knowledgeNodeIds : [];
+  const first = pickName(ids[0]);
+  if (first) raw.knowledgeNodeName = first;
+  const kuIds = Array.isArray(raw.knowledgeUsageIds) ? raw.knowledgeUsageIds : [];
+  const ku = Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [];
+  raw.knowledgeUsage = ku.map((u, i) => Object.assign({}, u, { name: pickName(kuIds[i]) || u.name }));
+  raw._idsGiven = ids.length;
+  raw._idsValid = ids.filter((x) => pickName(x)).length;
+  return raw;
+}
 
 // ---------- 模型配置（与 scripts/synth-traces.mjs 同款） ----------
 const env = {};
@@ -104,9 +120,12 @@ async function chatJSON(system, user) {
 }
 
 async function judge(questionText, traceText) {
-  const user = P.userMsg + '\n\n' + NODE_LIST + '\n\n===== L1-L11 标尺 =====\n' + P.RUBRIC_V2 + '\n\n===== 本题上下文 =====\n题目：' + questionText
+  const listText = VARIANT === 'ids' ? NUMBERED : NODE_LIST;
+  const extra = VARIANT === 'ids' ? IDS_RULE : '';
+  const user = P.userMsg + '\n\n' + listText + extra + '\n\n===== L1-L11 标尺 =====\n' + P.RUBRIC_V2 + '\n\n===== 本题上下文 =====\n题目：' + questionText
     + '\n\n【学生作答痕迹（仅用于判定对错/P/η/归因，严禁用于评估难度——难度是题目固有属性，与作答过程无关）】\n' + String(traceText || '').slice(0, 1500);
-  return chatJSON(SYSTEM_MSG, user);
+  const raw = await chatJSON(SYSTEM_MSG, user);
+  return VARIANT === 'ids' ? normalizeIds(raw) : raw;
 }
 
 // D6 两段：A 认题（只给题干）→ B 看过程（题干 + A 的答案/参考解法/知识点清单 + 痕迹）
