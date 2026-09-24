@@ -18,9 +18,12 @@ const RESULTS = path.join(ROOT, 'output/golden/results');
 const RAWDIR = path.join(RESULTS, 'stability-raw');
 const arg = (k, d) => { const hit = process.argv.find((a) => a.startsWith('--' + k + '=')); return hit ? hit.split('=').slice(1).join('=') : d; };
 const LABEL = arg('label', 'old');
-const ROUNDS = Number(arg('rounds', 3));
-const LIMIT = Number(arg('limit', 0)) || 0;
+const ROUNDS = Number(arg('rounds', 2));      // 默认 2 轮（用户 2026-09-25：别跑太多，费钱费时）
+const LIMIT = Number(arg('limit', 6)) || 6;   // 默认 6 例；要全量显式传 --limit=0
+const CONC = Number(arg('concurrency', 6));   // 并发数：串行跑 38×3 要 35 分钟，并发 6 约 6 分钟
 const IDS = arg('ids', '') ? String(arg('ids')).split(',') : null;
+const VARIANT = arg('variant', 'old');   // old=线上原版一口气 | split=D6 两段
+const D6 = await import(new URL('./d6-prompts.mjs', import.meta.url).href);
 
 // ---------- 模型配置（与 scripts/synth-traces.mjs 同款） ----------
 const env = {};
@@ -70,10 +73,9 @@ async function postWithRetry(url, body, headers, tries = 3) {
   throw lastErr;
 }
 
-async function judge(questionText, traceText) {
-  const user = P.userMsg + '\n\n' + '\n\n===== L1-L11 标尺 =====\n' + P.RUBRIC_V2 + '\n\n===== 本题上下文 =====\n题目：' + questionText
-    + '\n\n【学生作答痕迹（仅用于判定对错/P/η/归因，严禁用于评估难度——难度是题目固有属性，与作答过程无关）】\n' + String(traceText || '').slice(0, 1500);
+async function chatJSON(system, user) {
   let content = '';
+
   if (IS_ANTHROPIC) {
     const data = await postWithRetry(cfg.base + '/v1/messages',
       { model: cfg.model, max_tokens: 8000, temperature: 0.2, system: SYSTEM_MSG, messages: [{ role: 'user', content: user }] },
@@ -90,6 +92,21 @@ async function judge(questionText, traceText) {
     content = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
   }
   return extractJSON(content);
+}
+
+async function judge(questionText, traceText) {
+  const user = P.userMsg + '\n\n' + '\n\n===== L1-L11 标尺 =====\n' + P.RUBRIC_V2 + '\n\n===== 本题上下文 =====\n题目：' + questionText
+    + '\n\n【学生作答痕迹（仅用于判定对错/P/η/归因，严禁用于评估难度——难度是题目固有属性，与作答过程无关）】\n' + String(traceText || '').slice(0, 1500);
+  return chatJSON(SYSTEM_MSG, user);
+}
+
+// D6 两段：A 认题（只给题干）→ B 看过程（题干 + A 的答案/参考解法/知识点清单 + 痕迹）
+async function judgeSplit(questionText, traceText) {
+  const A = D6.buildA(questionText);
+  const rawA = await chatJSON(A.system, A.user);
+  const B = D6.buildB({ questionText, answer: rawA.correctAnswer, referenceProcess: rawA.referenceProcess, knowledgeUsage: rawA.knowledgeUsage, traceText });
+  const rawB = await chatJSON(B.system, B.user);
+  return D6.mergeAB(rawA, rawB);
 }
 
 // ---------- 指标 ----------
@@ -110,9 +127,8 @@ function spread(a) { const v = a.map(Number).filter((x) => Number.isFinite(x)); 
   console.log('label=' + LABEL + ' 模型=' + cfg.model + ' 用例=' + cases.length + ' 轮数=' + ROUNDS);
 
   const rows = [];
-  let i = 0;
-  for (const c of cases) {
-    i++;
+  let done = 0;
+  async function runCase(c) {
     const caseId = c.id + '__' + c.role;
     const rounds = [];
     let caseErr = null;
@@ -121,7 +137,7 @@ function spread(a) { const v = a.map(Number).filter((x) => Number.isFinite(x)); 
       try {
         let raw;
         if (fs.existsSync(rawFile)) raw = JSON.parse(fs.readFileSync(rawFile, 'utf8'));
-        else { raw = await judge(c.question || '', c.traceText || ''); fs.writeFileSync(rawFile, JSON.stringify(raw, null, 1)); }
+        else { raw = await (VARIANT === 'split' ? judgeSplit : judge)(c.question || '', c.traceText || ''); fs.writeFileSync(rawFile, JSON.stringify(raw, null, 1)); }
         rounds.push(raw);
       } catch (e) {
         caseErr = 'r' + r + ': ' + (e.message || e);
@@ -129,7 +145,8 @@ function spread(a) { const v = a.map(Number).filter((x) => Number.isFinite(x)); 
         break;
       }
     }
-    if (caseErr || rounds.length < ROUNDS) { rows.push({ id: c.id, role: c.role, type: c.type, error: caseErr || ('只拿到 ' + rounds.length + ' 轮') }); continue; }
+    done++;
+    if (caseErr || rounds.length < ROUNDS) { rows.push({ id: c.id, role: c.role, type: c.type, error: caseErr || ('只拿到 ' + rounds.length + ' 轮') }); console.log('[' + done + '/' + cases.length + '] ' + caseId + ' | ✗ 失败'); return; }
     const levels = rounds.map((x) => String(x.level || ''));
     const statuses = rounds.map((x) => statusOf(x.P));
     const ets = rounds.map((x) => String(x.errorType || ''));
@@ -146,8 +163,18 @@ function spread(a) { const v = a.map(Number).filter((x) => Number.isFinite(x)); 
       Dspread: spread(Ds), Pspread: spread(Ps), Ds, Ps,
     };
     rows.push(row);
-    console.log('[' + i + '/' + cases.length + '] ' + caseId + ' | level ' + (row.levelSame ? 'OK' : 'DIFF') + ' | 三态 ' + (row.statusSame ? 'OK' : 'DIFF') + ' | 知识点 ' + (row.knSame ? 'OK' : 'DIFF') + ' | D 抖 ' + row.Dspread);
+    console.log('[' + done + '/' + cases.length + '] ' + caseId + ' | level ' + (row.levelSame ? 'OK' : 'DIFF') + ' | 三态 ' + (row.statusSame ? 'OK' : 'DIFF') + ' | D 抖 ' + row.Dspread);
   }
+
+  // 并发执行（2026-09-25 用户要求：省时省钱。串行 38×3 要 35 分钟）
+  let cursor = 0;
+  await Promise.all(Array.from({ length: Math.max(1, Math.min(CONC, cases.length)) }, async () => {
+    while (true) {
+      const idx = cursor++;
+      if (idx >= cases.length) return;
+      await runCase(cases[idx]);
+    }
+  }));
 
   const valid = rows.filter((r) => !r.error);
   const failed = rows.filter((r) => r.error);
