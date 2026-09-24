@@ -1,7 +1,7 @@
 # 📋 项目状态清单
 
-> **用途一**：当你说「更新状态」时，按下方「更新操作清单」改对应文件。
-> **用途二**：下方「当前快照」反映 main 分支最新结构（2026-08-17）。
+> ⚠️ **2026-09-25 起：项目整体状态以 [`doc/STATUS.md`](STATUS.md) 为准**（唯一入口）。
+> 本文件只保留**知识图谱专项**与**仓库布局快照**两块明细；下方「最新状态快照（2026-09-06）」各表**已过期**，仅作历史留档。
 
 ---
 
@@ -74,8 +74,8 @@
 
 | 区域 | 路径 | 状态 |
 |------|------|------|
-| 小程序前端 | `miniprogram/` | ✅ 11 个活跃页面（已归档 knowledge-map / knowledge-tree） |
-| 云函数 | `cloudfunctions/` | 8 个（graphService + knowledgeAdmin 为图谱核心） |
+| 小程序前端 | `miniprogram/` | ✅ **主包 6 + 子包 11 = 17 个页面**（工作区口径，其中 `packageSync` 为用户本地未提交）；已归档 knowledge-map / knowledge-tree |
+| 云函数 | `cloudfunctions/` | **14 个**（判定域 `judgeOne` + `graphEngine`；图谱 `graphService`/`knowledgeAdmin`；其余 `diagnose`/`dispute`/`photoUpload`/`ragService`/`reportService`/`statService`/`userLogin`/`manageKnowledge`/`zhixueAuth`/`zhixueSync`） |
 | 图谱源数据 | `knowledge-graph/` | 356 节点 JSON |
 | 管线产物 | `output/` | OCR/抽取中间文件 |
 | 文档 | `doc/` | 61 文件 |

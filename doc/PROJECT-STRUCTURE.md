@@ -1,14 +1,14 @@
 # 项目文件结构说明（按用途分类）
 
 > **单一事实来源**：本文描述 `main` 分支当前仓库布局。归档内容见 [`archive/README.md`](../archive/README.md)。
-> 最后更新：2026-08-14
+> 最后更新：2026-09-25（原 2026-08-14）｜项目整体状态见 [`doc/STATUS.md`](STATUS.md)
 
 ---
 
 ## 一、总览
 
 ```
-ai-learning-system/                    ~404 文件 · ~10MB
+ai-learning-system/                    708 受控文件（工作区 1605 个，排除 node_modules/.git/.venv_ocr）
 ├── miniprogram/          【运行】微信小程序前端
 ├── cloudfunctions/       【运行】CloudBase 云函数
 ├── knowledge-graph/      【数据】知识图谱 JSON 源文件（入库前真源）
