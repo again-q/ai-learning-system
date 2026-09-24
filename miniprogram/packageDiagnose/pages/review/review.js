@@ -201,8 +201,8 @@ Page({
         const t0 = Date.now();
         try {
           await wx.cloud.callFunction({
-            name: 'judgeOne',
-            data: { questionId: item.questionId },
+            name: 'graphEngine',   // D5 切换（2026-09-25）：判定域改走新引擎；其余 judgeOne action 不变
+            data: { action: 'judgeQuestion', questionId: item.questionId },
             timeout: 120000,
           });
           log.append('judge_done', { questionId: item.questionId, durationMs: Date.now() - t0 });
