@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>ai-learning-system · 进度看板</title>
+<style>
+:root{--bg:#0f1115;--card:#171a21;--line:#262b36;--fg:#e6e9ef;--dim:#9aa4b2;--ok:#3fb950;--mid:#d29922;--warn:#f85149;--todo:#6e7681}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.6 -apple-system,"PingFang SC",sans-serif;padding:28px}
+h1{font-size:20px;margin:0 0 4px}.sub{color:var(--dim);margin-bottom:20px}
+.cards{display:flex;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;min-width:112px}
+.card .n{font-size:22px;font-weight:700}.card .l{color:var(--dim);font-size:12px}
+.ok .n{color:var(--ok)}.warn .n{color:var(--warn)}.mid .n{color:var(--mid)}.todo .n{color:var(--todo)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:22px}
+th{position:sticky;top:0;background:#1b1f27;text-align:left;padding:9px 10px;font-size:12px;color:var(--dim);border-bottom:1px solid var(--line)}
+td{padding:9px 10px;border-bottom:1px solid #1d2129;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr.ok td.item,tr.ok td.val{color:#c8e6c9}tr.warn td.item,tr.warn td.val{color:#ffd7d5}
+td.num{width:34px;color:var(--dim)}td.src{color:var(--dim);font-size:12px;width:26%}td.link{color:var(--dim);font-size:12px;width:22%}
+code{background:#20242d;padding:1px 5px;border-radius:4px;font-size:12px}
+a{color:#58a6ff;text-decoration:none}ul{list-style:none;padding-left:0}
+li{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:6px;display:flex;gap:8px;align-items:flex-start}
+li .dot{width:8px;height:8px;border-radius:50%;margin-top:7px;flex:0 0 8px}
+li.done .dot{background:var(--ok)}li.todo .dot{background:var(--todo)}
+li.todo{color:var(--dim)}
+h2{font-size:15px;margin:24px 0 10px;color:var(--dim);font-weight:600}
+</style></head><body>
+<h1>ai-learning-system · 进度看板</h1>
+<div class="sub">单一事实源：<code>doc/STATUS.md</code>（生成于 2026-09-24 19:14）｜最后核对 2026-09-25｜📊 一眼看状态：[`doc/status.html`](status.html)（由本表生成）｜<b>不要手改本页</b>，改 STATUS.md 后重跑 <code>node scripts/render-status.mjs</code></div>
+<div class="cards">
+<div class="card ok"><div class="n">8</div><div class="l">正常/已完成</div></div>
+<div class="card mid"><div class="n">4</div><div class="l">部分/进行中</div></div>
+<div class="card warn"><div class="n">7</div><div class="l">风险/待拍板</div></div>
+<div class="card todo"><div class="n">0</div><div class="l">未做</div></div>
+</div>
+<h2>① 状态总表</h2>
+<table><thead><tr><th>#</th><th>状态项</th><th>当前值</th><th>权威来源</th><th>联动位置</th></tr></thead><tbody>
+<tr class="mid"><td class="num">1</td><td class="item">🟡</td><td class="val"><b>代码主线</b></td><td class="src">0.6.0 节点化重构：D1 ✅ D2 ✅ D3 ✅ D4 ✅ <b>D5 ✅</b> D6 设计初稿（待拍板）D7–D10 ⬜</td><td class="link"><code>doc/architecture/节点化迁移计划.md</code> §四-A 进度区</td></tr>
+<tr class="ok"><td class="num">2</td><td class="item">✅</td><td class="val"><b>线上判定引擎</b></td><td class="src">前端判定调用已切 <b><code>graphEngine</code></b>（<code>review.js:204</code>，CI run #40 部署成功）；<code>judgeOne</code> 仍负责 <code>listQuestions</code>/<code>updateTranscription</code>/<code>reviseByNaturalLanguage</code>/<code>updateParams</code></td><td class="link">代码 <code>miniprogram/packageDiagnose/pages/review/review.js</code>；<code>doc/architecture/判定域影子对比（D5）.md</code> §6.1</td></tr>
+<tr class="ok"><td class="num">3</td><td class="item">✅</td><td class="val"><b>D5 影子对比结论</b></td><td class="src"><b>四层全 0 差异</b>：夹具 26 / 真模型 6 / 真题 55 / 云端同 raw 12 字段</td><td class="link"><code>doc/architecture/判定域影子对比（D5）.md</code> §7.1</td></tr>
+<tr class="ok"><td class="num">4</td><td class="item">✅</td><td class="val"><b>云函数</b></td><td class="src">14 个：<code>diagnose</code> <code>dispute</code> <code>graphEngine</code> <code>graphService</code> <code>judgeOne</code> <code>knowledgeAdmin</code> <code>manageKnowledge</code> <code>photoUpload</code> <code>ragService</code> <code>reportService</code> <code>statService</code> <code>userLogin</code> <code>zhixueAuth</code> <code>zhixueSync</code></td><td class="link"><code>cloudfunctions/</code> 目录</td></tr>
+<tr class="mid"><td class="num">5</td><td class="item">🟡</td><td class="val"><b>部署通道</b></td><td class="src">走 CI（miniprogram-ci，commit message 带 <code>[deploy]</code> / <code>[deploy:函数名]</code>）；<b><code>tcb fn deploy</code> 不可用</b>（COS 上传 60s 超时 + 会把 runtime 改成 Nodejs20.19，违反决策 044）</td><td class="link"><code>.github/workflows/deploy-wechat.yml</code>、<code>doc/standards/工程化与CI经验.md</code></td></tr>
+<tr class="ok"><td class="num">6</td><td class="item">✅</td><td class="val"><b>云端数据规模</b></td><td class="src">questions <b>61</b>（已判 55）/ batches <b>25</b>（photo 与 <b>zhixue</b> 两类）/ 用户 <b>2</b> / 报告 15 份（9/19 口径）/ 学生异议 <b>0</b></td><td class="link">云数据库（<code>tcb db nosql execute</code>，环境 <code>cloud1-d8g0ty39wd73f430a</code>）</td></tr>
+<tr class="warn"><td class="num">7</td><td class="item">⚠️</td><td class="val"><b>判定质量</b></td><td class="src">壳一致 ✅（0/55）；<b>稳定性仍未修</b>（P1 精细数值当精确分、P2 η 无钳制）</td><td class="link"><code>doc/architecture/诊断质量审计-2026-09-19.md</code></td></tr>
+<tr class="warn"><td class="num">8</td><td class="item">⚠️</td><td class="val"><b>🆕 已废规则残留</b></td><td class="src"><code>RUBRIC_V2</code> 里的 <code>■ 5维锁定</code> 表 + 必填 <code>fiveDim</code>，是<b>决策 024「不给五维逐项打分」的残留</b>；且表用 1~5、决策 026 已定 0~1 → 库里 20/54 题五值全同、7 题整组作废</td><td class="link">决策 024 / 026；<code>graphEngine/src/lib/prompts.js:21</code></td></tr>
+<tr class="warn"><td class="num">9</td><td class="item">⚠️</td><td class="val"><b>审计 P1–P9</b></td><td class="src">045 已修：对错口径统一 / 报告三态 / 五维越界作废 / 选填题字段守卫；<b>未修</b>：P1 展示改档位、P2 η 钳制、P3 043 判据落地、P5 errorLevel 兜底、历史 15 份报告是否重跑</td><td class="link">审计文档 §3、决策 045</td></tr>
+<tr class="warn"><td class="num">10</td><td class="item">⚠️</td><td class="val"><b>知识图谱</b></td><td class="src"><b>269 节点</b> + 61 extras（8/17 治理后）；覆盖<b>仅必修一</b>（含第 0 章初高衔接）</td><td class="link"><code>knowledge-graph/nodes/</code>；<code>doc/STATUS-MANIFEST.md</code> 图谱专项</td></tr>
+<tr class="mid"><td class="num">11</td><td class="item">🟡</td><td class="val"><b>评测资产</b></td><td class="src">题面 <b>436 题</b>（<code>dataset-v2.json</code>）；合成痕迹 <b>43 条 / 11 题</b>（4 角色，剔除 quality 后 38 条可用）；人工断言 <b>10 条</b>；稳定性脚本 <code>scripts/eval-stability.mjs</code></td><td class="link"><code>output/golden/</code>（<b>gitignore，版权原因不入库</b>）、<code>doc/architecture/评测数据集预研.md</code></td></tr>
+<tr class="ok"><td class="num">12</td><td class="item">✅</td><td class="val"><b>模型选型</b></td><td class="src">转录 Qwen3.7-plus；判定主模型 <code>deepseek-v4-flash</code>（thinking disabled + temp 0.2）；GLM 作影子 AB</td><td class="link"><code>doc/模型选型路由决策.md</code>、<code>cloudfunctions/*/index.js</code> 配置区</td></tr>
+<tr class="mid"><td class="num">13</td><td class="item">🟡</td><td class="val"><b>流程门禁</b></td><td class="src">prd ✅ / arch ✅ / detailed ✅ / review ✅ / <b>code 未完成</b>（流程遗留）；理解确认 ✅（9/19）</td><td class="link"><code>bash gate.sh status</code></td></tr>
+<tr class="ok"><td class="num">14</td><td class="item">✅</td><td class="val"><b>工程版本线</b></td><td class="src">0.5.x = 线上 beta（9/1 校内起）；<b>0.6.0 = D1–D10 全完成</b>；0.7.0 = 复盘 Q/S；1.0 需审批（长期不做）</td><td class="link"><code>doc/architecture/节点化迁移计划.md</code> §版本线</td></tr>
+<tr class="warn"><td class="num">15</td><td class="item">⚠️</td><td class="val"><b>真实使用规模</b></td><td class="src">2 个账号（1 个是作者本人）→ 「对某个学生有用」<b>缺证据</b></td><td class="link">审计文档 §1</td></tr>
+<tr class="warn"><td class="num">16</td><td class="item">⚠️</td><td class="val"><b>版权数据风险</b></td><td class="src"><code>output/golden/_src/</code>、<code>dataset-*.json</code> 已正确忽略；<b>但 3 个 golden 文件已被 git 跟踪</b>（含 <code>2025新高考I卷-数学-题面+解析.txt</code>）→ 与「版权内容不进 public 仓库」冲突，<b>待决定是否清理</b></td><td class="link">本表 §1-16；<code>.gitignore</code></td></tr>
+<tr class="ok"><td class="num">17</td><td class="item">✅</td><td class="val"><b>凭据与登录</b></td><td class="src">腾讯云 API 密钥对在 <code>~/.zsh_history</code>（<b>仓库内无泄露</b>，已扫）；<code>tcb login --apiKeyId/--apiKey</code> 已可用；<b>本机无微信私钥</b> → 云函数部署只能走 CI 或开发者工具</td><td class="link"><code>doc/standards/开发经验.md</code> §五-12</td></tr>
+<tr class="ok"><td class="num">18</td><td class="item">✅</td><td class="val"><b>D6 基线（旧版稳定性）</b></td><td class="src">三态一致率 <b>91.4%</b>、level 一致率 <b>85.7%</b>、errorLevel <b>77.1%</b>、知识点名 <b>60.0%</b>、题型 pattern <b>22.9%</b>、不稳定用例 <b>8/35</b>、解析失败 <b>3/38</b></td><td class="link"><code>output/golden/results/stability-old.json</code>、D6 设计 §5.1</td></tr>
+<tr class="warn"><td class="num">19</td><td class="item">⚠️</td><td class="val"><b>⚠️ 图谱质量（新发现 09-25）</b></td><td class="src">271 节点里 <b><code>type=method</code> 有 89 个 = 33%</b>，而决策 028 的 WWH 规定<b>方法/套路/过程不建节点</b>——说明 <code>method</code> 这个类别把「操作」（合法）与「方法套路」（违规）混在一起；另实测<b>同一内容挂多个节点</b>（并集/集合的并集；集合的子集计数/集合的子集与元素计数/子集）→ <b>K 记账被摊薄</b>（决策 026 粒度方案失效）</td><td class="link">云端 <code>knowledge_nodes</code>；本表 #19</td></tr>
+</tbody></table>
+<h2>② 节点化进度（D 系列）</h2><ul><li class="done"><span class="dot"></span>D1（2026-09-06 ✅：graphEngine 骨架 + langgraph/zod 依赖 + 空图 + 测试脚手架，<code>npm test</code> 3/3 过、入口 graphDemo 返回 count=1，未联网未连库未碰线上）</li>
+<li class="done"><span class="dot"></span>D2（2026-09-06 ✅：<b>拆考点盒子落地</b>——用户指定第一个盒子 = 已设计待实现的拆考点节点《判定节点设计-拆考点节点.md》；kg 候选注入(buildChapterIndex) + 三步节点(decomposePointsNode：章识别→图谱候选→编号勾选) + 还原校验(res</li>
+<li class="done"><span class="dot"></span>D3（2026-09-19 ✅：<b>环节判定节点落地</b>——<code>src/lib/pkp.js</code>（clampPkp/normName/alignNames/deriveBlank/deriveAhead 纯函数）+ <code>src/nodes/judgePoints.js</code>（三问判据 prompt + 依赖注</li>
+<li class="done"><span class="dot"></span><b>D4（2026-09-19 ✅：单题判定完整图落地）</b>——<code>src/nodes/</code> N0–N7 八节点 + <code>src/lib/</code>（normalize / ragTools / updateMastery / knowledgeMatch / prompts / http）+ `src/grap</li></ul>
+<h2>③ 改了什么 → 要同步哪些</h2>
+<table><thead><tr><th>你做了什么</th><th>必须更新</th></tr></thead><tbody><tr><td><b>完成一期节点化（Dn）</b></td><td>① <code>节点化迁移计划.md</code> 进度区 ② 本表 #1 ③ <code>ROADMAP.md</code> 状态行 ④ 有拍板则追加 <code>decision-log.md</code> ⑤ 本表「最后核对」</td></tr>
+<tr><td><b>改判定口径 / 阈值 / prompt</b></td><td>① <code>decision-log.md</code> 新决策 ② 本表 #7/#8 ③ 审计文档对应 Pn 状态 ④ <b>D5 有意修正清单</b>（若改了行为）⑤ D6 设计（若在拆分范围内）</td></tr>
+<tr><td><b>改云函数并部署</b></td><td>① 本表 #2/#4/#5 ② <code>PROJECT-STRUCTURE.md</code>（新增/删除函数时）③ 提交信息带 <code>[deploy:函数名]</code></td></tr>
+<tr><td><b>小程序增删页面</b></td><td>① <code>PROJECT-STRUCTURE.md</code> §二 ② 本表 #2（若影响判定入口）</td></tr>
+<tr><td><b>图谱数据变更</b></td><td>① <code>STATUS-MANIFEST.md</code> 图谱专项 ② 本表 #10</td></tr>
+<tr><td><b>新增评测语料 / 改评测脚本</b></td><td>① <code>评测数据集预研.md</code> §七/八 ② 本表 #11 ③ D6 设计的评测方案</td></tr>
+<tr><td><b>阶段门禁变化</b></td><td>① 以 <code>bash gate.sh status</code> 为准 ② 本表 #13</td></tr>
+<tr><td><b>每轮对话收尾</b></td><td>① git 提交（新建文档先问「是否进 public 仓库」）② 本表「最后核对」日期</td></tr>
+<tr><td><b>改了本表任何一行</b></td><td>重跑 <code>node scripts/render-status.mjs</code> 生成 <code>doc/status.html</code>（看板由本表派生，<b>不要手改 status.html</b>）</td></tr></tbody></table>
+<h2>④ 别再犯（反例）</h2>
+<table><thead><tr><th>反例</th><th>为什么错</th></tr></thead><tbody><tr><td>每个文档各写一份「当前状态」段落</td><td>副本必然漂移 —— 2026-09 实测：4 份文档同时停在 9/06，而代码已到 9/25</td></tr>
+<tr><td>用「设计定稿/正在讨论」描述已完成的期</td><td>无法判断真实进度 → 本表只写 ✅/🟡/⬜ + 日期</td></tr>
+<tr><td>把「跑通了」当成「质量达标」</td><td>D5 壳一致 ≠ 判定准；审计 P1/P2 仍在</td></tr>
+<tr><td>忘了 <code>source</code> 分组</td><td><code>photo</code>（AI 判）与 <code>zhixue</code>（官方口径）混统计会得出假结论（9/25 实测踩过）</td></tr></tbody></table>
+</body></html>
