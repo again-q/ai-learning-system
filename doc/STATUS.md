@@ -28,7 +28,7 @@
 | 16 | ⚠️ | **版权数据风险** | `output/golden/_src/`、`dataset-*.json` 已正确忽略；**但 3 个 golden 文件已被 git 跟踪**（含 `2025新高考I卷-数学-题面+解析.txt`）→ 与「版权内容不进 public 仓库」冲突，**待决定是否清理** | 本表 §1-16；`.gitignore` | 待拍板后：`.gitignore` + `git rm --cached` 或 filter-repo |
 | 17 | ✅ | **凭据与登录** | 腾讯云 API 密钥对在 `~/.zsh_history`（**仓库内无泄露**，已扫）；`tcb login --apiKeyId/--apiKey` 已可用；**本机无微信私钥** → 云函数部署只能走 CI 或开发者工具 | `doc/standards/开发经验.md` §五-12 | 经验文档、本表 |
 | 18 | ✅ | **D6 基线（旧版稳定性）** | 三态一致率 **91.4%**、level 一致率 **85.7%**、errorLevel **77.1%**、知识点名 **60.0%**、题型 pattern **22.9%**、不稳定用例 **8/35**、解析失败 **3/38** | `output/golden/results/stability-old.json`、D6 设计 §5.1 | D6 设计、本表 |
-| 19 | **🟡 图谱质量 / 方法区分治** | 271 节点里 `type=method` **89 个（33%）**，按决策 028 的 WWH 不该作知识节点 → **已给这 89 个打 `partition:'method'`**（纯新增字段，`nModified:89` 已复核）；**两个引擎的「清单过滤」已改**（`judgeOne:108`、`graphEngine/lib/knowledgeMatch.js:33`，47/47 测试过）→ **待部署才生效**；回退：`node scripts/partition-method-nodes.mjs --revert` | 云端 `knowledge_nodes`；`scripts/partition-method-nodes.mjs` | 剩余：① 部署生效 ② 图谱前端分区展示 ③ 5 道历史题的主知识点是否迁父节点 |
+| 19 | 🟡 | ** 图谱质量 / 方法区分治** | 271 节点里 `type=method` **89 个（33%）**，按决策 028 的 WWH 不该作知识节点 → **已给这 89 个打 `partition:'method'`**（纯新增字段，`nModified:89` 已复核）；**两个引擎的「清单过滤」已改**（`judgeOne:108`、`graphEngine/lib/knowledgeMatch.js:33`，47/47 测试过）→ **待部署才生效**；回退：`node scripts/partition-method-nodes.mjs --revert` | 云端 `knowledge_nodes`；`scripts/partition-method-nodes.mjs` | 剩余：① 部署生效 ② 图谱前端分区展示 ③ 5 道历史题的主知识点是否迁父节点 |
 
 ---
 
