@@ -36,3 +36,6 @@ miniprogram/packageSync/
 
 # babel 辅助函数编译产物（工具自动生成）
 @babel/runtime/
+
+# Pairlet 共享票（一次性兑换令牌＝本机访问入口，文件内含二维码）：仅本地自用，禁止入库/推送（2026-09-25）
+output/pairlet-share-qr.txt
