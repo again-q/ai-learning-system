@@ -104,7 +104,9 @@ async function loadNodes() {
 async function buildNodeNames() {
   try {
     const nodes = await loadNodes();
-    const names = Array.from(new Set((nodes || []).map((n) => String(n.name || '').trim()).filter(Boolean)))
+    // 分区（2026-09-25）：方法类节点不进清单，但仍留在库里供 findNode 匹配（避免 custom_nodes 兜底分裂）
+    const knowledgeOnly = (nodes || []).filter((n) => String(n.partition || '') !== 'method');
+    const names = Array.from(new Set(knowledgeOnly.map((n) => String(n.name || '').trim()).filter(Boolean)))
       .sort((a, b) => a.length - b.length || a.localeCompare(b, 'zh'));
     return '【知识点节点清单】' + names.join('、');
   } catch (e) { return ''; }
