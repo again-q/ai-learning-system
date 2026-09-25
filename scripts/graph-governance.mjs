@@ -78,9 +78,15 @@ const SYSTEM_TRIAGE = [
 (async () => {
   const catalog = JSON.parse(fs.readFileSync(path.join(ROOT, 'output/graph-partition/knowledge-catalog.json'), 'utf8'));
   const all = JSON.parse(fs.readFileSync(path.join(ROOT, 'output/graph-partition/method-nodes.json'), 'utf8'));
+  if (!['method', 'knowledge'].includes(TYPE)) throw new Error('未知 --type=' + TYPE + '（只允许 method | knowledge）—— 不做静默 fallback');
   const pool = TYPE === 'method' ? all.items : catalog.items;
   const chOf = (x) => String(x.chapter || (x.path || [])[2] || '');
   const picked = pool.filter((x) => /^(第0章|第一章|第二章)/.test(chOf(x))).slice(0, LIMIT);
+  // ⚠️ 「空结果」必须当失败处理（2026-09-25 教训：静默 0 命中比报错更危险——它会安静产出空提案队列）
+  if (!picked.length) {
+    const sample = pool[0] || {};
+    throw new Error('分诊选到 0 个节点 → 拒绝生成空提案。诊断：pool=' + pool.length + '，样例字段=[' + Object.keys(sample).join(',') + ']，样例=' + JSON.stringify(sample).slice(0, 200));
+  }
   console.log('分诊任务: type=' + TYPE + ' 取前 ' + picked.length + ' 个（限定前两章便于人工核对）');
   const proposals = [];
   let i = 0;

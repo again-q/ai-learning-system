@@ -49,6 +49,8 @@ function query(cmd) {
 }
 
 const all = query({ find: TABLE, filter: {}, projection: { _id: 1, name: 1, type: 1, partition: 1, path: 1 }, limit: 1000 });
+if (!all.length) throw new Error('knowledge_nodes 查询返回 0 条 → 拒绝继续（先查登录态/环境 id）');
+if (!('path' in (all[0] || {}))) throw new Error('节点缺 path 字段（projection 漏了？）→ 章节统计会静默出错');
 const method = all.filter((n) => n.type === 'method');
 const tagged = all.filter((n) => n.partition === 'method');
 console.log('节点总数 ' + all.length + '｜type=method ' + method.length + '｜已打 container/method 标记 ' + tagged.length);
