@@ -19,7 +19,7 @@
 | 7 | ⚠️ | **判定质量** | 壳一致 ✅（0/55）；**稳定性仍未修**（P1 精细数值当精确分、P2 η 无钳制） | `doc/architecture/诊断质量审计-2026-09-19.md` | 本表、决策日志、掌握度链路-待办 |
 | 8 | ⚠️ | **🆕 已废规则残留** | `RUBRIC_V2` 里的 `■ 5维锁定` 表 + 必填 `fiveDim`，是**决策 024「不给五维逐项打分」的残留**；且表用 1~5、决策 026 已定 0~1 → 库里 20/54 题五值全同、7 题整组作废 | 决策 024 / 026；`graphEngine/src/lib/prompts.js:21` | 待用户拍 a/b/c 后：prompt、D6 设计、审计 P5、本表 |
 | 9 | ⚠️ | **审计 P1–P9** | 045 已修：对错口径统一 / 报告三态 / 五维越界作废 / 选填题字段守卫；**未修**：P1 展示改档位、P2 η 钳制、P3 043 判据落地、P5 errorLevel 兜底、历史 15 份报告是否重跑 | 审计文档 §3、决策 045 | 本表、决策日志 |
-| 10 | 🟡 | **知识图谱** | **271 节点**（definition 77 / property 84 / **method 89** / notation 21）＋ **方法区已分治**（知识区 182 / 方法区 89，已部署生效）＋ extras 61 条；⚠️ `relations.reference` 仅 **56%** 且**判定不读它**；`custom_nodes` **39 条**自造 | `knowledge-graph/nodes/`、`doc/STATUS-MANIFEST.md` 图谱专项 | STATUS-MANIFEST、本表 |
+| 10 | 🟡 | **知识图谱** | **271 节点**（definition 77 / property 84 / **method 89** / notation 21）＋ **方法区已分治**（知识区 182 / 方法区 89，已部署生效）＋ extras 61 条；⚠️ `relations.reference` 仅 **56%** 且**判定不读它**；`custom_nodes` **39 条**自造 | `doc/architecture/图谱与诊断管线-全局关系（框架）.md`（取舍看这份）、`doc/STATUS-MANIFEST.md` 图谱专项 | STATUS-MANIFEST、本表 |
 | 11 | 🟡 | **评测资产** | 题面 **436 题**（`dataset-v2.json`）；合成痕迹 **43 条 / 11 题**（4 角色，剔除 quality 后 38 条可用）；人工断言 **10 条**；稳定性脚本 `scripts/eval-stability.mjs` | `output/golden/`（**gitignore，版权原因不入库**）、`doc/architecture/评测数据集预研.md` | 评测预研 §七/八、D6 设计、本表 |
 | 12 | ✅ | **模型选型** | 转录 Qwen3.7-plus；判定主模型 `deepseek-v4-flash`（thinking disabled + temp 0.2）；GLM 作影子 AB | `doc/模型选型路由决策.md`、`cloudfunctions/*/index.js` 配置区 | 本表、ROADMAP 选型结论 |
 | 13 | 🟡 | **流程门禁** | prd ✅ / arch ✅ / detailed ✅ / review ✅ / **code 未完成**（流程遗留）；理解确认 ✅（9/19） | `bash gate.sh status` | GATE_SUMMARY、本表 |
