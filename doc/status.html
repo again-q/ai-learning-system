@@ -23,11 +23,11 @@ li.todo{color:var(--dim)}
 h2{font-size:15px;margin:24px 0 10px;color:var(--dim);font-weight:600}
 </style></head><body>
 <h1>ai-learning-system · 进度看板</h1>
-<div class="sub">单一事实源：<code>doc/STATUS.md</code>（生成于 2026-09-25 05:13）｜最后核对 2026-09-25｜📊 一眼看状态：[`doc/status.html`](status.html)（由本表生成）｜<b>不要手改本页</b>，改 STATUS.md 后重跑 <code>node scripts/render-status.mjs</code></div>
+<div class="sub">单一事实源：<code>doc/STATUS.md</code>（生成于 2026-09-25 06:41）｜最后核对 2026-09-25｜📊 一眼看状态：[`doc/status.html`](status.html)（由本表生成）｜<b>不要手改本页</b>，改 STATUS.md 后重跑 <code>node scripts/render-status.mjs</code></div>
 <div class="cards">
 <div class="card ok"><div class="n">9</div><div class="l">正常/已完成</div></div>
-<div class="card mid"><div class="n">4</div><div class="l">部分/进行中</div></div>
-<div class="card warn"><div class="n">6</div><div class="l">风险/待拍板</div></div>
+<div class="card mid"><div class="n">5</div><div class="l">部分/进行中</div></div>
+<div class="card warn"><div class="n">5</div><div class="l">风险/待拍板</div></div>
 <div class="card todo"><div class="n">0</div><div class="l">未做</div></div>
 </div>
 <h2>① 状态总表</h2>
@@ -41,7 +41,7 @@ h2{font-size:15px;margin:24px 0 10px;color:var(--dim);font-weight:600}
 <tr class="warn"><td class="num">7</td><td class="item">⚠️</td><td class="val"><b>判定质量</b></td><td class="src">壳一致 ✅（0/55）；<b>稳定性仍未修</b>（P1 精细数值当精确分、P2 η 无钳制）</td><td class="link"><code>doc/architecture/诊断质量审计-2026-09-19.md</code></td></tr>
 <tr class="warn"><td class="num">8</td><td class="item">⚠️</td><td class="val"><b>🆕 已废规则残留</b></td><td class="src"><code>RUBRIC_V2</code> 里的 <code>■ 5维锁定</code> 表 + 必填 <code>fiveDim</code>，是<b>决策 024「不给五维逐项打分」的残留</b>；且表用 1~5、决策 026 已定 0~1 → 库里 20/54 题五值全同、7 题整组作废</td><td class="link">决策 024 / 026；<code>graphEngine/src/lib/prompts.js:21</code></td></tr>
 <tr class="warn"><td class="num">9</td><td class="item">⚠️</td><td class="val"><b>审计 P1–P9</b></td><td class="src">045 已修：对错口径统一 / 报告三态 / 五维越界作废 / 选填题字段守卫；<b>未修</b>：P1 展示改档位、P2 η 钳制、P3 043 判据落地、P5 errorLevel 兜底、历史 15 份报告是否重跑</td><td class="link">审计文档 §3、决策 045</td></tr>
-<tr class="warn"><td class="num">10</td><td class="item">⚠️</td><td class="val"><b>知识图谱</b></td><td class="src"><b>269 节点</b> + 61 extras（8/17 治理后）；覆盖<b>仅必修一</b>（含第 0 章初高衔接）</td><td class="link"><code>knowledge-graph/nodes/</code>；<code>doc/STATUS-MANIFEST.md</code> 图谱专项</td></tr>
+<tr class="mid"><td class="num">10</td><td class="item">🟡</td><td class="val"><b>知识图谱</b></td><td class="src"><b>271 节点</b>（definition 77 / property 84 / <b>method 89</b> / notation 21）＋ <b>方法区已分治</b>（知识区 182 / 方法区 89，已部署生效）＋ extras 61 条；⚠️ <code>relations.reference</code> 仅 <b>56%</b> 且<b>判定不读它</b>；<code>custom_nodes</code> <b>39 条</b>自造</td><td class="link"><code>knowledge-graph/nodes/</code>、<code>doc/STATUS-MANIFEST.md</code> 图谱专项</td></tr>
 <tr class="mid"><td class="num">11</td><td class="item">🟡</td><td class="val"><b>评测资产</b></td><td class="src">题面 <b>436 题</b>（<code>dataset-v2.json</code>）；合成痕迹 <b>43 条 / 11 题</b>（4 角色，剔除 quality 后 38 条可用）；人工断言 <b>10 条</b>；稳定性脚本 <code>scripts/eval-stability.mjs</code></td><td class="link"><code>output/golden/</code>（<b>gitignore，版权原因不入库</b>）、<code>doc/architecture/评测数据集预研.md</code></td></tr>
 <tr class="ok"><td class="num">12</td><td class="item">✅</td><td class="val"><b>模型选型</b></td><td class="src">转录 Qwen3.7-plus；判定主模型 <code>deepseek-v4-flash</code>（thinking disabled + temp 0.2）；GLM 作影子 AB</td><td class="link"><code>doc/模型选型路由决策.md</code>、<code>cloudfunctions/*/index.js</code> 配置区</td></tr>
 <tr class="mid"><td class="num">13</td><td class="item">🟡</td><td class="val"><b>流程门禁</b></td><td class="src">prd ✅ / arch ✅ / detailed ✅ / review ✅ / <b>code 未完成</b>（流程遗留）；理解确认 ✅（9/19）</td><td class="link"><code>bash gate.sh status</code></td></tr>
