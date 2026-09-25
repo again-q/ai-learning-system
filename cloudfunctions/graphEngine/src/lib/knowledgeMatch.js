@@ -26,8 +26,7 @@ function createKnowledgeTools(deps) {
   async function buildNodeNames() {
     try {
       const nodes = await loadNodes();
-      const names = Array.from(new Set((nodes || []).map((n) => String(n.name || '').trim()).filter(Boolean)))
-        .sort((a, b) => a.length - b.length || a.localeCompare(b, 'zh'));
+
       // 分区（2026-09-25）：方法类节点（partition='method'，按决策 028 的 WWH 不该作知识节点）**不进清单**，
       // 但仍留在库里供 findNode 匹配（否则历史引用会走 custom_nodes 兜底 → 同一内容分裂）
       const knowledgeOnly = (nodes || []).filter((n) => String(n.partition || '') !== 'method');
