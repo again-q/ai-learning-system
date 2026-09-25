@@ -23,10 +23,10 @@ li.todo{color:var(--dim)}
 h2{font-size:15px;margin:24px 0 10px;color:var(--dim);font-weight:600}
 </style></head><body>
 <h1>ai-learning-system · 进度看板</h1>
-<div class="sub">单一事实源：<code>doc/STATUS.md</code>（生成于 2026-09-25 04:08）｜最后核对 2026-09-25｜📊 一眼看状态：[`doc/status.html`](status.html)（由本表生成）｜<b>不要手改本页</b>，改 STATUS.md 后重跑 <code>node scripts/render-status.mjs</code></div>
+<div class="sub">单一事实源：<code>doc/STATUS.md</code>（生成于 2026-09-25 05:13）｜最后核对 2026-09-25｜📊 一眼看状态：[`doc/status.html`](status.html)（由本表生成）｜<b>不要手改本页</b>，改 STATUS.md 后重跑 <code>node scripts/render-status.mjs</code></div>
 <div class="cards">
-<div class="card ok"><div class="n">8</div><div class="l">正常/已完成</div></div>
-<div class="card mid"><div class="n">5</div><div class="l">部分/进行中</div></div>
+<div class="card ok"><div class="n">9</div><div class="l">正常/已完成</div></div>
+<div class="card mid"><div class="n">4</div><div class="l">部分/进行中</div></div>
 <div class="card warn"><div class="n">6</div><div class="l">风险/待拍板</div></div>
 <div class="card todo"><div class="n">0</div><div class="l">未做</div></div>
 </div>
@@ -50,7 +50,7 @@ h2{font-size:15px;margin:24px 0 10px;color:var(--dim);font-weight:600}
 <tr class="warn"><td class="num">16</td><td class="item">⚠️</td><td class="val"><b>版权数据风险</b></td><td class="src"><code>output/golden/_src/</code>、<code>dataset-*.json</code> 已正确忽略；<b>但 3 个 golden 文件已被 git 跟踪</b>（含 <code>2025新高考I卷-数学-题面+解析.txt</code>）→ 与「版权内容不进 public 仓库」冲突，<b>待决定是否清理</b></td><td class="link">本表 §1-16；<code>.gitignore</code></td></tr>
 <tr class="ok"><td class="num">17</td><td class="item">✅</td><td class="val"><b>凭据与登录</b></td><td class="src">腾讯云 API 密钥对在 <code>~/.zsh_history</code>（<b>仓库内无泄露</b>，已扫）；<code>tcb login --apiKeyId/--apiKey</code> 已可用；<b>本机无微信私钥</b> → 云函数部署只能走 CI 或开发者工具</td><td class="link"><code>doc/standards/开发经验.md</code> §五-12</td></tr>
 <tr class="ok"><td class="num">18</td><td class="item">✅</td><td class="val"><b>D6 基线（旧版稳定性）</b></td><td class="src">三态一致率 <b>91.4%</b>、level 一致率 <b>85.7%</b>、errorLevel <b>77.1%</b>、知识点名 <b>60.0%</b>、题型 pattern <b>22.9%</b>、不稳定用例 <b>8/35</b>、解析失败 <b>3/38</b></td><td class="link"><code>output/golden/results/stability-old.json</code>、D6 设计 §5.1</td></tr>
-<tr class="mid"><td class="num">19</td><td class="item">🟡</td><td class="val"><b> 图谱质量 / 方法区分治</b></td><td class="src">271 节点里 <code>type=method</code> <b>89 个（33%）</b>，按决策 028 的 WWH 不该作知识节点 → <b>已给这 89 个打 <code>partition:'method'</code></b>（纯新增字段，<code>nModified:89</code> 已复核）；<b>两个引擎的「清单过滤」已改</b>（<code>judgeOne:108</code>、<code>graphEngine/lib/knowledgeMatch.js:33</code>，47/47 测试过）→ <b>待部署才生效</b>；回退：<code>node scripts/partition-method-nodes.mjs --revert</code></td><td class="link">云端 <code>knowledge_nodes</code>；<code>scripts/partition-method-nodes.mjs</code></td></tr>
+<tr class="ok"><td class="num">19</td><td class="item">✅</td><td class="val"><b>图谱质量 / 方法区分治</b></td><td class="src">89 个 <code>type=method</code> 已打 <code>partition:'method'</code>（<code>nModified:89</code>）；两引擎「清单过滤」<b>已部署生效并定量复验</b>：判定 prompt tokens <b>6470→5823</b>、判定出的知识点 0 个落在方法区；回退 <code>node scripts/partition-method-nodes.mjs --revert</code></td><td class="link"><code>scripts/partition-method-nodes.mjs</code>、<code>knowledgeMatch.js:33</code>、<code>judgeOne:108</code></td></tr>
 </tbody></table>
 <h2>② 节点化进度（D 系列）</h2><ul><li class="done"><span class="dot"></span>D1（2026-09-06 ✅：graphEngine 骨架 + langgraph/zod 依赖 + 空图 + 测试脚手架，<code>npm test</code> 3/3 过、入口 graphDemo 返回 count=1，未联网未连库未碰线上）</li>
 <li class="done"><span class="dot"></span>D2（2026-09-06 ✅：<b>拆考点盒子落地</b>——用户指定第一个盒子 = 已设计待实现的拆考点节点《判定节点设计-拆考点节点.md》；kg 候选注入(buildChapterIndex) + 三步节点(decomposePointsNode：章识别→图谱候选→编号勾选) + 还原校验(res</li>
