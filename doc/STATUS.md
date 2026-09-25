@@ -29,6 +29,8 @@
 | 17 | ✅ | **凭据与登录** | 腾讯云 API 密钥对在 `~/.zsh_history`（**仓库内无泄露**，已扫）；`tcb login --apiKeyId/--apiKey` 已可用；**本机无微信私钥** → 云函数部署只能走 CI 或开发者工具 | `doc/standards/开发经验.md` §五-12 | 经验文档、本表 |
 | 18 | ✅ | **D6 基线（旧版稳定性）** | 三态一致率 **91.4%**、level 一致率 **85.7%**、errorLevel **77.1%**、知识点名 **60.0%**、题型 pattern **22.9%**、不稳定用例 **8/35**、解析失败 **3/38** | `output/golden/results/stability-old.json`、D6 设计 §5.1 | D6 设计、本表 |
 | 19 | ✅ | **图谱质量 / 方法区分治** | 89 个 `type=method` 已打 `partition:'method'`（`nModified:89`）；两引擎「清单过滤」**已部署生效并定量复验**：判定 prompt tokens **6470→5823**、判定出的知识点 0 个落在方法区；回退 `node scripts/partition-method-nodes.mjs --revert` | `scripts/partition-method-nodes.mjs`、`knowledgeMatch.js:33`、`judgeOne:108` | 剩余：① 图谱前端分区展示 ② 5 道历史题主知识点是否迁父节点 ③ 部署期间曾因 SyntaxError 中断判定约 8 分钟（已记 §五-14） |
+| 20 | ⚠️ | **最高判据（设计宪法追加）** | 决策 047：AI 产出的最终目的＝「学生自己动了一下」；三问判据（证据在哪 / 下一步动作 / 学生能不能推翻）已入宪法 §一；**异议入口线上 0 次使用、入口点不到 → 优先级高于一切新功能与精度优化** | `doc/theory/五维能力向量框架-理论文档.md` §一 · `doc/architecture/AI产出物-第一性原理.md` | 报告页「下一步」、`dispute` |
+| 21 | ⚠️ | **采集层冻结（硬约束）** | 决策 048：**2.0 AI 教练加入前，采集项一个都不能多**——现役只有「拍照」；0.7.0 的 Q/S 报告页回顾采集是否也冻结到 2.0 之后（**待用户一句话确认**） | `doc/architecture/五维工程实现规范.md` 顶部硬约束、决策 048 | 版本线、D10、产品形态总设计 |
 
 ---
 
@@ -44,6 +46,7 @@
 | **新增评测语料 / 改评测脚本** | ① `评测数据集预研.md` §七/八 ② 本表 #11 ③ D6 设计的评测方案 |
 | **阶段门禁变化** | ① 以 `bash gate.sh status` 为准 ② 本表 #13 |
 | **每轮对话收尾** | ① git 提交（新建文档先问「是否进 public 仓库」）② 本表「最后核对」日期 |
+| **拍了最高判据 / 设计原则** | ① 宪法 `doc/theory/五维能力向量框架-理论文档.md`（按决策 016：原文不篡改，只追加「⚠️」块）② `doc/architecture/AI产出物-第一性原理.md` ③ `decision-log.md` 新决策 ④ 本表 #20 / **#21**（采集类口径落 `五维工程实现规范.md`，按决策 027 不进宪法）⑤ 重跑 `node scripts/render-status.mjs` |
 | **改了本表任何一行** | 重跑 `node scripts/render-status.mjs` 生成 `doc/status.html`（看板由本表派生，**不要手改 status.html**） |
 
 ---
