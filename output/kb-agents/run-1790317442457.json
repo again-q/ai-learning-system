@@ -1,0 +1,44 @@
+{
+ "meta": {
+  "ts": "2026-09-25T06:24:02.457Z",
+  "model": "deepseek-v4-flash",
+  "tokens": [
+   {
+    "in": 168,
+    "out": 59
+   }
+  ]
+ },
+ "runs": [
+  {
+   "id": "4c2f81c76a9ada1500f58acb06c217f0",
+   "hist": "交集",
+   "proposed": [
+    "集合的交集",
+    "集合的表示法"
+   ],
+   "mapped": [
+    {
+     "input": "集合的交集",
+     "no": null,
+     "name": null,
+     "how": "miss",
+     "score": 0.76
+    },
+    {
+     "input": "集合的表示法",
+     "no": null,
+     "name": null,
+     "how": "miss",
+     "score": 0.733
+    }
+   ],
+   "votes": [],
+   "final": [],
+   "verdict": {
+    "needAdjudication": true,
+    "reason": "has-miss"
+   }
+  }
+ ]
+}

@@ -1,0 +1,77 @@
+{
+ "generatedAt": "2026-10-05T03:12:33.303Z",
+ "experiment1": [
+  {
+   "size": 12,
+   "acc": 1,
+   "avgConf": 0.998
+  },
+  {
+   "size": 30,
+   "acc": 1,
+   "avgConf": 0.998
+  },
+  {
+   "size": 60,
+   "acc": 1,
+   "avgConf": 0.9960000000000001
+  },
+  {
+   "size": 120,
+   "acc": 1,
+   "avgConf": 0.994
+  }
+ ],
+ "experiment2": [
+  {
+   "name": "并集运算",
+   "expect": "并集",
+   "pickedCh": "第一章 集合与常用逻辑用语",
+   "chOk": true,
+   "nCand": 58,
+   "picked": "并集",
+   "conf": 1,
+   "hit": true
+  },
+  {
+   "name": "交集运算",
+   "expect": "交集",
+   "pickedCh": "第一章 集合与常用逻辑用语",
+   "chOk": true,
+   "nCand": 58,
+   "picked": "交集",
+   "conf": 1,
+   "hit": true
+  },
+  {
+   "name": "补集运算",
+   "expect": "补集",
+   "pickedCh": "第一章 集合与常用逻辑用语",
+   "chOk": true,
+   "nCand": 58,
+   "picked": "补集",
+   "conf": 1,
+   "hit": true
+  },
+  {
+   "name": "确定性",
+   "expect": "确定性",
+   "pickedCh": "第一章 集合与常用逻辑用语",
+   "chOk": true,
+   "nCand": 58,
+   "picked": "确定性",
+   "conf": 0.99,
+   "hit": true
+  },
+  {
+   "name": "元素与集合关系",
+   "expect": "属于与不属于",
+   "pickedCh": "第一章 集合与常用逻辑用语",
+   "chOk": true,
+   "nCand": 58,
+   "picked": "属于与不属于",
+   "conf": 0.99,
+   "hit": true
+  }
+ ]
+}

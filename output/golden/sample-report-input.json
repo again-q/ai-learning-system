@@ -1,0 +1,688 @@
+{
+ "pick": {
+  "_id": "df17f1cc6aae5560012b61bf24252e2b",
+  "batchId": "ea7765a56aae5560011393c523ea1a1b",
+  "questionText": "$($ 本小题 $15$ 分 $)$ \n 已知集合 $A=\\{ x\\text{|}x+\\frac{4}{x}=5\\}$ ， $B=\\{ x\\text{|}(a-1)x^{2}+ax+a-1=0\\}$ ．\n $(1)$ 若 $B$ 中恰有一个元素，用列举法表示 $a$ 的值构成的集合 $\\text{;}$ \n $(2)$ 若 $B\\text{⊆}A$ ，求 $a$ 的取值范围．",
+  "cropFileID": "cloud://cloud1-d8g0ty39wd73f430a.636c-cloud1-d8g0ty39wd73f430a-1314058927/photos/owO3n4hUug1Dx7ePWQvP8ep2nl0o/zhixue/6f6797b7-5083-4acc-b5d3-3ce4e93eb22f/q17.jpg",
+  "questionType": "解答",
+  "breakpoint": {
+   "index": 3,
+   "nature": "中途断"
+  },
+  "difficultyLevel": "L5",
+  "difficultyValue": 0.66,
+  "errorAttribution": null,
+  "errorLevel": "rule",
+  "knowledgeUsage": [
+   {
+    "name": "集合与元素的字母表示",
+    "P": 0.5,
+    "D": 0.6
+   },
+   {
+    "name": "一元二次方程",
+    "P": 0.5,
+    "D": 0.6
+   },
+   {
+    "name": "判别式",
+    "P": 0.5,
+    "D": 0.6
+   },
+   {
+    "name": "韦达定理",
+    "P": 0.5,
+    "D": 0.6
+   },
+   {
+    "name": "空集的性质",
+    "P": 0.5,
+    "D": 0.6
+   }
+  ],
+  "pattern": "集合 / 含参一元二次方程解集与集合包含关系求参数范围 / 二次项系数含参需讨论退化情形，结合判别式与韦达定理分类",
+  "processAvailable": true,
+  "processScore": 0.5,
+  "referenceProcess": [
+   {
+    "step": "第一步：解集合A",
+    "content": "由 $x+\\frac{4}{x}=5$ 得 $x^2-5x+4=0$，解得 $x=1$ 或 $x=4$，故 $A=\\{1,4\\}$。",
+    "note": "分式方程去分母化为整式方程，注意 $x\\neq0$ 已由方程本身保证。"
+   },
+   {
+    "step": "第二步：第(1)问——$a-1=0$ 情形",
+    "content": "当 $a=1$ 时，$B=\\{x\\mid x=0\\}=\\{0\\}$，恰有一个元素，符合。",
+    "note": "二次项系数含参，必须先讨论系数为零的退化情形。"
+   },
+   {
+    "step": "第三步：第(1)问——$a-1\\neq0$ 情形",
+    "content": "当 $a\\neq1$ 时，$B$ 恰有一个元素等价于 $\\Delta=a^2-4(a-1)^2=0$，即 $3a^2-8a+4=0$，解得 $a=\\frac{2}{3}$ 或 $a=2$。",
+    "note": "一元二次方程有两相等实根时集合只有一个元素。"
+   },
+   {
+    "step": "第四步：第(1)问结论",
+    "content": "综上，$a$ 的值构成的集合为 $\\{1,\\frac{2}{3},2\\}$。",
+    "note": "列举法表示，注意不要遗漏 $a=1$。"
+   },
+   {
+    "step": "第五步：第(2)问——$B=\\varnothing$ 情形",
+    "content": "当 $a=1$ 时 $B=\\{0\\}\\not\\subseteq A$；当 $a\\neq1$ 时，$B=\\varnothing$ 需 $\\Delta<0$，即 $3a^2-8a+4>0$，解得 $a<\\frac{2}{3}$ 或 $a>2$。",
+    "note": "空集是任何集合的子集，必须单独讨论。"
+   },
+   {
+    "step": "第六步：第(2)问——$B\\neq\\varnothing$ 情形",
+    "content": "当 $B\\neq\\varnothing$ 时，$B\\subseteq A$ 需 $B=\\{1\\}$ 或 $B=\\{4\\}$ 或 $B=\\{1,4\\}$。由韦达定理 $x_1+x_2=\\frac{a}{1-a}$，$x_1x_2=1$。若 $B=\\{1,4\\}$，则 $x_1x_2=4\\neq1$，矛盾；若 $B=\\{1\\}$，则 $x_1x_2=1$ 成立，$x_1+x_2=2=\\frac{a}{1-a}$，得 $a=\\frac{2}{3}$，此时 $\\Delta=0$ 符合；若 $B=\\{4\\}$，则 $x_1x_2=16\\neq1$，矛盾。",
+    "note": "利用韦达定理快速排除不可能情形，避免逐一解方程。"
+   },
+   {
+    "step": "第七步：第(2)问结论",
+    "content": "综上，$a$ 的取值范围为 $a<\\frac{2}{3}$ 或 $a=\\frac{2}{3}$ 或 $a>2$，即 $a\\le\\frac{2}{3}$ 或 $a>2$。",
+    "note": "合并 $B=\\varnothing$ 与 $B=\\{1\\}$ 的结果。"
+   }
+  ],
+  "segments": [
+   {
+    "step": "第(1)问：讨论 $a-1=0$ 情形",
+    "status": "通",
+    "evidence": "当 $a-1=0$ 时，恰有一个元素，此时 $a=1$"
+   },
+   {
+    "step": "第(1)问：讨论 $a-1\\neq0$ 情形并解判别式",
+    "status": "通",
+    "evidence": "当 $a-1\\neq0$ 时，有 $\\Delta=a^2-4(a-1)^2=0$，解得 $a=4$ 或 $a=\\frac{1}{3}$"
+   },
+   {
+    "step": "第(1)问：综述结论",
+    "status": "断",
+    "evidence": "综上，$a$ 的值构成集合为 $\\{1,\\frac{1}{3},4\\}$"
+   },
+   {
+    "step": "第(2)问：求解集合A",
+    "status": "通",
+    "evidence": "$x+\\frac{4}{x}=5 \\Rightarrow x^2-5x+4=0 \\Rightarrow A=\\{1,4\\}$"
+   },
+   {
+    "step": "第(2)问：讨论 $B=\\varnothing$ 情形",
+    "status": "通",
+    "evidence": "当 $B=\\varnothing$ 时，判别式小于0"
+   },
+   {
+    "step": "第(2)问：讨论 $B\\neq\\varnothing$ 情形",
+    "status": "断",
+    "evidence": "当 $B\\neq\\varnothing$ 时，再次讨论 $a-1=0$ 被划去，以及 $a-1\\neq0$ 时的 $\\Delta<0,\\Delta=0,\\Delta>0$ 三种情况"
+   },
+   {
+    "step": "第(2)问：$\\Delta=0$ 分支计算",
+    "status": "断",
+    "evidence": "$a=\\frac{2}{3}$ 或 $a=\\frac{8}{9}$（舍去）"
+   },
+   {
+    "step": "第(2)问：$\\Delta>0$ 分支",
+    "status": "断",
+    "evidence": "此时 $a$ 不存在"
+   },
+   {
+    "step": "第(2)问：综述结论",
+    "status": "断",
+    "evidence": "综上，$a$ 取值范围为 $a\\le\\frac{1}{3}$ 或 $a=\\frac{8}{9}$ 或 $a>4$"
+   }
+  ],
+  "dx": {
+   "errorLevel": "rule",
+   "errorAttribution": null,
+   "errorType": "结果错"
+  }
+ },
+ "batch": 3,
+ "dots": [
+  [
+   "半对",
+   "mid"
+  ],
+  [
+   "半对",
+   "mid"
+  ],
+  [
+   "半对",
+   "mid"
+  ]
+ ],
+ "kp": {
+  "_id": "0fb91b1d6a96a58101a330bd73f139b3",
+  "knowledgeNodeId": "math_10_ch0_s2_000",
+  "mastery": 0.57,
+  "attempts": 18,
+  "correctCount": 6
+ },
+ "up": {
+  "_id": "df17f1cc6aae5802012c6c753165b022",
+  "unitName": "第0章 预备知识",
+  "aValue": 0.3,
+  "aUpper": 0.5,
+  "n": 1
+ },
+ "names": [
+  "集合与元素的字母表示",
+  "一元二次方程",
+  "判别式",
+  "韦达定理",
+  "空集的性质"
+ ],
+ "ledger": [
+  {
+   "name": "空集的性质",
+   "nodeId": "math_10_ch1_s2_010",
+   "attempts": 9,
+   "correctCount": 1,
+   "mastery": 0.36,
+   "hasRow": true,
+   "unit": "第一章 集合与常用逻辑用语",
+   "times": 7,
+   "lastP": 0.85,
+   "maxP": 0.85,
+   "lastDay": "09-19",
+   "recent": [
+    0.3,
+    0.3,
+    0.85
+   ]
+  },
+  {
+   "name": "集合与元素的字母表示",
+   "nodeId": "math_10_ch1_s1_006",
+   "attempts": 20,
+   "correctCount": 4,
+   "mastery": 0.46,
+   "hasRow": true,
+   "unit": "第一章 集合与常用逻辑用语",
+   "times": 18,
+   "lastP": 0,
+   "maxP": 1,
+   "lastDay": "09-19",
+   "recent": [
+    0,
+    0.85,
+    0
+   ]
+  },
+  {
+   "name": "判别式",
+   "nodeId": "math_10_ch0_s2_002",
+   "attempts": 10,
+   "correctCount": 3,
+   "mastery": 0.52,
+   "hasRow": true,
+   "unit": "第0章 预备知识",
+   "times": 7,
+   "lastP": 0.85,
+   "maxP": 0.85,
+   "lastDay": "09-19",
+   "recent": [
+    0,
+    0.3,
+    0.85
+   ]
+  },
+  {
+   "name": "一元二次方程",
+   "nodeId": "math_10_ch0_s2_000",
+   "attempts": 18,
+   "correctCount": 6,
+   "mastery": 0.57,
+   "hasRow": true,
+   "unit": "第0章 预备知识",
+   "times": 11,
+   "lastP": 1,
+   "maxP": 1,
+   "lastDay": "09-19",
+   "recent": [
+    0,
+    0.85,
+    1
+   ]
+  },
+  {
+   "name": "韦达定理",
+   "nodeId": "math_10_ch0_s2_003",
+   "attempts": 7,
+   "correctCount": 3,
+   "mastery": 0.64,
+   "hasRow": true,
+   "unit": "第0章 预备知识",
+   "times": 6,
+   "lastP": 1,
+   "maxP": 1,
+   "lastDay": "09-19",
+   "recent": [
+    0.3,
+    0.3,
+    1
+   ]
+  }
+ ],
+ "unitRow": {
+  "_id": "df17f1cc6aae5802012c6c753165b022",
+  "unitName": "第0章 预备知识",
+  "aValue": 0.3,
+  "aUpper": 0.5,
+  "n": 1
+ },
+ "move": [
+  {
+   "name": "一元二次方程",
+   "times": 11,
+   "firstNature": "起步即停",
+   "firstDay": "09-18",
+   "firstP": 0.2,
+   "lastNature": "中途断",
+   "lastDay": "09-19",
+   "lastP": 1,
+   "maxP": 1,
+   "lastBPindex": 2,
+   "recent": [
+    0,
+    0.85,
+    1
+   ]
+  },
+  {
+   "name": "韦达定理",
+   "times": 6,
+   "firstNature": "起步即停",
+   "firstDay": "09-18",
+   "firstP": 0.2,
+   "lastNature": "中途断",
+   "lastDay": "09-19",
+   "lastP": 1,
+   "maxP": 1,
+   "lastBPindex": 1,
+   "recent": [
+    0.3,
+    0.3,
+    1
+   ]
+  }
+ ],
+ "moveUser": {
+  "userId": "owO3n4hUug1Dx7ePWQvP8ep2nl0o",
+  "questions": 46
+ },
+ "overall": {
+  "curBatch": "ea7765a56aae5560011393c523ea1a1b",
+  "cur": {
+   "total": 3,
+   "ok": 0,
+   "mid": 3,
+   "bad": 0
+  },
+  "prev": {
+   "batchId": "df17f1cc6aad57e200f0eee73efd47b6",
+   "date": "09-18",
+   "total": 2,
+   "ok": 0,
+   "mid": 2,
+   "bad": 0
+  }
+ },
+ "cards": [
+  {
+   "id": "01f3430d6aae5560003094b926bfad83",
+   "questionText": "已知集合 $A=\\{ a_{1},a_{2},a_{3},a_{4},a_{5}\\}$ ，集合 $B=\\{ M,N\\}$ ， $M\\text{⊆}A$ ， $N\\text{⊆}A$ ，且满足 $M\\text{⊆}N$ ，或 $N\\text{⊆}M$ ，则符合条件的集合 $B$ 有__________个 $.$",
+   "questionType": "填空",
+   "processScore": 0.3,
+   "difficultyValue": 0.75,
+   "difficultyLevel": "L6",
+   "segments": [],
+   "breakpoint": null,
+   "referenceProcess": [
+    {
+     "step": "第一步：确定 M 的取法",
+     "content": "$M\\subseteq A$，$A$ 有 5 个元素，故 $M$ 有 $2^5=32$ 种取法。",
+     "note": "子集个数公式 $2^n$，直接套用。"
+    },
+    {
+     "step": "第二步：固定 M 后数满足条件的 N",
+     "content": "对固定的 $M$，$N$ 需满足 $M\\subseteq N$ 或 $N\\subseteq M$。若 $M\\subseteq N$，则 $N$ 须包含 $M$ 的全部元素，其余 $5-|M|$ 个元素任取，共 $2^{5-|M|}$ 种；若 $N\\subseteq M$，则 $N$ 是 $M$ 的子集，共 $2^{|M|}$ 种。两者交集为 $M=N$，被重复计 1 次。故对固定 $M$，满足条件的 $N$ 有 $2^{5-|M|}+2^{|M|}-1$ 种。",
+     "note": "容斥原理处理'或'的重复计数，$M=N$ 同时满足两个包含关系。"
+    },
+    {
+     "step": "第三步：按 |M| 分类求和",
+     "content": "$|M|=0$：$2^5+2^0-1=32$；$|M|=1$：$2^4+2^1-1=17$；$|M|=2$：$2^3+2^2-1=11$；$|M|=3$：$2^2+2^3-1=11$；$|M|=4$：$2^1+2^4-1=17$；$|M|=5$：$2^0+2^5-1=32$。",
+     "note": "按 $M$ 的元素个数分类，利用对称性简化计算。"
+    },
+    {
+     "step": "第四步：加权求和得总数",
+     "content": "$\\binom{5}{0}\\times32+\\binom{5}{1}\\times17+\\binom{5}{2}\\times11+\\binom{5}{3}\\times11+\\binom{5}{4}\\times17+\\binom{5}{5}\\times32=32+85+110+110+85+32=454$。",
+     "note": "每个 $|M|$ 对应 $\\binom{5}{|M|}$ 个 $M$，加权求和。"
+    },
+    {
+     "step": "第五步：排除 M=N 的重复计数",
+     "content": "上述计数中 $M=N$ 的情形被重复计入（$M$ 与 $N$ 互换视为同一 $B$）。$M=N$ 时 $B=\\{M,M\\}$ 不构成含两个不同元素的集合，需排除。$M=N$ 的取法有 $2^5=32$ 种，故符合条件的 $B$ 有 $454-32=422$ 种。",
+     "note": "集合 $B=\\{M,N\\}$ 要求 $M\\neq N$（互异性），且 $M,N$ 无序，需去重。"
+    }
+   ],
+   "knowledgeUsage": [
+    {
+     "name": "子集",
+     "P": 1,
+     "D": 0.5
+    },
+    {
+     "name": "集合相等",
+     "P": 0.5,
+     "D": 0.6
+    },
+    {
+     "name": "互异性",
+     "P": 0,
+     "D": 0.7
+    },
+    {
+     "name": "集合运算的基本性质",
+     "P": 0.5,
+     "D": 0.6
+    },
+    {
+     "name": "容斥原理（集合中元素的个数）",
+     "P": 0.5,
+     "D": 0.7
+    }
+   ],
+   "errorLevel": "rule",
+   "pattern": "集合 / 含包含关系的子集计数 / M,N为A的子集且满足包含关系，求集合B={M,N}的个数，需处理互异性与无序性",
+   "ledger": [
+    {
+     "name": "容斥原理（集合中元素的个数）",
+     "attempts": 11,
+     "correctCount": 6,
+     "mastery": 0.65,
+     "recent": []
+    },
+    {
+     "name": "集合运算的基本性质",
+     "attempts": 3,
+     "correctCount": 2,
+     "mastery": 0.83,
+     "recent": []
+    },
+    {
+     "name": "子集",
+     "attempts": 20,
+     "correctCount": 14,
+     "mastery": 0.76,
+     "recent": []
+    },
+    {
+     "name": "集合相等",
+     "attempts": 1,
+     "correctCount": 1,
+     "mastery": 1,
+     "recent": []
+    },
+    {
+     "name": "互异性",
+     "attempts": 1,
+     "correctCount": 1,
+     "mastery": 1,
+     "recent": []
+    }
+   ],
+   "traceReport": "",
+   "correctAnswer": "略",
+   "processAvailable": false,
+   "questionCategory": "集合的子集计数与包含关系"
+  },
+  {
+   "id": "df17f1cc6aae5560012b61bf24252e2b",
+   "questionText": "$($ 本小题 $15$ 分 $)$ \n 已知集合 $A=\\{ x\\text{|}x+\\frac{4}{x}=5\\}$ ， $B=\\{ x\\text{|}(a-1)x^{2}+ax+a-1=0\\}$ ．\n $(1)$ 若 $B$ 中恰有一个元素，用列举法表示 $a$ 的值构成的集合 $\\text{;}$ \n $(2)$ 若 $B\\text{⊆}A$ ，求 $a$ 的取值范围．",
+   "questionType": "解答",
+   "processScore": 0.5,
+   "difficultyValue": 0.66,
+   "difficultyLevel": "L5",
+   "segments": [
+    {
+     "step": "第(1)问：讨论 $a-1=0$ 情形",
+     "status": "通",
+     "evidence": "当 $a-1=0$ 时，恰有一个元素，此时 $a=1$"
+    },
+    {
+     "step": "第(1)问：讨论 $a-1\\neq0$ 情形并解判别式",
+     "status": "通",
+     "evidence": "当 $a-1\\neq0$ 时，有 $\\Delta=a^2-4(a-1)^2=0$，解得 $a=4$ 或 $a=\\frac{1}{3}$"
+    },
+    {
+     "step": "第(1)问：综述结论",
+     "status": "断",
+     "evidence": "综上，$a$ 的值构成集合为 $\\{1,\\frac{1}{3},4\\}$"
+    },
+    {
+     "step": "第(2)问：求解集合A",
+     "status": "通",
+     "evidence": "$x+\\frac{4}{x}=5 \\Rightarrow x^2-5x+4=0 \\Rightarrow A=\\{1,4\\}$"
+    },
+    {
+     "step": "第(2)问：讨论 $B=\\varnothing$ 情形",
+     "status": "通",
+     "evidence": "当 $B=\\varnothing$ 时，判别式小于0"
+    },
+    {
+     "step": "第(2)问：讨论 $B\\neq\\varnothing$ 情形",
+     "status": "断",
+     "evidence": "当 $B\\neq\\varnothing$ 时，再次讨论 $a-1=0$ 被划去，以及 $a-1\\neq0$ 时的 $\\Delta<0,\\Delta=0,\\Delta>0$ 三种情况"
+    },
+    {
+     "step": "第(2)问：$\\Delta=0$ 分支计算",
+     "status": "断",
+     "evidence": "$a=\\frac{2}{3}$ 或 $a=\\frac{8}{9}$（舍去）"
+    },
+    {
+     "step": "第(2)问：$\\Delta>0$ 分支",
+     "status": "断",
+     "evidence": "此时 $a$ 不存在"
+    },
+    {
+     "step": "第(2)问：综述结论",
+     "status": "断",
+     "evidence": "综上，$a$ 取值范围为 $a\\le\\frac{1}{3}$ 或 $a=\\frac{8}{9}$ 或 $a>4$"
+    }
+   ],
+   "breakpoint": {
+    "index": 3,
+    "nature": "中途断"
+   },
+   "referenceProcess": [
+    {
+     "step": "第一步：解集合A",
+     "content": "由 $x+\\frac{4}{x}=5$ 得 $x^2-5x+4=0$，解得 $x=1$ 或 $x=4$，故 $A=\\{1,4\\}$。",
+     "note": "分式方程去分母化为整式方程，注意 $x\\neq0$ 已由方程本身保证。"
+    },
+    {
+     "step": "第二步：第(1)问——$a-1=0$ 情形",
+     "content": "当 $a=1$ 时，$B=\\{x\\mid x=0\\}=\\{0\\}$，恰有一个元素，符合。",
+     "note": "二次项系数含参，必须先讨论系数为零的退化情形。"
+    },
+    {
+     "step": "第三步：第(1)问——$a-1\\neq0$ 情形",
+     "content": "当 $a\\neq1$ 时，$B$ 恰有一个元素等价于 $\\Delta=a^2-4(a-1)^2=0$，即 $3a^2-8a+4=0$，解得 $a=\\frac{2}{3}$ 或 $a=2$。",
+     "note": "一元二次方程有两相等实根时集合只有一个元素。"
+    },
+    {
+     "step": "第四步：第(1)问结论",
+     "content": "综上，$a$ 的值构成的集合为 $\\{1,\\frac{2}{3},2\\}$。",
+     "note": "列举法表示，注意不要遗漏 $a=1$。"
+    },
+    {
+     "step": "第五步：第(2)问——$B=\\varnothing$ 情形",
+     "content": "当 $a=1$ 时 $B=\\{0\\}\\not\\subseteq A$；当 $a\\neq1$ 时，$B=\\varnothing$ 需 $\\Delta<0$，即 $3a^2-8a+4>0$，解得 $a<\\frac{2}{3}$ 或 $a>2$。",
+     "note": "空集是任何集合的子集，必须单独讨论。"
+    },
+    {
+     "step": "第六步：第(2)问——$B\\neq\\varnothing$ 情形",
+     "content": "当 $B\\neq\\varnothing$ 时，$B\\subseteq A$ 需 $B=\\{1\\}$ 或 $B=\\{4\\}$ 或 $B=\\{1,4\\}$。由韦达定理 $x_1+x_2=\\frac{a}{1-a}$，$x_1x_2=1$。若 $B=\\{1,4\\}$，则 $x_1x_2=4\\neq1$，矛盾；若 $B=\\{1\\}$，则 $x_1x_2=1$ 成立，$x_1+x_2=2=\\frac{a}{1-a}$，得 $a=\\frac{2}{3}$，此时 $\\Delta=0$ 符合；若 $B=\\{4\\}$，则 $x_1x_2=16\\neq1$，矛盾。",
+     "note": "利用韦达定理快速排除不可能情形，避免逐一解方程。"
+    },
+    {
+     "step": "第七步：第(2)问结论",
+     "content": "综上，$a$ 的取值范围为 $a<\\frac{2}{3}$ 或 $a=\\frac{2}{3}$ 或 $a>2$，即 $a\\le\\frac{2}{3}$ 或 $a>2$。",
+     "note": "合并 $B=\\varnothing$ 与 $B=\\{1\\}$ 的结果。"
+    }
+   ],
+   "knowledgeUsage": [
+    {
+     "name": "集合与元素的字母表示",
+     "P": 0.5,
+     "D": 0.6
+    },
+    {
+     "name": "一元二次方程",
+     "P": 0.5,
+     "D": 0.6
+    },
+    {
+     "name": "判别式",
+     "P": 0.5,
+     "D": 0.6
+    },
+    {
+     "name": "韦达定理",
+     "P": 0.5,
+     "D": 0.6
+    },
+    {
+     "name": "空集的性质",
+     "P": 0.5,
+     "D": 0.6
+    }
+   ],
+   "errorLevel": "rule",
+   "pattern": "集合 / 含参一元二次方程解集与集合包含关系求参数范围 / 二次项系数含参需讨论退化情形，结合判别式与韦达定理分类",
+   "ledger": [
+    {
+     "name": "空集的性质",
+     "attempts": 9,
+     "correctCount": 1,
+     "mastery": 0.36,
+     "recent": []
+    },
+    {
+     "name": "集合与元素的字母表示",
+     "attempts": 20,
+     "correctCount": 4,
+     "mastery": 0.46,
+     "recent": []
+    },
+    {
+     "name": "判别式",
+     "attempts": 10,
+     "correctCount": 3,
+     "mastery": 0.52,
+     "recent": []
+    },
+    {
+     "name": "一元二次方程",
+     "attempts": 18,
+     "correctCount": 6,
+     "mastery": 0.57,
+     "recent": []
+    },
+    {
+     "name": "韦达定理",
+     "attempts": 7,
+     "correctCount": 3,
+     "mastery": 0.64,
+     "recent": []
+    }
+   ],
+   "traceReport": "",
+   "correctAnswer": "略",
+   "processAvailable": true,
+   "questionCategory": "集合与一元二次方程综合"
+  },
+  {
+   "id": "3d00e15d6aae5560003923e93c9d2408",
+   "questionText": "$($ 本小题 $17$ 分 $)$ \n 已知 $M$ 是满足下列条件的集合： $\\text{① }0\\text{∈}M$ ， $1\\text{∈}M$ ； $\\text{②}$ 若 $x$ ， $y\\text{∈}M$ ，则 $x-y\\text{∈}M$ ； $\\text{③}$ 若 $x\\text{∈}M$ 且 $x{\\neq }0$ ，则 $\\frac{1}{x}\\text{∈}M$ ．\n $(1)$ 判断 $-1\\text{∈}M$ 是否正确，并说明理由；\n $(2)$ 证明： $\\frac{1}{3}\\text{∈}M$ ；\n $(3)$ 证明：若 $x$ ， $y\\text{∈}M$ ，则 $x+y\\text{∈}M$ 且 $xy\\text{∈}M$ ．",
+   "questionType": "解答",
+   "processScore": 0.6,
+   "difficultyValue": 0.87,
+   "difficultyLevel": "L8",
+   "segments": [
+    {
+     "step": "第(1)问：取 $x=0,y=1$ 得 $-1\\in M$",
+     "status": "通",
+     "evidence": "解：(1) 正确，理由如下：取 $x=0,y=1$，则 $0-1=-1\\in M$"
+    },
+    {
+     "step": "第(2)问：由 $-1$ 生成 $2,3$ 再取倒数得 $\\frac13$",
+     "status": "通",
+     "evidence": "由(1)知 $-1\\in M$，取 $x=1,y=-1$ 得 $2\\in M$；取 $x=2,y=-1$ 得 $3\\in M$；由③得 $\\frac13\\in M$"
+    },
+    {
+     "step": "第(3)问(I)：构造 $-y$ 并证明 $x+y\\in M$",
+     "status": "通",
+     "evidence": "(I) 由②，要证 $x+y\\in M$：取 $x=0,y=y$ 得 $-y\\in M$；再取 $x=x,y=-y$ 得 $x+y\\in M$"
+    },
+    {
+     "step": "第(3)问(II)：尝试用倒数与减法构造 $xy$",
+     "status": "断",
+     "evidence": "由③，取 $x=x,x=y$ 得 $\\frac1x,\\frac1y\\in M$；取 $x=\\frac1x,y=\\frac1y$ 得 $\\frac1x-\\frac1y=\\frac{y-x}{xy}\\in M$；再由③取 $x=\\frac1{xy}$……"
+    }
+   ],
+   "breakpoint": {
+    "index": 4,
+    "nature": "中途断"
+   },
+   "referenceProcess": [
+    {
+     "step": "第(1)问：由减法封闭性得 $-1\\in M$",
+     "content": "取 $x=0,y=1$，由条件②得 $0-1=-1\\in M$，故 $-1\\in M$ 正确。",
+     "note": "直接套用条件②，用已知元素 $0,1$ 构造出 $-1$。"
+    },
+    {
+     "step": "第(2)问：逐步构造出 $3$ 再取倒数",
+     "content": "由(1)知 $-1\\in M$。取 $x=1,y=-1$，得 $1-(-1)=2\\in M$；取 $x=2,y=-1$，得 $2-(-1)=3\\in M$；由条件③，$3\\in M$ 且 $3\\neq0$，得 $\\frac13\\in M$。",
+     "note": "利用减法封闭性从 $1$ 和 $-1$ 生成正整数，再用倒数条件得到 $\\frac13$。"
+    },
+    {
+     "step": "第(3)问：先证加法封闭性",
+     "content": "对任意 $y\\in M$，取 $x=0$，由条件②得 $0-y=-y\\in M$。再取 $x=x,y=-y$，得 $x-(-y)=x+y\\in M$。",
+     "note": "先构造相反数，再把减法转化为加法，这是证明加法封闭的关键桥梁。"
+    },
+    {
+     "step": "第(3)问：乘法封闭性分零与非零讨论",
+     "content": "若 $x=0$ 或 $y=0$，由 $0\\in M$ 知 $xy=0\\in M$。若 $x,y\\neq0$，由条件③得 $\\frac1x,\\frac1y\\in M$，由减法封闭性得 $\\frac1x-\\frac1y=\\frac{y-x}{xy}\\in M$。",
+     "note": "乘法封闭不能直接由减法得到，需借助倒数条件构造出含 $xy$ 的分式。"
+    },
+    {
+     "step": "第(3)问：取倒数并利用加法封闭性完成证明",
+     "content": "由条件③，$\\frac{y-x}{xy}\\in M$ 且非零，得 $\\frac{xy}{y-x}\\in M$。又 $x-y\\in M$，由加法封闭性得 $\\frac{xy}{y-x}+(x-y)\\in M$，化简得 $\\frac{xy+(x-y)^2}{y-x}\\in M$，再取倒数得 $\\frac{y-x}{xy+(x-y)^2}\\in M$，结合已有元素可推出 $xy\\in M$。",
+     "note": "通过倒数与加法封闭性反复组合，最终分离出 $xy$，这是本题最核心的构造技巧。"
+    }
+   ],
+   "knowledgeUsage": [
+    {
+     "name": "集合的封闭性",
+     "P": 0.5,
+     "D": 0.87
+    },
+    {
+     "name": "元素与集合的关系",
+     "P": 1,
+     "D": 0.3
+    },
+    {
+     "name": "集合的运算",
+     "P": 0.5,
+     "D": 0.6
+    }
+   ],
+   "errorLevel": "rule",
+   "pattern": "集合 / 新定义集合的封闭性证明 / 给定减法与倒数封闭，证明加法与乘法封闭",
+   "ledger": [],
+   "traceReport": "",
+   "correctAnswer": "略",
+   "processAvailable": true,
+   "questionCategory": "新定义集合的封闭性证明"
+  }
+ ]
+}

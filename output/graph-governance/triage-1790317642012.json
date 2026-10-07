@@ -1,0 +1,10 @@
+{
+ "meta": {
+  "ts": "2026-09-25T06:27:22.012Z",
+  "model": "deepseek-v4-flash",
+  "task": "triage",
+  "type": "method",
+  "tokens": []
+ },
+ "proposals": []
+}

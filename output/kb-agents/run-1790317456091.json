@@ -1,0 +1,170 @@
+{
+ "meta": {
+  "ts": "2026-09-25T06:24:16.091Z",
+  "model": "deepseek-v4-flash",
+  "tokens": [
+   {
+    "in": 168,
+    "out": 57
+   },
+   {
+    "in": 192,
+    "out": 114
+   },
+   {
+    "in": 183,
+    "out": 129
+   },
+   {
+    "in": 281,
+    "out": 64
+   }
+  ]
+ },
+ "runs": [
+  {
+   "id": "4c2f81c76a9ada1500f58acb06c217f0",
+   "hist": "交集",
+   "proposed": [
+    "集合的交集",
+    "集合的列举法"
+   ],
+   "mapped": [
+    {
+     "input": "集合的交集",
+     "no": null,
+     "name": null,
+     "how": "miss",
+     "score": 0.76
+    },
+    {
+     "input": "集合的列举法",
+     "no": null,
+     "name": null,
+     "how": "miss",
+     "score": 0.733
+    }
+   ],
+   "votes": [],
+   "final": [],
+   "verdict": {
+    "needAdjudication": true,
+    "reason": "has-miss"
+   }
+  },
+  {
+   "id": "0fb91b1d6a9ada150221dc3e0dc9d7d9",
+   "hist": "并集",
+   "proposed": [
+    "集合的并集",
+    "不等式表示的数集",
+    "数轴法求集合运算",
+    "区间的端点取舍"
+   ],
+   "mapped": [
+    {
+     "input": "集合的并集",
+     "no": null,
+     "name": null,
+     "how": "miss",
+     "score": 0.76
+    },
+    {
+     "input": "不等式表示的数集",
+     "no": null,
+     "name": null,
+     "how": "miss",
+     "score": 0.571
+    },
+    {
+     "input": "数轴法求集合运算",
+     "no": null,
+     "name": null,
+     "how": "miss",
+     "score": 0.7
+    },
+    {
+     "input": "区间的端点取舍",
+     "no": null,
+     "name": null,
+     "how": "miss",
+     "score": 0.364
+    }
+   ],
+   "votes": [],
+   "final": [],
+   "verdict": {
+    "needAdjudication": true,
+    "reason": "has-miss"
+   }
+  },
+  {
+   "id": "0fb91b1d6a9ada160221dc4036dd0f28",
+   "hist": "交集",
+   "proposed": [
+    "一元二次方程的解法",
+    "集合的并集",
+    "集合的交集",
+    "空集",
+    "集合元素的互异性与列举法"
+   ],
+   "mapped": [
+    {
+     "input": "一元二次方程的解法",
+     "no": 4,
+     "name": "一元二次方程",
+     "how": "fuzzy",
+     "score": 0.867
+    },
+    {
+     "input": "集合的并集",
+     "no": null,
+     "name": null,
+     "how": "miss",
+     "score": 0.76
+    },
+    {
+     "input": "集合的交集",
+     "no": null,
+     "name": null,
+     "how": "miss",
+     "score": 0.76
+    },
+    {
+     "input": "空集",
+     "no": 13,
+     "name": "空集",
+     "how": "exact",
+     "score": 1
+    },
+    {
+     "input": "集合元素的互异性与列举法",
+     "no": null,
+     "name": null,
+     "how": "miss",
+     "score": 0.7
+    }
+   ],
+   "votes": [
+    {
+     "no": 1,
+     "keep": true,
+     "reason": "需解一元二次方程x²-3x+2=0求出集合A的元素。"
+    },
+    {
+     "no": 2,
+     "keep": true,
+     "reason": "条件A∩B=∅涉及空集概念，需理解交集为空集。"
+    }
+   ],
+   "final": [
+    "一元二次方程",
+    "空集"
+   ],
+   "verdict": {
+    "needAdjudication": true,
+    "reason": "has-miss"
+   }
+  }
+ ]
+}

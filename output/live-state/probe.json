@@ -1,0 +1,558 @@
+{
+ "env": "cloud1-d8g0ty39wd73f430a",
+ "fetchedAt": "2026-10-02T12:47:26.849Z",
+ "collections": {
+  "knowledge_nodes": {
+   "count": 271,
+   "hitLimit": false,
+   "sampleKeys": [
+    "_id",
+    "chapter",
+    "concept",
+    "deps",
+    "difficulty",
+    "grade",
+    "knowledgeId",
+    "name",
+    "path",
+    "stage",
+    "subject",
+    "subjectId",
+    "type"
+   ],
+   "sample": [
+    {
+     "_id": "math_linear_func",
+     "chapter": "必修1-第二章",
+     "deps": [
+      "math_func_basic"
+     ],
+     "difficulty": 0.4,
+     "name": "一次函数",
+     "subjectId": "math",
+     "type": "definition",
+     "grade": "初高衔接",
+     "knowledgeId": "math_10_ch0_s3_004",
+     "path": [
+      "数学",
+      "初高衔接",
+      "第0章 预备知识",
+      "0.3 函数基础"
+     ],
+     "stage": "高中",
+     "subject": "数学",
+     "concept": {
+      "source_text": "一般地，形如 y=kx+b（k，b 是常数，k≠0）的函数叫做一次函数。当 b=0 时，y=kx 叫做正比例函数。"
+     }
+    }
+   ]
+  },
+  "custom_nodes": {
+   "count": 0,
+   "hitLimit": false,
+   "sampleKeys": [],
+   "sample": []
+  },
+  "knowledge_extras": {
+   "count": 61,
+   "hitLimit": false,
+   "sampleKeys": [
+    "_id",
+    "aspect",
+    "content",
+    "createdAt",
+    "knowledgeId",
+    "name"
+   ],
+   "sample": [
+    {
+     "_id": "3c3ba2016a841b60000706942a7af8e5",
+     "name": "类比法研究不等式的性质",
+     "aspect": "思想",
+     "content": "类比法研究不等式的性质：由等式性质类比推广到不等式",
+     "createdAt": {
+      "$numberLong": "1787100000000"
+     },
+     "knowledgeId": "math_10_ch2_s1_006"
+    }
+   ]
+  },
+  "questions": {
+   "count": 61,
+   "hitLimit": false,
+   "sampleKeys": [
+    "_id",
+    "_openid",
+    "batchId",
+    "breakpoint",
+    "correctAnswer",
+    "createdAt",
+    "cropFileID",
+    "diagnosis",
+    "difficultyLevel",
+    "difficultyValue",
+    "errorAttribution",
+    "errorLevel",
+    "errorType",
+    "fiveDim",
+    "imageFileId",
+    "isCorrect",
+    "knowledgeNodeName",
+    "knowledgeUsage",
+    "nodeStatus",
+    "pathQuality",
+    "pattern",
+    "processAvailable",
+    "processScore",
+    "questionCategory",
+    "questionText",
+    "questionType",
+    "referenceProcess",
+    "reviewed",
+    "revisions",
+    "segments",
+    "source",
+    "traceReport",
+    "userId"
+   ],
+   "sample": [
+    {
+     "_id": "4c2f81c76a9ada1500f58acb06c217f0",
+     "_openid": "owO3n4seHkN6TwtFXwhqnDrqyZjo",
+     "userId": "owO3n4seHkN6TwtFXwhqnDrqyZjo",
+     "batchId": "54767b9d6a9ad9eb01add33d0bf8cab2",
+     "imageFileId": "cloud://cloud1-d8g0ty39wd73f430a.636c-cloud1-d8g0ty39wd73f430a-1314058927/photos/owO3n4seHkN6TwtFXwhqnDrqyZjo/1788587157173_px9ijhbcdui.jpg",
+     "questionText": "1.集合 $A=\\{1,2,3,4\\}, B=\\{2,3,4,5\\}$, 则 $A \\cap B=$ ( )\nA. $\\{1,2,3,4\\}$\nB. $\\{2,3,4\\}$\nC. $\\{2,4\\}$\nD. $\\{1\\}$",
+     "questionType": "选择",
+     "isCorrect": null,
+     "nodeStatus": "unmapped",
+     "source": "photo",
+     "traceReport": "括号内手写填入答案 \"B\"。",
+     "cropFileID": null,
+     "revisions": [],
+     "createdAt": {
+      "$numberLong": "1788533269915"
+     },
+     "breakpoint": null,
+     "correctAnswer": "B",
+     "difficultyLevel": "L1",
+     "difficultyValue": 0.1,
+     "errorAttribution": "整题空白未下笔",
+     "errorLevel": null,
+     "errorType": "无",
+     "fiveDim": {
+      "A": 0.1,
+      "K": 0.1,
+      "Q": 0.1,
+      "S": 0.1,
+      "T": 0.1
+     },
+     "knowledgeNodeName": "交集",
+     "knowledgeUsage": [
+      {
+       "name": "交集",
+       "P": 1,
+       "D": 0.1
+      },
+      {
+       "name": "元素",
+       "P": 1,
+       "D": 0.1
+      }
+     ],
+     "pathQuality": null,
+     "pattern": "集合 / 求两个有限集合的交集 / 直接给出列举法集合，求交集",
+     "processAvailable": false,
+     "processScore": 1,
+     "questionCategory": "集合",
+     "referenceProcess": [],
+     "reviewed": true,
+     "segments": [],
+     "diagnosis": {
+      "comment": "这道题你直接选了B，没有写过程，但答案是对的。",
+      "hook": "下次可以试着在草稿上快速圈出两集合共有的元素，更稳。",
+      "inference": "选填题没有过程可扣，答案正确，思路对。"
+     }
+    }
+   ]
+  },
+  "batches": {
+   "count": 25,
+   "hitLimit": false,
+   "sampleKeys": [
+    "_id",
+    "_openid",
+    "completedAt",
+    "createdAt",
+    "failedCount",
+    "fileIds",
+    "imageCount",
+    "progress",
+    "reportProgress",
+    "status",
+    "totalQuestions",
+    "userId"
+   ],
+   "sample": [
+    {
+     "_id": "a9defcfd6a96a52c00a028175117ec3a",
+     "_openid": "owO3n4hUug1Dx7ePWQvP8ep2nl0o",
+     "userId": "owO3n4hUug1Dx7ePWQvP8ep2nl0o",
+     "imageCount": 2,
+     "fileIds": [
+      "cloud://cloud1-d8g0ty39wd73f430a.636c-cloud1-d8g0ty39wd73f430a-1314058927/photos/owO3n4hUug1Dx7ePWQvP8ep2nl0o/1788257567437_c9htpqapx7j.jpg",
+      "cloud://cloud1-d8g0ty39wd73f430a.636c-cloud1-d8g0ty39wd73f430a-1314058927/photos/owO3n4hUug1Dx7ePWQvP8ep2nl0o/1788257572107_kz2i63nu5p9.jpg"
+     ],
+     "status": "completed",
+     "createdAt": {
+      "$numberLong": "1788257580725"
+     },
+     "failedCount": 0,
+     "progress": {
+      "done": 11,
+      "total": 11
+     },
+     "totalQuestions": 11,
+     "completedAt": {
+      "$numberLong": "1789754053384"
+     },
+     "reportProgress": {
+      "detail": "报告已生成",
+      "percent": 100,
+      "stageIndex": 4,
+      "updatedAt": 1789754708761
+     }
+    }
+   ]
+  },
+  "users": {
+   "count": 2,
+   "hitLimit": false,
+   "sampleKeys": [
+    "_id",
+    "_openid",
+    "aOverall",
+    "avatarUrl",
+    "createdAt",
+    "currentStreak",
+    "grade",
+    "kOverall",
+    "lastLogin",
+    "lastStudyDate",
+    "longestStreak",
+    "nickName",
+    "qOverall",
+    "sOverall",
+    "streak",
+    "subjectStats",
+    "subjects",
+    "tOverall",
+    "totalStudyMinutes",
+    "totalTime"
+   ],
+   "sample": [
+    {
+     "_id": "84a6d7fb6a45085e002907ce018d439a",
+     "_openid": "owO3n4hUug1Dx7ePWQvP8ep2nl0o",
+     "nickName": "again",
+     "avatarUrl": "cloud://cloud1-d8g0ty39wd73f430a.636c-cloud1-d8g0ty39wd73f430a-1314058927/avatars/1789553831619.3f99z6e5ys.jpg",
+     "subjects": [
+      "数学",
+      "英语"
+     ],
+     "createdAt": {
+      "$numberLong": "1782909022493"
+     },
+     "lastLogin": {
+      "$numberLong": "1789553834136"
+     },
+     "streak": 0,
+     "totalTime": 0,
+     "aOverall": 0.72,
+     "currentStreak": 7,
+     "grade": "junior_to_senior",
+     "kOverall": 0.57,
+     "lastStudyDate": "2025-07-02",
+     "longestStreak": 15,
+     "qOverall": 0.55,
+     "sOverall": 0.68,
+     "subjectStats": {
+      "math": {
+       "a": 0.72,
+       "k": 0.57,
+       "q": 0.55,
+       "s": 0.68,
+       "t": 0.45
+      }
+     },
+     "tOverall": 0.45,
+     "totalStudyMinutes": 480
+    }
+   ]
+  },
+  "reports": {
+   "count": 33,
+   "hitLimit": false,
+   "sampleKeys": [
+    "_id",
+    "batchId",
+    "createdAt",
+    "report",
+    "userId"
+   ],
+   "sample": [
+    {
+     "_id": "0fb91b1d6a96a5ac01a3361a011462a0",
+     "userId": "owO3n4hUug1Dx7ePWQvP8ep2nl0o",
+     "batchId": "a9defcfd6a96a52c00a028175117ec3a",
+     "report": {
+      "summary": "11道题做对了10道，全对的题都很扎实，继续保持这个节奏就行。",
+      "masteryChange": [
+       {
+        "nodeId": "math_10_ch0_s2_000",
+        "name": "一元二次方程",
+        "before": 1,
+        "after": 0.83
+       },
+       {
+        "nodeId": "math_10_ch1_s1_004",
+        "name": "互异性",
+        "before": 1,
+        "after": 0.82
+       },
+       {
+        "nodeId": "math_10_ch1_s2_004",
+        "name": "集合相等",
+        "before": 1,
+        "after": 0.63
+       }
+      ],
+      "pendingNodes": [
+       "集合的表示",
+       "点集与数集的区别",
+       "倒数",
+       "整数",
+       "分类讨论"
+      ],
+      "questions": [
+       {
+        "questionId": "a9defcfd6a96a55400a0299b493ae812",
+        "questionText": "1. 下列说法正确的是 ( )\nA. 某班中年龄较小的同学能够形成一个集合\nB. 由 $1, 2, 3$ 和 $\\sqrt{9}, 1, \\sqrt{4}$ 组成的集合不相等\nC. 不超过 20 的非负数组成一个集合\nD. 方程 $(x-1)(x+1)^2=0$ 的所有解构成的集合中有 3 个元素",
+        "status": "对",
+        "questionType": "选择",
+        "pattern": "集合 / 集合概念与性质辨析（判断说法正误） / 结合确定性、互异性、集合相等及方程解集元素个数，多选一",
+        "knowledgeNodeName": ""
+       },
+       {
+        "questionId": "54767b9d6a96a554013f9fde45a2c8b2",
+        "questionText": "2. 方程 $\\begin{cases} x-2y=3 \\\\ 2x+y=11 \\end{cases}$ 的解集是 ( )\nA. $\\{5, 1\\}$\nB. $\\{1, 5\\}$\nC. $\\{(5, 1)\\}$\nD. $\\{(1, 5)\\}$",
+        "status": "对",
+        "questionType": "选择",
+        "pattern": "集合 / 方程组的解集表示 / 二元一次方程组，解为有序数对，需区分点集与数集",
+        "knowledgeNodeName": ""
+       },
+       {
+        "questionId": "0fb91b1d6a96a55401a3297b51ac310e",
+        "questionText": "3. 由大于 -3 且小于 11 的偶数所组成的集合是 ( )\nA. $\\{x | -3 < x < 11, x \\in Q\\}$\nB. $\\{x | -3 < x < 11\\}$\nC. $\\{x | -3 < x < 11, x = 2k, k \\in N\\}$\nD. $\\{x | -3 < x < 11, x = 2k, k \\in Z\\}$",
+        "status": "对",
+        "questionType": "选择",
+        "pattern": "集合 / 用描述法表示满足条件的数集 / 限定区间内的偶数，需选择正确的数集符号（N vs Z）",
+        "knowledgeNodeName": ""
+       },
+       {
+        "questionId": "a9defcfd6a96a55400a0299c6cccdb2b",
+        "questionText": "4. 如果集合 $A = \\{x | ax^2 - 2x - 1 = 0\\}$ 只有一个元素，则 $a$ 的值是 ( )\nA. 0\nB. 0 或 1\nC. -1\nD. 0 或 -1",
+        "status": "对",
+        "questionType": "选择",
+        "pattern": "集合 / 由方程解集元素个数求参数值 / 二次项系数含参数，需讨论a=0与a≠0两种情况",
+        "knowledgeNodeName": ""
+       },
+       {
+        "questionId": "54767b9d6a96a554013f9fe137c4956c",
+        "questionText": "5. (多选) 给出下列说法，其中不正确的是 ( )\nA. 集合 $\\{x \\in N | x^3 = x\\}$ 用列举法表示为 $\\{-1, 0, 1\\}$\nB. 实数集可以表示为 $\\{x | x \\text{为所有实数}\\}$ 或 $\\{R\\}$\nC. 方程组 $\\begin{cases} x+y=3 \\\\ x-y=-1 \\end{cases}$ 的解组成的集合为 $\\{x=1, y=2\\}$\nD. 方程 $(x-3)^2 + (y+4)^2 = 0$ 的所有解组成的集合为 $\\{(3, -4)\\}$",
+        "status": "对",
+        "questionType": "选择",
+        "pattern": "集合 / 集合表示方法的辨析与正误判断 / 多选，判断不正确的说法，涉及列举法、描述法、点集与数集的区别",
+        "knowledgeNodeName": ""
+       },
+       {
+        "questionId": "54767b9d6a96a554013f9fe212c3ebf5",
+        "questionText": "6. (多选) 若 $x \\in A$，则 $\\frac{1}{x} \\in A$，就称 $A$ 是伙伴关系集合。集合 $M = \\left\\{-1, 0, \\frac{1}{2}, 2, 3\\right\\}$ 的所有非空子集中具有伙伴关系的是 ( ) (截断，后续文字不可见)\nA. $\\left\\{\\frac{1}{3}, \\frac{1}{2}, 2, 3\\right\\}$\nB. $\\left\\{-1, \\frac{1}{2}, 2\\right\\}$\nC. $\\left\\{\\frac{1}{2}, 2\\right\\}$\nD. $\\{-1\\}$",
+        "status": "对",
+        "questionType": "选择",
+        "pattern": "集合 / 新定义集合性质判断子集是否满足条件 / 伙伴关系集合，需验证每个元素及其倒数是否同时属于集合",
+        "knowledgeNodeName": ""
+       },
+       {
+        "questionId": "0fb91b1d6a96a55901a32abd5f646f07",
+        "questionText": "7. 用列举法表示集合 $\\{x \\in \\mathbf{Z} \\mid |x| + x = 0, x > -5\\}$ 为 _______",
+        "status": "对",
+        "questionType": "填空",
+        "pattern": "集合 / 用列举法表示满足条件的整数集合 / 含绝对值方程与不等式约束",
+        "knowledgeNodeName": ""
+       },
+       {
+        "questionId": "a9defcfd6a96a55900a029dc19d16ac2",
+        "questionText": "8. 设 $a, b \\in R$，若集合 $\\{1, a+b, a\\} = \\{0, \\frac{b}{a}, b\\}$，则 $a^2 - b =$ _______",
+        "status": "错",
+        "questionType": "填空",
+        "pattern": "集合 / 由集合相等求参数值 / 含分式元素，需讨论分母非零及元素互异性",
+        "knowledgeNodeName": ""
+       },
+       {
+        "questionId": "54767b9d6a96a559013fa09455b63e22",
+        "questionText": "9. 已知集合 $A = \\{x \\in \\mathbf{Z} \\mid \\frac{x-4}{x+1} \\in \\mathbf{Z}\\}$，则集合 A 中全部元素之和为 _______",
+        "status": "对",
+        "questionType": "填空",
+        "pattern": "集合 / 由分式值为整数求整数元素并求和 / 分母含变量，需讨论整除性",
+        "knowledgeNodeName": ""
+       },
+       {
+        "questionId": "a9defcfd6a96a55900a029e2197de9b7",
+        "questionText": "10. (10分) 已知集合 $A = \\{a, |a|, a-2\\}$，若 $3 \\in A$，求实数 $a$ 的值。",
+        "status": "错",
+        "questionType": "解答",
+        "pattern": "集合 / 已知元素属于集合求参数值 / 集合元素含绝对值，需分类讨论并检验互异性",
+        "knowledgeNodeName": ""
+       },
+       {
+        "questionId": "54767b9d6a96a559013fa0966933b4d2",
+        "questionText": "11. (10分) 设 $y = x^2 - ax + b$，$A = \\{x \\mid y - x = 0\\}$，$B = \\{x \\mid y - ax = 0\\}$，若 $A = \\{-3, 1\\}$，试用列举法表示集合 B。",
+        "status": "对",
+        "questionType": "解答",
+        "pattern": "集合 / 由集合相等条件求参数并解另一集合 / 通过A的元素确定二次函数参数，再求B中方程的解集",
+        "knowledgeNodeName": ""
+       }
+      ]
+     },
+     "createdAt": {
+      "$numberLong": "1788257708993"
+     }
+    }
+   ]
+  },
+  "knowledge_progress": {
+   "count": 52,
+   "hitLimit": false,
+   "sampleKeys": [
+    "_id",
+    "attempts",
+    "correctCount",
+    "dValue",
+    "knowledgeNodeId",
+    "lastUpdated",
+    "mastery",
+    "sValue",
+    "userId"
+   ],
+   "sample": [
+    {
+     "_id": "0fb91b1d6a96a58101a330bd73f139b3",
+     "userId": "owO3n4hUug1Dx7ePWQvP8ep2nl0o",
+     "knowledgeNodeId": "math_10_ch0_s2_000",
+     "sValue": 4.775,
+     "dValue": 8.45,
+     "mastery": 0.57,
+     "attempts": 18,
+     "correctCount": 6,
+     "lastUpdated": {
+      "$numberLong": "1789810862793"
+     }
+    }
+   ]
+  },
+  "unit_progress": {
+   "count": 4,
+   "hitLimit": false,
+   "sampleKeys": [
+    "_id",
+    "aUpper",
+    "aValue",
+    "lastUpdated",
+    "lowEtaStreak",
+    "n",
+    "unitName",
+    "userId"
+   ],
+   "sample": [
+    {
+     "_id": "a9defcfd6a9ada7400c8af82236e9429",
+     "userId": "owO3n4seHkN6TwtFXwhqnDrqyZjo",
+     "unitName": "第一章 集合与常用逻辑用语",
+     "aValue": 0.3,
+     "aUpper": 0.5,
+     "n": 1,
+     "lowEtaStreak": 0,
+     "lastUpdated": {
+      "$numberLong": "1788533364120"
+     }
+    }
+   ]
+  },
+  "mastery_logs": {
+   "count": 381,
+   "hitLimit": false,
+   "sampleKeys": [
+    "_id",
+    "algorithm",
+    "createdAt",
+    "knowledgeNodeId",
+    "newMastery",
+    "oldMastery",
+    "triggerQuestionId",
+    "userId"
+   ],
+   "sample": [
+    {
+     "_id": "0fb91b1d6a96a58101a330bf1208342e",
+     "userId": "owO3n4hUug1Dx7ePWQvP8ep2nl0o",
+     "knowledgeNodeId": "math_10_ch0_s2_000",
+     "triggerQuestionId": "54767b9d6a96a554013f9fde45a2c8b2",
+     "oldMastery": null,
+     "newMastery": 1,
+     "algorithm": "weighted_score_v1",
+     "createdAt": {
+      "$numberLong": "1788257665376"
+     }
+    }
+   ]
+  },
+  "node_requests": {
+   "count": 0,
+   "hitLimit": false,
+   "sampleKeys": [],
+   "sample": []
+  },
+  "debug_logs": {
+   "count": 157,
+   "hitLimit": false,
+   "sampleKeys": [
+    "_id",
+    "batchId",
+    "createdAt",
+    "info",
+    "step",
+    "userId"
+   ],
+   "sample": [
+    {
+     "_id": "54767b9d6a8c3fac006a1f7f25a4d513",
+     "step": "reportService.assemble",
+     "userId": "owO3n4hUug1Dx7ePWQvP8ep2nl0o",
+     "batchId": "54767b9d6a8c3f0b006a16ce4cf0eef5",
+     "info": {
+      "total": 5,
+      "correct": 4,
+      "wrongCount": 1,
+      "wrongScores": [
+       0
+      ]
+     },
+     "createdAt": {
+      "$numberLong": "1787576236038"
+     }
+    }
+   ]
+  }
+ }
+}

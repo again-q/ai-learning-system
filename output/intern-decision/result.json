@@ -1,0 +1,50 @@
+{
+ "device": "mps",
+ "catalogSize": 12,
+ "results": [
+  {
+   "name": "并集运算",
+   "expect": "并集",
+   "picks": [
+    "并集",
+    "并集",
+    "并集"
+   ],
+   "stable": true,
+   "ok": true
+  },
+  {
+   "name": "交集运算",
+   "expect": "交集",
+   "picks": [
+    "属于与包含的关系",
+    "属于与包含的关系",
+    "属于与包含的关系"
+   ],
+   "stable": true,
+   "ok": false
+  },
+  {
+   "name": "互异性+属于",
+   "expect": "互异性",
+   "picks": [
+    "属于与不属于",
+    "属于与不属于",
+    "属于与不属于"
+   ],
+   "stable": true,
+   "ok": false
+  },
+  {
+   "name": "概念判断",
+   "expect": "确定性",
+   "picks": [
+    "集合",
+    "集合",
+    "集合"
+   ],
+   "stable": true,
+   "ok": false
+  }
+ ]
+}

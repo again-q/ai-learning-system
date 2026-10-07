@@ -1,0 +1,257 @@
+{
+ "env": "cloud1-d8g0ty39wd73f430a",
+ "fetchedAt": "2026-10-02T12:49:58.099Z",
+ "collections": {
+  "knowledge_nodes": 271,
+  "custom_nodes": 0,
+  "knowledge_extras": 61,
+  "questions": 61,
+  "batches": 25,
+  "users": 2,
+  "reports": 33,
+  "knowledge_progress": 52,
+  "unit_progress": 4,
+  "mastery_logs": 381,
+  "node_requests": 0,
+  "debug_logs": 157
+ },
+ "detail": {
+  "knowledge_nodes": {
+   "total": 271,
+   "byType": {
+    "definition": 77,
+    "property": 84,
+    "method": 89,
+    "notation": 21
+   },
+   "byPartition": {
+    "(未打标)": 182,
+    "method": 89
+   },
+   "byGrade": {
+    "初高衔接": 12,
+    "必修第一册": 259
+   },
+   "withPath": 271,
+   "withDeps": 5,
+   "withKnowledgeId": 271,
+   "byChapter": {
+    "必修1-第二章": 2,
+    "必修1-第三章": 4,
+    "(无)": 265
+   }
+  },
+  "questions": {
+   "total": 61,
+   "bySource": {
+    "photo": 38,
+    "zhixue": 23
+   },
+   "byQuestionCategory": {
+    "集合": 3,
+    "集合运算": 4,
+    "(无)": 2,
+    "多选题": 2,
+    "集合运算与参数求解": 1,
+    "集合概念辨析": 1,
+    "集合的表示法与方程组的解集": 1,
+    "集合的表示与元素属性辨析": 1,
+    "集合概念辨析与分类讨论": 1,
+    "集合概念辨析判断正误": 1,
+    "新定义集合性质判断（多选）": 1,
+    "集合的表示与元素筛选": 1,
+    "集合相等求参数值": 1,
+    "集合的表示与整数条件求元素": 1,
+    "由集合元素与元素归属求参数值（含互异性检验）": 1,
+    "由集合相等求参数值": 3,
+    "新定义集合性质推理与求和": 1,
+    "新定义集合性质下求所有子集某统计量的总和": 2,
+    "集合元素个数最值": 1,
+    "集合的包含关系判断": 1,
+    "由集合包含关系求参数范围（含空集讨论）": 3,
+    "新定义集合计数": 1,
+    "新定义集合运算与集合关系推理": 1,
+    "集合与不等式综合": 1,
+    "集合间包含关系的判断": 1,
+    "新定义集合性质下求集合元素个数": 2,
+    "由集合元素特征判断集合间的包含关系": 1,
+    "充要条件的证明": 1,
+    "集合新定义与封闭性证明": 1,
+    "集合的子集计数与包含关系": 1,
+    "集合与一元二次方程综合": 2,
+    "新定义集合的封闭性证明": 3,
+    "含包含关系的子集计数": 1,
+    "集合的子集计数": 1,
+    "含参一元二次方程解集与集合包含关系求参数范围": 1,
+    "基本不等式与恒成立问题": 1,
+    "含参一元二次方程与充分必要条件": 1,
+    "含参不等式恒成立求参数范围": 1,
+    "一元二次方程根的分布与充要条件": 1,
+    "集合的补集运算与元素互异性": 1,
+    "由集合交集结果求参数范围": 1,
+    "集合交集与真子集个数": 1,
+    "含参方程解集与集合包含关系求参数范围": 1,
+    "集合子集元素求和": 1,
+    "含参方程解集与集合元素个数求参数": 1
+   },
+   "byQuestionType": {
+    "选择": 20,
+    "其他": 1,
+    "填空": 20,
+    "解答": 19,
+    "未知": 1
+   },
+   "judgedOrHasPattern": 59,
+   "withIsCorrect": 0,
+   "withFiveDim": 54,
+   "withKnowledgeUsage": 59,
+   "withOldSingleNodeName": 59,
+   "withReferenceProcess": 49,
+   "distinctUserId": 2,
+   "byErrorLevel": {
+    "(无)": 19,
+    "skill": 4,
+    "rule": 18,
+    "concept": 20
+   }
+  },
+  "batches": {
+   "total": 25,
+   "byStatus": {
+    "completed": 20,
+    "analyzing": 1,
+    "pending": 4
+   },
+   "imageTotal": 12,
+   "distinctUserId": 2
+  },
+  "users": {
+   "total": 2,
+   "nickNames": [
+    "again",
+    "Qiuuu"
+   ],
+   "kOverall": [
+    0.57,
+    0
+   ],
+   "aOverall": [
+    0.72,
+    0
+   ]
+  },
+  "reports": {
+   "total": 33,
+   "distinctUserId": 2,
+   "latest": {
+    "$numberLong": "1789811001402"
+   },
+   "earliest": {
+    "$numberLong": "1788257708993"
+   }
+  },
+  "knowledge_progress": {
+   "total": 52,
+   "distinctUserId": 2,
+   "withEvidence": 0,
+   "withAggregated": 0,
+   "withAlgorithm": 0,
+   "withAttempts": 52,
+   "withCorrectCount": 52,
+   "withOldOnly": 52,
+   "masteryMin": 0,
+   "masteryMax": 1,
+   "masteryAvg": 0.735,
+   "allKeys": [
+    "_id",
+    "attempts",
+    "correctCount",
+    "dValue",
+    "knowledgeNodeId",
+    "lastUpdated",
+    "mastery",
+    "sValue",
+    "userId"
+   ]
+  },
+  "unit_progress": {
+   "total": 4,
+   "distinctUserId": 3,
+   "aValueList": [
+    {
+     "unitName": "第一章 集合与常用逻辑用语",
+     "aValue": 0.3,
+     "n": 1
+    },
+    {
+     "unitName": "第一章 集合与常用逻辑用语",
+     "aValue": 0.28,
+     "n": 7
+    },
+    {
+     "unitName": "第一章 集合与常用逻辑用语",
+     "aValue": 0.3,
+     "n": 1
+    },
+    {
+     "unitName": "第0章 预备知识",
+     "aValue": 0.3,
+     "n": 1
+    }
+   ],
+   "allKeys": [
+    "_id",
+    "aUpper",
+    "aValue",
+    "lastUpdated",
+    "lowEtaStreak",
+    "n",
+    "unitName",
+    "userId"
+   ]
+  },
+  "mastery_logs": {
+   "total": 381,
+   "byAlgorithm": {
+    "weighted_score_v1": 322,
+    "diagnose_v1": 59
+   },
+   "distinctUserId": 2,
+   "latest": {
+    "$numberLong": "1789810863833"
+   },
+   "earliest": {
+    "$numberLong": "1788257665376"
+   },
+   "byMonth": {
+    "[object": 381
+   }
+  },
+  "debug_logs": {
+   "total": 157,
+   "byStep": {
+    "reportService.assemble": 14,
+    "reportService.generate": 14,
+    "reportService.error": 11,
+    "reportService.saved": 3,
+    "reportService.assemble_v2": 40,
+    "reportService.saved_v2": 40,
+    "reportService.cost": 35
+   }
+  },
+  "knowledge_extras": {
+   "total": 61,
+   "byAspect": {
+    "思想": 16,
+    "来源": 4,
+    "应用": 41
+   }
+  },
+  "custom_nodes": {
+   "total": 0
+  },
+  "node_requests": {
+   "total": 0
+  }
+ }
+}

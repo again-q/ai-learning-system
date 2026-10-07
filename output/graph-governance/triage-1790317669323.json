@@ -1,0 +1,152 @@
+{
+ "meta": {
+  "ts": "2026-09-25T06:27:49.323Z",
+  "model": "deepseek-v4-flash",
+  "task": "triage",
+  "type": "method",
+  "tokens": [
+   {
+    "in": 499,
+    "out": 67
+   },
+   {
+    "in": 498,
+    "out": 51
+   },
+   {
+    "in": 500,
+    "out": 75
+   },
+   {
+    "in": 499,
+    "out": 58
+   },
+   {
+    "in": 498,
+    "out": 52
+   },
+   {
+    "in": 499,
+    "out": 64
+   },
+   {
+    "in": 500,
+    "out": 69
+   },
+   {
+    "in": 498,
+    "out": 56
+   },
+   {
+    "in": 499,
+    "out": 68
+   },
+   {
+    "in": 501,
+    "out": 56
+   }
+  ]
+ },
+ "proposals": [
+  {
+   "name": "因式分解",
+   "curType": "method",
+   "verdict": "keep",
+   "wwh": "operation",
+   "suggestName": "因式分解",
+   "evidence": "",
+   "rule": "§七 操作（对知识的运算变换，可独立考核）",
+   "reason": "因式分解是对整式进行恒等变形的独立运算操作，可独立考核，属操作类知识节点。"
+  },
+  {
+   "name": "配方法",
+   "curType": "method",
+   "verdict": "keep",
+   "wwh": "operation",
+   "suggestName": "配方法",
+   "evidence": "",
+   "rule": "§4.2 method",
+   "reason": "配方法是可独立考核的操作性方法，回答「怎么做」，应保留为知识节点。"
+  },
+  {
+   "name": "列举子集的方法",
+   "curType": "method",
+   "verdict": "rename",
+   "wwh": "operation",
+   "suggestName": "列举法",
+   "evidence": "",
+   "rule": "§4.2 method / §4.1 命名",
+   "reason": "列举子集属于列举法这一操作方法的子集应用，应归入规范方法节点「列举法」，而非以「列举子集的方法」为独立节点名。"
+  },
+  {
+   "name": "Venn图",
+   "curType": "method",
+   "verdict": "keep",
+   "wwh": "notation",
+   "suggestName": "Venn图",
+   "evidence": "",
+   "rule": "§4.2 notation",
+   "reason": "Venn图是集合关系的图形表示工具，属符号/图形表示类知识节点，type应为notation而非method。"
+  },
+  {
+   "name": "列举法",
+   "curType": "method",
+   "verdict": "keep",
+   "wwh": "operation",
+   "suggestName": "列举法",
+   "evidence": "",
+   "rule": "§4.2 method",
+   "reason": "列举法是回答「怎么做」的独立操作方法，可独立考核，应保留为知识节点。"
+  },
+  {
+   "name": "四种条件关系",
+   "curType": "method",
+   "verdict": "drop",
+   "wwh": "other",
+   "suggestName": "四种条件关系",
+   "evidence": "",
+   "rule": "§七 关系辨析 / §4.2 判别句",
+   "reason": "「四种条件关系」是充分必要条件的辨析归类，属关系辨析而非独立知识点，应并入相关节点 source_text。"
+  },
+  {
+   "name": "求补集的方法",
+   "curType": "method",
+   "verdict": "keep",
+   "wwh": "operation",
+   "suggestName": "求补集",
+   "evidence": "",
+   "rule": "§4.2 method / §七 操作",
+   "reason": "求补集是对集合的运算变换，可独立考核，属操作类知识节点，名称规范为动宾短语「求补集」。"
+  },
+  {
+   "name": "描述法",
+   "curType": "method",
+   "verdict": "keep",
+   "wwh": "REJECTED",
+   "suggestName": "描述法",
+   "evidence": "",
+   "rule": "§4.2 method",
+   "reason": "描述法是集合的表示方法，回答“怎么做”，属可独立考核的操作方法，应保留为知识节点。"
+  },
+  {
+   "name": "或与且",
+   "curType": "method",
+   "verdict": "drop",
+   "wwh": "other",
+   "suggestName": "或与且",
+   "evidence": "(无)",
+   "rule": "§4.2 判别句/关系辨析不是独立知识点",
+   "reason": "「或与且」是逻辑联结词的辨析性内容，无教材原文支撑，不构成独立知识节点。"
+  },
+  {
+   "name": "求并集交集的方法",
+   "curType": "method",
+   "verdict": "drop",
+   "wwh": "how",
+   "suggestName": "求并集交集的方法",
+   "evidence": "",
+   "rule": "§七 How",
+   "reason": "“求并集交集的方法”是应用操作步骤，属 How，应归入题型/方法应用，不作为独立知识节点。"
+  }
+ ]
+}

@@ -1,0 +1,54 @@
+{
+ "meta": {
+  "ts": "2026-09-25T06:29:10.626Z",
+  "model": "deepseek-v4-flash",
+  "task": "triage",
+  "type": "nonexistent",
+  "tokens": [
+   {
+    "in": 545,
+    "out": 78
+   },
+   {
+    "in": 534,
+    "out": 74
+   },
+   {
+    "in": 553,
+    "out": 74
+   }
+  ]
+ },
+ "proposals": [
+  {
+   "name": "一次函数",
+   "curType": "definition",
+   "verdict": "keep",
+   "wwh": "definition",
+   "suggestName": "一次函数",
+   "evidence": "形如 y=kx+b（k，b 是常数，k≠0）的函数叫做一次函数",
+   "rule": "§4.2 definition / §七 What",
+   "reason": "教材原文直接给出一次函数的定义，回答“什么是一次函数”，应作为知识节点保留。"
+  },
+  {
+   "name": "二次函数",
+   "curType": "definition",
+   "verdict": "keep",
+   "wwh": "definition",
+   "suggestName": "二次函数",
+   "evidence": "形如 y=ax²+bx+c（a≠0）的函数叫做二次函数",
+   "rule": "§七 What / §4.2 definition",
+   "reason": "教材给出二次函数的定义，回答“什么是二次函数”，应作为定义类知识节点保留。"
+  },
+  {
+   "name": "二次函数的顶点",
+   "curType": "property",
+   "verdict": "keep",
+   "wwh": "property",
+   "suggestName": "二次函数的顶点",
+   "evidence": "顶点坐标为 (−b/(2a), (4ac−b²)/(4a))",
+   "rule": "§4.2 property",
+   "reason": "顶点是二次函数图象的固有性质，回答「X 有什么性质」，应保留为 property 节点。"
+  }
+ ]
+}

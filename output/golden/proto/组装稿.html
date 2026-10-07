@@ -1,0 +1,263 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>诊断报告 · 重组稿</title><style>
+:root{--ink:#111827;--sub:#6b7280;--line:#e8eaed;--ok:#0f766e;--okbg:#eefaf7;--bad:#b42318;--badbg:#fef3f2;--mid:#b45309;--warnbg:#fffbeb}
+*{box-sizing:border-box}html,body{margin:0}body{background:#f5f6f8;color:var(--ink);font:15px/1.72 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:430px;margin:0 auto;background:#f5f6f8;padding:0 12px 32px}
+.top{position:sticky;top:0;z-index:9;background:rgba(245,246,248,.94);backdrop-filter:blur(8px);padding:14px 4px 10px;display:flex;align-items:baseline;gap:8px}
+.top b{font-size:17px;letter-spacing:.3px}.tag{font-size:11px;color:var(--sub);border:1px solid var(--line);border-radius:99px;padding:1px 8px;background:#fff}
+h2.sec-t{font-size:15px;margin:22px 4px 4px;letter-spacing:.2px}
+p.sec-h{font-size:12.5px;color:var(--sub);margin:0 4px 10px}
+.card{background:#fff;border-radius:14px;padding:16px 16px 14px}
+.card+.card{margin-top:12px}
+.cap{font-size:11.5px;color:var(--sub);font-weight:400;letter-spacing:.2px}
+.qtext{margin:10px 0 4px;font-size:15px;line-height:1.85;color:#111}
+.tex{font-family:Georgia,"Times New Roman",serif;font-style:italic}
+.fr{display:inline-flex;flex-direction:column;vertical-align:-0.5em;text-align:center;font-size:.85em;line-height:1.15;margin:0 3px}
+.fr i{font-style:normal;padding:0 4px}.fr i:first-child{border-bottom:1px solid currentColor}
+/* 第1屏：三句话，人话 */
+.said{list-style:none;margin:0;padding:0}
+.said li{padding:11px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;font-size:15px;line-height:1.7}
+.said li:last-child{border:0;padding-bottom:2px}
+.said .k{flex:none;color:var(--sub);font-size:13px;padding-top:2px;width:56px}
+.said b{font-weight:600}
+/* 我的一页：我的字 */
+ol.mine{list-style:none;margin:0;padding:0}
+ol.mine li{display:flex;gap:9px;padding:7px 10px;border-radius:8px;margin-bottom:5px;font-size:14px}
+ol.mine .idx{color:var(--sub);font-size:12px;min-width:14px;flex:none;padding-top:1px}
+li.st-ok{background:var(--okbg)}li.st-ok .st{color:var(--ok)}
+li.st-bad{background:var(--badbg)}li.st-bad .st{color:var(--bad)}
+.st{font-size:11px;flex:none;padding-top:1px}
+.stopt{font-size:12.5px;color:var(--sub);margin:2px 0 8px}
+.diff{border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.side{padding:10px 11px;font-size:14px}
+.side.you{background:var(--badbg)}.side.you.mid{background:var(--warnbg)}
+.side.ref{background:var(--okbg)}
+.side .lab{display:block;font-size:11.5px;color:var(--sub);margin-bottom:3px}
+.side p{margin:0}
+.sep{display:flex;align-items:center;gap:7px;padding:3px 11px;font-size:11px;color:var(--sub);background:#fff}
+.sep:before,.sep:after{content:"";height:1px;background:var(--line);flex:1}
+/* 我做的那一下 */
+.pick{border:1px solid #e5d9f2;background:#faf7ff;border-radius:10px;padding:12px}
+.pick .t{font-weight:600;font-size:14px;color:#5b21b6}
+.pick .b{font-size:14px;margin-top:4px}
+.cand{border:1px solid #ddd6fe;background:#fff;border-radius:10px;padding:10px 11px;margin-top:8px;display:flex;gap:9px;font-size:14px;cursor:pointer}
+.cand.on{border-color:#5b21b6;background:#f5f0ff}
+.cand .r{width:15px;height:15px;border:1.5px solid #a78bfa;border-radius:50%;flex:none;margin-top:4px}
+.cand.on .r{border-color:#5b21b6;background:#5b21b6;box-shadow:inset 0 0 0 3px #fff}
+.cand .ev{display:block;font-size:11.5px;color:var(--sub);margin-top:3px;font-weight:400}
+textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:8px 9px;font:14px/1.6 inherit;min-height:46px;margin-top:6px}
+.btn{display:inline-flex;align-items:center;gap:5px;border:0;background:#5b21b6;color:#fff;border-radius:99px;padding:7px 16px;font-size:13px;margin-top:9px;cursor:pointer}
+.done{display:none;background:#f0fdf9;border:1px solid #a7f3d0;border-radius:10px;padding:11px 12px;margin-top:10px;font-size:13.5px;color:#065f46}
+.done .l{display:block;font-weight:600;margin-bottom:4px}
+/* 动作 */
+.act{border-left:2px solid var(--ink);padding:2px 0 2px 11px;margin-bottom:12px;font-size:14px}
+.act .why{display:block;font-size:11.5px;color:var(--sub);margin-top:2px}
+.act .did{display:inline-block;font-size:11.5px;color:var(--ok);border:1px solid #a7f3d0;background:var(--okbg);border-radius:99px;padding:1px 9px;margin-top:5px}
+/* 账 */
+.acct{margin-top:2px}.a-row{display:flex;align-items:baseline;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.a-row:last-child{border:0}
+.a-name{flex:1}
+.a-num{font-size:12.5px;color:var(--sub);flex:none;font-variant-numeric:tabular-nums}
+details{margin-top:8px}summary{font-size:12.5px;color:var(--sub);cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}summary:before{content:"＋ ";font-size:11px}
+details[open] summary:before{content:"－ "}
+.fold{background:#fafafa;border:1px solid var(--line);border-radius:9px;padding:9px 10px;font-size:12.5px;color:var(--sub);margin-top:8px;line-height:1.7}
+.none{font-size:13.5px;color:var(--sub)}
+.led{background:#fff;border-radius:14px;padding:14px 16px;margin-top:12px}
+.led .t{font-weight:600;font-size:14px;margin-bottom:6px}
+.row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+.row:last-child{border:0}.row .v{color:var(--sub);flex:none}
+.foot{font-size:11.5px;color:var(--sub);padding:14px 4px 0;line-height:1.7}
+</style></head><body><div class="wrap">
+
+<div class="top"><b>诊断报告</b><span class="tag">重组稿 · 真实数据</span></div>
+
+<!-- ══════ 第 1 屏：三句话 ══════ -->
+<h2 class="sec-t">这次的三句话</h2>
+<p class="sec-h">先说你自己的事，再往下看细的</p>
+<div class="card">
+<ul class="said">
+  <li><span class="k">题</span><span>这次 3 道，<b>一道都没做完</b>（上次 2 道也一样）。</span></li>
+  <li><span class="k">错法</span><span>第 2 题：<b>算错了数</b>（1/3 应该是 2/3）。<br>第 3 题：<b>少分了一种情况</b>（x=0 或 y=0 那一种）。</span></li>
+  <li><span class="k">重复</span><span><b>空集</b>这件事，你 9 次里只对过 1 次，这次第 2 题又栽在它上面。</span></li>
+</ul>
+</div>
+
+<!-- ══════ 第 2 屏：我的一页（按题，先看我） ══════ -->
+<h2 class="sec-t">我写的那一页</h2>
+<p class="sec-h">你的原话，先看一遍；想不起来哪一步就点开</p>
+
+<div class="card">
+<div><span class="cap">第 1 题 · 填空</span></div>
+<div class="qtext"><span class="tex">已知集合 A={ a<sub>1</sub>,a<sub>2</sub>,a<sub>3</sub>,a<sub>4</sub>,a<sub>5</sub>} ，集合 B={ M,N} ， M⊆A ， N⊆A ，且满足 M⊆N ，或 N⊆M ，则符合条件的集合 B 有__________个 .</span></div>
+<div class="none" style="margin-top:10px">这题你只填了一个数字，<b>没有写过程</b>，所以这题只能看到这里。</div>
+<div class="fold">空着的那一格你填的是什么、对不对，得对着卷子看 —— 报告里没有。</div>
+</div>
+
+<div class="card">
+<div><span class="cap">第 2 题 · 解答（15 分）· 你写到第 3 段停的</span></div>
+<div class="qtext"><span class="tex">已知集合 A={ x|x+<span class="fr"><i>4</i><i>x</i></span>=5} ， B={ x|(a-1)x<sup>2</sup>+ax+a-1=0} ． (1) 若 B 中恰有一个元素，用列举法表示 a 的值构成的集合 ; (2) 若 B⊆A ，求 a 的取值范围．</span></div>
+<div class="stopt">你写了 9 段，其中 <b>4 段是断的</b>（下面标红的就是）：</div>
+<ol class="mine">
+<li class="st-ok"><span class="idx">1</span><span class="st">通</span><span><span class="tex">当 a-1=0 时，恰有一个元素，此时 a=1</span></span></li>
+<li class="st-ok"><span class="idx">2</span><span class="st">通</span><span><span class="tex">当 a-1≠0 时，有 Δ=a^2-4(a-1)^2=0，解得 a=4 或 a=<span class="fr"><i>1</i><i>3</i></span></span></span></li>
+<li class="st-bad"><span class="idx">3</span><span class="st">断</span><span><span class="tex">综上，a 的值构成集合为 {1,<span class="fr"><i>1</i><i>3</i></span>,4}</span></span></li>
+<li class="st-ok"><span class="idx">4</span><span class="st">通</span><span><span class="tex">x+<span class="fr"><i>4</i><i>x</i></span>=5 ⇒ x^2-5x+4=0 ⇒ A={1,4}</span></span></li>
+<li class="st-ok"><span class="idx">5</span><span class="st">通</span><span><span class="tex">当 B=∅ 时，判别式小于0</span></span></li>
+</ol>
+<details><summary>展开其余 4 段</summary><ol class="mine" style="margin-top:6px"><li class="st-bad"><span class="idx">6</span><span class="st">断</span><span><span class="tex">当 B≠∅ 时，再次讨论 a-1=0 被划去，以及 a-1≠0 时的 Δ&lt;0,Δ=0,Δ&gt;0 三种情况</span></span></li><li class="st-bad"><span class="idx">7</span><span class="st">断</span><span><span class="tex">a=<span class="fr"><i>2</i><i>3</i></span> 或 a=<span class="fr"><i>8</i><i>9</i></span>（舍去）</span></span></li><li class="st-bad"><span class="idx">8</span><span class="st">断</span><span><span class="tex">此时 a 不存在</span></span></li><li class="st-bad"><span class="idx">9</span><span class="st">断</span><span><span class="tex">综上，a 取值范围为 a≤<span class="fr"><i>1</i><i>3</i></span> 或 a=<span class="fr"><i>8</i><i>9</i></span> 或 a&gt;4</span></span></li></ol></details>
+</div>
+
+<div class="card">
+<div><span class="cap">第 3 题 · 解答（17 分）· 你写到第 4 段停的</span></div>
+<div class="qtext"><span class="tex">已知 M 是满足下列条件的集合： ① 0∈M ， 1∈M ； ② 若 x ， y∈M ，则 x-y∈M ； ③ 若 x∈M 且 x{≠ }0 ，则 <span class="fr"><i>1</i><i>x</i></span>∈M ． (1) 判断 -1∈M 是否正确，并说明理由； (2) 证明： <span class="fr"><i>1</i><i>3</i></span>∈M ； (3) 证明：若 x ， y∈M ，则 x+y∈M 且 xy∈M ．</span></div>
+<div class="stopt">你写了 4 段，<b>只有最后一段是断的</b>：</div>
+<ol class="mine">
+<li class="st-ok"><span class="idx">1</span><span class="st">通</span><span><span class="tex">解：(1) 正确，理由如下：取 x=0,y=1，则 0-1=-1∈ M</span></span></li>
+<li class="st-ok"><span class="idx">2</span><span class="st">通</span><span><span class="tex">由(1)知 -1∈ M，取 x=1,y=-1 得 2∈ M；取 x=2,y=-1 得 3∈ M；由③得 13∈ M</span></span></li>
+<li class="st-ok"><span class="idx">3</span><span class="st">通</span><span><span class="tex">(I) 由②，要证 x+y∈ M：取 x=0,y=y 得 -y∈ M；再取 x=x,y=-y 得 x+y∈ M</span></span></li>
+<li class="st-bad"><span class="idx">4</span><span class="st">断</span><span><span class="tex">由③，取 x=x,x=y 得 1x,1y∈ M；取 x=1x,y=1y 得 1x-1y=<span class="fr"><i>y-x</i><i>xy</i></span>∈ M；再由③取 x=1{xy}……</span></span></li>
+</ol>
+</div>
+
+<!-- ══════ 第 3 屏：你自己看一眼（对照，逐题） ══════ -->
+<h2 class="sec-t">你自己看一眼</h2>
+<p class="sec-h">只把两段摆在一起，不解释 —— 差在哪你自己看得出来</p>
+
+<div class="card">
+<div><span class="cap">第 2 题 · 你停下的那一步</span></div>
+<div class="diff" style="margin-top:10px">
+<div class="side you"><span class="lab">你写的 · 第 3 段</span><p><span class="tex">综上，a 的值构成集合为 {1,<span class="fr"><i>1</i><i>3</i></span>,4}</span></p></div>
+<div class="sep">对照</div>
+<div class="side ref"><span class="lab">标准做法 · 第 3 步</span><p><span class="tex">Δ=a^2-4(a-1)^2=0，即 3a^2-8a+4=0，解得 a=<span class="fr"><i>2</i><i>3</i></span> 或 a=2。</span></p></div>
+</div>
+<div class="fold">这一步你算出来的 1/3 和 4，标准做法是 2/3 和 2 —— 差的就一个数。</div>
+<details><summary>看完整标准做法（7 步）</summary><ol class="mine" style="margin-top:6px">
+<li><span class="idx">1</span><span><b><span class="tex">解集合 A</span></b><br><span class="tex">由 x+<span class="fr"><i>4</i><i>x</i></span>=5 得 x^2-5x+4=0，解得 x=1 或 x=4，故 A={1,4}。</span></span></li>
+<li><span class="idx">2</span><span><b><span class="tex">第(1)问 —— a-1=0 的情形</span></b><br><span class="tex">当 a=1 时，B={x| x=0}={0}，恰有一个元素，符合。</span></span></li>
+<li><span class="idx">3</span><span><b><span class="tex">第(1)问 —— a-1≠0 的情形</span></b><br><span class="tex">当 a≠1 时，B 恰有一个元素等价于 Δ=a^2-4(a-1)^2=0，即 3a^2-8a+4=0，解得 a=<span class="fr"><i>2</i><i>3</i></span> 或 a=2。</span></span></li>
+<li><span class="idx">4</span><span><b><span class="tex">第(1)问结论</span></b><br><span class="tex">综上，a 的值构成的集合为 {1,<span class="fr"><i>2</i><i>3</i></span>,2}。</span></span></li>
+<li><span class="idx">5</span><span><b><span class="tex">第(2)问 —— B=∅ 的情形</span></b><br><span class="tex">当 a=1 时 B={0}⊆ A；当 a≠1 时，B=∅ 需 Δ&lt;0，即 3a^2-8a+4&gt;0，解得 a&lt;<span class="fr"><i>2</i><i>3</i></span> 或 a&gt;2。</span></span></li>
+<li><span class="idx">6</span><span><b><span class="tex">第(2)问 —— B≠∅ 的情形</span></b><br><span class="tex">当 B≠∅ 时，B⊆ A 需 B={1} 或 B={4} 或 B={1,4}。由韦达定理 x_1+x_2=<span class="fr"><i>a</i><i>1-a</i></span>，x_1x_2=1。若 B={1,4}，则 x_1x_2=4≠1，矛盾；若 B={1}，则 x_1x_2=1 成立，x_1+x_2=2=<span class="fr"><i>a</i><i>1-a</i></span>，得 a=<span class="fr"><i>2</i><i>3</i></span>，此时 Δ=0 符合；若 B={4}，则 x_1x_2=16≠1，矛盾。</span></span></li>
+<li><span class="idx">7</span><span><b><span class="tex">第(2)问结论</span></b><br><span class="tex">综上，a 的取值范围为 a&lt;<span class="fr"><i>2</i><i>3</i></span> 或 a=<span class="fr"><i>2</i><i>3</i></span> 或 a&gt;2，即 a≤<span class="fr"><i>2</i><i>3</i></span> 或 a&gt;2。</span></span></li>
+</ol></details>
+</div>
+
+<div class="card">
+<div><span class="cap">第 3 题 · 你停下的那一步</span></div>
+<div class="diff" style="margin-top:10px">
+<div class="side you mid"><span class="lab">你写的 · 第 4 段</span><p><span class="tex">由③，取 x=x,x=y 得 1x,1y∈ M；取 x=1x,y=1y 得 1x-1y=<span class="fr"><i>y-x</i><i>xy</i></span>∈ M；再由③取 x=1{xy}……</span></p></div>
+<div class="sep">对照</div>
+<div class="side ref"><span class="lab">标准做法 · 第 4 步</span><p><span class="tex">若 x=0 或 y=0，由 0∈ M 知 xy=0∈ M。若 x,y≠0，由条件③得 1x,1y∈ M，由减法封闭性得 1x-1y=<span class="fr"><i>y-x</i><i>xy</i></span>∈ M。</span></p></div>
+</div>
+<div class="fold">你写的和标准做法一样走到 <span class="tex">1x-1y</span> 这一步 —— 你少的是开头那句「若 x=0 或 y=0」。</div>
+<details><summary>看完整标准做法（5 步）</summary><ol class="mine" style="margin-top:6px">
+<li><span class="idx">1</span><span><b><span class="tex">第(1)问：由减法封闭性得 -1∈ M</span></b><br><span class="tex">取 x=0,y=1，由条件②得 0-1=-1∈ M，故 -1∈ M 正确。</span></span></li>
+<li><span class="idx">2</span><span><b><span class="tex">第(2)问：逐步构造出 3 再取倒数</span></b><br><span class="tex">由(1)知 -1∈ M。取 x=1,y=-1，得 1-(-1)=2∈ M；取 x=2,y=-1，得 2-(-1)=3∈ M；由条件③，3∈ M 且 3≠0，得 13∈ M。</span></span></li>
+<li><span class="idx">3</span><span><b><span class="tex">第(3)问：先证加法封闭性</span></b><br><span class="tex">对任意 y∈ M，取 x=0，由条件②得 0-y=-y∈ M。再取 x=x,y=-y，得 x-(-y)=x+y∈ M。</span></span></li>
+<li><span class="idx">4</span><span><b><span class="tex">第(3)问：乘法封闭性分零与非零讨论</span></b><br><span class="tex">若 x=0 或 y=0，由 0∈ M 知 xy=0∈ M。若 x,y≠0，由条件③得 1x,1y∈ M，由减法封闭性得 1x-1y=<span class="fr"><i>y-x</i><i>xy</i></span>∈ M。</span></span></li>
+<li><span class="idx">5</span><span><b><span class="tex">第(3)问：取倒数并利用加法封闭性完成证明</span></b><br><span class="tex">由条件③，<span class="fr"><i>y-x</i><i>xy</i></span>∈ M 且非零，得 <span class="fr"><i>xy</i><i>y-x</i></span>∈ M。又 x-y∈ M，由加法封闭性得 <span class="fr"><i>xy</i><i>y-x</i></span>+(x-y)∈ M，化简得 <span class="fr"><i>xy+(x-y)^2</i><i>y-x</i></span>∈ M，再取倒数得 <span class="fr"><i>y-x</i><i>xy+(x-y)^2</i></span>∈ M，结合已有元素可推出 xy∈ M。</span></span></li>
+</ol></details>
+</div>
+
+<!-- ══════ 第 4 屏：你到底是怎么错的（学生说了算，且有反馈） ══════ -->
+<h2 class="sec-t">你到底是怎么错的</h2>
+<p class="sec-h">这两处是我猜的，带证据；不对你就改，改了我就按你说的记</p>
+
+<div class="card">
+<div><span class="cap">第 2 题 · 一处对不上（B=∅ 那一支）</span></div>
+<div class="diff" style="margin-top:10px">
+<div class="side you mid"><span class="lab">你写的 · 第 5 段</span><p><span class="tex">当 B=∅ 时，判别式小于0</span></p></div>
+<div class="sep">对照</div>
+<div class="side ref"><span class="lab">标准做法 · 第 5 步（这一步做了）</span><p><span class="tex">当 a=1 时 B={0}⊆ A；当 a≠1 时，B=∅ 需 Δ&lt;0，即 3a^2-8a+4&gt;0，解得 a&lt;<span class="fr"><i>2</i><i>3</i></span> 或 a&gt;2。</span></p></div>
+</div>
+<div class="pick" style="margin-top:10px"><div class="t">更像是哪一种？（点一个）</div>
+<div class="cand" onclick="pick(this,0)"><span class="r"></span><span><b>算错了数</b><span class="ev">证据 → 你第 3 段写 {1, 1/3, 4}，标准做法是 {1, 2/3, 2}</span></span></div>
+<div class="cand" onclick="pick(this,0)"><span class="r"></span><span><b>情况没分全</b><span class="ev">证据 → 你第 5 段提了「B=∅ 判别式小于 0」，但没把这一支算成 a 的范围</span></span></div>
+<div class="cand" onclick="pick(this,0)"><span class="r"></span><span><b>都不是，我自己写</b><textarea placeholder="一句话说这一段的实际情况"></textarea></span></div>
+<button class="btn" onclick="save()">就这么记下</button>
+<div class="done" id="done"><span class="l">记下了 —— 你说的算</span>你选了<b id="picked">算错了数</b>。以后这类错按你说的记，不再按我猜的写。</div>
+</div>
+</div>
+
+<div class="card">
+<div><span class="cap">第 3 题 · 你写的一样，但你少了开头那一句</span></div>
+<div class="pick" style="margin-top:8px"><div class="t">更像是哪一种？（点一个）</div>
+<div class="cand" onclick="pick(this,1)"><span class="r"></span><span><b>漏了一种情况</b><span class="ev">证据 → 标准做法开头有「若 x=0 或 y=0」，你从「若 x,y≠0」直接开始</span></span></div>
+<div class="cand" onclick="pick(this,1)"><span class="r"></span><span><b>纯粹没写完（时间/笔没跟上）</b><span class="ev">证据 → 你第 4 段以「……」结尾，是断在半句上</span></span></div>
+<div class="cand" onclick="pick(this,1)"><span class="r"></span><span><b>都不是，我自己写</b><textarea placeholder="一句话说这一段的实际情况"></textarea></span></div>
+<button class="btn" onclick="save()">就这么记下</button>
+<div class="done" id="done2"><span class="l">记下了 —— 你说的算</span>你选了<b id="picked2">漏了一种情况</b>。以后这类错按你说的记，不再按我猜的写。</div>
+</div>
+</div>
+
+<!-- ══════ 第 5 屏：明天先做什么（带依据 + 能标已做） ══════ -->
+<h2 class="sec-t">明天先做什么</h2>
+<p class="sec-h">每条都指回上面某一处，不是空话</p>
+<div class="card">
+<div class="act">只重写第 2 题第 2 段这一步：把 Δ=a²−4(a−1)² 展开成 3a²−8a+4，再解一次<span class="why">依据 →「你自己看一眼」第 2 题那组对照，差的就是这一步</span><br><span class="did">✓ 我做了</span></div>
+<div class="act">第 2 题第 (1) 问按「a−1=0 与 a−1≠0 分开 → 各自对 Δ 下结论」重排顺序<span class="why">依据 → 你的第 1、2 段已经分成两条了，缺的是分开写</span><br><span class="did">✓ 我做了</span></div>
+<div class="act">下次遇到 B⊆A：<b>先把「B=∅」单独写一行</b>，再写另外两种<span class="why">依据 → 你第 5 段提了空集，后面没有对应结论；而空集你 9 次里只对过 1 次</span><br><span class="did">✓ 我做了</span></div>
+</div>
+
+<!-- ══════ 第 6 屏：你的账（从第1屏的"重复"点进来） ══════ -->
+<h2 class="sec-t">你的账</h2>
+<p class="sec-h">这是你自己记不住的 —— 每个数都能点开看是哪几道题</p>
+
+<div class="card">
+<div class="cap">这次三道题用到的知识点</div>
+<div class="acct">
+<div class="a-row"><span class="a-name">空集的性质</span><span class="a-num">9 次里对过 1 次</span></div>
+<div class="a-row"><span class="a-name">集合与元素的字母表示</span><span class="a-num">20 次里对过 4 次</span></div>
+<div class="a-row"><span class="a-name">判别式</span><span class="a-num">10 次里对过 3 次</span></div>
+<div class="a-row"><span class="a-name">一元二次方程</span><span class="a-num">18 次里对过 6 次</span></div>
+<div class="a-row"><span class="a-name">韦达定理</span><span class="a-num">7 次里对过 3 次</span></div>
+<div class="a-row"><span class="a-name">子集</span><span class="a-num">20 次里对过 14 次</span></div>
+</div>
+<details><summary>这 6 个数分别是谁算出来的</summary><div class="fold">每个数 = 你做过的题里，判定为「用到这个知识点」且做对的次数 ÷ 用到的总次数。<br>点开任意一行可看是哪几道题（本稿未接）。</div></details>
+</div>
+
+<div class="card">
+<div class="cap">你最近三次做这三道题对应的知识点时，每次是什么状态</div>
+<div class="acct">
+<div class="a-row"><span class="a-name">空集的性质</span><span class="a-num">做了一半 · 做了一半 · 基本做对（9月19日）</span></div>
+<div class="a-row"><span class="a-name">集合与元素的字母表示</span><span class="a-num">没做出来 · 基本做对 · 没做出来（9月19日）</span></div>
+<div class="a-row"><span class="a-name">一元二次方程</span><span class="a-num">没做出来 · 基本做对 · 做对了（9月19日）</span></div>
+</div>
+<div class="fold">这三行说明：<b>你「会不会」在飘</b> —— 同一个知识点，今天做对明天做不出来。这比「一直不会」更值得先解决。</div>
+</div>
+
+<div class="card">
+<div class="cap">跨题看：你的断点往哪边走</div>
+<div class="acct">
+<div class="a-row"><span class="a-name">一元二次方程</span><span class="a-num">9月18日 第一步没写出来 → 9月19日 写到一半停了</span></div>
+<div class="a-row"><span class="a-name">韦达定理</span><span class="a-num">9月18日 第一步没写出来 → 9月19日 写到一半停了</span></div>
+</div>
+<div class="fold">这两条是<b>往前走</b>的（从没动手到动手写了一半），跟你这次「一道都没做完」不矛盾 —— 是同一件事的两面。</div>
+</div>
+
+<div class="led">
+<div class="t">没给你结论的地方</div>
+<div class="row"><span>单元熟练度（第0章 预备知识）</span><span class="v">只有 1 次样本 → 样本不足，不给</span></div>
+<div class="row"><span>第 1 题（填空）</span><span class="v">没有过程 → 不给判定，只列题</span></div>
+<div class="row"><span>第 3 题的知识点</span><span class="v">图谱里还没有这几个点 → 不硬编</span></div>
+</div>
+
+<div class="foot">数据取自真实判定记录，未改一个数。本稿只重排结构与文案，不新增采集。</div>
+</div><script>
+var names=[["算错了数","情况没分全","都不是"],["漏了一种情况","纯粹没写完","都不是"]];
+function pick(el,g){
+  var box=el.parentNode;
+  box.querySelectorAll(".cand").forEach(function(c){c.classList.remove("on")});
+  el.classList.add("on");
+  var i=Array.prototype.indexOf.call(box.querySelectorAll(".cand"),el);
+  var t=el.querySelector("b").textContent;
+  var ta=el.querySelector("textarea"); if(ta) t="我自己写的";
+  document.getElementById(g?"picked2":"picked").textContent=t;
+}
+function save(){
+  document.getElementById("done").style.display="block";
+  document.getElementById("done2").style.display="block";
+}
+</script></body></html>

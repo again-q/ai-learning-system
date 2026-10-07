@@ -1,0 +1,119 @@
+{
+ "generatedAt": "2026-10-05T03:05:48.737Z",
+ "model": "jev (EdgeOne Makers)",
+ "rounds": 3,
+ "experiment1": [
+  {
+   "name": "并集运算",
+   "expect": "并集",
+   "picks": [
+    "并集",
+    "并集",
+    "并集"
+   ],
+   "confs": [
+    1,
+    1,
+    1
+   ],
+   "stable": true,
+   "hit": true
+  },
+  {
+   "name": "交集运算",
+   "expect": "交集",
+   "picks": [
+    "交集",
+    "交集",
+    "交集"
+   ],
+   "confs": [
+    1,
+    1,
+    1
+   ],
+   "stable": true,
+   "hit": true
+  },
+  {
+   "name": "补集运算",
+   "expect": "补集",
+   "picks": [
+    "补集",
+    "补集",
+    "补集"
+   ],
+   "confs": [
+    1,
+    1,
+    1
+   ],
+   "stable": true,
+   "hit": true
+  },
+  {
+   "name": "互异性",
+   "expect": "互异性",
+   "picks": [
+    "互异性",
+    "互异性",
+    "互异性"
+   ],
+   "confs": [
+    0.58,
+    0.54,
+    0.59
+   ],
+   "stable": true,
+   "hit": true
+  },
+  {
+   "name": "元素与集合关系",
+   "expect": "属于与不属于",
+   "picks": [
+    "属于与不属于",
+    "属于与不属于",
+    "属于与不属于"
+   ],
+   "confs": [
+    1,
+    1,
+    1
+   ],
+   "stable": true,
+   "hit": true
+  },
+  {
+   "name": "确定性",
+   "expect": "确定性",
+   "picks": [
+    "确定性",
+    "确定性",
+    "确定性"
+   ],
+   "confs": [
+    0.99,
+    0.99,
+    0.99
+   ],
+   "stable": true,
+   "hit": true
+  },
+  {
+   "name": "无序性",
+   "expect": "无序性",
+   "picks": [
+    "无序性",
+    "集合相等",
+    "无序性"
+   ],
+   "confs": [
+    0.47,
+    0.47,
+    0.47
+   ],
+   "stable": false,
+   "hit": true
+  }
+ ]
+}

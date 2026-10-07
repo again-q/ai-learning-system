@@ -1,0 +1,65 @@
+{
+ "generatedAt": "2026-10-05T03:42:16.093Z",
+ "gateway": "openrouter",
+ "model": "typesafe/jev-1.13",
+ "experiment1": [
+  {
+   "size": 12,
+   "acc": 100,
+   "avgConf": 0.998,
+   "avgTok": 1259,
+   "avgCostUsd": 0.000052878
+  },
+  {
+   "size": 60,
+   "acc": 100,
+   "avgConf": 0.994,
+   "avgTok": 5045,
+   "avgCostUsd": 0.00021189
+  },
+  {
+   "size": 254,
+   "acc": 100,
+   "avgConf": 0.994,
+   "avgTok": 25187,
+   "avgCostUsd": 0.001057854
+  }
+ ],
+ "experiment2": [
+  {
+   "name": "并集运算",
+   "expect": "并集",
+   "main": "并集",
+   "mainOk": true,
+   "tags": [
+    "集合:0.99",
+    "元素:0.82",
+    "并集:0.99",
+    "互异性:0.82",
+    "无序性:0.54"
+   ]
+  },
+  {
+   "name": "交集运算",
+   "expect": "交集",
+   "main": "交集",
+   "mainOk": true,
+   "tags": [
+    "集合:0.99",
+    "交集:0.99"
+   ]
+  },
+  {
+   "name": "补集运算",
+   "expect": "补集",
+   "main": "补集",
+   "mainOk": true,
+   "tags": [
+    "集合:0.99",
+    "元素:0.76",
+    "属于与不属于:0.53",
+    "补集:0.99"
+   ]
+  }
+ ]
+}

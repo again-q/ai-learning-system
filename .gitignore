@@ -37,5 +37,21 @@ miniprogram/packageSync/
 # babel 辅助函数编译产物（工具自动生成）
 @babel/runtime/
 
+# 本地验证产物（82M，含截图/临时脚本），仅本机自用
+.verify/
+
 # Pairlet 共享票（一次性兑换令牌＝本机访问入口，文件内含二维码）：仅本地自用，禁止入库/推送（2026-09-25）
 output/pairlet-share-qr.txt
+
+# CloudBase 部署配置（tcb config pull 生成，**内含明文密钥**）：仅本地自用，禁止入库（2026-10-07）
+cloudbaserc.json
+
+# 大体积本地环境/模型/工具状态（2026-10-07）：721M venv + 1.6G 模型，禁止入库
+.venv_decision/
+.workbuddy/
+output/models/
+
+# Pairlet 共享票产物（二维码/出票脚本）：与上面 pairlet-share-qr.txt 同类，仅本地自用（2026-10-07）
+output/share-qr.png
+output/share-qr.sh
+output/pairlet-share-qr.sh

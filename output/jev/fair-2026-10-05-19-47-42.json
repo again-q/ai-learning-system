@@ -1,0 +1,1152 @@
+{
+  "generatedAt": "2026-10-05T19:47:42.560Z",
+  "corpus": {
+    "raw": 61,
+    "dedup": 55
+  },
+  "summary": {
+    "n": 55,
+    "jevOk": 43,
+    "charOk": 51,
+    "bothOk": 40,
+    "jevOnly": 3,
+    "charOnly": 11,
+    "neither": 1,
+    "avgConf": 0.691860465116279
+  },
+  "rows": [
+    {
+      "q": "1.集合 $A=\\{1,2,3,4\\}, B=\\{2,3,4,5\\}$, 则 $A \\cap B=$ ( ) A. $\\",
+      "aiNames": [
+        "交集",
+        "元素"
+      ],
+      "charHit": true,
+      "charPick": "交集",
+      "charScore": 1,
+      "jev": {
+        "name": "交集",
+        "confidence": 1,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "2.已知集合 $M=\\{x|-4<x \\le 1\\}, N=\\{x|-1<x<3\\}$, 则 $M \\cup N=$ (",
+      "aiNames": [
+        "并集",
+        "区间表示法",
+        "元素"
+      ],
+      "charHit": true,
+      "charPick": "并集",
+      "charScore": 1,
+      "jev": {
+        "name": "并集",
+        "confidence": 1,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "3.设集合 $A=\\{x|x^2-3x+2=0\\}$, 则满足 $A \\cup B=\\{0,1,2\\}, A \\cap ",
+      "aiNames": [
+        "交集",
+        "并集",
+        "空集",
+        "一元二次方程的解法",
+        "元素"
+      ],
+      "charHit": true,
+      "charPick": "交集",
+      "charScore": 1,
+      "jev": {
+        "name": "并集",
+        "confidence": 0.81,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "4.设集合 $S=\\{x|x<-1 \\text{ 或 } x>5\\}$, 集合 $T=\\{x|a<x<a+8\\}$, 且",
+      "aiNames": [],
+      "charHit": false,
+      "charPick": null,
+      "charScore": 0,
+      "jev": {
+        "name": "并集",
+        "confidence": 1,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "5.(多选)已知全集 $U=\\mathbf{Z}$, 集合 $A=\\{1,2,3\\}, B=\\{a+b|a,b \\in ",
+      "aiNames": [
+        "集合的并集",
+        "集合的交集",
+        "真子集",
+        "列举法",
+        "元素"
+      ],
+      "charHit": true,
+      "charPick": "真子集",
+      "charScore": 1,
+      "jev": {
+        "name": "并集",
+        "confidence": 0.63,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "6.(多选)若集合 $A=\\{1,3,x\\}, B=\\{1,x^2\\}, A \\cup B=\\{1,3,x\\}$, 则满",
+      "aiNames": [
+        "并集",
+        "元素",
+        "互异性",
+        "一元二次方程的解法"
+      ],
+      "charHit": true,
+      "charPick": "并集",
+      "charScore": 1,
+      "jev": {
+        "name": "并集",
+        "confidence": 0.8,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "7.已知集合 $A=\\{1,2,3\\}, B=\\{2,m,4\\}, A \\cap B=\\{2,3\\}$, 则 $m=$ ",
+      "aiNames": [
+        "交集",
+        "元素",
+        "集合相等"
+      ],
+      "charHit": true,
+      "charPick": "交集",
+      "charScore": 1,
+      "jev": {
+        "name": "交集",
+        "confidence": 0.99,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "8.若集合 $A=\\{x|-1<x<5\\}, B=\\{x|x \\le 1 \\text{ 或 } x \\ge 4\\}$, ",
+      "aiNames": [
+        "并集",
+        "交集",
+        "区间表示法",
+        "元素"
+      ],
+      "charHit": true,
+      "charPick": "并集",
+      "charScore": 1,
+      "jev": {
+        "name": "并集",
+        "confidence": 0.91,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "9.已知集合 $A=\\{x|x<1 \\text{ 或 } x>5\\}, B=\\{x|a \\le x \\le b\\}$, ",
+      "aiNames": [
+        "并集",
+        "交集",
+        "区间表示法",
+        "元素"
+      ],
+      "charHit": true,
+      "charPick": "并集",
+      "charScore": 1,
+      "jev": {
+        "name": "并集",
+        "confidence": 0.68,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "10.(1)已知集合 $M=\\{x \\in \\mathbf{Z}|0 \\le x < 3\\}, N=\\{x|x^2-x-",
+      "aiNames": [
+        "并集",
+        "交集",
+        "一元二次方程的解法",
+        "元素",
+        "区间表示法"
+      ],
+      "charHit": true,
+      "charPick": "并集",
+      "charScore": 1,
+      "jev": {
+        "name": "并集",
+        "confidence": 0.84,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "1. 下列说法正确的是 ( ) A. 某班中年龄较小的同学能够形成一个集合 B. 由 $1, 2, 3$ 和 $\\sqr",
+      "aiNames": [
+        "集合",
+        "确定性",
+        "集合相等",
+        "互异性"
+      ],
+      "charHit": true,
+      "charPick": "集合",
+      "charScore": 1,
+      "jev": {
+        "name": "确定性",
+        "confidence": 0.7,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "2. 方程 $\\begin{cases} x-2y=3 \\\\ 2x+y=11 \\end{cases}$ 的解集是 ( )",
+      "aiNames": [
+        "集合与元素的字母表示",
+        "一元二次方程",
+        "描述法"
+      ],
+      "charHit": true,
+      "charPick": "集合与元素的字母表示",
+      "charScore": 1,
+      "jev": {
+        "name": null,
+        "confidence": 0.46,
+        "chapter": null,
+        "reason": "章节未命中"
+      },
+      "jevHit": false,
+      "err": null
+    },
+    {
+      "q": "3. 由大于 -3 且小于 11 的偶数所组成的集合是 ( ) A. $\\{x | -3 < x < 11, x \\in",
+      "aiNames": [
+        "集合与元素的字母表示",
+        "描述法",
+        "常用数集"
+      ],
+      "charHit": true,
+      "charPick": "集合与元素的字母表示",
+      "charScore": 1,
+      "jev": {
+        "name": "常用数集",
+        "confidence": 0.46,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "4. 如果集合 $A = \\{x | ax^2 - 2x - 1 = 0\\}$ 只有一个元素，则 $a$ 的值是 ( )",
+      "aiNames": [
+        "集合与元素的字母表示",
+        "一元二次方程",
+        "判别式",
+        "分类讨论"
+      ],
+      "charHit": true,
+      "charPick": "集合与元素的字母表示",
+      "charScore": 1,
+      "jev": {
+        "name": "元素",
+        "confidence": 0.35,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": true
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "5. (多选) 给出下列说法，其中不正确的是 ( ) A. 集合 $\\{x \\in N | x^3 = x\\}$ 用列举",
+      "aiNames": [
+        "集合",
+        "常用数集",
+        "列举法",
+        "描述法",
+        "一元二次方程"
+      ],
+      "charHit": true,
+      "charPick": "集合",
+      "charScore": 1,
+      "jev": {
+        "name": null,
+        "confidence": 0.44,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "reason": "章内未命中"
+      },
+      "jevHit": false,
+      "err": null
+    },
+    {
+      "q": "6. (多选) 若 $x \\in A$，则 $\\frac{1}{x} \\in A$，就称 $A$ 是伙伴关系集合。集合 ",
+      "aiNames": [
+        "集合",
+        "子集",
+        "元素",
+        "互异性"
+      ],
+      "charHit": true,
+      "charPick": "集合",
+      "charScore": 1,
+      "jev": {
+        "name": "充要条件与等价定义",
+        "confidence": 0.38,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": true
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "7. 用列举法表示集合 $\\{x \\in \\mathbf{Z} \\mid |x| + x = 0, x > -5\\}$ ",
+      "aiNames": [
+        "集合与元素的字母表示",
+        "绝对值",
+        "常用数集",
+        "列举法"
+      ],
+      "charHit": true,
+      "charPick": "集合与元素的字母表示",
+      "charScore": 1,
+      "jev": {
+        "name": null,
+        "confidence": 0.64,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "reason": "章内未命中"
+      },
+      "jevHit": false,
+      "err": null
+    },
+    {
+      "q": "8. 设 $a, b \\in R$，若集合 $\\{1, a+b, a\\} = \\{0, \\frac{b}{a}, b\\}",
+      "aiNames": [
+        "集合相等",
+        "互异性",
+        "元素",
+        "分式运算"
+      ],
+      "charHit": true,
+      "charPick": "集合相等",
+      "charScore": 1,
+      "jev": {
+        "name": "集合相等",
+        "confidence": 0.9,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "9. 已知集合 $A = \\{x \\in \\mathbf{Z} \\mid \\frac{x-4}{x+1} \\in \\ma",
+      "aiNames": [
+        "集合与元素的字母表示",
+        "分式运算",
+        "常用数集",
+        "互异性"
+      ],
+      "charHit": true,
+      "charPick": "集合与元素的字母表示",
+      "charScore": 1,
+      "jev": {
+        "name": "属于与不属于",
+        "confidence": 0.33,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": true
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "10. (10分) 已知集合 $A = \\{a, |a|, a-2\\}$，若 $3 \\in A$，求实数 $a$ 的值。",
+      "aiNames": [
+        "集合与元素的字母表示",
+        "属于与不属于",
+        "互异性",
+        "绝对值"
+      ],
+      "charHit": true,
+      "charPick": "集合与元素的字母表示",
+      "charScore": 1,
+      "jev": {
+        "name": "互异性",
+        "confidence": 0.53,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "11. (10分) 设 $y = x^2 - ax + b$，$A = \\{x \\mid y-x=0\\}$，$B = \\",
+      "aiNames": [
+        "集合相等",
+        "一元二次方程",
+        "韦达定理",
+        "列举法"
+      ],
+      "charHit": true,
+      "charPick": "集合相等",
+      "charScore": 1,
+      "jev": {
+        "name": "二次函数的零点",
+        "confidence": 0.61,
+        "chapter": "第二章 一元二次函数、方程和不等式",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "13. 对于含有有限个元素的非空数集，定义其“交替和”如下：把集合中的数按从小到大的顺序排列，然后从最大的数开始交替地减",
+      "aiNames": [
+        "子集",
+        "元素",
+        "集合",
+        "容斥原理（集合中元素的个数）",
+        "分类讨论"
+      ],
+      "charHit": true,
+      "charPick": "子集",
+      "charScore": 1,
+      "jev": {
+        "name": null,
+        "confidence": 0.85,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "reason": "章内未命中"
+      },
+      "jevHit": false,
+      "err": null
+    },
+    {
+      "q": "13. 对于含有有限个元素的非空数集，定义其“交替和”如下：把集合中的数按从小到大的顺序排列，然后从最大的数开始交替地减",
+      "aiNames": [
+        "子集",
+        "元素",
+        "集合",
+        "容斥原理（集合中元素的个数）",
+        "分类讨论"
+      ],
+      "charHit": true,
+      "charPick": "子集",
+      "charScore": 1,
+      "jev": {
+        "name": null,
+        "confidence": 0.84,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "reason": "章内未命中"
+      },
+      "jevHit": false,
+      "err": null
+    },
+    {
+      "q": "13. 对于含有有限个元素的非空数集，定义其“交替和”如下：把集合中的数按从小到大的顺序排列，然后从最大的数开始交替地减",
+      "aiNames": [
+        "子集",
+        "元素",
+        "集合",
+        "容斥原理（集合中元素的个数）",
+        "分类讨论"
+      ],
+      "charHit": true,
+      "charPick": "子集",
+      "charScore": 1,
+      "jev": {
+        "name": null,
+        "confidence": 0.8,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "reason": "章内未命中"
+      },
+      "jevHit": false,
+      "err": null
+    },
+    {
+      "q": "（右侧顶部题目，部分截断） $(a-x)(b-y)<0$，则集合 $B$ 中元素个数的最大值为 ( ) A. 5 B. ",
+      "aiNames": [
+        "集合与元素的字母表示",
+        "一元二次不等式",
+        "分类讨论"
+      ],
+      "charHit": true,
+      "charPick": "集合与元素的字母表示",
+      "charScore": 1,
+      "jev": {
+        "name": "元素",
+        "confidence": 0.29,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": true
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "（随堂演练 1） 1. 已知集合 $M=\\left\\{x \\mid x=k+\\frac{1}{2}, k \\in \\ma",
+      "aiNames": [
+        "集合的包含关系",
+        "集合与元素的字母表示",
+        "常用数集"
+      ],
+      "charHit": true,
+      "charPick": "集合与元素的字母表示",
+      "charScore": 1,
+      "jev": {
+        "name": "属于与不属于",
+        "confidence": 0.68,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "（随堂演练 2） 2. 已知集合 $A=\\{x \\mid 2a-2 < x < a\\}$，$B=\\{x \\mid 1 <",
+      "aiNames": [
+        "集合的包含关系",
+        "求补集的方法",
+        "空集的性质",
+        "区间表示法"
+      ],
+      "charHit": true,
+      "charPick": "求补集的方法",
+      "charScore": 1,
+      "jev": {
+        "name": "补集",
+        "confidence": 0.63,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "（随堂演练 3） 3. 已知 $X$ 为包含 $v$ 个元素的集合 ($v \\in \\mathbf{N}^*, v \\g",
+      "aiNames": [
+        "集合",
+        "子集",
+        "元素",
+        "容斥原理（集合中元素的个数）"
+      ],
+      "charHit": true,
+      "charPick": "集合",
+      "charScore": 1,
+      "jev": {
+        "name": null,
+        "confidence": 0.38,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "reason": "章内未命中"
+      },
+      "jevHit": false,
+      "err": null
+    },
+    {
+      "q": "17. (9分) (1) 对于数集 $A, B$，定义 $A+B = \\{x | x=a+b, a \\in A, b \\",
+      "aiNames": [
+        "集合的运算",
+        "子集",
+        "集合相等",
+        "Venn图",
+        "元素"
+      ],
+      "charHit": true,
+      "charPick": "子集",
+      "charScore": 1,
+      "jev": {
+        "name": null,
+        "confidence": 0.33,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "reason": "章内未命中"
+      },
+      "jevHit": false,
+      "err": null
+    },
+    {
+      "q": "（图片顶部截断题） $(a-x)(b-y)<0$，则集合 $B$ 中元素个数的最大值为 ( ) A. 5 B. 6 C.",
+      "aiNames": [
+        "集合与元素的字母表示",
+        "一元二次不等式",
+        "分类讨论"
+      ],
+      "charHit": true,
+      "charPick": "集合与元素的字母表示",
+      "charScore": 1,
+      "jev": {
+        "name": "元素",
+        "confidence": 0.25,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": true
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "（随堂演练 1） 已知集合 $M=\\left\\{x \\mid x=k+\\frac{1}{2}, k \\in \\mathb",
+      "aiNames": [
+        "集合的包含关系",
+        "集合与元素的字母表示",
+        "常用数集",
+        "元素"
+      ],
+      "charHit": true,
+      "charPick": "集合与元素的字母表示",
+      "charScore": 1,
+      "jev": {
+        "name": "属于与不属于",
+        "confidence": 0.72,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "（随堂演练 2） 已知集合 $A=\\{x \\mid 2a-2 < x < a\\}$，$B=\\{x \\mid 1 < x ",
+      "aiNames": [
+        "集合的包含关系",
+        "求补集的方法",
+        "空集的性质",
+        "区间表示法"
+      ],
+      "charHit": true,
+      "charPick": "求补集的方法",
+      "charScore": 1,
+      "jev": {
+        "name": "补集",
+        "confidence": 0.65,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "（随堂演练 3） 已知 $X$ 为包含 $v$ 个元素的集合 ($v \\in \\mathbf{N}^*, v \\ge 3",
+      "aiNames": [
+        "集合的子集与元素计数",
+        "容斥原理（集合中元素的个数）",
+        "集合"
+      ],
+      "charHit": true,
+      "charPick": "容斥原理（集合中元素的个数）",
+      "charScore": 1,
+      "jev": {
+        "name": null,
+        "confidence": 0.4,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "reason": "章内未命中"
+      },
+      "jevHit": false,
+      "err": null
+    },
+    {
+      "q": "**随堂演练** 1. 已知集合 $M=\\left\\{x \\mid x=k+\\frac{1}{2}, k \\in \\ma",
+      "aiNames": [
+        "集合的包含关系",
+        "集合与元素的字母表示",
+        "常用数集",
+        "元素"
+      ],
+      "charHit": true,
+      "charPick": "集合与元素的字母表示",
+      "charScore": 1,
+      "jev": {
+        "name": "属于与不属于",
+        "confidence": 0.73,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "2. 已知集合 $A=\\{x \\mid 2a-2 < x < a\\}$，$B=\\{x \\mid 1 < x < 2\\}$",
+      "aiNames": [
+        "集合的包含关系",
+        "求补集的方法",
+        "空集的性质",
+        "区间表示法"
+      ],
+      "charHit": true,
+      "charPick": "求补集的方法",
+      "charScore": 1,
+      "jev": {
+        "name": "补集",
+        "confidence": 0.68,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "3. 已知 $X$ 为包含 $v$ 个元素的集合 ($v \\in \\mathbf{N}^*, v \\ge 3$)。设 $",
+      "aiNames": [
+        "集合的子集与元素计数",
+        "容斥原理（集合中元素的个数）",
+        "集合"
+      ],
+      "charHit": true,
+      "charPick": "容斥原理（集合中元素的个数）",
+      "charScore": 1,
+      "jev": {
+        "name": null,
+        "confidence": 0.4,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "reason": "章内未命中"
+      },
+      "jevHit": false,
+      "err": null
+    },
+    {
+      "q": "18. (17分) (本小题 17 分) 已知 $a$，$b$ 是正实数，求证：$\\frac{a+1}{b} + \\fr",
+      "aiNames": [
+        "充要条件的证明方法",
+        "分式运算",
+        "因式分解",
+        "一元二次方程的解法",
+        "基本不等式定义"
+      ],
+      "charHit": true,
+      "charPick": "充要条件的证明方法",
+      "charScore": 1,
+      "jev": {
+        "name": null,
+        "confidence": 0.59,
+        "chapter": "第二章 一元二次函数、方程和不等式",
+        "reason": "章内未命中"
+      },
+      "jevHit": false,
+      "err": null
+    },
+    {
+      "q": "19. (17分) (本小题 17 分) 已知 $M$ 是满足下列条件的集合：① $0 \\in M$，$1 \\in M$",
+      "aiNames": [
+        "集合的封闭性",
+        "元素与集合的关系",
+        "集合的运算"
+      ],
+      "charHit": false,
+      "charPick": "集合",
+      "charScore": 0.76,
+      "jev": {
+        "name": "属于与不属于",
+        "confidence": 0.27,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": true
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "已知集合 $A=\\{ a_{1},a_{2},a_{3},a_{4},a_{5}\\}$ ，集合 $B=\\{ M,N\\}$",
+      "aiNames": [
+        "子集",
+        "集合相等",
+        "互异性",
+        "集合运算的基本性质",
+        "容斥原理（集合中元素的个数）"
+      ],
+      "charHit": true,
+      "charPick": "子集",
+      "charScore": 1,
+      "jev": {
+        "name": "属于与包含的关系",
+        "confidence": 0.65,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "$($ 本小题 $15$ 分 $)$ 已知集合 $A=\\{ x\\text{|}x+\\frac{4}{x}=5\\}$ ， ",
+      "aiNames": [
+        "集合与元素的字母表示",
+        "一元二次方程",
+        "判别式",
+        "韦达定理",
+        "空集的性质"
+      ],
+      "charHit": true,
+      "charPick": "集合与元素的字母表示",
+      "charScore": 1,
+      "jev": {
+        "name": "属于与包含的关系",
+        "confidence": 0.95,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "$($ 本小题 $17$ 分 $)$ 已知 $M$ 是满足下列条件的集合： $\\text{① }0\\text{∈}M$ ",
+      "aiNames": [
+        "集合的封闭性",
+        "元素与集合的关系",
+        "集合的运算"
+      ],
+      "charHit": false,
+      "charPick": "集合",
+      "charScore": 0.76,
+      "jev": {
+        "name": "属于与不属于",
+        "confidence": 0.38,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": true
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "已知正实数x，y满足4x+4y＝1． （1）求xy的最大值； （2）若不等式 [图] 恒成立，求实数a的取值范围．",
+      "aiNames": [
+        "基本不等式定义",
+        "一元二次不等式的求解步骤（框图）",
+        "函数的最大值定义",
+        "函数的最小值定义"
+      ],
+      "charHit": true,
+      "charPick": "基本不等式定义",
+      "charScore": 1,
+      "jev": {
+        "name": "和定积最大原理",
+        "confidence": 0.5,
+        "chapter": "第二章 一元二次函数、方程和不等式",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "已知命题：“ $\\exists x \\in R$ ，使 $4{x^2} + \\left ( a - 2 \\right )",
+      "aiNames": [
+        "存在量词命题的否定",
+        "一元二次方程",
+        "判别式",
+        "充分条件",
+        "必要条件"
+      ],
+      "charHit": true,
+      "charPick": "存在量词命题的否定",
+      "charScore": 1,
+      "jev": {
+        "name": "性质定理与必要条件",
+        "confidence": 0.35,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": true
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "对 $\\forall x \\in R$ ， $k { x ^ 2 } - k x - 1 < 0$ 是真命题，则 $k$",
+      "aiNames": [
+        "全称量词命题",
+        "一元二次不等式",
+        "判别式",
+        "二次函数"
+      ],
+      "charHit": true,
+      "charPick": "全称量词命题",
+      "charScore": 1,
+      "jev": {
+        "name": "Δ<0时一元二次不等式的解集",
+        "confidence": 0.97,
+        "chapter": "第二章 一元二次函数、方程和不等式",
+        "tentative": false,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "已知方程x2＋(2k－1)x＋k2＝0，求使方程有两个大于1的实数根的充要条件．",
+      "aiNames": [
+        "一元二次方程",
+        "韦达定理",
+        "判别式",
+        "充要条件的证明方法",
+        "一元二次不等式的求解步骤（框图）"
+      ],
+      "charHit": true,
+      "charPick": "一元二次方程",
+      "charScore": 1,
+      "jev": {
+        "name": "二次函数的零点",
+        "confidence": 0.88,
+        "chapter": "第二章 一元二次函数、方程和不等式",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "设全集 $U = \\left \\{ 2,3,{a^2} + a - 3 \\right \\}$ ，集合 $A = \\lef",
+      "aiNames": [
+        "求补集的方法",
+        "集合与元素的字母表示",
+        "互异性",
+        "绝对值",
+        "一元二次方程"
+      ],
+      "charHit": true,
+      "charPick": "求补集的方法",
+      "charScore": 1,
+      "jev": {
+        "name": "补集",
+        "confidence": 0.99,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "已知集合 $A = \\left \\{ - 1,0,1,2 \\right \\} ,B = \\{ x \\mid a < x ",
+      "aiNames": [
+        "求并集交集的方法",
+        "集合与元素的字母表示",
+        "区间表示法"
+      ],
+      "charHit": true,
+      "charPick": "求并集交集的方法",
+      "charScore": 1,
+      "jev": {
+        "name": "交集",
+        "confidence": 1,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "已知集合 $A = \\left \\{ x \\in N\\left | - 2 \\leqslant x \\leqslant ",
+      "aiNames": [
+        "常用数集",
+        "求并集交集的方法",
+        "子集",
+        "真子集"
+      ],
+      "charHit": true,
+      "charPick": "常用数集",
+      "charScore": 1,
+      "jev": {
+        "name": "交集",
+        "confidence": 0.72,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "若 $\\left \\{ 1,a,\\frac{b}{a} \\right \\} = \\left \\{ 0,{a^2},a +",
+      "aiNames": [
+        "集合相等",
+        "互异性",
+        "元素",
+        "分式运算"
+      ],
+      "charHit": true,
+      "charPick": "集合相等",
+      "charScore": 1,
+      "jev": {
+        "name": "集合相等",
+        "confidence": 0.83,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "已知集合 $A = \\left \\{ x\\left | a{x^2} + 6x + 3 = 0 \\right. \\rig",
+      "aiNames": [
+        "空集的性质",
+        "一元二次方程",
+        "判别式",
+        "集合与元素的字母表示",
+        "子集"
+      ],
+      "charHit": true,
+      "charPick": "空集的性质",
+      "charScore": 1,
+      "jev": {
+        "name": "属于与包含的关系",
+        "confidence": 0.78,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "已知集合 $A = \\left \\{ x\\left | x \\in N,\\frac{12}{6 - x} \\in N \\",
+      "aiNames": [
+        "常用数集",
+        "集合与元素的字母表示",
+        "子集",
+        "真子集"
+      ],
+      "charHit": true,
+      "charPick": "常用数集",
+      "charScore": 1,
+      "jev": {
+        "name": "真子集",
+        "confidence": 0.98,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "已知集合 $A = \\left \\{ a,b,c \\right \\}$ 的所有非空真子集的元素之和等于12，则 $a +",
+      "aiNames": [
+        "子集",
+        "真子集",
+        "集合与元素的字母表示"
+      ],
+      "charHit": true,
+      "charPick": "子集",
+      "charScore": 1,
+      "jev": {
+        "name": "真子集",
+        "confidence": 0.96,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "设y＝x2－ax＋b，A＝{x|y－x＝0}，B＝{x|y－ax＝0}，若A＝{－3，1}，试用列举法表示集合B.",
+      "aiNames": [
+        "集合相等",
+        "一元二次方程",
+        "韦达定理",
+        "列举法"
+      ],
+      "charHit": true,
+      "charPick": "集合相等",
+      "charScore": 1,
+      "jev": {
+        "name": "二次函数的零点",
+        "confidence": 0.6,
+        "chapter": "第二章 一元二次函数、方程和不等式",
+        "tentative": true,
+        "uncertain": false
+      },
+      "jevHit": true,
+      "err": null
+    },
+    {
+      "q": "（多选）给出下列说法，其中不正确的是（ ） A. 集合 $\\{ x \\in N | {x^3} = x \\}$ 用列举法",
+      "aiNames": [],
+      "charHit": false,
+      "charPick": null,
+      "charScore": 0,
+      "jev": {
+        "name": null,
+        "confidence": 0.44,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "reason": "章内未命中"
+      },
+      "jevHit": false,
+      "err": null
+    },
+    {
+      "q": "如果集合 $A = \\left \\{ x\\left | a{x^2} - 2x - 1 = 0 \\right. \\rig",
+      "aiNames": [
+        "一元二次方程",
+        "判别式",
+        "集合与元素的字母表示",
+        "空集的性质"
+      ],
+      "charHit": true,
+      "charPick": "一元二次方程",
+      "charScore": 1,
+      "jev": {
+        "name": "元素",
+        "confidence": 0.39,
+        "chapter": "第一章 集合与常用逻辑用语",
+        "tentative": false,
+        "uncertain": true
+      },
+      "jevHit": true,
+      "err": null
+    }
+  ]
+}
