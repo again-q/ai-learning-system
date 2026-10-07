@@ -17,6 +17,8 @@ const { runJudge } = require('./src/graphs/judgeGraph');
 const { createRagTools } = require('./src/lib/ragTools');
 const { createPostJSON } = require('./src/lib/http');
 const { createKnowledgeTools } = require('./src/lib/knowledgeMatch');
+const { createJevClient } = require('./src/lib/jevMatch');
+const { probeJev, readEngineStatus, recordEngineResult, listHeldBatches, summarize } = require('./src/lib/engineStatus');
 
 // ============ 配置（与 judgeOne/index.js:7-17 同源） ============
 const QWEN_API_KEY = process.env.QWEN_API_KEY;
@@ -45,6 +47,14 @@ function buildDeps() {
     const data = await postJSON(QWEN_BASE_URL + '/embeddings', { model: EMBEDDING_MODEL, input: text }, QWEN_API_KEY);
     return data.data[0].embedding;
   };
+  // 决策 063：Jev 客户端（知识点节点解析用）。
+  // key 优先读环境变量；未配置时 createJevClient 仍会建对象，但调用会失败 →
+  // N5 捕获后回退原 matchKnowledgeNode（见 nodes/updateMastery.js），不会中断判定。
+  const jev = createJevClient({
+    apiKey: process.env.OPENROUTER_API_KEY || process.env.JEV_API_KEY || undefined,
+    url: process.env.JEV_URL,
+    model: process.env.JEV_MODEL,
+  });
   return {
     db,
     cloud,
@@ -53,6 +63,7 @@ function buildDeps() {
     embed,
     rag: createRagTools({ db, embed, logger: console }),
     kg: createKnowledgeTools({ db, _ }),
+    jev,
     logger: console,
   };
 }
@@ -66,6 +77,30 @@ exports.main = async (event) => {
     if (action === 'graphDemo') {
       const out = await demoGraph.invoke({ count: 0 });
       return success(out);
+    }
+    // ============ 诊断引擎服务状态（2026-10-06） ============
+    // engineStatus：读当前状态；带 probe:true 则**主动探测一次**并更新（会花一次极小请求）
+    if (action === 'engineStatus') {
+      const d = buildDeps();
+      let status = await readEngineStatus(db, 'jev');
+      if (event && event.probe === true) {
+        const p = await probeJev(d.jev);
+        status = await recordEngineResult(db, 'jev', p);
+      }
+      const held = await listHeldBatches(db, 100);
+      return success({
+        engines: [summarize(status, 'jev')],
+        heldBatches: held.map((b) => ({ batchId: b._id, userId: b.userId, hold: b.serviceHold || null })),
+        heldCount: held.length,
+      });
+    }
+    // heldBatches：只列「因引擎不可用而挂起」的批次（供重跑）
+    if (action === 'heldBatches') {
+      const held = await listHeldBatches(db, event.limit || 100);
+      return success({
+        count: held.length,
+        batches: held.map((b) => ({ batchId: b._id, userId: b.userId, hold: b.serviceHold || null })),
+      });
     }
     if (action === 'judgeQuestion') {
       const wxContext = cloud.getWXContext();

@@ -335,7 +335,7 @@ exports.main = async (event) => {
         const qIns = await db.collection('questions').add({
           data: {
             _openid: openid, userId: openid, batchId, imageFileId: vr.fileId,
-            questionText: '', questionType: '其他', isCorrect: null,
+            questionText: '', questionType: '其他',
             nodeStatus: 'unmapped', source: 'photo', traceReport: null,
             failedReason: 'vision:' + (vr.error || '未知错误'),
             revisions: [], createdAt: db.serverDate(),
@@ -359,7 +359,7 @@ exports.main = async (event) => {
         const qIns = await db.collection('questions').add({
           data: {
             _openid: openid, userId: openid, batchId, imageFileId: vr.fileId,
-            questionText: '', questionType: '其他', isCorrect: null,
+            questionText: '', questionType: '其他',
             nodeStatus: 'unmapped', source: 'photo', traceReport: vr.report,
             failedReason: 'split:' + (splitError || '拆出0题'),
             revisions: [], createdAt: db.serverDate(),
@@ -391,7 +391,7 @@ exports.main = async (event) => {
           data: {
             _openid: openid, userId: openid, batchId, imageFileId: vr.fileId,
             questionText: item.text, questionType: item.type || '其他',
-            isCorrect: null, nodeStatus: 'unmapped', source: 'photo',
+            nodeStatus: 'unmapped', source: 'photo',
             traceReport, cropFileID, cropError, cropBbox: item.bbox || null, revisions: [], createdAt: db.serverDate(),
           },
         });

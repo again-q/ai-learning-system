@@ -8,10 +8,23 @@ const { assemble } = require('./assemble');
 const genV2 = require('./generateV2');
 const { runWithTools } = require('./toolLoop');
 const { sanitizeWeakpoint, isPoisonSentence } = require('./sanitize');   // sanitizeReport 从未被调用，去掉死引用（2026-09-19 审计）
+// 报告/检索侧口径纯函数（决策 052 / 063）：单元级 A/U 换算。
+// 与 ragService.getUnitLevel 共用同一实现，避免两处口径漂移。
+const { unitLevelsOf } = require('./lib/reportReadings');
 
 const DS_API_KEY = process.env.DEEPSEEK_API_KEY;
 const DS_BASE_URL = process.env.DS_BASE_URL || 'https://api.deepseek.com';
 const DS_MODEL = process.env.DS_MODEL || 'deepseek-v4-flash';
+
+// 知识点名列表（决策 053：主知识点 knowledgeNodeName 已取消 → 用 knowledgeUsage 的每个 name；
+// 旧数据（本决策前落库）只有 knowledgeNodeName → 兜底兼容，保证历史报告不显示「未归类」）
+function usageNamesOf(q) {
+  const us = Array.isArray(q && q.knowledgeUsage) ? q.knowledgeUsage : [];
+  const names = us.map((u) => String((u && u.name) || '').trim()).filter(Boolean);
+  if (names.length) return Array.from(new Set(names));
+  const legacy = String((q && q.knowledgeNodeName) || '').trim();
+  return legacy ? [legacy] : [];
+}
 
 // 报告底部：知识点掌握度变化（只用图谱节点 旧->新）+ 待建节点（custom_nodes，不当作参考）
 async function buildMasteryChange({ openid, questionIds }) {
@@ -46,6 +59,94 @@ async function buildMasteryChange({ openid, questionIds }) {
     }
   }
   return { masteryChange, pendingNodes: Array.from(pendingSet) };
+}
+
+// 报告：「同一处丢过几次」（跨题对齐，TARGET §3.3）
+// 解决的是「同一个动作反复出问题，但他每次遇到都当成新问题」—— 替他做跨题对齐。
+//
+// 口径（2026-10-07 用户口头拍板）：
+//   · 范围 = **只挂这次做题涉及的知识点**（不把历史无关知识点一并倒出来）
+//   · 次数 = attempts − correctCount。注意 K 的 attempts 只在「用对 或 概念性错」时 +1
+//     （见 graphEngine/src/lib/updateMastery.js:58），所以这个差值是**概念性错**的次数，
+//     rule/skill 类错归 A/S、不进 K，不算在这里。
+//   · 只报丢分 ≥ REPEAT_MISS_MIN 次的（样本少的会被单次失误误导）
+//
+// 「这次做题涉及的知识点」怎么取：mastery_logs 同时存了 triggerQuestionId 与 knowledgeNodeId，
+// 按本批 questionIds 过滤即得（与 buildMasteryChange 同源，见其上方注释）。
+const REPEAT_MISS_MIN = 3;
+async function buildRepeatMisses({ openid, questionIds }) {
+  if (!questionIds || !questionIds.length) return [];
+  const logsRes = await db.collection('mastery_logs')
+    .where({ userId: openid, triggerQuestionId: _.in(questionIds) })
+    .limit(1000).get();
+  const nodeIds = Array.from(new Set((logsRes.data || []).map((l) => l.knowledgeNodeId).filter(Boolean)));
+  if (!nodeIds.length) return [];
+
+  const progRes = await db.collection('knowledge_progress')
+    .where({ userId: openid, knowledgeNodeId: _.in(nodeIds) })
+    .limit(1000).get();
+  const hits = (progRes.data || [])
+    .map((r) => {
+      const attempts = Number(r.attempts) || 0;
+      const correct = Number(r.correctCount) || 0;
+      return { nodeId: r.knowledgeNodeId, attempts, missCount: attempts - correct };
+    })
+    .filter((r) => r.nodeId && r.missCount >= REPEAT_MISS_MIN)
+    .sort((a, b) => b.missCount - a.missCount);
+  if (!hits.length) return [];
+
+  const nodesRes = await db.collection('knowledge_nodes')
+    .where({ knowledgeId: _.in(hits.map((h) => h.nodeId)) }).limit(1000).get();
+  const nameOf = new Map((nodesRes.data || []).map((n) => [n.knowledgeId || n._id, n.name]));
+  return hits.map((h) => ({
+    nodeId: h.nodeId,
+    name: nameOf.get(h.nodeId) || h.nodeId,
+    missCount: h.missCount,
+    attempts: h.attempts,
+  }));
+}
+
+// 报告：单元级 A/U 变化（决策 063）—— 报告页聚合展示「这次做题 A 变了多少」
+//
+// 数据源 unit_logs（2026-10-07 起才开始写）。为什么不像 K 那样从进度表推：
+//   unit_progress 只存当前值、没有历史 → before 取不到，必须有变更日志。
+//   ⚠️ 2026-10-07 之前的批次没有 unit_logs，本块自然为空 —— 这不是 bug。
+// 档位名（L1~L11）在写入时已由 graphEngine 算好落库（reportService 跨云函数拿不到那个函数）。
+async function buildUnitChanges({ openid, questionIds }) {
+  if (!questionIds || !questionIds.length) return [];
+  const res = await db.collection('unit_logs')
+    .where({ userId: openid, triggerQuestionId: _.in(questionIds) })
+    .orderBy('createdAt', 'asc')
+    .limit(1000).get();
+  const byUnit = {};
+  for (const l of res.data || []) {
+    const un = String(l.unitName || '').trim();
+    if (!un) continue;
+    const e = byUnit[un] = byUnit[un] || {
+      unitName: un, n: 0,
+      aBefore: null, aAfter: null, aLevelBefore: null, aLevelAfter: null,
+      uBefore: null, uAfter: null, uLevelBefore: null, uLevelAfter: null,
+    };
+    if (e.aBefore == null) {                 // 首次出现 = 本批开始前的值
+      e.aBefore = l.oldLambdaA; e.aLevelBefore = l.oldALevel;
+      e.uBefore = l.oldLambdaU; e.uLevelBefore = l.oldULevel;
+    }
+    e.aAfter = l.newLambdaA; e.aLevelAfter = l.newALevel;   // 最后一次 = 本批结束后的值
+    e.uAfter = l.newLambdaU; e.uLevelAfter = l.newULevel;
+    e.n++;
+  }
+  return Object.values(byUnit).sort((a, b) => (b.n - a.n) || String(a.unitName).localeCompare(String(b.unitName)));
+}
+
+// 报告：单元级 A/U 快照（决策 063）
+// 语义：U = 能力前沿、A = 实际发挥，A ≤ U 结构性成立；余量 = U − A（越大越不稳）。
+// ⚠️ 报告正文规则第 10 条禁止输出数值型能力指标 →
+//    本函数产出的数值**只落库供展示层/内部判断**，不得进入 summary/diagnosis 文案。
+// 兼容旧行：没有 lambdaA/lambdaU 的 055 旧行，按 aValue/aUpper 原样带出（λ 衍生字段为 null）。
+// 换算逻辑与 ragService.getUnitLevel 同源（lib/reportReadings，由 scripts/sync-shared.mjs 同步），避免两处漂移。
+async function buildUnitLevels(openid) {
+  const res = await db.collection('unit_progress').where({ userId: openid }).limit(200).get();
+  return unitLevelsOf(res.data || []);
 }
 
 const success = (data = null) => ({ code: 0, data, message: 'ok' });
@@ -223,10 +324,10 @@ async function questionEvolution(event, openid) {
       ? scored.find((q) => q.questionType === questionType && Math.abs(q.processScore - scoreNum) < 0.01) : null);
   if (!current) return fail(404, '未能定位该题的判定记录');
 
-  // 同知识点历史（不含本题），时间升序
-  const node = current.knowledgeNodeName || '';
+  // 同知识点历史（不含本题），时间升序（决策 053：一题可有多个知识点 → 名集合有交集即算同知识点）
+  const topics = usageNamesOf(current);
   const past = scored
-    .filter((q) => q._id !== current._id && (q.knowledgeNodeName || '') === node)
+    .filter((q) => q._id !== current._id && usageNamesOf(q).some((n) => topics.includes(n)))
     .sort((a, b) => (a.createdAt?.$date || 0) - (b.createdAt?.$date || 0))
     .map(toAttempt);
 
@@ -508,8 +609,8 @@ exports.main = async (event) => {
     const topicCount = {};
     const topicErr = {};
     for (const wq of input.wrongQuestions) {
-      const t = (wq.knowledgeNodeName || '').trim();
-      if (t) {
+      // 决策 053：一题按其调用的**每个**知识点各记一次（不再只有「主知识点」）
+      for (const t of usageNamesOf(wq)) {
         topicCount[t] = (topicCount[t] || 0) + 1;
         const el = wq.errorLevel || 'skill';
         topicErr[t] = topicErr[t] || {};
@@ -569,17 +670,47 @@ exports.main = async (event) => {
 
     // ③ 持久化首页报告
     const mc = await buildMasteryChange({ openid, questionIds: qs.map((q) => q.questionId) });
+    // 「同一处丢过几次」（跨题对齐）。失败不阻塞报告生成（降级为空数组）。
+    let repeatMisses = [];
+    try {
+      repeatMisses = await buildRepeatMisses({ openid, questionIds: qs.map((q) => q.questionId) });
+    } catch (e) {
+      console.warn('[reportService] 跨题对齐（同一处丢过几次）失败（不阻塞报告）:', e.message);
+    }
+    // 单元级 A/U 快照（决策 063）。失败不阻塞报告生成（降级为空数组）。
+    let unitLevels = [];
+    try {
+      unitLevels = await buildUnitLevels(openid);
+    } catch (e) {
+      console.warn('[reportService] 单元级 A/U 快照失败（不阻塞报告）:', e.message);
+    }
+    // A/U 变化（决策 063）：报告页聚合展示「这次做题 A 变了多少」。同样失败不阻塞。
+    let unitChanges = [];
+    try {
+      unitChanges = await buildUnitChanges({ openid, questionIds: qs.map((q) => q.questionId) });
+    } catch (e) {
+      console.warn('[reportService] 单元 A/U 变化失败（不阻塞报告）:', e.message);
+    }
     const report = {
       summary,
       masteryChange: mc.masteryChange,
       pendingNodes: mc.pendingNodes,
+      // 同一处丢过几次（跨题对齐，TARGET §3.3）：只含本批涉及、且历史丢分 ≥3 次的知识点
+      repeatMisses,
+      // 单元级 A/U 变化（决策 063）：本批做完后各单元 A（实际发挥）/U（能力前沿）的变化
+      unitChanges,
+      // 单元级 A/U 快照（决策 063）——**仅供内部/展示层使用**。
+      // 报告正文受 systemV3 规则第 10 条约束：禁止输出任何数值型能力指标，
+      // 因此这里只落读数，不参与 summary/diagnosis 的文案生成。
+      unitLevels,
       questions: qs.map((q) => ({
         questionId: q.questionId,
         questionText: q.questionText,
         status: q.status,
         questionType: q.questionType,
         pattern: q.pattern || null,
-        knowledgeNodeName: q.knowledgeNodeName || '',
+        knowledgeNames: usageNamesOf(q),        // 决策 053：原 knowledgeNodeName 已取消，落知识点名数组
+        knowledgeUsage: q.knowledgeUsage || [],
       })),
     };
     const ins = await db.collection('reports').add({

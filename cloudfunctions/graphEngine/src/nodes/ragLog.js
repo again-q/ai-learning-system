@@ -14,7 +14,8 @@ function createRagLogNode({ db, rag, embed, now, logger } = {}) {
       const derived = state.derived || {};
       const clamped = state.clamped || {};
       const question = state.question || {};
-      const mainNodeId = (state.mastery && state.mastery.mainNodeId) || null;
+      // 决策 053：主知识点（mainNodeId / knowledgeNodeName）已取消 —— updateMastery 不再返回 mainNodeId，
+      // 知识点一律走 knowledgeUsage（多个），故此处不再写这两个字段（不留恒为 null 的死字段）
       const pOk = !!(state.mastery && state.mastery.pOk);
       const patternFull = derived.patternFull || '';
       const ragReportText = rag.buildReportText({
@@ -23,8 +24,6 @@ function createRagLogNode({ db, rag, embed, now, logger } = {}) {
         isCorrect: pOk,
         questionCategory: derived.patternText || raw.questionCategory || question.questionType || '',
         difficultyLevel: raw.level || 'L4',
-        knowledgeNodeId: mainNodeId || '',
-        knowledgeNodeName: (raw.knowledgeNodeName || '').trim(),
         errorAttribution: derived.errorAttribution,
         errorDimension: raw.errorDimension || null,
         breakpoint: raw.breakpoint || null,
@@ -44,8 +43,6 @@ function createRagLogNode({ db, rag, embed, now, logger } = {}) {
           _openid: state.openid,
           userId: state.openid,
           questionId: state.questionId,
-          knowledgeNodeId: mainNodeId,
-          knowledgeNodeName: (raw.knowledgeNodeName || '').trim() || null,
           algorithm: 'diagnose_v1',
           isCorrect: pOk,
           processScore: Number(clamped.P) || 0,
@@ -62,7 +59,6 @@ function createRagLogNode({ db, rag, embed, now, logger } = {}) {
           report: {
             questionText: question.questionText || '',
             isCorrect: pOk,
-            knowledgeNodeName: (raw.knowledgeNodeName || '').trim() || null,
             errorType: derived.errorType,
             errorLevel: derived.errorLevel,
             errorAttribution: derived.errorAttribution,

@@ -32,7 +32,7 @@ function createJudgeAINode({ cloud, postJSON, config, kg, logger } = {}) {
     return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
   }
 
-  async function judgeQuestion(question, ragContext) {
+  async function judgeQuestion(question, ragContext, jevPoints) {
     const issues = [];
     const ragSection = ragContext ? '\n\n【历史参考（仅供参考不强制）】\n' + ragContext : '';
     // 切题 v1：有单题裁剪图 → 精读痕迹替代整页文本痕迹
@@ -46,7 +46,13 @@ function createJudgeAINode({ cloud, postJSON, config, kg, logger } = {}) {
         issues.push('N2: 裁剪图痕迹精读失败，已回退整页痕迹（' + e.message + '）');
       }
     }
-    const nodeList = (kg && typeof kg.buildNodeNames === 'function') ? await kg.buildNodeNames() : '';
+    // 决策 063（先 J 再 L）：N1.5 的 Jev 已把考点缩小到几个 → 只把这几个喂给 LLM。
+    //   没有 Jev 结果时退回原「全量清单」（= 接入前行为，保证可降级）。
+    const jevList = Array.isArray(jevPoints) ? jevPoints.filter(Boolean) : null;
+    const nodeList = jevList && jevList.length
+      ? '【本题考点清单（系统已判定本题考以下知识点，请逐个给出它们的 D 与 P）】' + jevList.join('、')
+        + '\n\n（若你认为本题还考了清单之外的「知识本体」，仍可写进 knowledgeUsage 并加 newNode:true）'
+      : ((kg && typeof kg.buildNodeNames === 'function') ? await kg.buildNodeNames() : '');
     const data = await postJSON(cfg.dsBaseUrl + '/chat/completions', {
       model: cfg.dsModel,
       thinking: { type: 'disabled' },       // 决策 023：thinking 开 + 难题 = content 空死锁
@@ -73,7 +79,7 @@ function createJudgeAINode({ cloud, postJSON, config, kg, logger } = {}) {
   }
 
   return async function judgeAINode(state) {
-    const out = await judgeQuestion(state.question || {}, state.ragContext);
+    const out = await judgeQuestion(state.question || {}, state.ragContext, state.jevPoints);
     const raw = out.raw;
     // 预留接口：外部按「图片题号」提供的标准答案 > LLM 自算的 correctAnswer（judgeOne:619）
     if (state.providedAnswer) raw.correctAnswer = state.providedAnswer;

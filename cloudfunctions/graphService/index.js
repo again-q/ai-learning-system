@@ -32,13 +32,26 @@ exports.main = async (event) => {
       const wxContext = cloud.getWXContext();
       const openid = wxContext.OPENID || (event && event.userId) || null;
       let progressMap = {};
+      let progressDetail = {};
       if (openid && nodes.length) {
         const ids = nodes.map((n) => n.knowledgeId || n._id);
         const pRes = await db.collection('knowledge_progress')
           .where({ userId: openid, knowledgeNodeId: _.in(ids) }).limit(1000).get();
-        pRes.data.forEach((p) => { progressMap[p.knowledgeNodeId] = p.mastery; });
+        // progressMap 保持「纯数字」向后兼容（老前端直接 ×100 上色，不动它）；
+        // progressDetail 补出**证据强度**（决策 052/056）：
+        //   · attempts ≤1 → evidence='insufficient'：只考过 1 次，前端应显示「样本不足」而不是 0%/100%
+        //   · aggregated=true → 该行是父节点聚合值（证据来自子节点，前端不应与子节点重复上色）
+        pRes.data.forEach((p) => {
+          progressMap[p.knowledgeNodeId] = p.mastery;
+          progressDetail[p.knowledgeNodeId] = {
+            mastery: p.mastery != null ? p.mastery : null,
+            attempts: Number(p.attempts) || 0,
+            evidence: p.evidence || ((Number(p.attempts) || 0) > 1 ? 'ok' : 'insufficient'),
+            aggregated: p.aggregated === true,
+          };
+        });
       }
-      return success({ nodes, progressMap });
+      return success({ nodes, progressMap, progressDetail });
     }
 
     // 图谱查询（公开可读；掌握度前端先用 mock，待诊断链路补上后接入）

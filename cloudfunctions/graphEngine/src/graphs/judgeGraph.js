@@ -1,12 +1,14 @@
 'use strict';
 // ============ D4 · 单题判定图（8 节点串行） ============
-// 拓扑：N0 取题 → N1 翻旧账 → N2 AI 判定 → N3 纯程序整理 → N4 写题 → N5 掌握度 → N6 RAG 记录 → N7 批次进度
+// 拓扑：N0 取题 → N1 翻旧账 → N1.5 Jev 分类 → N2 AI 判定 → N3 纯程序整理 → N4 写题 → N5 掌握度 → N6 RAG 记录 → N7 批次进度
+// 决策 063（2026-10-06 用户定「先 J 再 L」）：N1.5 只做知识点分类，N2 拿缩小后的清单，N5 直接用 Jev 结果。
 // 设计：doc/architecture/判定节点设计-单题判定图（D4）.md
 // 红线：不 require judgeOne 任何文件；不改 prompt/阈值；N6/N7 失败降级不阻塞
 const { StateGraph, START, END, Annotation } = require('@langchain/langgraph');
 
 const { createLoadQuestionNode } = require('../nodes/loadQuestion');
 const { createRagLookupNode } = require('../nodes/ragLookup');
+const { createJevMatchNode } = require('../nodes/jevMatchNode');
 const { createJudgeAINode } = require('../nodes/judgeAI');
 const { createNormalizeQuestionNode } = require('../nodes/normalizeQuestion');
 const { createPersistQuestionNode } = require('../nodes/persistQuestion');
@@ -17,6 +19,7 @@ const { createBatchProgressNode } = require('../nodes/batchProgress');
 const NODES = {
   n0: 'N0_loadQuestion',
   n1: 'N1_ragLookup',
+  n15: 'N1_5_jevMatch',
   n2: 'N2_judgeAI',
   n3: 'N3_normalize',
   n4: 'N4_persistQuestion',
@@ -37,6 +40,10 @@ const JudgeState = Annotation.Root({
   clamped: keep(null),
   derived: keep(null),
   mastery: keep(null),
+  // 决策 063：Jev 分类结果（先 J 再 L）
+  jevPoints: keep(null),   // 本题考点名（图谱合法叶子）→ 给 N2 缩清单、给 N5 直接记账
+  jevUnits: keep(null),    // 记账单元（A 用）
+  jevInfo: keep(null),     // 可观测性
   questionPatch: keep(null),
   // 非致命问题（降级/回退都进来，不静默；影子对比 D5 也要看这个）
   issues: Annotation({ reducer: (a, b) => (a || []).concat(b || []), default: () => [] }),
@@ -54,8 +61,6 @@ function buildNewDiagnosis(raw, clamped, question) {
     difficultyValue: c.D,
     processScore: c.P,
     pathQuality: c.eta,
-    knowledgeNodeName: r.knowledgeNodeName || '',
-    fiveDim: r.fiveDim || null,
     segments: Array.isArray(r.segments) ? r.segments : [],
     breakpoint: r.breakpoint || null,
     processAvailable: r.processAvailable === true,
@@ -70,10 +75,11 @@ function createJudgeGraph(deps, { until } = {}) {
   const defs = [
     [NODES.n0, () => createLoadQuestionNode({ db: d.db })],
     [NODES.n1, () => createRagLookupNode({ rag })],
+    [NODES.n15, () => createJevMatchNode({ kg: d.kg, jev: d.jev, db: d.db, logger: d.logger })],
     [NODES.n2, () => createJudgeAINode({ cloud: d.cloud, postJSON: d.postJSON, config: d.config, kg: d.kg, logger: d.logger })],
     [NODES.n3, () => createNormalizeQuestionNode()],
     [NODES.n4, () => createPersistQuestionNode({ db: d.db })],
-    [NODES.n5, () => createUpdateMasteryNode({ db: d.db, kg: d.kg })],
+    [NODES.n5, () => createUpdateMasteryNode({ db: d.db, kg: d.kg, jev: d.jev })],
     [NODES.n6, () => createRagLogNode({ db: d.db, rag, embed: d.embed, now: d.now, logger: d.logger })],
     [NODES.n7, () => createBatchProgressNode({ db: d.db, now: d.now, logger: d.logger })],
   ];

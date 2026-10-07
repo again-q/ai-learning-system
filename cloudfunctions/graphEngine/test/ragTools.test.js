@@ -61,11 +61,11 @@ test('buildRagContext: 空命中 → 空串；命中 → 线上同款文案', ()
 test('buildReportText: 全字段与最小字段', () => {
   const full = buildReportText({
     questionText: '题干', studentAnswer: '答案', isCorrect: false, questionCategory: '函数',
-    difficultyLevel: 'L5', knowledgeNodeName: '函数的单调性', errorDimension: 'K',
+    difficultyLevel: 'L5', knowledgeNodeName: '函数的单调性', errorDimension: 'K',   // 决策 053：该字段已取消 → 传进来也必须被忽略（见下方断言）
     errorAttribution: '分类讨论遗漏B={-2}', breakpoint: { index: 2, nature: '中途断' },
     knowledgeUsage: [{ name: '单调性', P: 0.5 }, { name: '定义域', P: 0 }],
   });
-  assert.strictEqual(full, '题目：题干 | 作答：答案 | 判定：错 | 题型：函数 | 难度：L5 | 知识点：函数的单调性 | 归因维度：K | 归因：分类讨论遗漏B={-2} | 断点：第2段 中途断 | 知识点使用：单调性(P=0.5)、定义域(P=0)');
+  assert.strictEqual(full, '题目：题干 | 作答：答案 | 判定：错 | 题型：函数 | 难度：L5 | 归因维度：K | 归因：分类讨论遗漏B={-2} | 断点：第2段 中途断 | 知识点使用：单调性(P=0.5)、定义域(P=0)');
   const min = buildReportText({ questionText: '题干', isCorrect: true });
-  assert.strictEqual(min, '题目：题干 | 作答： | 判定：对 | 题型： | 难度： | 知识点：');
+  assert.strictEqual(min, '题目：题干 | 作答： | 判定：对 | 题型： | 难度：');
 });

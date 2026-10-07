@@ -1,7 +1,7 @@
 // ============ D4 · N3 整理归一 单测（纯函数，无 IO） ============
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { clampParams, deriveAll, buildQuestionPatch, normalizeProcessFields, clampFiveDim } = require('../src/lib/normalize');
+const { clampParams, deriveAll, buildQuestionPatch, normalizeProcessFields, normalizeQuestionCategory } = require('../src/lib/normalize');
 
 test('clampParams：D 落在等级区间内，未知等级用兜底区间', () => {
   assert.equal(clampParams({ level: 'L4', D: 0.9 }, '解答').D, 0.6, 'L4 上沿 0.6');
@@ -26,7 +26,7 @@ test('deriveAll：空白题 → 归因由代码推导，不采信模型解释', 
   assert.equal(d1.isBlank, true);
   assert.equal(d1.errorAttribution, '整题空白未下笔');
   assert.equal(d1.errorType, '结果错', 'P=0 → 结果错');
-  assert.equal(d1.errorLevel, 'skill', '无 errorLevel 且无 errorDimension → 回退 skill');
+  assert.equal(d1.errorLevel, null, '2026-09-25 清理（决策 051）：无 errorLevel 就是 null，不再回退 skill');
   const d2 = deriveAll({ errorAttribution: '未理解某方法' }, { studentAnswer: '   ' }, clamped);
   assert.equal(d2.isBlank, true, '无答案且无分段也算空白');
   assert.equal(d2.errorAttribution, '整题空白未下笔', '空白必须覆盖模型给的臆测归因');
@@ -74,13 +74,17 @@ test('deriveAll：填空题无作答但模型给了过程分段 → 仍算空白
   assert.equal(d.errorAttribution, '整题空白未下笔');
 });
 
-test('deriveAll：errorLevel 缺失时按 errorDimension 映射', () => {
+test('deriveAll：errorLevel 只认模型原值，缺失即 null（不再由 errorDimension 推）', () => {
   const mk = (dim) => deriveAll({ errorType: '结果错', errorDimension: dim, processAvailable: true, segments: [{ step: 'x' }] }, { studentAnswer: '答' }, clampParams({ level: 'L4', P: 0.3 }, '解答'));
-  assert.equal(mk('K').errorLevel, 'concept');
-  assert.equal(mk('A').errorLevel, 'rule');
-  assert.equal(mk('T').errorLevel, 'rule');
-  assert.equal(mk('S').errorLevel, 'skill');
-  assert.equal(mk(undefined).errorLevel, 'skill', '无维度也回退 skill');
+  // 2026-09-25 清理（决策 051）：dimension 与 level 是两件事，不再互相推导；缺 level 就是 null（宁缺勿假）
+  assert.equal(mk('K').errorLevel, null, 'K 维度不再被推成 concept');
+  assert.equal(mk('A').errorLevel, null);
+  assert.equal(mk('T').errorLevel, null);
+  assert.equal(mk('S').errorLevel, null);
+  assert.equal(mk(undefined).errorLevel, null, '无维度也不再回退 skill');
+  // 模型自己给了 level → 原样采纳
+  const given = deriveAll({ errorType: '结果错', errorLevel: 'concept', processAvailable: true, segments: [{ step: 'x' }] }, { studentAnswer: '答' }, { P: 0.3, D: 0.5, eta: null });
+  assert.equal(given.errorLevel, 'concept');
 });
 
 test('deriveAll：pattern 三层拼装并限长', () => {
@@ -95,12 +99,12 @@ test('deriveAll：pattern 三层拼装并限长', () => {
 });
 
 test('buildQuestionPatch：19 个字段齐全（与线上 questions.update 对齐）', () => {
-  const raw = { questionType: '解答', correctAnswer: 'x=1', referenceProcess: [{ step: 'a', content: 'b', note: 'c' }], questionCategory: '集合', level: 'L4', D: 0.5, P: 1, eta: 0.9, knowledgeNodeName: '集合的表示', knowledgeUsage: [{ name: '集合的表示', P: 1, D: 0.3 }], fiveDim: { K: 1, A: 1, T: 1, Q: 1, S: 1 }, segments: [{ step: 'x', status: '通', evidence: 'y' }], breakpoint: null, processAvailable: true, pattern: { domain: '集合', pattern: '辨析', variant: 'v' } };
+  const raw = { questionType: '解答', correctAnswer: 'x=1', referenceProcess: [{ step: 'a', content: 'b', note: 'c' }], questionCategory: '集合', level: 'L4', D: 0.5, P: 1, eta: 0.9, knowledgeUsage: [{ name: '集合的表示', P: 1, D: 0.3 }], segments: [{ step: 'x', status: '通', evidence: 'y' }], breakpoint: null, processAvailable: true, pattern: { domain: '集合', pattern: '辨析', variant: 'v' } };
   const q = { questionType: '解答', studentAnswer: '答' };
   const c = clampParams(raw, '解答');
   const d = deriveAll(raw, q, c);
   const patch = buildQuestionPatch(raw, q, c, d);
-  const need = ['questionType','correctAnswer','referenceProcess','questionCategory','difficultyLevel','difficultyValue','processScore','pathQuality','errorType','errorLevel','errorAttribution','pattern','knowledgeNodeName','knowledgeUsage','fiveDim','segments','breakpoint','processAvailable','reviewed'];
+  const need = ['questionType','correctAnswer','referenceProcess','questionCategory','difficultyLevel','difficultyValue','processScore','pathQuality','errorType','errorLevel','errorAttribution','pattern','knowledgeUsage','segments','breakpoint','processAvailable','isOutOfSyllabus','errorDimension','reviewed'];
   need.forEach((k) => assert.ok(Object.prototype.hasOwnProperty.call(patch, k), '缺字段 ' + k));
   assert.equal(patch.difficultyValue, 0.5);
   assert.equal(patch.processScore, 1);
@@ -109,6 +113,12 @@ test('buildQuestionPatch：19 个字段齐全（与线上 questions.update 对�
   assert.equal(patch.errorType, '无');
   assert.equal(patch.errorLevel, null);
   assert.equal(patch.errorAttribution, null);
+  // 2026-09-25 参数对齐（决策 050）：三个此前「判定端有输出、落库丢掉」的字段
+  assert.equal(patch.isOutOfSyllabus, false, "raw 未给时默认 false");
+  assert.equal(patch.errorDimension, null, "raw 未给时默认 null");
+  const patch2 = buildQuestionPatch({ ...raw, isOutOfSyllabus: true, errorDimension: "A" }, q, c, d);
+  assert.equal(patch2.isOutOfSyllabus, true, "超纲标记要落库（宪法 §4.4 超纲规则依赖它）");
+  assert.equal(patch2.errorDimension, "A", "归因维度要落库（审计用）");
 });
 
 // ============ 2026-09-19 审计后补的两道守卫（都来自生产数据暴露的问题） ============
@@ -136,11 +146,14 @@ test('选填题：即使模型给了过程分段/断点，落库也必须清空�
   assert.equal(unknown.processAvailable, true);
 });
 
-test('fiveDim 越界/缺失一律整组作废（宁缺勿假）', () => {
-  assert.deepEqual(clampFiveDim({ K: 0.5, A: 0.8, T: 0.4, Q: 0.25, S: 0.6 }), { K: 0.5, A: 0.8, T: 0.4, Q: 0.25, S: 0.6 }, '五个都在 0~1 → 原样保留');
-  assert.equal(clampFiveDim({ K: 0.5, A: 2, T: -1, Q: 0.25, S: 3 }), null, '越界不能钳成 1（那就等于把 3/5 说成 100%）');
-  assert.equal(clampFiveDim({ K: 0.5, A: 0.8, T: 0.4, Q: 0.25, S: 3 }), null, '只要有一个越界，整组作废');
-  assert.equal(clampFiveDim({ K: 0.7 }), null, '维度不全 → 作废');
-  assert.equal(clampFiveDim(null), null);
-  assert.equal(buildQuestionPatch({ fiveDim: null }, {}, { D: 0.5, P: 1, eta: null }, {}).fiveDim, null);
+test('questionCategory 只认宪法 §二 三种枚举，其余一律「未分类」（2026-09-25 清理，决策 051）', () => {
+  assert.equal(normalizeQuestionCategory('回忆类'), '回忆类');
+  assert.equal(normalizeQuestionCategory('单元内应用'), '单元内应用');
+  assert.equal(normalizeQuestionCategory('跨单元应用'), '跨单元应用');
+  assert.equal(normalizeQuestionCategory('由集合相等求参数值'), '未分类', '自由文本不再直接落库（此前会污染图谱展示与翻旧账上下文）');
+  assert.equal(normalizeQuestionCategory(''), '未分类');
+  assert.equal(normalizeQuestionCategory(null), '未分类');
+  const p = buildQuestionPatch({ questionCategory: '函数与导数' }, {}, { D: 0.5, P: 1, eta: null }, {});
+  assert.equal(p.questionCategory, '未分类', '落库前必经守卫');
+  assert.equal(buildQuestionPatch({ questionCategory: '单元内应用' }, {}, { D: 0.5, P: 1, eta: null }, {}).questionCategory, '单元内应用');
 });

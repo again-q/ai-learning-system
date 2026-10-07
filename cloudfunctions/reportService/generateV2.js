@@ -124,7 +124,11 @@ async function advancedAnalysis(pattern, hits) {
       errorCategory: h.errorLevel || h.errorCategory || null,
       processScore: h.processScore != null ? h.processScore : null,
       errorAttribution: h.errorAttribution || null,
-      knowledgeNodeName: h.knowledgeNodeName || null,
+      // 决策 053：hits 已无主知识点 → 用 knowledgeUsage 名拼接（键名沿用 prompt 里已有的 knowledgeNodeName，
+      // 不改 LLM 合约；旧 hits 仍有该字段时兜底）
+      knowledgeNodeName: (Array.isArray(h.knowledgeUsage) && h.knowledgeUsage.length
+        ? h.knowledgeUsage.map((u) => String((u && u.name) || '').trim()).filter(Boolean).join('、')
+        : (h.knowledgeNodeName || null)),
     })),
   });
   const out = await callLLM(readPrompt('advanced-analysis.txt'), user, 800);

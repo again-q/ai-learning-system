@@ -47,13 +47,12 @@ function createFakeDb({ seed = {}, failOn = null } = {}) {
 const RAW = {
   index: 1, questionType: '解答', level: 'L5', D: 0.6, P: 0.5, eta: 0.7,
   errorType: '过程风险', errorLevel: 'rule', errorAttribution: '分类讨论遗漏B={-2}',
-  knowledgeNodeName: '函数的单调性', knowledgeUsage: [{ name: '函数的单调性', P: 0.5, D: 0.5 }],
-  fiveDim: { K: 0.5, A: 0.5, T: 0.5, Q: 0.5, S: 0.5 },
+  knowledgeUsage: [{ name: '函数的单调性', P: 0.5, D: 0.5 }],
   pattern: { domain: '函数', pattern: '含参不等式恒成立', variant: '分离参数' },
   segments: [{ step: '第一步：化简', status: '通', evidence: 'x>1' }],
   breakpoint: { index: 1, nature: '中途断' }, processAvailable: true,
   correctAnswer: 'a>1', referenceProcess: [{ step: '第一步：化简', content: 'x>1', note: '去分母' }],
-  questionCategory: '函数与导数',
+  questionCategory: '单元内应用',
 };
 
 function seedQuestion(over = {}) {
@@ -90,11 +89,11 @@ test('N4 写库：19 个字段齐全且值正确；出口 newDiagnosis 字段齐
   const upd = deps.db.writes.find((w) => w.name === 'questions');
   const p = upd.data;
   assert.strictEqual(Object.keys(p).length, 19);
-  assert.deepStrictEqual(Object.keys(p).sort(), ['breakpoint','correctAnswer','difficultyLevel','difficultyValue','errorAttribution','errorLevel','errorType','fiveDim','knowledgeNodeName','knowledgeUsage','pathQuality','pattern','processAvailable','processScore','questionCategory','questionType','referenceProcess','reviewed','segments']);
+  assert.deepStrictEqual(Object.keys(p).sort(), ['breakpoint','correctAnswer','difficultyLevel','difficultyValue','errorAttribution','errorDimension','errorLevel','errorType','isOutOfSyllabus','knowledgeUsage','pathQuality','pattern','processAvailable','processScore','questionCategory','questionType','referenceProcess','reviewed','segments']);
   assert.strictEqual(p.questionType, '解答');
   assert.strictEqual(p.correctAnswer, 'a>1');
   assert.deepStrictEqual(p.referenceProcess, RAW.referenceProcess);
-  assert.strictEqual(p.questionCategory, '函数与导数');
+  assert.strictEqual(p.questionCategory, '单元内应用', 'questionCategory 只认宪法 §二 三种枚举（守卫生效）');
   assert.strictEqual(p.difficultyLevel, 'L5');
   assert.strictEqual(p.difficultyValue, 0.6);
   assert.strictEqual(p.processScore, 0.5);
@@ -104,16 +103,14 @@ test('N4 写库：19 个字段齐全且值正确；出口 newDiagnosis 字段齐
   // P>=0.5 时不给归因（judgeOne:632-634 同款规则：有分就不解释原因）
   assert.strictEqual(p.errorAttribution, null);
   assert.strictEqual(p.pattern, '函数 / 含参不等式恒成立 / 分离参数');
-  assert.strictEqual(p.knowledgeNodeName, '函数的单调性');
   assert.strictEqual(p.knowledgeUsage.length, 1);
-  assert.deepStrictEqual(p.fiveDim, RAW.fiveDim);
   assert.deepStrictEqual(p.segments, RAW.segments);
   assert.deepStrictEqual(p.breakpoint, RAW.breakpoint);
   assert.strictEqual(p.processAvailable, true);
   assert.strictEqual(p.reviewed, true);
   // 出口
   const nd = out.response.data.newDiagnosis;
-  assert.deepStrictEqual(Object.keys(nd).sort(), ['breakpoint','correctAnswer','difficultyLevel','difficultyValue','fiveDim','knowledgeNodeName','pathQuality','processAvailable','processScore','questionCategory','referenceProcess','segments']);
+  assert.deepStrictEqual(Object.keys(nd).sort(), ['breakpoint','correctAnswer','difficultyLevel','difficultyValue','pathQuality','processAvailable','processScore','questionCategory','referenceProcess','segments']);
   assert.strictEqual(nd.processScore, 0.5);
   assert.strictEqual(nd.pathQuality, 0.7);
   // 全链路无降级

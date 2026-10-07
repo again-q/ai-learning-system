@@ -60,9 +60,12 @@ function deriveAll(raw, question, clamped) {
   if (isNoProcess && errorType === '过程风险') errorType = c.P < 0.5 ? '结果错' : '无';
 
   const rawEL = String(r.errorLevel || '').trim();
+  // 2026-09-25 清理（决策 051）：取消「errorDimension → errorLevel」的互相推导。
+  //   dimension（K/A/T/S）= 归因维度；level（skill/rule/concept）= 错误层级 —— 两件事，不再用前者推后者。
+  //   模型没给 level 就是 null（对齐审计 P5 口径：宁缺勿假，不编一个 skill 出来）。
   const errorLevel = (errorType === '无') ? null
     : (rawEL === 'skill' || rawEL === 'rule' || rawEL === 'concept') ? rawEL
-    : (r.errorDimension === 'K' ? 'concept' : r.errorDimension === 'A' ? 'rule' : r.errorDimension === 'T' ? 'rule' : r.errorDimension === 'S' ? 'skill' : 'skill');
+    : null;
 
   const rawPattern = (r.pattern && typeof r.pattern === 'object') ? r.pattern : {};
   const patternText = ((String(rawPattern.pattern || '').trim()) || '').slice(0, 80);
@@ -91,23 +94,27 @@ function normalizeProcessFields(raw, questionType) {
 }
 
 /**
- * 五维校验 0~1：fiveDim 是模型自由生成的，此前**零校验**。
- * 生产库里已经出现越界值（K=3 / Q=4 / S=3）——说明模型有时按 0~5 给，量纲都不统一。
- * 处理原则：**越界或缺失即整组作废（null），绝不钳成 1**——钳制等于把 3/5 说成 100%，是编数据。
- * （五个维度必须齐全且都在 0~1 才保留；生产库 37/37 都是齐全的）
+ * 题目类型守卫（2026-09-25 清理，决策 051）：只认宪法 §二 的三种枚举 ——
+ * 回忆类 / 单元内应用 / 跨单元应用；模型给了别的值一律记「未分类」。
+ * 为什么必须守：该字段被三处消费（图谱页返回、翻旧账上下文「题型：…」、RAG 日志兜底），
+ * 放任自由文本（如"由集合相等求参数值"）会让统计和检索都失准。
  */
-function clampFiveDim(fd) {
-  if (!fd || typeof fd !== 'object') return null;
-  const out = {};
-  for (const k of ['K', 'A', 'T', 'Q', 'S']) {
-    const v = Number(fd[k]);
-    if (!Number.isFinite(v) || v < 0 || v > 1) return null;
-    out[k] = v;
-  }
-  return out;
+const QUESTION_CATEGORIES = ['回忆类', '单元内应用', '跨单元应用'];
+function normalizeQuestionCategory(v) {
+  const s = String(v || '').trim();
+  return QUESTION_CATEGORIES.includes(s) ? s : '未分类';
 }
 
-/** 组装写库字段（照抄 judgeOne:660-684 的字段清单，缺一不可） */
+/**
+ * 组装写库字段（照抄 judgeOne:660-684 的字段清单，缺一不可）
+ *
+ * ⚠️ 命名对照（判定端 → 落库）——**物理改名不做**，避免动判定核心（决策 050）：
+ *   level → difficultyLevel ｜ D → difficultyValue ｜ P → processScore ｜ eta → pathQuality
+ *   knowledgeUsage[].D / .P 不改名（环节级与整题级本就不同层）。
+ * 新增字段一律**以判定端命名为准**（isOutOfSyllabus / errorDimension）。
+ * 2026-09-25 清理（决策 051）：删除 isRecallQuestion —— K 不再靠「是不是回忆题」当门，
+ *   直接看过程里该知识点用对没用对（用错即负证据），见《参数对齐审计》§9。
+ */
 function buildQuestionPatch(raw, question, clamped, derived) {
   const r = raw || {};
   const c = clamped || {};
@@ -118,7 +125,7 @@ function buildQuestionPatch(raw, question, clamped, derived) {
     questionType,
     correctAnswer: r.correctAnswer || '',
     referenceProcess: Array.isArray(r.referenceProcess) ? r.referenceProcess : [],
-    questionCategory: r.questionCategory || '无法归类',
+    questionCategory: normalizeQuestionCategory(r.questionCategory),
     difficultyLevel: r.level || 'L4',
     difficultyValue: c.D,
     processScore: c.P,
@@ -127,14 +134,16 @@ function buildQuestionPatch(raw, question, clamped, derived) {
     errorLevel: d.errorLevel,
     errorAttribution: d.errorAttribution,
     pattern: d.patternFull || null,
-    knowledgeNodeName: r.knowledgeNodeName || '',
+    // 2026-09-25（决策 053）：不再写「主知识点」——一题只留 knowledgeUsage
     knowledgeUsage: Array.isArray(r.knowledgeUsage) ? r.knowledgeUsage : [],
-    fiveDim: clampFiveDim(r.fiveDim),
     segments: proc.segments,
     breakpoint: proc.breakpoint,
     processAvailable: proc.processAvailable,
+    // 2026-09-25 参数对齐（决策 050）：补齐三个「判定端有输出、此前落库丢掉」的字段
+    isOutOfSyllabus: r.isOutOfSyllabus === true,
+    errorDimension: r.errorDimension || null,
     reviewed: true,
   };
 }
 
-module.exports = { LR, clampParams, deriveAll, buildQuestionPatch, normalizeProcessFields, clampFiveDim };
+module.exports = { LR, clampParams, deriveAll, buildQuestionPatch, normalizeProcessFields, normalizeQuestionCategory, QUESTION_CATEGORIES };

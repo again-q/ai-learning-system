@@ -2,6 +2,9 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 const _ = db.command;
+// 报告/检索侧口径纯函数（决策 052 / 063）：K 用对率 + 单元级 A/U。
+// 抽到 shared/ 是为了可单测（本文件 require 了 wx-server-sdk，本地跑不起来）。
+const { nodeHistoryOf, unitLevelsOf } = require('./lib/reportReadings');
 
 // ============ 配置 ============
 const QWEN_API_KEY = process.env.QWEN_API_KEY;
@@ -117,11 +120,14 @@ async function getErrorPattern(args) {
   const logs = (await fetchLogs(userId, days)).filter((l) => logIsCorrect(l) === false);
   const groups = new Map();
   for (const l of logs) {
-    const key = l.knowledgeNodeId || '__unknown__';
+    // 决策 053：主知识点（knowledgeNodeId/Name）已取消 → 用 knowledgeUsage 首个知识点名做聚合键；
+    // 旧日志兜底 knowledgeNodeName（响应字段形状保持不变，避免动未开工的 2.0 教练接口契约）
+    const firstUsageName = (Array.isArray(l.knowledgeUsage) && l.knowledgeUsage[0] && String(l.knowledgeUsage[0].name || '').trim()) || '';
+    const key = firstUsageName || l.knowledgeNodeName || l.knowledgeNodeId || '__unknown__';
     if (!groups.has(key)) {
       groups.set(key, {
         knowledgeNodeId: l.knowledgeNodeId || null,
-        knowledgeNodeName: l.knowledgeNodeName || null,
+        knowledgeNodeName: firstUsageName || l.knowledgeNodeName || null,
         count: 0,
         lastTs: 0,
         lastErrorAttribution: null,
@@ -196,6 +202,12 @@ async function getTrend(args) {
 }
 
 // ============ 工具 ④ getNodeHistory — 知识点历史状态 ============
+// ⚠️ 2026-10-06 修：原来直接返回 `p.mastery` 字段，但决策 052 之后权威口径是
+//    correctCount/attempts；28/52 条旧行的 mastery 是失效残留（例：attempts=18 correct=6
+//    却写着 mastery=0.57，052 口径应为 0.33）。
+//    报告规则第 10 条禁止输出数值，但**内部判断「该知识点是否薄弱」用的就是这个值** ——
+//    偏高的 mastery 会把真正薄弱的知识点判成「还行」。改为按 052 口径重算。
+//    计算逻辑抽到 lib/reportReadings.js（纯函数、可单测；源文件在 cloudfunctions/shared/，由 scripts/sync-shared.mjs 同步）。
 async function getNodeHistory(args) {
   const userId = args.userId;
   const nodeId = (args.knowledgeNodeId || '').trim();
@@ -206,17 +218,7 @@ async function getNodeHistory(args) {
   try {
     const pRes = await db.collection('knowledge_progress')
       .where({ userId, knowledgeNodeId: nodeId }).limit(1).get();
-    if (pRes.data.length) {
-      const p = pRes.data[0];
-      node = {
-        knowledgeNodeId: nodeId,
-        knowledgeNodeName: p.knowledgeNodeName || null,
-        mastery: p.mastery != null ? p.mastery : null,
-        attempts: p.attempts || 0,
-        correctCount: p.correctCount || 0,
-        lastUpdated: p.lastUpdated || null,
-      };
-    }
+    if (pRes.data.length) node = nodeHistoryOf(pRes.data[0], nodeId);
   } catch (e) {
     console.warn('[ragService] knowledge_progress 读取失败:', e.message);
   }
@@ -231,6 +233,46 @@ async function getNodeHistory(args) {
     }));
 
   return success({ node, logs: history });
+}
+
+// ============ 工具 ⑤ getUnitLevel — 单元级 A/U（决策 063） ============
+// 用途：给报告提供「这个单元的题对他偏难还是偏易」的**内部**判断依据。
+// 硬约束：报告规则第 10 条禁止输出任何数值型能力指标 →
+//        本工具返回的 aValue/aUpper/aLevel 等**只供模型内部推理**，不得写进报告正文。
+//
+// A/U 的语义（决策 063）：U = 能力前沿，A = 实际发挥，A ≤ U 结构性成立。
+// 读法：题目难度 D 落在 A 之下 → 他稳；落在 [A,U] → 够得到但不稳；落在 U 之上 → 够不到。
+async function getUnitLevel(args) {
+  const userId = args.userId;
+  const unitName = String(args.unitName || '').trim();
+  try {
+    const q = db.collection('unit_progress').where(unitName ? { userId, unitName } : { userId });
+    const res = await q.limit(200).get();
+    // 结构换算抽到 lib/reportReadings.unitLevelsOf（纯函数、可单测、与报告侧同源）
+    const units = unitLevelsOf(res.data || []).map((u) => ({
+      unitName: u.unitName,
+      // aValue/aUpper 是归一显示值（λ 是内部坐标，不外露）
+      a: u.aValue,
+      u: u.aUpper,
+      aD: u.aD,           // A 的 D 值（显示层「甲」）
+      uD: u.uD,
+      aLevel: u.aLevel,   // 档位（显示层「乙」）
+      uLevel: u.uLevel,
+      n: u.n,
+      margin: u.margin,   // 余量 = U − A，越大说明越不稳
+      algorithm: u.algorithm,
+    }));
+    return success({
+      units,
+      // 给模型的一句话内部提示（仍不得写进报告）
+      note: units.length
+        ? '以上数值仅供内部判断难度是否合适，禁止写入报告正文（报告规则第 10 条）。'
+        : '该学生还没有单元级 A/U 记录（样本不足）。',
+    });
+  } catch (e) {
+    console.warn('[ragService] unit_progress 读取失败:', e.message);
+    return success({ units: [], note: '读取失败，按「无数据」处理。' });
+  }
 }
 
 // ============ DeepSeek Function Calling schema ============
@@ -293,6 +335,22 @@ const TOOLS_SCHEMA = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'getUnitLevel',
+      description: '获取指定单元（或全部单元）的能力水平参考：A=实际发挥、U=能力前沿，以及余量。'
+        + '仅供内部判断「这个单元的题对他偏难还是偏易」「他能不能够到更难一点的题」，'
+        + '严禁把任何数值或档位写进报告（报告规则第 10 条）。',
+      parameters: {
+        type: 'object',
+        properties: {
+          unitName: { type: 'string', description: '单元名（如「第一章 集合与常用逻辑用语」）；不传则返回全部单元' },
+        },
+        required: [],
+      },
+    },
+  },
 ];
 
 // ============ 入口 ============
@@ -320,6 +378,9 @@ exports.main = async (event) => {
         break;
       case 'getNodeHistory':
         result = await getNodeHistory(args);
+        break;
+      case 'getUnitLevel':
+        result = await getUnitLevel(args);
         break;
       default:
         return fail(40004, '未知 action: ' + action);

@@ -59,7 +59,6 @@ function buildReportText(report) {
     '判定：' + (report.isCorrect ? '对' : '错'),
     '题型：' + (report.questionCategory || ''),
     '难度：' + (report.difficultyLevel || ''),
-    '知识点：' + (report.knowledgeNodeName || report.knowledgeNodeId || ''),
   ];
   if (report.errorDimension) parts.push('归因维度：' + report.errorDimension);
   if (report.errorAttribution) parts.push('归因：' + report.errorAttribution);

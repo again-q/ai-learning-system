@@ -2,6 +2,7 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 const _ = db.command;
+const { computeK, isUsableRow, rowK } = require('./kFormula');   // K 口径（决策 052），纯函数可单测
 
 const success = (data = null) => ({ code: 0, data, message: 'ok' });
 const fail = (code, msg) => ({ code, data: null, message: msg });
@@ -45,26 +46,36 @@ function fmtDate(v) {
   return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
 }
 
+// 知识点名列表（决策 053：主知识点已取消 → 用 knowledgeUsage 的每个 name；旧数据兜底 knowledgeNodeName）
+function usageNamesOf(q) {
+  const us = Array.isArray(q && q.knowledgeUsage) ? q.knowledgeUsage : [];
+  const names = us.map((u) => String((u && u.name) || '').trim()).filter(Boolean);
+  if (names.length) return Array.from(new Set(names));
+  const legacy = String((q && q.knowledgeNodeName) || '').trim();
+  return legacy ? [legacy] : ['未归类知识点'];
+}
+
 async function patternTrajectory(userId, nodeFilter) {
   const qs = await db.collection('questions')
     .where({ userId, reviewed: true }).limit(1000).get();
   const scored = qs.data.filter((q) => q.processScore != null);
   const groups = {};
   for (const q of scored) {
-    // 按知识点聚合（knowledgeNodeName 每题落库；pattern 未落库，见开发经验 §31）
-    const key = q.knowledgeNodeName || '未归类知识点';
-    if (nodeFilter && key !== nodeFilter) continue;
-    if (!groups[key]) groups[key] = [];
+    // 按知识点聚合（决策 053：一题按其调用的**每个**知识点各记一条；pattern 未落库，见开发经验 §31）
     const correct = q.processScore >= 1;   // 口径统一（决策 026）：否则 P=0.6 会在题型轨迹上显示「做对」而报告里显示 ✗
     const nature = (q.breakpoint && q.breakpoint.nature) || null;
     const closeness = correct ? 3 : (CLOSINESS[nature] != null ? CLOSINESS[nature] : null);
-    groups[key].push({
-      batchId: q.batchId,
-      date: fmtDate(q.createdAt),
-      result: correct ? RESULT_LABEL[3] : (RESULT_LABEL[closeness] || '无过程'),
-      closeness,
-      _t: q.createdAt ? new Date(q.createdAt.$date || q.createdAt).getTime() : 0,
-    });
+    for (const key of usageNamesOf(q)) {
+      if (nodeFilter && key !== nodeFilter) continue;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push({
+        batchId: q.batchId,
+        date: fmtDate(q.createdAt),
+        result: correct ? RESULT_LABEL[3] : (RESULT_LABEL[closeness] || '无过程'),
+        closeness,
+        _t: q.createdAt ? new Date(q.createdAt.$date || q.createdAt).getTime() : 0,
+      });
+    }
   }
   const patterns = Object.keys(groups).map((key) => {
     const attempts = groups[key].sort((a, b) => a._t - b._t)
@@ -83,22 +94,26 @@ async function patternTrajectory(userId, nodeFilter) {
   return { patterns };
 }
 
-// ============ 掌握度总览（宪法 §4.4 加权得分法的全局推广） ============
-// K = ΣS_k / ΣD_k（等价于所有作答题目按难度 D 加权平均过程分 P）
+// ============ 掌握度总览（决策 052：K = 叶子「用对率」ΣcorrectCount/Σattempts） ============
+// 口径必须与图谱页/报告同源。
+// ⚠️ 2026-10-06 修：原实现按 `mastery` 字段排序取最弱 3 个，但决策 052 之后
+//    **权威口径是 correctCount/attempts**，`mastery` 在 28 条旧行上是失效残留
+//    （例：attempts=18 correct=6 却写着 mastery=0.57，052 口径应为 0.33）。
+//    直接用 mastery 排序 → 「最弱知识点」排序错乱。改为统一走 rowK()。
+// 排除：父节点聚合行（aggregated，同一证据记两遍）+ 证据不足行（只考过 1 次）
 async function masteryOverview(userId) {
   const res = await db.collection('knowledge_progress')
     .where({ userId }).limit(1000).get();
   const rows = res.data || [];
-  let S = 0, D = 0;
-  for (const r of rows) {
-    S += Number(r.sValue) || 0;
-    D += Number(r.dValue) || 0;
-  }
-  const k = D > 0 ? S / D : null; // 0~1，无数据时 null
-  // 最弱 3 个知识点（mastery 升序；名称回 knowledge_nodes 补）
-  const weak = [...rows]
-    .sort((a, b) => (a.mastery != null ? a.mastery : 1) - (b.mastery != null ? b.mastery : 1))
-    .slice(0, 3);
+  const usable = rows.filter(isUsableRow);
+  const k = computeK(rows); // 0~1，无有效样本时 null
+  // 最弱 3 个知识点（按 052 口径的行 K 升序；名称回 knowledge_nodes 补）
+  const weak = usable
+    .map((r) => ({ r, k: rowK(r) }))
+    .filter((x) => x.k != null)
+    .sort((a, b) => a.k - b.k)
+    .slice(0, 3)
+    .map((x) => x.r);
   const ids = weak.map((w) => w.knowledgeNodeId).filter(Boolean);
   let weakNodes = [];
   if (ids.length) {
