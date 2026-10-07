@@ -22,17 +22,17 @@
 | **改图谱数据** | `knowledge-graph/nodes/` → `scripts/manage-knowledge-nodes.py` |
 | **AI 协作规则** | [`AI协作手册.md`](AI协作手册.md) |
 | **查归档/废弃文件** | [`archive/README.md`](archive/README.md) |
+| 🎯 **我们为谁、解决什么** | [`doc/TARGET.md`](doc/TARGET.md)（**目标唯一事实源**，决策 059） |
 
 ---
 
-## 当前状态（2026-09-25）
+## 当前状态（2026-10-02）
 
-**一句话**：核心链路 9/1 校内上线并稳定运行；**0.6.0 节点化重构已推进到 D5 完成** —— 判定域新引擎（`graphEngine`）与线上在四层对拍中**逐字段 0 差异**，前端判定调用**已切换**；当前主要矛盾仍是**判定稳定性**（审计 P1/P2 + 新发现的已废规则残留）。
+**一句话**：**产品目标已重定** —— 从「找薄弱知识点」改为「**给高分段学生的解答题过程审阅**」（决策 059，见 [`doc/TARGET.md`](doc/TARGET.md)）。当前主要矛盾是**目标已重定、实现仍停在旧目标**：判定层无「松/绕」信号、报告只审错题、主轴仍是 K、主链路仍挂 `judgeOne`。次要矛盾＝判定稳定性（审计 P1/P2，已随 K 降级而降级）。
 
-> 📊 **状态以 [`doc/STATUS.md`](doc/STATUS.md) 为准**（唯一入口：17 项状态 + 「改了什么要同步哪些」触发清单）
+> 📊 **状态以 [`doc/STATUS.md`](doc/STATUS.md) 为准**（唯一入口：**23 项状态** + §0 主要矛盾 + 「改了什么要同步哪些」触发清单）
+> 🎯 **目标以 [`doc/TARGET.md`](doc/TARGET.md) 为准**（决策 059，2026-10-02 重定）
 > 🗺 路线图见 [`ROADMAP.md`](ROADMAP.md) ｜ 文件结构见 [`doc/PROJECT-STRUCTURE.md`](doc/PROJECT-STRUCTURE.md)
-
----
 
 ---
 

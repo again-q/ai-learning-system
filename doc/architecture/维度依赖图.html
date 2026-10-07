@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>按维度看依赖：参数 → 公式 → 存储 → 可见</title>
+<style>
+  :root{--ok:#2e9e5b;--warn:#d98415;--bad:#cf3a3a;--dead:#9aa0a6;--ink:#1f2328;--bg:#f6f7f9;--line:#dfe3e8;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 -apple-system,"PingFang SC","Helvetica Neue",Arial,sans-serif;}
+  header{padding:22px 28px 6px;}
+  h1{font-size:20px;margin:0 0 6px;}
+  .sub{color:#5b6270;font-size:13px;margin:0 0 6px;}
+  .legend{font-size:12.5px;color:#444;margin:4px 0 0;}
+  .pill{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11.5px;border:1px solid;margin-right:6px;white-space:nowrap;}
+  .ok{color:var(--ok);border-color:var(--ok);}
+  .warn{color:var(--warn);border-color:var(--warn);}
+  .bad{color:var(--bad);border-color:var(--bad);}
+  .dead{color:var(--dead);border-color:var(--dead);}
+  main{padding:10px 28px 40px;}
+  .dim{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px 16px;margin:14px 0;}
+  .dim.k-warn{border-left:5px solid var(--warn);}
+  .dim.k-bad{border-left:5px solid var(--bad);}
+  .dim.k-dead{border-left:5px solid var(--dead);}
+  .dim.k-ok{border-left:5px solid var(--ok);}
+  .dh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+  .dh h2{font-size:16px;margin:0;}
+  .dh .def{color:#5b6270;font-size:12.5px;}
+  .chain{display:grid;grid-template-columns:1.05fr 1.35fr 1fr 1fr;gap:10px;}
+  @media (max-width:1000px){.chain{grid-template-columns:1fr;}}
+  .stage{background:#fbfcfd;border:1px solid var(--line);border-radius:9px;padding:9px 11px;}
+  .stage h3{margin:0 0 6px;font-size:12px;color:#6b7280;font-weight:600;letter-spacing:.3px;}
+  .stage ul{margin:0;padding-left:16px;}
+  .stage li{margin:2px 0;font-size:12.8px;}
+  code{background:#f2f4f7;padding:0 4px;border-radius:3px;font-size:12.3px;}
+  .miss{color:var(--bad);font-weight:600;}
+  .note{margin-top:10px;font-size:12.8px;color:#3f4653;background:#fffaf2;border:1px dashed #e6cfa8;border-radius:8px;padding:8px 11px;}
+  .note b{color:#8a5a00;}
+  .note.danger{background:#fff5f5;border-color:#e7b4b4;}
+  .note.danger b{color:#a32020;}
+  .xgrid{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:8px 0 0;}
+  table{border-collapse:collapse;width:100%;font-size:12.8px;}
+  th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top;}
+  th{background:#f4f6f8;font-weight:600;}
+  a{color:#2f6fd0;}
+</style>
+</head>
+<body>
+<header>
+  <h1>按维度看依赖（现状快照 2026-09-25）</h1>
+  <p class="sub">每个维度一条链：<b>吃什么参数 → 用什么公式 → 存到哪 → 谁看得见</b>。红字＝缺失或该维度没实现。</p>
+  <p class="legend"><span class="pill ok">在跑</span><span class="pill warn">在跑但证据错位</span><span class="pill bad">未实现 / 参数缺失</span><span class="pill dead">已废弃</span>　（另一张按流水线画的图见 <a href="参数与维度依赖图.html">参数与维度依赖图.html</a>）</p>
+</header>
+<main>
+<section class="dim k-warn">
+  <div class="dh"><h2>K — 知识掌握</h2><span class="pill warn">在跑，但证据错位</span><span class="def">该刻画：这个知识点本身在长时记忆里「存到多深 / 能不能直接取出来」</span></div>
+  <div class="chain">
+    <div class="stage"><h3>① 吃什么参数</h3><ul>
+      <li><code>knowledgeUsage[].D</code> 环节难度 ✔</li>
+      <li><code>knowledgeUsage[].P</code> 环节作答（0/0.5/1）✔</li>
+      <li><code>knowledgeNodeName</code> → 图谱节点 ✔</li>
+      <li class="miss">该吃但现在没有：<code>isRecallQuestion</code>（未落库）</li>
+    </ul></div>
+    <div class="stage"><h3>② 用什么公式</h3><ul>
+      <li><code>S_k += D_kp · P_kp</code></li>
+      <li><code>D_k += D_kp</code></li>
+      <li><code>mastery = S_k / D_k</code></li>
+      <li class="miss">难度 D 直接进了分子分母 → 被当成证据</li>
+    </ul></div>
+    <div class="stage"><h3>③ 存到哪</h3><ul>
+      <li><code>knowledge_progress</code>：sValue · dValue · mastery · attempts（66 条）</li>
+      <li><code>mastery_logs</code>：只记 old/new 掌握度（381 条）</li>
+    </ul></div>
+    <div class="stage"><h3>④ 谁看得见</h3><ul>
+      <li>报告「掌握度变化」：<code>62% → 65%</code></li>
+      <li>首页掌握度总览（最弱 3 个知识点，字段 <code>masteryPercent</code>）</li>
+    </ul></div>
+  </div>
+  <div class="note danger"><b>问题：</b>①「做题正确率的加权平均」冒充「知不知道」——简单题全做对就能到 100%；② 回忆类通道断链（<code>isRecallQuestion</code> 没落库、<code>questionCategory</code> 存的是自由文本），所以 K 只能吃应用类题的信号，与 A 重合；③ 库内 66 条账里 8 条记在<b>父节点</b>上、14 条挂在找不到的节点上。</div>
+</section>
+<section class="dim k-warn">
+  <div class="dh"><h2>A — 应用能力</h2><span class="pill warn">在跑，但难度混入</span><span class="def">该刻画：在熟悉、结构良好的情境里，把知识自动/半自动地用出来的<b>效率与熟练度</b></span></div>
+  <div class="chain">
+    <div class="stage"><h3>① 吃什么参数</h3><ul>
+      <li><code>D</code> 整题难度 ✔</li>
+      <li><code>eta</code> 路径质量（落库名 pathQuality）✔</li>
+      <li><code>P</code> 整题过程分 ✔</li>
+      <li><code>unitName</code> 单元名 ✔</li>
+    </ul></div>
+    <div class="stage"><h3>② 用什么公式</h3><ul>
+      <li><code>eff = D × η × (2P − 1)</code></li>
+      <li><code>ΔA = 0.25 · |eff| · (U − A)</code></li>
+      <li><code>η ≥ 0.7 → U += 0.05(1−U)</code>；连续低 η → <code>U −= 0.03(U−A)</code></li>
+      <li class="miss">难度 D 被乘进来了 → 该做「分层条件」而非证据</li>
+    </ul></div>
+    <div class="stage"><h3>③ 存到哪</h3><ul>
+      <li><code>unit_progress</code>：aValue(A) · aUpper(U) · n · lowEtaStreak（4 条）</li>
+    </ul></div>
+    <div class="stage"><h3>④ 谁看得见</h3><ul>
+      <li class="miss">学生看不到（只在库里）</li>
+    </ul></div>
+  </div>
+  <div class="note"><b>对的地方（别改坏）：</b>η（解法是否接近本质）+ U 上浮/下浮 = <b>熟练度机制</b>，正是 A 该刻画的；「做错且属 K/S 问题 → eff = 0」也是正确的信号归位。<b>问题：</b>难度乘进能力分数；另外选择/填空题 <code>eta</code> 为 null → 这两类题<b>完全不更新 A</b>。</div>
+</section>
+<section class="dim k-bad">
+  <div class="dh"><h2>T — 迁移能力</h2><span class="pill bad">未实现</span><span class="def">该刻画：在<b>新颖 / 不良结构</b>情境里识别深层结构、重组知识、自己造解法的能力</span></div>
+  <div class="chain">
+    <div class="stage"><h3>① 吃什么参数</h3><ul>
+      <li class="miss"><code>W</code> 跨类型权重 —— 判定端不输出，来源缺失</li>
+      <li class="miss"><code>r</code> 解题质量系数 —— 没落库</li>
+      <li><code>D</code> 整题难度 ✔（但难度不该是证据）</li>
+      <li class="miss">该有但没有：<code>是否重组 / 是否非标准解法</code></li>
+    </ul></div>
+    <div class="stage"><h3>② 用什么公式</h3><ul>
+      <li><code>T_shown = f(r, 作答结果)</code></li>
+      <li><code>ΔT = 0.20 · (T_shown − T) · (TU_new − T)</code></li>
+      <li>TU 上浮 0.10 / 下浮 0.09（观测窗 N=3）</li>
+    </ul></div>
+    <div class="stage"><h3>③ 存到哪</h3><ul><li class="miss">没有对应集合 —— 从来没算过</li></ul></div>
+    <div class="stage"><h3>④ 谁看得见</h3><ul><li class="miss">无</li></ul></div>
+  </div>
+  <div class="note danger"><b>问题：</b>宪法把 T 定义<b>窄化</b>成「跨单元」，只在跨单元综合题上更新；而你举的例子「高难度 + 非标准解法」如果发生在单元内，信号就丢了。这正是 T 该吃、却没字段承载的东西。</div>
+</section>
+<section class="dim k-bad">
+  <div class="dh"><h2>Q — 思维品质</h2><span class="pill bad">未实现（v1.5 挂起）</span><span class="def">该刻画：元认知 —— 知不知道自己怎么错的、下次能不能改</span></div>
+  <div class="chain">
+    <div class="stage"><h3>① 吃什么参数</h3><ul><li class="miss">思维链（回顾位自述）—— <b>未采集</b>，且在决策 048 采集冻结范围内</li></ul></div>
+    <div class="stage"><h3>② 用什么公式</h3><ul><li>Q1 0.25 / Q2 0.25 / Q3 0.25 / Q4 0.15 / Q5 0.10 加权</li></ul></div>
+    <div class="stage"><h3>③ 存到哪</h3><ul><li class="miss">没有对应集合</li></ul></div>
+    <div class="stage"><h3>④ 谁看得见</h3><ul><li class="miss">无</li></ul></div>
+  </div>
+</section>
+<section class="dim k-bad">
+  <div class="dh"><h2>S — 执行稳定性</h2><span class="pill bad">未实现</span><span class="def">该刻画：实际表现与真实能力之间的<b>偏差</b>（该做对的做错了）</span></div>
+  <div class="chain">
+    <div class="stage"><h3>① 吃什么参数</h3><ul><li>作答对错（客观可算）✔</li><li class="miss">S1~S6 回溯自报 —— 未采集</li></ul></div>
+    <div class="stage"><h3>② 用什么公式</h3><ul><li>S0 波动指数（客观，全量）</li><li>S1~S6 子维度</li><li class="miss">代码 0 命中 —— 从来没算过</li></ul></div>
+    <div class="stage"><h3>③ 存到哪</h3><ul><li class="miss">没有对应集合</li></ul></div>
+    <div class="stage"><h3>④ 谁看得见</h3><ul><li class="miss">无</li></ul></div>
+  </div>
+  <div class="note"><b>注意：</b>现在的 K 公式对「做错」敏感，实际上把 S 的信号算进了 K —— 这正是两者重合的地方。S 独立实现后，K 应把这份信号还回去。</div>
+</section>
+<section class="dim k-dead">
+  <div class="dh"><h2>fiveDim — 模型直给的五维</h2><span class="pill dead">已废弃（决策 024）</span><span class="def">与上面整套「按维度记账」并行的一条旧路</span></div>
+  <div class="chain">
+    <div class="stage"><h3>① 吃什么参数</h3><ul><li>模型对每题直接给 K/A/T/Q/S 五个数（<b>不再给逐项打分</b>）</li></ul></div>
+    <div class="stage"><h3>② 用什么公式</h3><ul><li><code>clampFiveDim()</code> 钳制</li><li class="miss">表用 1~5，而决策 026 已定 0~1</li></ul></div>
+    <div class="stage"><h3>③ 存到哪</h3><ul><li><code>questions.fiveDim</code> · <code>fiveDimRaw</code></li></ul></div>
+    <div class="stage"><h3>④ 谁看得见</h3><ul><li class="miss">前端 0 处引用 —— 学生看不到</li></ul></div>
+  </div>
+  <div class="note danger"><b>问题：</b>prompt 仍把 <code>fiveDim</code> 标成必填、仍落库 → 每轮判定都在为一份没人用的数据付 token；库里 20/54 题五个值全同、7 题整组作废。</div>
+</section>
+<section class="xgrid">
+  <h2 style="font-size:15px;margin:0 0 8px;">交叉依赖：三个维度抢同一批参数</h2>
+  <table>
+    <tr><th>参数</th><th>K 拿它做什么</th><th>A 拿它做什么</th><th>T 拿它做什么</th></tr>
+    <tr><td><code>D</code> 难度</td><td>当权重，直接进分子分母（<span class="miss">错位</span>）</td><td>乘进 eff（<span class="miss">错位</span>）</td><td>乘进 T_shown（<span class="miss">错位</span>）</td></tr>
+    <tr><td><code>P</code> 作答</td><td>环节级 P_kp</td><td>整题 P（判方向）</td><td>与 r 合成 T_shown</td></tr>
+    <tr><td><code>η</code> 路径质量</td><td>不用</td><td><b>核心证据</b>（熟练度）</td><td>不用（该用 r）</td></tr>
+    <tr><td>「是否重组 / 非标准」</td><td>不用</td><td>不该用（用了就是 T）</td><td class="miss">必须用，但没这个字段</td></tr>
+  </table>
+  <p class="sub" style="margin-top:8px;">一句话：<b>三个维度都把「题目难度」当成了证据</b>。难度的正确位置是「情境条件」——K 与它无关，A 用它<b>分层</b>，T 用它界定<b>有没有挑战性</b>。</p>
+</section>
+<section class="xgrid">
+  <h2 style="font-size:15px;margin:0 0 8px;">现在的「五维」实际只有两维在跑</h2>
+  <table>
+    <tr><th>维度</th><th>状态</th><th>存储条数</th><th>学生可见</th></tr>
+    <tr><td>K 知识掌握</td><td>在跑（证据错位）</td><td>knowledge_progress 66 / mastery_logs 381</td><td>报告 · 首页</td></tr>
+    <tr><td>A 应用能力</td><td>在跑（难度混入）</td><td>unit_progress 4</td><td>无</td></tr>
+    <tr><td>T 迁移</td><td class="miss">未实现</td><td>无</td><td>无</td></tr>
+    <tr><td>Q 思维品质</td><td class="miss">未实现（挂起）</td><td>无</td><td>无</td></tr>
+    <tr><td>S 稳定性</td><td class="miss">未实现</td><td>无</td><td>无</td></tr>
+    <tr><td>fiveDim</td><td>已废弃</td><td>questions.fiveDim（每題）</td><td>无（前端 0 引用）</td></tr>
+  </table>
+</section>
+</main>
+</body>
+</html>

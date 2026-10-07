@@ -2,35 +2,58 @@
 
 > **用法**：想知道「现在到哪了」→ 只看本表。要改状态 → 先查 §2 触发清单，按它列的联动位置改，别只改一处。
 > **规则**：每个状态项只在本表写**当前值**；其他文档要么写指针（「状态见 doc/STATUS.md」），要么只写与本文件主题相关的细节。**禁止多份完整副本**（副本必然漂移——本项目已经吃过大亏：README/ROADMAP/STATUS-MANIFEST/ENGINEERING_TODO 全部停在 9/06，实际已到 9/25）。
-> **最后核对：2026-09-25**｜📊 一眼看状态：[`doc/status.html`](status.html)（由本表生成）
+> **最后核对：2026-10-02**（本轮用 `tcb` 实查线上库全面刷新）｜📊 一眼看状态：[`doc/status.html`](status.html)（由本表生成）
+> 🎯 **产品目标唯一事实源：[`doc/TARGET.md`](TARGET.md)**（决策 059，2026-10-02 重定）
+
+---
+
+## 0. 当前主要矛盾（2026-10-02 重定）
+
+> **目标已重定，实现仍停在旧目标。**
+
+决策 059 把目标从「找薄弱知识点」改为「**给高分段学生的解答题过程审阅**」（`doc/TARGET.md`）。但全链路每一行代码、每一份报告结构，都还是照旧目标写的：
+
+| 新目标要的 | 现在有的 | 差 |
+|---|---|---|
+| 「松 / 绕」信号（做对但不严谨、不简洁） | **判定层无此档**，`segments.status` 词表只有 `通/断/空白` | ❌ 要新建 |
+| 审**做对的题** | 报告只有「**错题**逐题」 | ❌ 要重写 |
+| 过程质量为主指标 | 主轴仍是 **K（知识点用对率）** | ❌ 要降级重排 |
+| 节点化架构（才加得进新信号） | 主判定仍走 **`judgeOne`** 巨石（`photo.js:302`） | ❌ 要切 |
+
+**为什么不是另外两个候选：**
+
+- ~~**判定稳定性**（旧主矛盾，审计 P1/P2）~~ → **降为次要矛盾**。理由：决策 059 把 K 降为**副指标**后，P1「精细数值当精确分」的影响面随之缩小（它影响的主要就是 K 的展示）；P2 η 钳制仍要修，但不再是卡住全局的那一个。
+- ~~**线上流量停摆**~~ → **是症状，不是矛盾**。实测线上自 2026-09-19 起 **13 天零新增**、两账号失活（见 #15）。但这是"产品没打到痛点"的**结果**，把停摆当矛盾去治会得出"赶紧拉人用"的错误动作 —— 正确的因果是：**先让产品打中高分学生的痛点，人自然会回来**。
 
 ---
 
 ## 1. 状态总表
 
-| # | 状态 | 状态项 | 当前值（2026-09-25） | 权威来源（唯一事实源） | 联动位置（改了要同步） |
+| # | 状态 | 状态项 | 当前值（2026-10-02） | 权威来源（唯一事实源） | 联动位置（改了要同步） |
 |---|---|---|---|---|---|
 | 1 | 🟡 | **代码主线** | 0.6.0 节点化重构：D1 ✅ D2 ✅ D3 ✅ D4 ✅ **D5 ✅** D6 设计初稿（待拍板）D7–D10 ⬜ | `doc/architecture/节点化迁移计划.md` §四-A 进度区 | ROADMAP 状态行、本表、决策日志（每期拍板） |
-| 2 | ✅ | **线上判定引擎** | 前端判定调用已切 **`graphEngine`**（`review.js:204`，CI run #40 部署成功）；`judgeOne` 仍负责 `listQuestions`/`updateTranscription`/`reviseByNaturalLanguage`/`updateParams` | 代码 `miniprogram/packageDiagnose/pages/review/review.js`；`doc/architecture/判定域影子对比（D5）.md` §6.1 | 本表、决策日志、PROJECT-STRUCTURE |
+| 2 | 🟡 | **线上判定引擎（口径没切全）** | **拍照页主判定仍走 `judgeOne`**（`photo.js:302`，无 action = 判定主分支）→ 生产 K/A 账**全是旧壳写的**；仅**复核页**批处理切到了 `graphEngine`（`review.js:204`，CI run #40）。**2026-09-26 实查**：52 条 `knowledge_progress` 的 `evidence`/`aggregated`/`algorithm` **全空**、`unit_progress` 仅 **4 条**且 `aValue`≈0.30（停在初始值）→ **052–057 新口径尚未在真实流量生效**。切法：`photo.js:302` 改调 `graphEngine`（或先影子双跑对比），切前先修本表 #1/#3。⚠️ **2026-10-02 决策 059 后优先级上调**：新信号（松/绕）只能在节点化架构上加，`judgeOne` 巨石加不动 → **不切，过程审阅无从谈起** | 决策 052–057、059、`graphEngine/index.js:4` 自述「线上仍是 judgeOne」、2026-10-02 库内实查 | `miniprogram/pages/photo/photo.js`、`review.js`、`graphEngine/index.js` |
 | 3 | ✅ | **D5 影子对比结论** | **四层全 0 差异**：夹具 26 / 真模型 6 / 真题 55 / 云端同 raw 12 字段 | `doc/architecture/判定域影子对比（D5）.md` §7.1 | 迁移计划进度区、本表 |
 | 4 | ✅ | **云函数** | 14 个：`diagnose` `dispute` `graphEngine` `graphService` `judgeOne` `knowledgeAdmin` `manageKnowledge` `photoUpload` `ragService` `reportService` `statService` `userLogin` `zhixueAuth` `zhixueSync` | `cloudfunctions/` 目录 | PROJECT-STRUCTURE、本表 |
 | 5 | 🟡 | **部署通道** | 走 CI（miniprogram-ci，commit message 带 `[deploy]` / `[deploy:函数名]`）；**`tcb fn deploy` 不可用**（COS 上传 60s 超时 + 会把 runtime 改成 Nodejs20.19，违反决策 044） | `.github/workflows/deploy-wechat.yml`、`doc/standards/工程化与CI经验.md` | 经验文档、本表 |
-| 6 | ✅ | **云端数据规模** | questions **61**（已判 55）/ batches **25**（photo 与 **zhixue** 两类）/ 用户 **2** / 报告 15 份（9/19 口径）/ 学生异议 **0** | 云数据库（`tcb db nosql execute`，环境 `cloud1-d8g0ty39wd73f430a`） | 审计文档 §1、本表 |
-| 7 | ⚠️ | **判定质量** | 壳一致 ✅（0/55）；**稳定性仍未修**（P1 精细数值当精确分、P2 η 无钳制） | `doc/architecture/诊断质量审计-2026-09-19.md` | 本表、决策日志、掌握度链路-待办 |
-| 8 | ⚠️ | **🆕 已废规则残留** | `RUBRIC_V2` 里的 `■ 5维锁定` 表 + 必填 `fiveDim`，是**决策 024「不给五维逐项打分」的残留**；且表用 1~5、决策 026 已定 0~1 → 库里 20/54 题五值全同、7 题整组作废 | 决策 024 / 026；`graphEngine/src/lib/prompts.js:21` | 待用户拍 a/b/c 后：prompt、D6 设计、审计 P5、本表 |
+| 6 | ✅ | **云端数据规模**（2026-10-02 实查） | questions **61**（photo 38 / zhixue 23；选择 20 / 填空 20 / **解答 19** / 其他·未知 2）/ batches **25** / 用户 **2** / **报告 33**（旧值 15 已翻倍）/ mastery_logs **381** / knowledge_progress **52**（`evidence`/`aggregated`/`algorithm` **全 0**）/ unit_progress **4** / **`custom_nodes` 0**（旧值 39，已清空）/ 学生异议 **0** | 云数据库（`tcb db nosql execute`，环境 `cloud1-d8g0ty39wd73f430a`），2026-10-02 实查 | 审计文档 §1、本表、#10 |
+| 7 | ⚠️ | **判定质量** | 壳一致 ✅（0/55）；**稳定性仍未修**（P1 精细数值当精确分、P2 η 无钳制）。⚠️ **2026-10-02 降级为次要矛盾**（见 §0）：决策 059 把 K 降为副指标后 P1 影响面缩小；P2 仍要修但不卡全局 | `doc/architecture/诊断质量审计-2026-09-19.md` | 本表、决策日志、掌握度链路-待办 |
+| 8 | 🟡 | **已废规则残留（已清理大半）** | **决策 051 已清**：`fiveDim` 从 prompt/落库/钳制全删（`grep -c fiveDim` = 0）；`r`、`isRecallQuestion` 删除；`questionCategory` 改三值枚举 + 落库守卫（实测两轮稳定性 4/6漂→0/6）；`questions.isCorrect` 停写。**剩**：库里历史 fiveDim 数据、`custom_nodes` 39 条（属图谱治理） | 决策 024 / 051 / 052；`graphEngine/src/lib/{prompts.js,normalize.js}` | 决策 051、参数对齐审计 §8 |
 | 9 | ⚠️ | **审计 P1–P9** | 045 已修：对错口径统一 / 报告三态 / 五维越界作废 / 选填题字段守卫；**未修**：P1 展示改档位、P2 η 钳制、P3 043 判据落地、P5 errorLevel 兜底、历史 15 份报告是否重跑 | 审计文档 §3、决策 045 | 本表、决策日志 |
-| 10 | 🟡 | **知识图谱** | **271 节点**（definition 77 / property 84 / **method 89** / notation 21）＋ **方法区已分治**（知识区 182 / 方法区 89，已部署生效）＋ extras 61 条；⚠️ `relations.reference` 仅 **56%** 且**判定不读它**；`custom_nodes` **39 条**自造 | `doc/architecture/图谱与诊断管线-全局关系（框架）.md`（取舍看这份）、`doc/STATUS-MANIFEST.md` 图谱专项 | STATUS-MANIFEST、本表 |
+| 10 | 🟡 | **知识图谱**（2026-10-02 实查） | **271 节点**（definition 77 / property 84 / **method 89** / notation 21）＋ **方法区已分治**（知识区 182 / 方法区 89，已部署生效）＋ extras 61 条；⚠️ `relations.reference` 仅 **56%** 且**判定不读它**；**`custom_nodes` 实测 0 条**（旧记 39，已清空 → 图谱缺口兜底已不存在，原因待查）。⚠️ **决策 059 裁决：图谱降级为过滤/背景层，不再是主轴**（高分学生 K 饱和、区分度≈0）。✅ **附带结论（2026-10-02）：「建必修二~五 / 选必图谱」可明确推迟** —— 用户群是高一学生，现有必修一（人教A版必修第一册）正好覆盖高一上学期 | `doc/architecture/图谱与诊断管线-全局关系（框架）.md`、`doc/STATUS-MANIFEST.md` 图谱专项、`doc/TARGET.md` §1/§7 | STATUS-MANIFEST、本表 |
 | 11 | 🟡 | **评测资产** | 题面 **436 题**（`dataset-v2.json`）；合成痕迹 **43 条 / 11 题**（4 角色，剔除 quality 后 38 条可用）；人工断言 **10 条**；稳定性脚本 `scripts/eval-stability.mjs` | `output/golden/`（**gitignore，版权原因不入库**）、`doc/architecture/评测数据集预研.md` | 评测预研 §七/八、D6 设计、本表 |
 | 12 | ✅ | **模型选型** | 转录 Qwen3.7-plus；判定主模型 `deepseek-v4-flash`（thinking disabled + temp 0.2）；GLM 作影子 AB | `doc/模型选型路由决策.md`、`cloudfunctions/*/index.js` 配置区 | 本表、ROADMAP 选型结论 |
 | 13 | 🟡 | **流程门禁** | prd ✅ / arch ✅ / detailed ✅ / review ✅ / **code 未完成**（流程遗留）；理解确认 ✅（9/19） | `bash gate.sh status` | GATE_SUMMARY、本表 |
 | 14 | ✅ | **工程版本线** | 0.5.x = 线上 beta（9/1 校内起）；**0.6.0 = D1–D10 全完成**；0.7.0 = 复盘 Q/S；1.0 需审批（长期不做） | `doc/architecture/节点化迁移计划.md` §版本线 | 本表、决策日志 |
-| 15 | ⚠️ | **真实使用规模** | 2 个账号（1 个是作者本人）→ 「对某个学生有用」**缺证据** | 审计文档 §1 | 本表 |
+| 15 | 🟡 | **真实使用规模（已停摆；作者账号价值已重定义）** | 2 个账号。线上自 2026-09-19 起 **13 天零新增**（mastery_logs 末条 09-19 09:41 / batches 末条 09-19 09:32）；两账号最后登录 **again 09-16 / Qiuuu 09-04**。⚠️ **2026-10-02 按账号拆分实测**（`users._openid`↔`questions.userId` 对齐）：**again（作者）** 51 题＝选择 15/填空 17/**解答 18**/未知 1，24 批次 32 报告，活跃 09-18~19；**Qiuuu（同学）** 10 题＝选择 5/填空 3/其他 1/**解答 1**，**仅 09-04 一天**、1 批次 1 报告，`kOverall`/`aOverall` **至今为 0**（掌握度从未更新）。→ **同学样本 90% 输入落在"只做解答题"边界外**，详见 `doc/TARGET.md` §6。`mastery_logs.algorithm` 仅 `weighted_score_v1`(322) + `diagnose_v1`(59) → **052–057 新口径云端执行 0 次**。⚠️ **作者账号重定义**：不再是"缺证据的噪声样本"，而是**带 ground truth 的有效样本（n=1）**。⚠️ **n=1 不代表可定案**（开发者偏差/痒点≠痛点，见 `doc/TARGET.md` §1.1）。停摆定性：**症状**，根因是产品没打中痛点（见 §0） | 审计文档 §1、2026-10-02 线上实查、决策 059 补充 | 本表 |
 | 16 | ⚠️ | **版权数据风险** | `output/golden/_src/`、`dataset-*.json` 已正确忽略；**但 3 个 golden 文件已被 git 跟踪**（含 `2025新高考I卷-数学-题面+解析.txt`）→ 与「版权内容不进 public 仓库」冲突，**待决定是否清理** | 本表 §1-16；`.gitignore` | 待拍板后：`.gitignore` + `git rm --cached` 或 filter-repo |
 | 17 | ✅ | **凭据与登录** | 腾讯云 API 密钥对在 `~/.zsh_history`（**仓库内无泄露**，已扫）；`tcb login --apiKeyId/--apiKey` 已可用；**本机无微信私钥** → 云函数部署只能走 CI 或开发者工具 | `doc/standards/开发经验.md` §五-12 | 经验文档、本表 |
 | 18 | ✅ | **D6 基线（旧版稳定性）** | 三态一致率 **91.4%**、level 一致率 **85.7%**、errorLevel **77.1%**、知识点名 **60.0%**、题型 pattern **22.9%**、不稳定用例 **8/35**、解析失败 **3/38** | `output/golden/results/stability-old.json`、D6 设计 §5.1 | D6 设计、本表 |
 | 19 | ✅ | **图谱质量 / 方法区分治** | 89 个 `type=method` 已打 `partition:'method'`（`nModified:89`）；两引擎「清单过滤」**已部署生效并定量复验**：判定 prompt tokens **6470→5823**、判定出的知识点 0 个落在方法区；回退 `node scripts/partition-method-nodes.mjs --revert` | `scripts/partition-method-nodes.mjs`、`knowledgeMatch.js:33`、`judgeOne:108` | 剩余：① 图谱前端分区展示 ② 5 道历史题主知识点是否迁父节点 ③ 部署期间曾因 SyntaxError 中断判定约 8 分钟（已记 §五-14） |
-| 20 | ⚠️ | **最高判据（设计宪法追加）** | 决策 047：AI 产出的最终目的＝「学生自己动了一下」；三问判据（证据在哪 / 下一步动作 / 学生能不能推翻）已入宪法 §一；**异议入口线上 0 次使用、入口点不到 → 优先级高于一切新功能与精度优化** | `doc/theory/五维能力向量框架-理论文档.md` §一 · `doc/architecture/AI产出物-第一性原理.md` | 报告页「下一步」、`dispute` |
+| 20 | ⚠️ | **最高判据（设计宪法追加）** | 决策 047：AI 产出的最终目的＝「学生自己动了一下」；三问判据（证据在哪 / 下一步动作 / 学生能不能推翻）已入宪法 §一；**异议入口：表层两个能点到（题型/参考过程），但能推翻「AI 对学生判断」的通道 `cloudfunctions/dispute` 前端 0 调用（内含已废 P 四档）→ 优先级高于一切新功能与精度优化** | `doc/theory/五维能力向量框架-理论文档.md` §一 · `doc/architecture/AI产出物-第一性原理.md` | 报告页「下一步」、`dispute` |
 | 21 | ⚠️ | **采集层冻结（硬约束）** | 决策 048：**2.0 AI 教练加入前，采集项一个都不能多**——现役只有「拍照」；0.7.0 的 Q/S 报告页回顾采集是否也冻结到 2.0 之后（**待用户一句话确认**） | `doc/architecture/五维工程实现规范.md` 顶部硬约束、决策 048 | 版本线、D10、产品形态总设计 |
+| 22 | 🟡 | **五维口径总修订（052–057）** | **052** K＝最细层叶子「用对率」`correctCount/attempts`＋父节点**只靠聚合**（难度退出 K）；**053** 取消「主知识点」，一题只留 `knowledgeUsage`；**054** 本体更新 K+A、方法只更新 A（两段清单）；**055** A＝`s = P×(0.6+0.4D)×q`，`ΔA = 0.25(s−A)(U−A)`，**skill（抄错）归 S**；**056** 下游迁移＝统计按**全部** usage 名／同知识点按**集合取交**／单节点接口取**首个** usage 名；**057** 口径落地收尾＝K 总览改 `kFormula` 同源（原来读已停写的 sValue/dValue → **总览恒空**）、`graphService` 新增 `progressDetail`（evidence/aggregated）、`migrateProgress` 修「账不跟着走＋整行误删＋P≥0.5 旧阈值」、`aggregateUp` 补 4 单测。**已做**：prompt 口径、`updateMastery`、`knowledgeMatch`、6 个下游文件、评测脚本与线上同源、`kFormula.js`；单测 **61/61**；验证跑 6 例×2 轮＝三态 **100%**／level 83%／知识点名 100%（**但 6 例全是"做对"的题，测不到错题分支 → 只能判"没崩"**）。**遗留**：① 前端图谱页未消费 `progressDetail`（"样本不足"文案待拍板）② 复核页 `editK` 悬空 ③ `newNode` 待建队列无审核入口 ④ A（`unit_progress`）仍无 UI ⑤ T/Q/S 未实现 ⑥ 0.7.0 的 Q/S 是否冻到 2.0 待答。⚠️ **2026-10-02 决策 059 裁决：K 降为副指标 → 本轮口径总修订的价值下调**（它优化的是一个对目标用户无区分度的副指标）；**A 升为主指标之一**，信号源需重定义为过程质量 | 决策 052–057、宪法 §4.4/§4.5/§5.5、`参数对齐审计.md` §12 | `updateMastery.js`、`prompts.js`、`knowledgeMatch.js`、`kFormula.js`、`reportService`、`statService`、`graphService`、`ragService`、`ragLog.js`、`ragTools.js`、`scripts/dump-nodes.mjs` |
+| 23 | 🟡 | **产品目标（已重定，实现未跟）** | 决策 059（2026-10-02）：**服务高分段学生，做「解答题过程审阅」** —— 告诉他哪里会被扣分、同一处丢过几次。旧核心命题「哪里不会」**作废**。硬边界：**只做解答题**（实测选择 20＋填空 20＋其他 2 = 42 道，`processAvailable=true` **0** 道；解答 19 道 **100%** 有过程）。核心缺口：**判定层无「松/绕」信号**（`segments.status` 词表仅 `通`45/`断`34/`空白`1）；**做对的 17 道题仅 2 道有过程**。**未决 3 条**（松的判据由谁产 / 标准解法给不给 / 高分段如何识别）→ 拍板后才动代码 | `doc/TARGET.md`（唯一事实源）、决策 059 | `产品形态总设计.md` 头部、`ROADMAP.md`、宪法 §1（待追加 ⚠️ 标注）、报告结构、判定层 |
 
 ---
 
@@ -48,6 +71,7 @@
 | **每轮对话收尾** | ① git 提交（新建文档先问「是否进 public 仓库」）② 本表「最后核对」日期 |
 | **拍了最高判据 / 设计原则** | ① 宪法 `doc/theory/五维能力向量框架-理论文档.md`（按决策 016：原文不篡改，只追加「⚠️」块）② `doc/architecture/AI产出物-第一性原理.md` ③ `decision-log.md` 新决策 ④ 本表 #20 / **#21**（采集类口径落 `五维工程实现规范.md`，按决策 027 不进宪法）⑤ 重跑 `node scripts/render-status.mjs` |
 | **改了本表任何一行** | 重跑 `node scripts/render-status.mjs` 生成 `doc/status.html`（看板由本表派生，**不要手改 status.html**） |
+| **重定产品目标 / 服务对象** | ① **`doc/TARGET.md`**（唯一事实源，先改它）② `decision-log.md` 新决策 ③ 本表 **#23** + §0「当前主要矛盾」④ `ROADMAP.md` 顶部 ⑤ `产品形态总设计.md` 头部核心命题 ⑥ 宪法（按决策 016 **只追加 ⚠️ 块，不篡改原文**）⑦ 重跑 `render-status.mjs` |
 
 ---
 
@@ -60,4 +84,6 @@
 | 把「跑通了」当成「质量达标」 | D5 壳一致 ≠ 判定准；审计 P1/P2 仍在 |
 | 忘了 `source` 分组 | `photo`（AI 判）与 `zhixue`（官方口径）混统计会得出假结论（9/25 实测踩过） |
 
-> 更新日志：2026-09-25 建立（首次把 7 个文件里的状态收敛到本表 + 6 份滞后文档对齐）。
+> 更新日志：
+> - 2026-09-25 建立（首次把 7 个文件里的状态收敛到本表 + 6 份滞后文档对齐）。
+> - **2026-10-02 目标重定 + 线上实测刷新**：新增 §0「当前主要矛盾」（旧主矛盾「判定稳定性」降级）；新增 #23「产品目标」；用 `tcb` 实查刷新 #6 云端数据规模（报告 33、custom_nodes 0）、#10 图谱、#15（13 天零新增、新口径 0 次执行）；#2/#7/#22 按决策 059 重排优先级；触发清单新增「重定产品目标」一行。依据：`doc/TARGET.md`、决策 059。

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>参数 → 公式 → 维度分数 依赖图</title>
+<style>
+  :root{--ok:#2e9e5b;--warn:#d98415;--bad:#cf3a3a;--dead:#9aa0a6;--ink:#1f2328;--line:#c9ced6;--bg:#f6f7f9;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,"PingFang SC","Helvetica Neue",Arial,sans-serif;}
+  header{padding:20px 28px 8px;}
+  h1{font-size:20px;margin:0 0 6px;}
+  .sub{margin:0 0 10px;color:#5b6270;font-size:13px;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:#444;margin-bottom:6px;}
+  .legend i{display:inline-block;width:22px;height:0;border-top:2px solid var(--ok);vertical-align:middle;margin-right:6px;}
+  .legend .dash{border-top:2px dashed var(--bad);}
+  .legend .dead{border-top:2px dashed var(--dead);}
+  .legend .box{width:14px;height:12px;border:2px solid var(--bad);background:#fff;display:inline-block;vertical-align:middle;margin-right:6px;}
+  #wrap{padding:6px 20px 30px;overflow:auto;}
+  svg{background:#fff;border:1px solid #e3e6ea;border-radius:10px;}
+  .node rect{fill:#fff;stroke:var(--ok);stroke-width:1.6px;}
+  .node.warn rect{stroke:var(--warn);}
+  .node.missing rect{stroke:var(--bad);stroke-dasharray:5 3;}
+  .node.deprecated rect{stroke:var(--dead);stroke-dasharray:3 3;fill:#fafafa;}
+  .node.store rect{stroke:#2f6fd0;}
+  .node.formula rect{stroke:#6b4bd6;}
+  .node.view rect{stroke:#0f8b8d;}
+  .node.bad rect{stroke:var(--bad);stroke-width:2.6px;}
+  .node text{font:12.5px/1.2 inherit;fill:var(--ink);}
+  .node .t{font-weight:600;font-size:13px;}
+  .node .s{fill:#6b7280;font-size:11.5px;}
+  .edge{fill:none;stroke:var(--line);stroke-width:1.4px;}
+  .edge.missing{stroke:var(--bad);stroke-dasharray:5 4;}
+  .edge.dead{stroke:var(--dead);stroke-dasharray:3 3;}
+  .coltitle{font:600 13px/1 inherit;fill:#374151;font-weight:600;}
+  .dim{opacity:.18;}
+  .notes{margin:0 28px 40px;padding:16px 20px;background:#fff;border:1px solid #e3e6ea;border-radius:10px;}
+  .notes h2{font-size:15px;margin:0 0 8px;}
+  .notes li{margin:3px 0;font-size:13px;}
+  .tag{display:inline-block;padding:0 6px;border-radius:4px;font-size:11.5px;border:1px solid;margin-right:6px;}
+  .tag.bad{color:var(--bad);border-color:var(--bad);}
+  .tag.warn{color:var(--warn);border-color:var(--warn);}
+  .tag.dead{color:var(--dead);border-color:var(--dead);}
+  code{background:#f2f4f7;padding:0 4px;border-radius:3px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>参数 → 公式 → 维度分数：依赖图（现状快照 2026-09-25）</h1>
+  <p class="sub">看的是「公式计算到底要用到哪些参数」。点任意方块可高亮它的上下游。</p>
+  <div class="legend">
+    <span><i></i>已实现</span>
+    <span><i class="dash"></i>参数缺失 / 该维度未实现</span>
+    <span><i class="dead"></i>已废弃（决策 024）</span>
+    <span><span class="box"></span>已知错位：难度被当成证据</span>
+  </div>
+</header>
+<div id="wrap"></div>
+<section class="notes">
+  <h2>这张图里能直接看出的问题</h2>
+  <ol>
+    <li><span class="tag bad">根病</span><b>难度 D 被当成证据本身</b>：K 用 <code>D_kp×P_kp</code>、A 用 <code>D×η</code>、T 用 <code>W×D×r</code> —— 三处都把难度乘进能力分数。难度正确的位置是「情境条件」。</li>
+    <li><span class="tag bad">断链</span><b>K 的独占通道没数据</b>：<code>isRecallQuestion</code> 判定端有输出、落库时丢了；<code>questionCategory</code> 存的是自由文本而不是枚举 → K 只能吃应用类题（＝A 的信号）。</li>
+    <li><span class="tag bad">失效</span><b>超纲规则跑不了</b>：宪法 §4.4 规定「超纲题做错不计入 D_k」，而 <code>isOutOfSyllabus</code> 没落库。</li>
+    <li><span class="tag dead">虚设</span><b>T / Q / S 三个维度零实现</b>：T 缺 <code>r</code> 与 <code>W</code> 两个信号，Q 依赖思维链（未采集），S0 从未计算 → 口称五维，实际只有 K、A 在跑。</li>
+    <li><span class="tag dead">残留</span><b>fiveDim 白付成本</b>：决策 024 已废「五维逐项打分」，但 prompt 仍必填、仍落库、前端 0 引用。</li>
+    <li><span class="tag warn">脏账</span><b>知识点层级混装</b>：<code>knowledgeNodeName</code> 一个字段既装父节点名又装叶子名；库内 66 条 <code>knowledge_progress</code> 里 8 条记在父节点、14 条挂在找不到的节点上。</li>
+    <li><span class="tag warn">不可复算</span><b>审计断链</b>：<code>mastery_logs</code> 只记 old/new 掌握度，不记 D 与 P → 历史只能从 <code>questions</code> 重放。</li>
+    <li><span class="tag warn">假精度</span><b>展示层</b>：报告「掌握度变化」与首页都显示百分比（<code>masteryPercent</code>），而底层同一题重跑会得到不同的值。</li>
+  </ol>
+</section>
+<script>
+var COLS = [
+  {x:36,  title:"① 判定端输出（模型给的参数）"},
+  {x:436, title:"② 公式 / 算法"},
+  {x:836, title:"③ 状态存储（云数据库）"},
+  {x:1236,title:"④ 学生可见"}
+];
+var NW = 320, NH = 50, GAP = 16, TOP = 74;
+var NODES = [
+  {id:"level",   col:0,row:0, t:"level / D / P", s:"整题难度档 L1~L11、难度值、过程分", k:"ok", dep:"落库改名：difficultyLevel / difficultyValue / processScore"},
+  {id:"eta",     col:0,row:1, t:"eta", s:"路径质量：解法是否接近本质（0.4~1.0）", k:"ok", dep:"落库改名 pathQuality"},
+  {id:"kusage",  col:0,row:2, t:"knowledgeUsage[]", s:"环节级：每个知识点的 D 与 P", k:"ok", dep:""},
+  {id:"kname",   col:0,row:3, t:"knowledgeNodeName", s:"核心知识点（单值）", k:"warn", dep:"父节点名与叶子名混装"},
+  {id:"graph",   col:0,row:4, t:"图谱节点清单", s:"271 个节点（含 24 个父节点）", k:"warn", dep:"父节点也塞给了模型"},
+  {id:"proc",    col:0,row:5, t:"segments · breakpoint", s:"过程分段与断点（仅解答题）", k:"ok", dep:""},
+  {id:"err",     col:0,row:6, t:"errorType · errorLevel · errorAttribution", s:"错因三件套", k:"ok", dep:""},
+  {id:"recall",  col:0,row:7, t:"isRecallQuestion", s:"回忆类标记 —— K 的唯一通道", k:"missing", dep:"判定端有输出，落库时丢了"},
+  {id:"syll",    col:0,row:8, t:"isOutOfSyllabus", s:"超纲标记 —— 超纲规则要用", k:"missing", dep:"没落库 → 规则无法执行"},
+  {id:"r",       col:0,row:9, t:"r", s:"解题质量系数 —— T 的信号", k:"missing", dep:"没落库"},
+  {id:"W",       col:0,row:10,t:"W", s:"跨类型权重 —— T 的权重", k:"missing", dep:"判定端不输出，来源缺失"},
+  {id:"fivedim", col:0,row:11,t:"fiveDim", s:"五维逐项打分（K/A/T/Q/S）", k:"deprecated", dep:"决策 024 已废，仍必填"},
+  {id:"tri",     col:1,row:0, t:"三态判定", s:"P=1 对 / 0<P<1 半对 / P=0 错", k:"formula", dep:""},
+  {id:"kf",      col:1,row:2, t:"K 加权得分法", s:"S_k += D_kp·P_kp；D_k += D_kp；掌握度 = S_k / D_k", k:"formula bad", dep:"难度被当成证据"},
+  {id:"amp",     col:1,row:3, t:"知识点归一与匹配", s:"名称 → 图谱节点（相似度 ≥0.8）", k:"formula warn", dep:"清单含父节点 → 会匹配到父"},
+  {id:"af",      col:1,row:5, t:"A 有效刺激量", s:"eff = D × η × (2P − 1)", k:"formula bad", dep:"难度被乘进 A"},
+  {id:"af2",     col:1,row:6, t:"A 更新 / 上限 U", s:"ΔA = 0.25·|eff|·(U−A)；η≥0.7 上浮，连续低 η 下浮", k:"formula", dep:"熟练度机制 —— 这块是对的"},
+  {id:"tf",      col:1,row:9, t:"T 更新（未实现）", s:"ΔT = 0.20·(T_shown − T)·(TU − T)", k:"missing", dep:""},
+  {id:"qf",      col:1,row:10,t:"Q 评分（未实现）", s:"思维链 5 子维度", k:"missing", dep:""},
+  {id:"sf",      col:1,row:11,t:"S0 波动（未实现）", s:"客观计算，全量", k:"missing", dep:""},
+  {id:"kp",      col:2,row:2, t:"knowledge_progress", s:"sValue · dValue · mastery · attempts（66 条）", k:"store", dep:""},
+  {id:"ml",      col:2,row:3, t:"mastery_logs", s:"oldMastery · newMastery · algorithm（381 条）", k:"store warn", dep:"不记 D / P → 不可复算"},
+  {id:"up",      col:2,row:5, t:"unit_progress", s:"aValue(A) · aUpper(U) · n · lowEtaStreak（4 条）", k:"store", dep:""},
+  {id:"nostore", col:2,row:9, t:"T / Q / S", s:"没有对应集合", k:"missing", dep:""},
+  {id:"fd2",     col:2,row:11,t:"questions.fiveDim", s:"fiveDim · fiveDimRaw", k:"deprecated", dep:""},
+  {id:"vdot",    col:3,row:0, t:"报告三态圆点", s:"✓ 对 · △ 半对 · ✗ 错", k:"view", dep:""},
+  {id:"vmc",     col:3,row:2, t:"报告「掌握度变化」", s:"62% → 65%", k:"view warn", dep:"百分比＝给噪声配刻度"},
+  {id:"vhome",   col:3,row:3, t:"首页掌握度总览", s:"最弱 3 个知识点（masteryPercent）", k:"view warn", dep:""},
+  {id:"vproc",   col:3,row:4, t:"报告：过程与断点", s:"哪一步断的、过程分段原文", k:"view", dep:""},
+  {id:"verr",    col:3,row:5, t:"报告：错因一句话", s:"errorAttribution（只写可观察事实）", k:"view", dep:""},
+  {id:"vno",     col:3,row:9, t:"T / Q / S 分数", s:"没有可展示的值", k:"missing", dep:""},
+  {id:"vfd",     col:3,row:11,t:"五维数值", s:"前端 0 处引用 → 学生看不到", k:"deprecated", dep:""}
+];
+var EDGES = [
+  ["kusage","kf",""], ["level","af",""], ["eta","af",""], ["eta","af2",""],
+  ["kname","amp",""], ["graph","amp","warn"], ["amp","kp",""],
+  ["kf","kp",""], ["kf","ml",""], ["af","af2",""], ["af2","up",""],
+  ["r","tf","missing"], ["W","tf","missing"], ["level","tf",""],
+  ["recall","kf","missing"], ["syll","kf","missing"], ["fivedim","fd2","dead"],
+  ["level","tri",""], ["tri","vdot",""],
+  ["kp","vmc",""], ["kp","vhome",""], ["fd2","vfd","dead"],
+  ["nostore","vno","missing"],
+  ["proc","vproc",""], ["err","verr",""],
+  ["tf","nostore","missing"], ["qf","nostore","missing"], ["sf","nostore","missing"]
+];
+function nodeById(id){for(var i=0;i<NODES.length;i++){if(NODES[i].id===id)return NODES[i];}return null;}
+function yOf(row){return TOP + row*(NH+GAP);}
+function maxRow(){var m=0;NODES.forEach(function(n){if(n.row>m)m=n.row;});return m;}
+var H = yOf(maxRow())+NH+40;
+var W_TOTAL = COLS[3].x + NW + 40;
+function el(tag,attrs){var e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(var k in attrs){e.setAttribute(k,attrs[k]);}return e;}
+var svg = el("svg",{width:W_TOTAL,height:H,viewBox:"0 0 "+W_TOTAL+" "+H});
+COLS.forEach(function(c){var t=el("text",{x:c.x,y:44,"class":"coltitle"});t.textContent=c.title;svg.appendChild(t);});
+var gEdges = el("g",{}); svg.appendChild(gEdges);
+var gNodes = el("g",{}); svg.appendChild(gNodes);
+EDGES.forEach(function(e,i){
+  var a=nodeById(e[0]), b=nodeById(e[1]); if(!a||!b) return;
+  var x1=COLS[a.col].x+NW, y1=yOf(a.row)+NH/2, x2=COLS[b.col].x, y2=yOf(b.row)+NH/2;
+  var mx=(x1+x2)/2;
+  var d="M "+x1+" "+y1+" C "+mx+" "+y1+", "+mx+" "+y2+", "+x2+" "+y2;
+  var cls="edge"+(e[2]?" "+e[2]:"");
+  var p=el("path",{d:d,"class":cls,"marker-end":"url(#arrow)"});
+  p.setAttribute("data-from",e[0]); p.setAttribute("data-to",e[1]);
+  gEdges.appendChild(p);
+});
+var defs=el("defs",{}); var mk=el("marker",{id:"arrow",markerWidth:"8",markerHeight:"8",refX:"7",refY:"3",orient:"auto"});
+mk.appendChild(el("path",{d:"M0,0 L7,3 L0,6 z",fill:"#c9ced6"})); defs.appendChild(mk); svg.insertBefore(defs,svg.firstChild);
+NODES.forEach(function(n){
+  var g=el("g",{"class":"node "+n.k});
+  g.setAttribute("data-id",n.id);
+  g.appendChild(el("rect",{x:COLS[n.col].x,y:yOf(n.row),width:NW,height:NH,rx:"8"}));
+  var t1=el("text",{x:COLS[n.col].x+12,y:yOf(n.row)+20,"class":"t"}); t1.textContent=n.t; g.appendChild(t1);
+  var t2=el("text",{x:COLS[n.col].x+12,y:yOf(n.row)+37,"class":"s"}); t2.textContent=n.s; g.appendChild(t2);
+  g.addEventListener("click",function(){highlight(n.id);});
+  gNodes.appendChild(g);
+});
+document.getElementById("wrap").appendChild(svg);
+function highlight(id){
+  var keep={}; keep[id]=1; var grew=true;
+  while(grew){grew=false;EDGES.forEach(function(e){if(keep[e[0]]&&!keep[e[1]]){keep[e[1]]=1;grew=true;}});}
+  grew=true;
+  while(grew){grew=false;EDGES.forEach(function(e){if(keep[e[1]]&&!keep[e[0]]){keep[e[0]]=1;grew=true;}});}
+  var ps=document.querySelectorAll("svg path");
+  for(var i=0;i<ps.length;i++){var p=ps[i];var f=p.getAttribute("data-from");if(!f)continue;var t=p.getAttribute("data-to");p.classList.toggle("dim", !(keep[f]&&keep[t]));}
+  var gs=document.querySelectorAll("g.node");
+  for(var j=0;j<gs.length;j++){gs[j].classList.toggle("dim", !keep[gs[j].getAttribute("data-id")]);}
+}
+</script>
+</body>
+</html>

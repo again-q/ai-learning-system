@@ -1,0 +1,221 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>诊断报告 · 示例</title><style>
+:root{--ink:#111827;--sub:#6b7280;--line:#e8eaed;--ok:#0f766e;--okbg:#eefaf7;--bad:#b42318;--badbg:#fef3f2;--mid:#b45309;--warnbg:#fffbeb}
+*{box-sizing:border-box}html,body{margin:0}body{background:#f5f6f8;color:var(--ink);font:15px/1.72 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:430px;margin:0 auto;background:#f5f6f8;padding:0 12px 32px}
+.top{position:sticky;top:0;z-index:9;background:rgba(245,246,248,.94);backdrop-filter:blur(8px);padding:14px 4px 10px;display:flex;align-items:baseline;gap:8px}
+.top b{font-size:17px;letter-spacing:.3px}.tag{font-size:11px;color:var(--sub);border:1px solid var(--line);border-radius:99px;padding:1px 8px;background:#fff}
+.sum{background:#fff;border-radius:14px;padding:14px 16px}
+.n{font-size:13px;color:var(--sub);margin-bottom:2px}
+.mt{font-weight:600;font-size:13.5px;color:#0f766e;margin-top:10px}
+.mline{font-size:13px;margin-top:4px;color:#134e4a}
+.dots{display:block;font-size:19px;letter-spacing:5px;margin-bottom:8px}.dot-ok{color:var(--ok)}.dot-mid{color:var(--mid)}.dot-bad{color:var(--bad)}
+.sum .n{font-size:13px;color:var(--sub)}
+.card{background:#fff;border-radius:14px;margin-top:12px;padding:16px 16px 6px}
+.card-h{display:flex;align-items:center;gap:8px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.card-h .no{font-weight:600;font-size:15px}
+.chip{font-size:11.5px;border-radius:99px;padding:1px 9px;border:1px solid var(--line);color:var(--sub)}
+.chip.mid{color:var(--mid);background:var(--warnbg);border-color:#fde3ae}
+.qtext{margin:12px 0 4px;font-size:15px;line-height:1.85;color:#111}
+.tex{font-family:Georgia,"Times New Roman",serif;font-style:italic}
+.fr{display:inline-flex;flex-direction:column;vertical-align:-0.5em;text-align:center;font-size:.85em;line-height:1.15;margin:0 3px}
+.fr i{font-style:normal;padding:0 4px}.fr i:first-child{border-bottom:1px solid currentColor}
+.sec{list-style:none}.sec>summary{list-style:none;cursor:pointer}
+.sec>summary::-webkit-details-marker{display:none}
+.sec>summary:before{content:"▸";color:var(--sub);font-size:11px;margin-right:4px}
+.sec[open]>summary:before{content:"▾"}
+.rail{margin-top:14px;border-left:2px solid var(--line);padding-left:14px}
+.step{position:relative;padding-bottom:16px}
+.step:before{content:"";position:absolute;left:-21px;top:3px;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid var(--ink)}
+.step-h{display:flex;align-items:baseline;gap:8px;font-weight:600;font-size:15px}
+.step-h .n{font-size:11px;color:#fff;background:var(--ink);border-radius:50%;width:17px;height:17px;display:inline-flex;align-items:center;justify-content:center;flex:none;transform:translateY(-1px)}
+.step-h .hint{font-weight:400;font-size:12px;color:var(--sub)}
+.block{margin-top:9px}
+.mine-note{font-size:12px;color:var(--sub);margin-bottom:6px}
+ol.mine{list-style:none;margin:0;padding:0}
+ol.mine li{display:flex;gap:8px;padding:6px 9px;border-radius:8px;margin-bottom:5px;font-size:14px}
+ol.mine .idx{color:var(--sub);font-size:12px;min-width:14px;flex:none;padding-top:1px}
+li.st-ok{background:var(--okbg)}li.st-ok .st{color:var(--ok)}
+li.st-bad{background:var(--badbg)}li.st-bad .st{color:var(--bad)}
+li.st-blank{background:#f3f4f6}li.st-blank .st{color:var(--sub)}
+.st{font-size:11px;flex:none;padding-top:1px}
+.diff{border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.side{padding:10px 11px;font-size:14px}
+.side.you{background:var(--badbg)}.side.ref{background:var(--okbg)}
+.side.you.mid{background:var(--warnbg);border-color:#fde3ae}
+.side .lab{display:block;font-size:11.5px;color:var(--sub);margin-bottom:3px}
+.side p{margin:0}
+.sep{display:flex;align-items:center;gap:7px;padding:3px 11px;font-size:11px;color:var(--sub);background:#fff}
+.sep:before,.sep:after{content:"";height:1px;background:var(--line);flex:1}
+.cand{border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin-bottom:7px;display:flex;gap:9px;font-size:14px;cursor:pointer}
+.cand.on{border-color:#111;background:#fafafa}
+.cand .r{width:15px;height:15px;border:1.5px solid #9ca3af;border-radius:50%;flex:none;margin-top:4px}
+.cand.on .r{border-color:#111;background:#111;box-shadow:inset 0 0 0 3px #fff}
+.cand .ev{display:block;font-size:11.5px;color:var(--sub);margin-top:3px}
+.act{border-left:2px solid var(--ink);padding:2px 0 2px 11px;margin-bottom:11px;font-size:14px}
+.act .why{display:block;font-size:11.5px;color:var(--sub);margin-top:2px}
+details{margin-top:8px}summary{font-size:12.5px;color:var(--sub);cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}summary:before{content:"＋ ";font-size:11px}
+details[open] summary:before{content:"－ "}
+textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:8px 9px;font:14px/1.6 inherit;min-height:52px;margin-top:6px}
+.btn{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:#fff;border-radius:99px;padding:6px 13px;font-size:12.5px;color:var(--sub);margin-top:4px;cursor:pointer}
+.fold{background:#fafafa;border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:12.5px;color:var(--sub);margin-top:8px}
+.led{margin-top:12px;background:#fff;border-radius:14px;padding:14px 16px}
+.led .t{font-weight:600;font-size:15px;margin-bottom:2px}.led .h{font-size:12px;color:var(--sub);margin-bottom:10px}
+.row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.row:last-child{border:0}.row .v{color:var(--sub);flex:none}
+.acct{margin-top:4px}.a-row{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13.5px}
+.a-name{min-width:118px;flex:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar{flex:1;height:6px;background:#f1f2f4;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ink);border-radius:99px}
+.a-num{font-size:12px;color:var(--sub);flex:none;font-variant-numeric:tabular-nums}
+.guess{margin-top:10px;border:1px solid #e5d9f2;background:#faf7ff;border-radius:10px;padding:11px 12px}
+.guess .g-t{font-weight:600;font-size:13.5px;color:#5b21b6}
+.guess .g-b{font-size:13.5px;margin-top:5px;line-height:1.7}
+.guess .g-e{font-size:11.5px;color:var(--sub);margin-top:6px}
+.guess .g-a{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+.guess .g-a span{border:1px solid #ddd6fe;background:#fff;border-radius:99px;padding:3px 11px;font-size:12.5px;color:#5b21b6;cursor:pointer}
+.mini{display:inline-flex;gap:3px;vertical-align:middle}
+.mini i{width:10px;height:10px;border-radius:2px;background:#e5e7eb;display:block}
+.mini i.p1{background:var(--ok)}.mini i.p05{background:#f0b429}
+.sub-row{padding-top:0!important;font-size:12px}
+.mv{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-top:10px}
+.mv .t{font-weight:600;font-size:14px;color:#0f766e}.mv .r{font-size:13px;margin-top:5px;color:#134e4a}
+.mv .e{font-size:11.5px;color:var(--sub);margin-top:6px}
+.foot{font-size:11.5px;color:var(--sub);padding:14px 4px 0;line-height:1.7}
+.card>summary{list-style:none;cursor:pointer}.card>summary::-webkit-details-marker{display:none}
+.card>summary:before{content:"▾";color:var(--sub);font-size:12px;margin-right:6px}
+.card:not([open])>summary:before{content:"▸"}
+</style></head><body><div class="wrap">
+<div class="top"><b>诊断报告</b><span class="tag">示例</span></div>
+<div class="sum"><span class="dots"><span class="dot-mid">△</span><span class="dot-mid">△</span><span class="dot-mid">△</span></span>
+<div class="n">这次 3 题：半对 3 道　｜　上次（09-18）2 题：半对 2 道</div>
+<div class="mt">和上次比</div>
+<div class="mline"><b>一元二次方程</b>：9月18日 第一步没写出来，9月19日 写到一半停了</div>
+<div class="mline"><b>韦达定理</b>：9月18日 第一步没写出来，9月19日 写到一半停了</div>
+</div>
+<details class="card">
+<summary class="card-h"><span class="no">第 1 题</span><span class="chip mid">半对</span></summary>
+<div class="qtext"><span class="tex">已知集合 A={ a<sub>1</sub>,a<sub>2</sub>,a<sub>3</sub>,a<sub>4</sub>,a<sub>5</sub>} ，集合 B={ M,N} ， M⊆A ， N⊆A ，且满足 M⊆N ，或 N⊆M ，则符合条件的集合 B 有__________个 .</span></div>
+<div class="rail">
+<details class="sec"><summary class="step-h"><span class="n">0</span>这道题的信息<span class="hint">选填题没有过程可看</span></summary>
+<div class="block">
+<div class="mine-note">这题用到的知识点：子集 · 集合相等 · 互异性 · 集合运算的基本性质 · 容斥原理（集合中元素的个数）</div>
+</div></details>
+<details class="sec"><summary class="step-h"><span class="n">1</span>你的账<span class="hint">跨题统计 · 你自己看不到的部分</span></summary>
+<div class="block">
+<div class="mine-note">这道题用到的 5 个知识点，按你的历史用对率排序</div><div class="acct">
+<div class="a-row"><span class="a-name">容斥原理（集合中元素的个数）</span><span class="mini"></span><span class="a-num">近 3 次 · 最近一次</span></div><div class="a-row sub-row"><span class="a-name" style="color:var(--sub)">累计</span><span class="a-num" style="flex:1;text-align:right;color:var(--sub)">11 次里对过 6 次</span></div>
+<div class="a-row"><span class="a-name">集合运算的基本性质</span><span class="mini"></span><span class="a-num">近 3 次 · 最近一次</span></div><div class="a-row sub-row"><span class="a-name" style="color:var(--sub)">累计</span><span class="a-num" style="flex:1;text-align:right;color:var(--sub)">3 次里对过 2 次</span></div>
+</div>
+<details><summary>展开其余 3 个知识点</summary><div class="acct" style="margin-top:6px">
+<div class="a-row"><span class="a-name">子集</span><span class="mini"></span><span class="a-num">近 3 次 · 最近一次</span></div><div class="a-row sub-row"><span class="a-name" style="color:var(--sub)">累计</span><span class="a-num" style="flex:1;text-align:right;color:var(--sub)">20 次里对过 14 次</span></div>
+<div class="a-row"><span class="a-name">集合相等</span><span class="mini"></span><span class="a-num">近 3 次 · 最近一次</span></div><div class="a-row sub-row"><span class="a-name" style="color:var(--sub)">累计</span><span class="a-num" style="flex:1;text-align:right;color:var(--sub)">1 次里对过 1 次</span></div>
+<div class="a-row"><span class="a-name">互异性</span><span class="mini"></span><span class="a-num">近 3 次 · 最近一次</span></div><div class="a-row sub-row"><span class="a-name" style="color:var(--sub)">累计</span><span class="a-num" style="flex:1;text-align:right;color:var(--sub)">1 次里对过 1 次</span></div>
+</div></details>
+<div class="mine-note" style="margin-top:8px">这题 5 个环节：子集 <b>1</b> · 集合相等 <b>0.5</b> · 互异性 <b>0</b> · 集合运算的基本性质 <b>0.5</b> · 容斥原理（集合中元素的个数） <b>0.5</b></div>
+</div></details>
+<details class="sec"><summary class="step-h"><span class="n">2</span>参考过程<span class="hint">这道题的标准做法</span></summary>
+<div class="block">
+<details><summary>看完整参考过程（5 步）</summary><ol class="mine" style="margin-top:6px">
+<li><span class="idx">1</span><span><b><span class="tex">第一步：确定 M 的取法</span></b><br><span class="tex">M⊆ A，A 有 5 个元素，故 M 有 2^5=32 种取法。</span></span></li>
+<li><span class="idx">2</span><span><b><span class="tex">第二步：固定 M 后数满足条件的 N</span></b><br><span class="tex">对固定的 M，N 需满足 M⊆ N 或 N⊆ M。若 M⊆ N，则 N 须包含 M 的全部元素，其余 5-|M| 个元素任取，共 2<sup>5-|M|</sup> 种；若 N⊆ M，则 N 是 M 的子集，共 2<sup>|M|</sup> 种。两者交集为 M=N，被重复计 1 次。故对固定 M，满足条件的 N 有 2<sup>5-|M|</sup>+2<sup>|M|</sup>-1 种。</span></span></li>
+<li><span class="idx">3</span><span><b><span class="tex">第三步：按 |M| 分类求和</span></b><br><span class="tex">|M|=0：2^5+2^0-1=32；|M|=1：2^4+2^1-1=17；|M|=2：2^3+2^2-1=11；|M|=3：2^2+2^3-1=11；|M|=4：2^1+2^4-1=17；|M|=5：2^0+2^5-1=32。</span></span></li>
+<li><span class="idx">4</span><span><b><span class="tex">第四步：加权求和得总数</span></b><br><span class="tex">C(5,0)×32+C(5,1)×17+C(5,2)×11+C(5,3)×11+C(5,4)×17+C(5,5)×32=32+85+110+110+85+32=454。</span></span></li>
+<li><span class="idx">5</span><span><b><span class="tex">第五步：排除 M=N 的重复计数</span></b><br><span class="tex">上述计数中 M=N 的情形被重复计入（M 与 N 互换视为同一 B）。M=N 时 B={M,M} 不构成含两个不同元素的集合，需排除。M=N 的取法有 2^5=32 种，故符合条件的 B 有 454-32=422 种。</span></span></li>
+</ol></details>
+</div></details>
+</div></details>
+<details class="card" open>
+<summary class="card-h"><span class="no">第 2 题</span><span class="chip mid">半对</span><span class="chip">断在第 3 段 · 写到一半停了</span></summary>
+<div class="qtext"><span class="tex">( 本小题 15 分 ) 已知集合 A={ x|x+<span class="fr"><i>4</i><i>x</i></span>=5} ， B={ x|(a-1)x<sup>2</sup>+ax+a-1=0} ． (1) 若 B 中恰有一个元素，用列举法表示 a 的值构成的集合 ; (2) 若 B⊆A ，求 a 的取值范围．</span></div>
+<div class="rail">
+<details class="sec" open><summary class="step-h"><span class="n">0</span>先看你自己<span class="hint">没有 AI 的话</span></summary>
+<div class="block"><div class="mine-note">你的作答过程（原样转录，共 9 段）</div><ol class="mine">
+<li class="st-ok"><span class="idx">1</span><span class="st">通</span><span><span class="tex">当 a-1=0 时，恰有一个元素，此时 a=1</span></span></li><li class="st-ok"><span class="idx">2</span><span class="st">通</span><span><span class="tex">当 a-1≠0 时，有 Δ=a^2-4(a-1)^2=0，解得 a=4 或 a=<span class="fr"><i>1</i><i>3</i></span></span></span></li><li class="st-bad"><span class="idx">3</span><span class="st">断</span><span><span class="tex">综上，a 的值构成集合为 {1,<span class="fr"><i>1</i><i>3</i></span>,4}</span></span></li><li class="st-ok"><span class="idx">4</span><span class="st">通</span><span><span class="tex">x+<span class="fr"><i>4</i><i>x</i></span>=5 ⇒ x^2-5x+4=0 ⇒ A={1,4}</span></span></li><li class="st-ok"><span class="idx">5</span><span class="st">通</span><span><span class="tex">当 B=∅ 时，判别式小于0</span></span></li>
+</ol>
+<details><summary>展开其余 4 段</summary><ol class="mine" style="margin-top:6px"><li class="st-bad"><span class="idx">6</span><span class="st">断</span><span><span class="tex">当 B≠∅ 时，再次讨论 a-1=0 被划去，以及 a-1≠0 时的 Δ&lt;0,Δ=0,Δ&gt;0 三种情况</span></span></li><li class="st-bad"><span class="idx">7</span><span class="st">断</span><span><span class="tex">a=<span class="fr"><i>2</i><i>3</i></span> 或 a=<span class="fr"><i>8</i><i>9</i></span>（舍去）</span></span></li><li class="st-bad"><span class="idx">8</span><span class="st">断</span><span><span class="tex">此时 a 不存在</span></span></li><li class="st-bad"><span class="idx">9</span><span class="st">断</span><span><span class="tex">综上，a 取值范围为 a≤<span class="fr"><i>1</i><i>3</i></span> 或 a=<span class="fr"><i>8</i><i>9</i></span> 或 a&gt;4</span></span></li></ol></details>
+</div>
+</details>
+<details class="sec"><summary class="step-h"><span class="n">1</span>你的账<span class="hint">跨题统计 · 你自己看不到的部分</span></summary>
+<div class="block">
+<div class="mine-note">这道题用到的 5 个知识点，按你的历史用对率排序</div><div class="acct">
+<div class="a-row"><span class="a-name">空集的性质</span><span class="mini"></span><span class="a-num">近 3 次 · 最近一次</span></div><div class="a-row sub-row"><span class="a-name" style="color:var(--sub)">累计</span><span class="a-num" style="flex:1;text-align:right;color:var(--sub)">9 次里对过 1 次</span></div>
+<div class="a-row"><span class="a-name">集合与元素的字母表示</span><span class="mini"></span><span class="a-num">近 3 次 · 最近一次</span></div><div class="a-row sub-row"><span class="a-name" style="color:var(--sub)">累计</span><span class="a-num" style="flex:1;text-align:right;color:var(--sub)">20 次里对过 4 次</span></div>
+</div>
+<details><summary>展开其余 3 个知识点</summary><div class="acct" style="margin-top:6px">
+<div class="a-row"><span class="a-name">判别式</span><span class="mini"></span><span class="a-num">近 3 次 · 最近一次</span></div><div class="a-row sub-row"><span class="a-name" style="color:var(--sub)">累计</span><span class="a-num" style="flex:1;text-align:right;color:var(--sub)">10 次里对过 3 次</span></div>
+<div class="a-row"><span class="a-name">一元二次方程</span><span class="mini"></span><span class="a-num">近 3 次 · 最近一次</span></div><div class="a-row sub-row"><span class="a-name" style="color:var(--sub)">累计</span><span class="a-num" style="flex:1;text-align:right;color:var(--sub)">18 次里对过 6 次</span></div>
+<div class="a-row"><span class="a-name">韦达定理</span><span class="mini"></span><span class="a-num">近 3 次 · 最近一次</span></div><div class="a-row sub-row"><span class="a-name" style="color:var(--sub)">累计</span><span class="a-num" style="flex:1;text-align:right;color:var(--sub)">7 次里对过 3 次</span></div>
+</div></details>
+<div class="mine-note" style="margin-top:8px">这题 5 个环节：集合与元素的字母表示 <b>0.5</b> · 一元二次方程 <b>0.5</b> · 判别式 <b>0.5</b> · 韦达定理 <b>0.5</b> · 空集的性质 <b>0.5</b></div>
+</div></details>
+<details class="sec"><summary class="step-h"><span class="n">2</span>差在哪<span class="hint">只对照，不解释</span></summary>
+<div class="block">
+<div class="diff"><div class="side you"><span class="lab">你写的 · 第 3 段</span><p><span class="tex">综上，a 的值构成集合为 {1,<span class="fr"><i>1</i><i>3</i></span>,4}</span></p></div>
+<div class="sep">对照</div>
+<div class="side ref"><span class="lab">参考答案 · 第 3 步</span><p><span class="tex">当 a≠1 时，B 恰有一个元素等价于 Δ=a^2-4(a-1)^2=0，即 3a^2-8a+4=0，解得 a=<span class="fr"><i>2</i><i>3</i></span> 或 a=2。</span></p></div></div>
+<details><summary>看完整参考过程（7 步）</summary><ol class="mine" style="margin-top:6px">
+<li><span class="idx">1</span><span><b><span class="tex">第一步：解集合A</span></b><br><span class="tex">由 x+<span class="fr"><i>4</i><i>x</i></span>=5 得 x^2-5x+4=0，解得 x=1 或 x=4，故 A={1,4}。</span></span></li>
+<li><span class="idx">2</span><span><b><span class="tex">第二步：第(1)问——a-1=0 情形</span></b><br><span class="tex">当 a=1 时，B={x| x=0}={0}，恰有一个元素，符合。</span></span></li>
+<li><span class="idx">3</span><span><b><span class="tex">第三步：第(1)问——a-1≠0 情形</span></b><br><span class="tex">当 a≠1 时，B 恰有一个元素等价于 Δ=a^2-4(a-1)^2=0，即 3a^2-8a+4=0，解得 a=<span class="fr"><i>2</i><i>3</i></span> 或 a=2。</span></span></li>
+<li><span class="idx">4</span><span><b><span class="tex">第四步：第(1)问结论</span></b><br><span class="tex">综上，a 的值构成的集合为 {1,<span class="fr"><i>2</i><i>3</i></span>,2}。</span></span></li>
+<li><span class="idx">5</span><span><b><span class="tex">第五步：第(2)问——B=∅ 情形</span></b><br><span class="tex">当 a=1 时 B={0}⊆ A；当 a≠1 时，B=∅ 需 Δ&lt;0，即 3a^2-8a+4&gt;0，解得 a&lt;<span class="fr"><i>2</i><i>3</i></span> 或 a&gt;2。</span></span></li>
+<li><span class="idx">6</span><span><b><span class="tex">第六步：第(2)问——B≠∅ 情形</span></b><br><span class="tex">当 B≠∅ 时，B⊆ A 需 B={1} 或 B={4} 或 B={1,4}。由韦达定理 x_1+x_2=<span class="fr"><i>a</i><i>1-a</i></span>，x_1x_2=1。若 B={1,4}，则 x_1x_2=4≠1，矛盾；若 B={1}，则 x_1x_2=1 成立，x_1+x_2=2=<span class="fr"><i>a</i><i>1-a</i></span>，得 a=<span class="fr"><i>2</i><i>3</i></span>，此时 Δ=0 符合；若 B={4}，则 x_1x_2=16≠1，矛盾。</span></span></li>
+<li><span class="idx">7</span><span><b><span class="tex">第七步：第(2)问结论</span></b><br><span class="tex">综上，a 的取值范围为 a&lt;<span class="fr"><i>2</i><i>3</i></span> 或 a=<span class="fr"><i>2</i><i>3</i></span> 或 a&gt;2，即 a≤<span class="fr"><i>2</i><i>3</i></span> 或 a&gt;2。</span></span></li>
+</ol></details>
+</div></details>
+<details class="sec"><summary class="step-h"><span class="n">3</span>缺了什么 · 一个推测<span class="hint">对着参考过程看，不猜</span></summary>
+<div class="block"><div class="mine-note">一处对不上（B=∅ 那一支）</div>
+<div class="diff"><div class="side you mid"><span class="lab">你写的 · 第 5 段</span><p><span class="tex">当 B=∅ 时，判别式小于0</span></p></div><div class="sep">对照</div><div class="side ref"><span class="lab">参考答案 · 第 5 步（做了这一步）</span><p><span class="tex">当 a=1 时 B={0}⊆ A；当 a≠1 时，B=∅ 需 Δ&lt;0，即 3a^2-8a+4&gt;0，解得 a&lt;<span class="fr"><i>2</i><i>3</i></span> 或 a&gt;2。</span></p></div></div>
+<div class="guess" style="margin-top:10px"><div class="g-t">一个推测（你可以否掉）</div>
+<div class="g-b">两个候选，各带证据 —— 你看更像哪个：</div>
+<div class="cand" onclick="pick(this)"><span class="r"></span><span><b>A</b> 分完情况后没回头查边界<span class="ev">依据 → 第 5 段提了「B=∅ 时判别式小于 0」，但没有把这一支算成 a 的范围</span></span></div>
+<div class="cand" onclick="pick(this)"><span class="r"></span><span><b>B</b> 判别式那一步算错，后面都跟着偏<span class="ev">依据 → 第 3 段结论 {1, 1/3, 4} vs 参考第 4 步 {1, 2/3, 2}</span></span></div>
+<div class="cand" onclick="pick(this)"><span class="r"></span><span>都不是，我自己写<textarea placeholder="一句话说这一段的实际情况"></textarea></span></div>
+<div class="g-a"><span>选 A</span><span>选 B</span><span>都不是</span></div></div></div></details>
+<details class="sec"><summary class="step-h"><span class="n">4</span>下次先做什么</summary><div class="block">
+<div class="act">只重写第 2 段这一步：把 Δ=a²−4(a−1)² 展开成 3a²−8a+4，再解一次<span class="why">依据 → 上面「差在哪」那组对照的差异都在这里</span></div>
+<div class="act">第 (1) 问按「a−1=0 与 a−1≠0 分开 → 各自对 Δ 下结论」重排顺序<span class="why">依据 → 你的第 1、2 段已是两条分支，缺的是分开写</span></div>
+<div class="act">下次遇到 B⊆A：先把「B=∅」单独写一行，再写另外两种<span class="why">依据 → 第 5 段提了空集，后面没有对应结论</span></div>
+</div></details>
+</div></details>
+<details class="card">
+<summary class="card-h"><span class="no">第 3 题</span><span class="chip mid">半对</span><span class="chip">断在第 4 段 · 写到一半停了</span></summary>
+<div class="qtext"><span class="tex">( 本小题 17 分 ) 已知 M 是满足下列条件的集合： ① 0∈M ， 1∈M ； ② 若 x ， y∈M ，则 x-y∈M ； ③ 若 x∈M 且 x{≠ }0 ，则 <span class="fr"><i>1</i><i>x</i></span>∈M ． (1) 判断 -1∈M 是否正确，并说明理由； (2) 证明： <span class="fr"><i>1</i><i>3</i></span>∈M ； (3) 证明：若 x ， y∈M ，则 x+y∈M 且 xy∈M ．</span></div>
+<div class="rail">
+<details class="sec"><summary class="step-h"><span class="n">0</span>先看你自己<span class="hint">没有 AI 的话</span></summary>
+<div class="block"><div class="mine-note">你的作答过程（原样转录，共 4 段）</div><ol class="mine">
+<li class="st-ok"><span class="idx">1</span><span class="st">通</span><span><span class="tex">解：(1) 正确，理由如下：取 x=0,y=1，则 0-1=-1∈ M</span></span></li><li class="st-ok"><span class="idx">2</span><span class="st">通</span><span><span class="tex">由(1)知 -1∈ M，取 x=1,y=-1 得 2∈ M；取 x=2,y=-1 得 3∈ M；由③得 13∈ M</span></span></li><li class="st-ok"><span class="idx">3</span><span class="st">通</span><span><span class="tex">(I) 由②，要证 x+y∈ M：取 x=0,y=y 得 -y∈ M；再取 x=x,y=-y 得 x+y∈ M</span></span></li><li class="st-bad"><span class="idx">4</span><span class="st">断</span><span><span class="tex">由③，取 x=x,x=y 得 1x,1y∈ M；取 x=1x,y=1y 得 1x-1y=<span class="fr"><i>y-x</i><i>xy</i></span>∈ M；再由③取 x=1{xy}……</span></span></li>
+</ol>
+</div>
+</details>
+<details class="sec"><summary class="step-h"><span class="n">1</span>你的账<span class="hint">跨题统计 · 你自己看不到的部分</span></summary>
+<div class="block">
+<div class="mine-note">这道题的知识点还没有历史记录</div>
+<div class="mine-note" style="margin-top:8px">这题 3 个环节：集合的封闭性 <b>0.5</b> · 元素与集合的关系 <b>1</b> · 集合的运算 <b>0.5</b></div>
+</div></details>
+<details class="sec"><summary class="step-h"><span class="n">2</span>差在哪<span class="hint">只对照，不解释</span></summary>
+<div class="block">
+<div class="diff"><div class="side you mid"><span class="lab">你写的 · 第 4 段</span><p><span class="tex">由③，取 x=x,x=y 得 1x,1y∈ M；取 x=1x,y=1y 得 1x-1y=<span class="fr"><i>y-x</i><i>xy</i></span>∈ M；再由③取 x=1{xy}……</span></p></div>
+<div class="sep">对照</div>
+<div class="side ref"><span class="lab">参考答案 · 第 4 步</span><p><span class="tex">若 x=0 或 y=0，由 0∈ M 知 xy=0∈ M。若 x,y≠0，由条件③得 1x,1y∈ M，由减法封闭性得 1x-1y=<span class="fr"><i>y-x</i><i>xy</i></span>∈ M。</span></p></div></div>
+<details><summary>看完整参考过程（5 步）</summary><ol class="mine" style="margin-top:6px">
+<li><span class="idx">1</span><span><b><span class="tex">第(1)问：由减法封闭性得 -1∈ M</span></b><br><span class="tex">取 x=0,y=1，由条件②得 0-1=-1∈ M，故 -1∈ M 正确。</span></span></li>
+<li><span class="idx">2</span><span><b><span class="tex">第(2)问：逐步构造出 3 再取倒数</span></b><br><span class="tex">由(1)知 -1∈ M。取 x=1,y=-1，得 1-(-1)=2∈ M；取 x=2,y=-1，得 2-(-1)=3∈ M；由条件③，3∈ M 且 3≠0，得 13∈ M。</span></span></li>
+<li><span class="idx">3</span><span><b><span class="tex">第(3)问：先证加法封闭性</span></b><br><span class="tex">对任意 y∈ M，取 x=0，由条件②得 0-y=-y∈ M。再取 x=x,y=-y，得 x-(-y)=x+y∈ M。</span></span></li>
+<li><span class="idx">4</span><span><b><span class="tex">第(3)问：乘法封闭性分零与非零讨论</span></b><br><span class="tex">若 x=0 或 y=0，由 0∈ M 知 xy=0∈ M。若 x,y≠0，由条件③得 1x,1y∈ M，由减法封闭性得 1x-1y=<span class="fr"><i>y-x</i><i>xy</i></span>∈ M。</span></span></li>
+<li><span class="idx">5</span><span><b><span class="tex">第(3)问：取倒数并利用加法封闭性完成证明</span></b><br><span class="tex">由条件③，<span class="fr"><i>y-x</i><i>xy</i></span>∈ M 且非零，得 <span class="fr"><i>xy</i><i>y-x</i></span>∈ M。又 x-y∈ M，由加法封闭性得 <span class="fr"><i>xy</i><i>y-x</i></span>+(x-y)∈ M，化简得 <span class="fr"><i>xy+(x-y)^2</i><i>y-x</i></span>∈ M，再取倒数得 <span class="fr"><i>y-x</i><i>xy+(x-y)^2</i></span>∈ M，结合已有元素可推出 xy∈ M。</span></span></li>
+</ol></details>
+</div></details>
+</div></details>
+<div class="led"><div class="t">这些结论凭什么</div><div class="h">每条都能点回证据；证据不够就不给结论</div>
+<div class="row"><span>每道题的对照</span><span class="v">你的原文 ↔ 参考过程（可点开）</span></div>
+<div class="row"><span>你的账</span><span class="v">共 64 次作答记录</span></div>
+<div class="row"><span>单元熟练度</span><span class="v">样本 1 次 → 样本不足</span></div>
+</div>
+<div class="foot">示例数据取自真实判定记录（不显示身份信息）。</div>
+</div><script>
+function pick(el){var on=el.classList.contains("on");document.querySelectorAll(".cand").forEach(function(c){c.classList.remove("on")});if(!on)el.classList.add("on");}
+function reject(){document.getElementById("rej").style.display="block";}
+</script></body></html>

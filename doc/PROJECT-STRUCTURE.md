@@ -1,7 +1,7 @@
 # 项目文件结构说明（按用途分类）
 
 > **单一事实来源**：本文描述 `main` 分支当前仓库布局。归档内容见 [`archive/README.md`](../archive/README.md)。
-> 最后更新：2026-09-25（原 2026-08-14）｜项目整体状态见 [`doc/STATUS.md`](STATUS.md)
+> 最后更新：**2026-10-02**（原 2026-09-25）｜项目整体状态见 [`doc/STATUS.md`](STATUS.md)｜**产品目标见 [`doc/TARGET.md`](TARGET.md)**（唯一事实源，决策 059）
 
 ---
 
@@ -84,7 +84,7 @@ ai-learning-system/                    708 受控文件（工作区 1605 个，�
 
 | 位置 | 内容 | 谁用 |
 |------|------|------|
-| **`knowledge-graph/nodes/*.json`** | 24 节标准 JSON，356 节点 | 导入脚本 → CloudBase |
+| **`knowledge-graph/nodes/*.json`** | 24 节标准 JSON，**本地 359 节点（⚠️ 治理前）**；**线上 `knowledge_nodes` 271 才是真源** → 重新导入会抹掉治理结果，见 `knowledge-graph/README.md` 顶部警告 | 导入脚本 → CloudBase（**导入前必读警告**） |
 | **`output/`** | OCR layout / agent2 抽取 / agent3 质检 / sections 文本 | 构建管线，**前端不读** |
 | **CloudBase `knowledge_nodes`** | 361 条已入库 | `graphService.getAll` |
 
