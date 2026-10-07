@@ -255,6 +255,15 @@ Page({
         questions: qs,
         masteryChange: (report.masteryChange || []).map((m) => ({ ...m, beforePct: Math.round((m.before || 0) * 100), afterPct: Math.round((m.after || 0) * 100) })),
         pendingNodes: report.pendingNodes || [],
+        // 同一处丢过几次（跨题对齐）：后端已算好 {nodeId,name,missCount,attempts}，直接用
+        repeatMisses: report.repeatMisses || [],
+        // 单元 A/U 变化（决策 063）：档位直接给，数值补两位小数（λ 是 2~5 量级的小数）
+        unitChanges: (report.unitChanges || []).map((u) => Object.assign({}, u, {
+          aBeforeText: u.aBefore != null ? Number(u.aBefore).toFixed(2) : '—',
+          aAfterText: u.aAfter != null ? Number(u.aAfter).toFixed(2) : '—',
+          uBeforeText: u.uBefore != null ? Number(u.uBefore).toFixed(2) : '—',
+          uAfterText: u.uAfter != null ? Number(u.uAfter).toFixed(2) : '—',
+        })),
       },
       scoreMain: correct + (qs.length ? ' / ' + qs.length : ''),
       scoreSub: qs.length ? ('共 ' + qs.length + ' 道' + (halfN ? ' · 半对 ' + halfN + ' 道' : '')) : '',

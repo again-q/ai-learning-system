@@ -70,6 +70,11 @@ Page({
     wx.navigateTo({ url: '/packageDiagnose/pages/report/report' });
   },
 
+  goZhixue() {
+    if (!this.data.isLoggedIn) { this.goLogin(); return; }
+    wx.navigateTo({ url: '/packageSync/pages/zhixue/zhixue' });
+  },
+
   goAchievement() {
     if (!this.data.isLoggedIn) { this.goLogin(); return; }
     wx.showToast({ title: '开发中', icon: 'none' });

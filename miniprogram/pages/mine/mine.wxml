@@ -57,6 +57,11 @@
       <text class="menu-text">学习报告</text>
       <text class="menu-arrow">▸</text>
     </view>
+    <view class="menu-item {{isLoggedIn ? '' : 'dim'}}" bindtap="goZhixue">
+      <image class="menu-icon" src="/images/baogao.png"></image>
+      <text class="menu-text">智学网同步</text>
+      <text class="menu-arrow">▸</text>
+    </view>
     <view class="menu-item {{isLoggedIn ? '' : 'dim'}}" bindtap="goAchievement">
       <image class="menu-icon" src="/images/chengjiu.png"></image>
       <text class="menu-text">成就墙</text>

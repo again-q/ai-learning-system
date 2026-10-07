@@ -148,6 +148,31 @@
       </view>
     </view>
 
+    <!-- 同一处丢过几次（跨题对齐，TARGET §3.3）：同一环节反复出问题，替他做跨题对齐 -->
+    <view class="more-title" wx:if="{{report.repeatMisses.length}}">同一处丢过几次</view>
+    <view class="qlist" wx:if="{{report.repeatMisses.length}}">
+      <view class="qitem" wx:for="{{report.repeatMisses}}" wx:key="nodeId" wx:for-item="rm">
+        <text class="qitem-status bad">×{{rm.missCount}}</text>
+        <view class="qitem-body">
+          <text class="qitem-text">{{rm.name}}</text>
+          <text class="qitem-pattern">共考 {{rm.attempts}} 次，这里丢了 {{rm.missCount}} 次</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 单元 A/U 变化（决策 063）：这次做题后，各单元「实际发挥 A / 能力前沿 U」的变化 -->
+    <view class="more-title" wx:if="{{report.unitChanges.length}}">单元变化</view>
+    <view class="qlist" wx:if="{{report.unitChanges.length}}">
+      <view class="qitem" wx:for="{{report.unitChanges}}" wx:key="unitName" wx:for-item="uc">
+        <text class="qitem-status ok">↗</text>
+        <view class="qitem-body">
+          <text class="qitem-text">{{uc.unitName}}</text>
+          <text class="qitem-pattern">实际发挥 {{uc.aLevelBefore}} → {{uc.aLevelAfter}}（{{uc.aBeforeText}} → {{uc.aAfterText}}）</text>
+          <text class="qitem-pattern">能力前沿 {{uc.uLevelBefore}} → {{uc.uLevelAfter}}（{{uc.uBeforeText}} → {{uc.uAfterText}}）</text>
+        </view>
+      </view>
+    </view>
+
     <!-- 题型异议弹层 -->
     <view class="adv-mask" wx:if="{{disputeVisible}}" bindtap="closeDispute">
       <view class="adv-card" catchtap="noop">

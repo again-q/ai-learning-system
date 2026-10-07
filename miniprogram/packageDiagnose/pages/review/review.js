@@ -195,23 +195,38 @@ Page({
     // 逐题判定（judgeOne judge），并发 2
     const queue = pending.slice();
     let done = 0, failed = 0;
+    // 2026-10-06：诊断引擎不可用时**立刻停手** —— 不要拿剩下几十道题去撞同一个 503
+    let serviceDown = null;
     const worker = async () => {
       while (queue.length > 0) {
+        if (serviceDown) return;                 // 另一路已发现服务不可用 → 不再取题
         const item = queue.shift();
         const t0 = Date.now();
         try {
-          await wx.cloud.callFunction({
+          const res = await wx.cloud.callFunction({
             name: 'graphEngine',   // D5 切换（2026-09-25）：判定域改走新引擎；其余 judgeOne action 不变
             data: { action: 'judgeQuestion', questionId: item.questionId },
             timeout: 120000,
           });
+          // ⚠️ 2026-10-06 补：callFunction **不会**因返回体里的非 0 code 而 reject，
+          //    必须自己检查 —— 否则「判定失败 / 服务不可用」会被静默当成成功。
+          //    （本文件 53/127/162/239/293 行都是这个写法，此前唯独这里漏了。）
+          const r = res && res.result;
+          if (!r || r.code !== 0) {
+            const err = new Error((r && r.message) || '判定失败');
+            err.code = (r && r.code) || -1;
+            throw err;
+          }
           log.append('judge_done', { questionId: item.questionId, durationMs: Date.now() - t0 });
         } catch (e) {
           failed++;
-          console.error('[review] judgeOne failed:', item.questionId, e);
+          // 服务不可用：单独标记（后端已把本批标成 serviceHold，且 status 保持 pending 可重跑）
+          if (e && e.code === 503) serviceDown = e.message || '诊断引擎暂不可用';
+          console.error('[review] judgeQuestion failed:', item.questionId, e);
           log.append('judge_fail', {
             questionId: item.questionId,
             durationMs: Date.now() - t0,
+            code: (e && e.code) || null,
             error: e.message || String(e),
           });
         }
@@ -220,7 +235,18 @@ Page({
       }
     };
     Promise.all([worker(), worker()]).then(() => {
-      log.append('analyze_done', { total: pending.length, failed });
+      log.append('analyze_done', { total: pending.length, failed, serviceDown: !!serviceDown });
+      // 服务不可用：**不进完成态**，明确告诉学生「已缓存、恢复后可重来」
+      if (serviceDown) {
+        this.setData({ analyzing: false });
+        wx.showModal({
+          title: '诊断引擎暂不可用',
+          content: serviceDown + '\n\n本批题目已缓存，服务恢复后重新提交即可继续。',
+          showCancel: false,
+          confirmText: '知道了',
+        });
+        return;
+      }
       if (failed > 0) {
         wx.showToast({ title: failed + ' 题分析失败', icon: 'none' });
       }

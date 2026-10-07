@@ -29,6 +29,13 @@
         "pages/method-list/method-list",
         "pages/admin/knowledge-admin/knowledge-admin"
       ]
+    },
+    {
+      "root": "packageSync",
+      "name": "sync",
+      "pages": [
+        "pages/zhixue/zhixue"
+      ]
     }
   ],
   "preloadRule": {
