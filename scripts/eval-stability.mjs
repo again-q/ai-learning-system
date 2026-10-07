@@ -27,26 +27,32 @@ const VARIANT = arg('variant', 'old');   // old=线上原版一口气 | split=D6
 const D6 = await import(new URL('./d6-prompts.mjs', import.meta.url).href);
 // 线上会把【知识点节点清单】注入 prompt（judgeAI.js: nodeList = kg.buildNodeNames()）；
 // 本 harness 之前漏了这一步 → name 一致率基线失真（2026-09-25 修）。清单取自云端 knowledge_nodes 导出。
-const NODE_LIST = (() => {
-  const p = path.join(ROOT, 'output/golden/nodes-dump.json');
-  if (!fs.existsSync(p)) { console.warn('⚠️ 缺 nodes-dump.json → 本次不注入清单（与线上不一致）'); return ''; }
-  const j = JSON.parse(fs.readFileSync(p, 'utf8'));
-  return '【知识点节点清单】' + (j.names || []).join('、');
+// 2026-09-26（决策 053/054）：线上清单已改「两段式」——【知识本体清单】记 K /【方法清单】记 A。
+// 旧 nodes-dump.json 只有扁平 names（无 parentId/partition），复现不出线上 pickLeafNodes 的过滤
+//（本体只给叶子：方法类 + 父/聚合节点都不进）→ 改用 output/golden/nodes-full.json（全量快照，
+// 由 scripts/dump-nodes.mjs 生成），且清单文本直接调用 cloudfunctions 里的 buildNodeListText
+// 生成 → 与线上**逐字一致**，两边永不再漂移。
+const NODES_FULL = (() => {
+  const p = path.join(ROOT, 'output/golden/nodes-full.json');
+  if (!fs.existsSync(p)) { console.warn('⚠️ 缺 nodes-full.json（先跑 node scripts/dump-nodes.mjs）→ 本次不注入清单（与线上不一致）'); return []; }
+  return JSON.parse(fs.readFileSync(p, 'utf8')).items || [];
 })();
-const NODE_NAMES = (() => { const p = path.join(ROOT, 'output/golden/nodes-dump.json'); return fs.existsSync(p) ? (JSON.parse(fs.readFileSync(p, 'utf8')).names || []) : []; })();
+const KMOD = require(path.join(ROOT, 'cloudfunctions/graphEngine/src/lib/knowledgeMatch.js'));
+const NODE_LIST = NODES_FULL.length ? KMOD.buildNodeListText(NODES_FULL) : '';
+const NODE_NAMES = KMOD.pickLeafNodes(NODES_FULL).map((n) => n.name).filter(Boolean);
+const NODE_METHODS = NODES_FULL.filter((n) => String(n.partition || '') === 'method').map((n) => n.name).filter(Boolean);
+const ALL_NAMES = NODE_NAMES.concat(NODE_METHODS);
 // 编号清单：让模型回编号，名字由代码回填（2026-09-25 实验：消灭「近义词漂移」）
-const NUMBERED = '【知识点节点清单（编号）】' + NODE_NAMES.map((n, i) => (i + 1) + '.' + n).join('、');
-const IDS_RULE = '\n\n【本次额外要求】除原有字段外，必须再输出两个数组：knowledgeNodeIds、knowledgeUsageIds（与 knowledgeUsage 一一对应）。它们只能取上面【知识点节点清单（编号）】里的编号（整数）。knowledgeNodeName 与 knowledgeUsage[].name 必须写对应编号的规范名，不得改写、不得造近义词。';
-function pickName(i) { const n = Number(i); return (Number.isInteger(n) && n >= 1 && n <= NODE_NAMES.length) ? NODE_NAMES[n - 1] : null; }
+const NUMBERED = '【知识本体清单（编号）】' + NODE_NAMES.map((n, i) => (i + 1) + '.' + n).join('、')
+  + '\n\n【方法清单（编号，记 A）】' + NODE_METHODS.map((n, i) => (NODE_NAMES.length + i + 1) + '.' + n).join('、');
+const IDS_RULE = '\n\n【本次额外要求】除原有字段外，必须再输出两个数组：knowledgeNodeIds、knowledgeUsageIds（与 knowledgeUsage 一一对应）。它们只能取上面【知识本体清单（编号）】/【方法清单（编号）】里的编号（整数）。knowledgeUsage[].name 必须写对应编号的规范名，不得改写、不得造近义词。';
+function pickName(i) { const n = Number(i); return (Number.isInteger(n) && n >= 1 && n <= ALL_NAMES.length) ? ALL_NAMES[n - 1] : null; }
 function normalizeIds(raw) {
-  const ids = Array.isArray(raw.knowledgeNodeIds) ? raw.knowledgeNodeIds : [];
-  const first = pickName(ids[0]);
-  if (first) raw.knowledgeNodeName = first;
   const kuIds = Array.isArray(raw.knowledgeUsageIds) ? raw.knowledgeUsageIds : [];
   const ku = Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [];
   raw.knowledgeUsage = ku.map((u, i) => Object.assign({}, u, { name: pickName(kuIds[i]) || u.name }));
-  raw._idsGiven = ids.length;
-  raw._idsValid = ids.filter((x) => pickName(x)).length;
+  raw._idsGiven = kuIds.length;
+  raw._idsValid = kuIds.filter((x) => pickName(x)).length;
   return raw;
 }
 
@@ -139,7 +145,11 @@ async function judgeSplit(questionText, traceText) {
 
 // ---------- 指标 ----------
 const statusOf = (p) => (Number(p) === 1 ? '对' : (Number(p) > 0 ? '半对' : '错'));
-const knOf = (raw) => String(raw.knowledgeNodeName || '').trim();
+// 决策 053：raw 里已无「主知识点」→ 知识点一致率改看 knowledgeUsage[0].name（旧 raw 仍兼容旧字段）
+const knOf = (raw) => {
+  const u = Array.isArray(raw.knowledgeUsage) ? raw.knowledgeUsage : [];
+  return String(raw.knowledgeNodeName || (u[0] && u[0].name) || '').trim();
+};
 const patOf = (raw) => String((raw.pattern && raw.pattern.pattern) || '').trim();
 function same(arr) { return arr.every((x) => JSON.stringify(x) === JSON.stringify(arr[0])); }
 function median(a) { const s = a.slice().sort((x, y) => x - y); const n = s.length; if (!n) return null; return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2; }
@@ -217,7 +227,7 @@ function spread(a) { const v = a.map(Number).filter((x) => Number.isFinite(x)); 
   const rate = (k) => valid.length ? valid.filter((r) => r[k]).length / valid.length : null;
   const rep = {
     meta: { label: LABEL, ts: new Date().toISOString(), model: cfg.model, rounds: ROUNDS, cases: rows.length,
-      note: NODE_LIST ? '已按线上注入【知识点节点清单】；本地不接 RAG 历史与裁剪图精读' : '⚠️ 未注入节点清单（与线上不一致）',
+      note: NODE_LIST ? '已按线上注入【知识本体清单】+【方法清单】（两段式，决策 054；本体 ' + NODE_NAMES.length + ' 项 / 方法 ' + NODE_METHODS.length + ' 项）；本地不接 RAG 历史与裁剪图精读' : '⚠️ 未注入节点清单（与线上不一致）',
       tokens: { calls: USAGE.length, in: USAGE.reduce((s, u) => s + u.in, 0), out: USAGE.reduce((s, u) => s + u.out, 0) } },
     summary: {
       levelRate: rate('levelSame'), statusRate: rate('statusSame'), errorTypeRate: rate('errorTypeSame'),

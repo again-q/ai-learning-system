@@ -1,6 +1,6 @@
 const fs = require('fs');
 const url = 'https://dashscope.aliyuncs.com/compatible-mode/v1';
-const key = '***REMOVED***';
+const key = process.env.QWEN_API_KEY;
 const imgPath = '/Users/apple/Desktop/ai-learning-system/.reasonix/attachments/clipboard-20260810-154807.452013-000001.jpg';
 const buf = fs.readFileSync(imgPath);
 console.log('图片大小:', (buf.length/1024).toFixed(1), 'KB');
