@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "scan-secrets": "node scripts/scan-secrets.mjs",
+    "scan-secrets:history": "node scripts/scan-secrets.mjs --history"
+  },
   "dependencies": {
     "@rojer/katex-mini": "^1.3.4",
     "pdf-parse": "^2.4.5",

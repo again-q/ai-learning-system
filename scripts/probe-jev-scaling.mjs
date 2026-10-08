@@ -15,7 +15,11 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const tcb = path.join(ROOT, 'node_modules/.bin/tcb');
 const ENV = process.env.TCB_ENV || 'cloud1-d8g0ty39wd73f430a';
-const KEY = process.env.JEV_KEY || '***REMOVED***';
+const KEY = process.env.JEV_KEY;
+if (!KEY) {
+  console.error('[probe-jev-scaling] 缺少 JEV_KEY 环境变量——密钥禁止硬编码入库，请放入本地 .env（已被 .gitignore 忽略）');
+  process.exit(1);
+}
 const URL = 'https://ai-gateway.edgeone.link/v1/systemone';
 
 function unwrap(v) {
