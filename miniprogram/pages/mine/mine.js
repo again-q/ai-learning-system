@@ -72,7 +72,12 @@ Page({
 
   goZhixue() {
     if (!this.data.isLoggedIn) { this.goLogin(); return; }
-    wx.navigateTo({ url: '/packageSync/pages/zhixue/zhixue' });
+    // 智学网页面（packageSync 分包）按决策 042/060 不进 public 仓库：
+    // 本机有该目录时正常跳转；别处 clone 的仓库里没有这个分包，跳转失败时给提示，避免白屏。
+    wx.navigateTo({
+      url: '/packageSync/pages/zhixue/zhixue',
+      fail: () => wx.showToast({ title: '该功能未随本版本发布', icon: 'none' }),
+    });
   },
 
   goAchievement() {

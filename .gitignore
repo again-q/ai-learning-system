@@ -27,12 +27,13 @@ doc/.gate/
 # cursor.md 仅本地协作,不进仓库
 cursor.md
 
-# 第三方平台（智学网）自动化接入：含接口逆向/登录加密细节，仅本地自用，禁止入库/推送（决策 042）
+# 第三方平台（智学网）自动化接入：含接口逆向/登录加密细节，仅本地自用，禁止入库/推送（决策 042 / 060）
 doc/standards/智学网接入.md
 cloudfunctions/zhixue*/
 scripts/zhixue/
 design-preview/
 miniprogram/packageSync/
+output/zhixue-h5/
 
 # babel 辅助函数编译产物（工具自动生成）
 @babel/runtime/
@@ -55,3 +56,6 @@ output/models/
 output/share-qr.png
 output/share-qr.sh
 output/pairlet-share-qr.sh
+
+# 线上状态探针产物：含线上云数据库真实记录（openid/nickName＝学生身份），禁止入库/推送（2026-10-08 密钥泄漏排查）
+output/live-state/
