@@ -47,6 +47,11 @@ jobs:
         run: |
           echo "module.exports = { buildVersion: '0.0.${{ github.run_number }}' };" > miniprogram/version.js
 
+      # 智学网分包（packageSync）在 .gitignore 内、仓库里没有 → app.json 里的声明必须随之增删。
+      # 不跑这步：CI 上 app.json 指向不存在的目录 → 微信报 code 10009 拒绝上传（见开发经验 §6.27）。
+      - name: 同步分包声明（按目录实际情况）
+        run: node scripts/sync-subpackage.mjs
+
       # ① 主路径：上传代码包 → 微信后台生成新的「开发版」
       - name: 上传小程序代码（生成开发版）
         working-directory: .github/ci
