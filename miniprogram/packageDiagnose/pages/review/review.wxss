@@ -224,6 +224,13 @@
   white-space: pre-wrap;
   word-break: break-all;
 }
+/* 智学网 plan b：答题卡裁图（无转录文本时用它看题与过程） */
+.q-img {
+  width: 100%;
+  margin-top: 8rpx;
+  border-radius: 12rpx;
+  background: #f2f2f7;
+}
 .trace {
   margin-top: 16rpx;
   background: #f8f8fa;

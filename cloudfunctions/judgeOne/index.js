@@ -454,6 +454,8 @@ exports.main = async (event) => {
       const qs = await db.collection('questions').where({ batchId, userId: openid }).limit(30).get();
       return success(qs.data.map((q) => ({
         questionId: q._id, questionText: q.questionText || '', studentAnswer: q.studentAnswer || '',
+        // 智学网 plan b：官方题号 + 答题卡裁图 —— 这类题没有转录文本，复核页靠图看题
+        questionNo: q.questionNo || null, cropFileID: q.cropFileID || null,
         traceReport: q.traceReport || '', status: q.status || 'pending',
         reviewed: !!q.reviewed,
         transcriptionReviewed: !!q.transcriptionReviewed,
@@ -465,6 +467,8 @@ exports.main = async (event) => {
         errorAttribution: q.errorAttribution || null,
         knowledgeNodeName: q.knowledgeNodeName || '',
         knowledgeUsage: Array.isArray(q.knowledgeUsage) ? q.knowledgeUsage : [],
+        // 智学网 plan b：官方无作答图/文字的题在导入时就标了跳过原因 → 复核页据此不送判定
+        diagnosisSkipped: q.diagnosisSkipped || null,
       })));
     }
     if (action === 'updateTranscription') {

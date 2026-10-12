@@ -7,6 +7,11 @@ async function assemble(batchId, userId) {
   const qs = await db.collection('questions')
     .where({ batchId, userId }).limit(100).get();
   const reviewed = qs.data.filter((q) => q.reviewed && q.processScore != null);
+  // 进报告的题 = AI 判定过的 ∪ 带官方三态的（智学网 plan b）。
+  // 为什么不能只认 reviewed：plan b 的对题只做官方记账、过程诊断另行触发；
+  // 若 AI 诊断还没跑，reviewed=false 会让报告「questions 为空」→ 前端显示「对 0 / 总 0」。
+  const rows = qs.data.filter((q) =>
+    (q.reviewed && q.processScore != null) || (q.officialStatus && q.officialStatus !== '未判'));
 
   // 官方口径优先（智学网 plan b 批次带 officialTally）：plan b 只导入未满分的题，
   // 若拿题目行数当分母，会得出「5 道题对 0 道」这种错话；官方数据在手就以官方为准。
@@ -48,8 +53,8 @@ async function assemble(batchId, userId) {
     else trend = 'flat';
   }
 
-  // 所有已判定题（报告呈现全部题目情况；错题用于薄弱点分析）
-  const allQuestions = reviewed.map((q) => ({
+  // 所有进报告的题（含官方三态未做 AI 诊断的）；错题用于薄弱点分析
+  const allQuestions = rows.map((q) => ({
     questionId: q._id,
     questionText: q.questionText || '',
     traceReport: (q.traceReport || '').slice(0, 2000),
@@ -74,7 +79,8 @@ async function assemble(batchId, userId) {
     officialClassScoreRate: q.officialClassScoreRate != null ? q.officialClassScoreRate : null,
     officialKnowledge: Array.isArray(q.officialKnowledge) ? q.officialKnowledge : [],
   }));
-  const wrongQuestions = allQuestions.filter((q) => q.processScore < 1);
+  // 三态口径（决策 045）：半对/漏判都不算对。按 status 判定，兼容「只有官方三态、未跑 AI」的题。
+  const wrongQuestions = allQuestions.filter((q) => q.status !== '对');
 
   return {
     stats: { totalQuestions: total, correctCount: correct, halfCount: half, correctRate: rate, trend, lastCorrectRate: lastRate, scoreSource: officialTotal > 0 ? 'official' : 'ai' },

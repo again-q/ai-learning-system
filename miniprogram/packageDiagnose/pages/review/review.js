@@ -51,7 +51,12 @@ Page({
     }).then((res) => {
       const r = res.result;
       if (r.code !== 0) throw new Error(r.message);
-      const items = (r.data || []).map((q) => ({
+      const rows = r.data || [];
+      // 智学网 plan b：无作答材料的题导入时已标 diagnosisSkipped —— 不进复核列表，
+      // 否则会拿没有题干/没有图的题去撞判定（实测会编出「整题空白未下笔」或直接失败）。
+      const skipped = rows.filter((q) => q.diagnosisSkipped);
+      if (skipped.length) log.append('review_skipped_no_material', { count: skipped.length });
+      const items = rows.filter((q) => !q.diagnosisSkipped).map((q) => ({
         ...q,
         traceText: q.traceReport || '',
         traceOpen: false,
