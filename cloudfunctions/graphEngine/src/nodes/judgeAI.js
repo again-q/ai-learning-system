@@ -114,7 +114,17 @@ function createJudgeAINode({ cloud, postJSON, config, kg, logger } = {}) {
           const m = d.choices && d.choices[0] && d.choices[0].message;
           return { text: (m && m.content) || '' };
         };
-        orchestrator = await orchestratorLib.analyze({ call, question, logger });
+        // ⚠️ 关键（2026-10-17 线上实测踩到）：state.question 是**判定前**读到的旧数据，
+        //    智学网链路的 traceReport 恒为空；过程文本其实就在【本次判定刚产出的 raw.segments[].evidence】里。
+        //    不合并进去 → 编排拿到空过程 → 一律报 clean（实测 verdict='clean'、transcriptLength=0）。
+        const qForOrch = Object.assign({}, question, {
+          traceReport: question.traceReport || '',
+          segments: (Array.isArray(raw.segments) && raw.segments.length)
+            ? raw.segments
+            : (question.segments || []),
+          correctAnswer: raw.correctAnswer || question.correctAnswer || '',
+        });
+        orchestrator = await orchestratorLib.analyze({ call, question: qForOrch, logger });
         if (orchestrator) {
           // 编排结果挂到 raw，供 N3 之后的展示层/日志使用；**不覆盖** N2 的判定字段
           raw.orchestrator = orchestrator;

@@ -229,35 +229,125 @@ Page({
     this._progressTimer = setInterval(tick, 2500);
   },
 
-  // ============ 渲染 ============
+  // ============ 渲染（2026-10-17 重组：四段结构）============
   applyReport(report, extra) {
-    // 三态：对（P=1）/ 半对（写了过程但不完整）/ 错（P=0）
-    // status 缺失一律显示「—」并且不计入「对」——旧逻辑 `status !== '错'` 会把漏判的题显示成 ✓
     const DOT = { 对: { t: '✓', c: 'ok' }, 半对: { t: '△', c: 'mid' }, 错: { t: '✗', c: 'bad' }, 待判: { t: '–', c: 'na' } };
-    const qs = (report.questions || []).map((q, i) => {
+    const TYPE_WORD = { 选择: '选择', 填空: '填空', 解答: '解答题', 其他: '其他', 未知: '其他' };
+    const md = (t) => { try { return renderMathText(unescapeUnderscore(String(t || ''))); } catch (e) { return []; } };
+    const plain = (t) => unescapeUnderscore(String(t || '')).replace(/\$[^$]*\$/g, '').replace(/\s+/g, ' ').trim();
+
+    const rawQs = report.questions || [];
+    // ---- 逐题：把「你写的 / 标准做法 / 你停下的那一步」整理成可直接渲染的结构 ----
+    const questions = rawQs.map((q, i) => {
       const st = DOT[q.status] ? q.status : '待判';
+      const segs = Array.isArray(q.segments) ? q.segments : [];
+      const broken = segs.filter((s) => s.status === '断' || s.status === '空白');
+      const ref = Array.isArray(q.referenceProcess) ? q.referenceProcess : [];
+      const refSteps = ref.map((s, k) => ({
+        idx: k + 1,
+        title: plain(s && s.step) || ('第 ' + (k + 1) + ' 步'),
+        nodes: md(s && s.content),
+      })).filter((s) => s.nodes && s.nodes.length);
+      const full = Number(q.officialStandardScore || 0);
+      const got = Number(q.officialScore || 0);
+      const rate = q.officialClassScoreRate;
       return {
-        ...q,
+        questionId: q.questionId,
         idx: i,
-        status: st,
-        dot: DOT[st].t,
-        dotCls: DOT[st].c,
-        text: unescapeUnderscore(String(q.questionText || '').replace(/\$[^$]*\$/g, '…')).slice(0, 42),
-        patternMid: midPattern(q.pattern),
-        ok: st === '对',
+        no: String(q.questionNo || i + 1),
+        typeText: TYPE_WORD[q.questionType] || '其他',
+        scoreText: full > 0 ? (got + '/' + full + ' 分') : (DOT[st].t + ' ' + st),
+        scoreCls: got >= full && full > 0 ? 'ok' : (got > 0 ? 'mid' : 'bad'),
+        classRateText: (rate != null && rate > 0) ? ('全班 ' + Math.round(rate * 100) + '% 做对') : '',
+        textNodes: md(q.questionText),
+        hasProcess: segs.length > 0,
+        noProcessText: '这题只填了答案，没写过程 —— 只能对着卷子看。',
+        brokenCount: broken.length,
+        // 只展示第一处断点，其余折叠（认知负荷：一次只展开一个）
+        brokenSegs: broken.slice(0, 1).map((s) => ({
+          cls: s.status === '断' ? 'bad' : 'gray',
+          mark: s.status === '断' ? '✗' : '○',
+          nodes: md(s.evidence || s.step),
+        })),
+        restBroken: broken.slice(1).map((s) => ({
+          cls: s.status === '断' ? 'bad' : 'gray',
+          mark: s.status === '断' ? '✗' : '○',
+          nodes: md(s.evidence || s.step),
+        })),
+        // 对照：与学生断掉那处对位的标准做法（按段序号对位，越界取最后一步）
+        refStep: (broken.length && refSteps.length)
+          ? refSteps[Math.min(segs.indexOf(broken[0]), refSteps.length - 1)]
+          : null,
+        inferenceNodes: md((q.diagnosis && q.diagnosis.inference) || q.errorAttribution || ''),
+        refSteps,
+        moreOpen: false,
+        refOpen: false,
       };
     });
-    const correct = qs.filter((q) => q.ok).length;
-    const halfN = qs.filter((q) => q.status === '半对').length;
+
+    const total = questions.length;
+    const okQs = questions.filter((q) => q.scoreCls === 'ok').length;
+    const halfQs = questions.filter((q) => q.scoreCls === 'mid').length;
+    const withProc = questions.filter((q) => q.hasProcess).length;
+
+    // ---- ① 概览三句（不写空话；每句都指回数据）----
+    const overview = [];
+    overview.push({ k: '得分', nodes: md('这次 ' + total + ' 道题，其中 ' + okQs + ' 道拿满' + (halfQs ? '，' + halfQs + ' 道半对' : '') + '。') });
+    if (withProc) {
+      const worst = questions.filter((q) => q.brokenCount > 0).sort((a, b) => b.brokenCount - a.brokenCount)[0];
+      overview.push({
+        k: '过程',
+        nodes: md('有 ' + withProc + ' 道写了过程' + (worst ? '，其中第 ' + worst.no + ' 题断的地方最多（' + worst.brokenCount + ' 处）。' : '，都走到了最后。')),
+      });
+    }
+    const weakest = questions.slice().sort((a, b) => (a.scoreCls === 'bad' ? -1 : 0) - (b.scoreCls === 'bad' ? -1 : 0))[0];
+    if (weakest && weakest.scoreCls !== 'ok') {
+      overview.push({ k: '先看这题', nodes: md('第 ' + weakest.no + ' 题，' + weakest.scoreText + '。') });
+    }
+
+    // ---- ③ 接下来做什么：从「断掉的那处」生成动作，每条挂依据 ----
+    const actions = [];
+    questions.forEach((q) => {
+      if (!q.hasProcess || !q.brokenCount) return;
+      actions.push({
+        idx: actions.length + 1,
+        textNodes: md('把第 ' + q.no + ' 题断掉的那一步重写一遍。'),
+        why: '这题有 ' + q.brokenCount + ' 处没写完，先补上第一处',
+      });
+    });
+
+    // ---- ④ 你的记录：按知识点统计「考了几次、拿满几次」----
+    // ⚠️ knowledgeNames 在【原始 q】上，加工后的 question 已不带它 → 这里用 rawQs 对齐取
+    const tallyMap = {};
+    questions.forEach((q, i) => {
+      const src = rawQs[i] || {};
+      const names = Array.isArray(src.knowledgeNames) ? src.knowledgeNames : [];
+      names.forEach((n) => {
+        const key = String(n || '').trim();
+        if (!key) return;
+        const e = tallyMap[key] = tallyMap[key] || { name: key, n: 0, win: 0 };
+        e.n += 1;
+        if (q.scoreCls === 'ok') e.win += 1;
+      });
+    });
+    const tally = Object.values(tallyMap).sort((a, b) => b.n - a.n).slice(0, 12);
+
+    const noProcess = questions.filter((q) => !q.hasProcess).map((q) => q.no);
+
     this.setData(Object.assign({
+      activeTab: 's1',
+      scrollTo: '',
+      overview,
+      questions,
+      actions,
+      tally,
+      noProcessNums: noProcess.join('、'),
       report: {
         summary: report.summary || '',
-        questions: qs,
+        questions,
         masteryChange: (report.masteryChange || []).map((m) => ({ ...m, beforePct: Math.round((m.before || 0) * 100), afterPct: Math.round((m.after || 0) * 100) })),
         pendingNodes: report.pendingNodes || [],
-        // 同一处丢过几次（跨题对齐）：后端已算好 {nodeId,name,missCount,attempts}，直接用
         repeatMisses: report.repeatMisses || [],
-        // 单元 A/U 变化（决策 063）：档位直接给，数值补两位小数（λ 是 2~5 量级的小数）
         unitChanges: (report.unitChanges || []).map((u) => Object.assign({}, u, {
           aBeforeText: u.aBefore != null ? Number(u.aBefore).toFixed(2) : '—',
           aAfterText: u.aAfter != null ? Number(u.aAfter).toFixed(2) : '—',
@@ -265,12 +355,34 @@ Page({
           uAfterText: u.uAfter != null ? Number(u.uAfter).toFixed(2) : '—',
         })),
       },
-      scoreMain: correct + (qs.length ? ' / ' + qs.length : ''),
-      scoreSub: qs.length ? ('共 ' + qs.length + ' 道' + (halfN ? ' · 半对 ' + halfN + ' 道' : '')) : '',
+      scoreMain: okQs + (total ? ' / ' + total : ''),
+      scoreSub: total ? ('共 ' + total + ' 道' + (halfQs ? ' · 半对 ' + halfQs + ' 道' : '')) : '',
       loading: false,
       reportProgressVisible: false,
       retryable: false,
     }, extra || {}));
+  },
+
+  // 四段导航：点击滚动到对应段（scroll-view 用 scroll-into-view）
+  switchTab(e) {
+    const tab = e.currentTarget.dataset.tab;
+    if (!tab) return;
+    // 先置空再设值，保证重复点同一段也能触发滚动
+    this.setData({ activeTab: tab, scrollTo: '' }, () => {
+      this.setData({ scrollTo: tab });
+    });
+  },
+
+  // 折叠：其余断处 / 完整参考过程
+  toggleMore(e) {
+    const qid = e.currentTarget.dataset.qid;
+    const questions = this.data.questions.map((q) => (q.questionId === qid ? { ...q, moreOpen: !q.moreOpen } : q));
+    this.setData({ questions });
+  },
+  toggleRef(e) {
+    const qid = e.currentTarget.dataset.qid;
+    const questions = this.data.questions.map((q) => (q.questionId === qid ? { ...q, refOpen: !q.refOpen } : q));
+    this.setData({ questions });
   },
 
   // ============ 逐题内联展开 ============

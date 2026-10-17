@@ -22,7 +22,10 @@ function createPersistQuestionNode({ db, config, logger } = {}) {
     const orch = (state.raw && state.raw.orchestrator) || null;
     if (orch) {
       try {
-        const transcript = String(q.traceReport || '');
+        // 转录文本：优先 traceReport；智学网链路该字段恒空，实际过程在 segments[].evidence 里
+        const segText = (Array.isArray(q.segments) ? q.segments : [])
+          .map((s) => (s && (s.evidence || s.step)) || '').filter(Boolean).join('\n');
+        const transcript = String(q.traceReport || '') || segText;
         // 转录残缺检测：以省略号结尾 / 极短 / 空 —— 题19 曾因截断导致测不出真错误
         const truncated = /……\s*$|\.\.\.\s*$/.test(transcript) || transcript.trim().length < 20;
         const verdict = (orch.findings && orch.findings.length)

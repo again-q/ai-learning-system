@@ -57,6 +57,10 @@ async function assemble(batchId, userId) {
   const allQuestions = rows.map((q) => ({
     questionId: q._id,
     questionText: q.questionText || '',
+    // 2026-10-17 报告页重组：四段结构需要题号 / 标准做法（原来只在上面的 detail 字段里，没带进报告）
+    questionNo: q.questionNo != null ? String(q.questionNo) : '',
+    referenceProcess: Array.isArray(q.referenceProcess) ? q.referenceProcess : [],
+    diagnosis: q.diagnosis || null,
     traceReport: (q.traceReport || '').slice(0, 2000),
     segments: q.segments || [],
     breakpoint: q.breakpoint || null,

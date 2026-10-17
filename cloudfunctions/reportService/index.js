@@ -711,6 +711,15 @@ exports.main = async (event) => {
         pattern: q.pattern || null,
         knowledgeNames: usageNamesOf(q),        // 决策 053：原 knowledgeNodeName 已取消，落知识点名数组
         knowledgeUsage: q.knowledgeUsage || [],
+        // 2026-10-17 报告页重组：四段结构需要题号 / 断点过程 / 标准做法 / 官方分
+        questionNo: q.questionNo != null ? String(q.questionNo) : '',
+        segments: Array.isArray(q.segments) ? q.segments : [],
+        referenceProcess: Array.isArray(q.referenceProcess) ? q.referenceProcess : [],
+        diagnosis: q.diagnosis || null,
+        errorAttribution: q.errorAttribution || null,
+        officialScore: q.officialScore != null ? q.officialScore : null,
+        officialStandardScore: q.officialStandardScore != null ? q.officialStandardScore : null,
+        officialClassScoreRate: q.officialClassScoreRate != null ? q.officialClassScoreRate : null,
       })),
     };
     const ins = await db.collection('reports').add({
