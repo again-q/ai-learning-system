@@ -233,7 +233,18 @@ Page({
   applyReport(report, extra) {
     const DOT = { 对: { t: '✓', c: 'ok' }, 半对: { t: '△', c: 'mid' }, 错: { t: '✗', c: 'bad' }, 待判: { t: '–', c: 'na' } };
     const TYPE_WORD = { 选择: '选择', 填空: '填空', 解答: '解答题', 其他: '其他', 未知: '其他' };
-    const md = (t) => { try { return renderMathText(unescapeUnderscore(String(t || ''))); } catch (e) { return []; } };
+    // katex-mini 遇到残缺公式（括号未闭合等）不抛错，而是把 "KaTeX parse error: ..." 塞进节点树，
+    // 直接渲染会出现满屏红字（2026-10-18 第4题实测）。这里统一兜底：一旦出现该字样，
+    // 就把公式还原成纯文本（去掉 $ 定界符），宁可难看也不要把报错糊到学生脸上。
+    const md = (t) => {
+      const raw = unescapeUnderscore(String(t || ''));
+      let nodes;
+      try { nodes = renderMathText(raw); } catch (e) { nodes = null; }
+      const bad = !nodes || /KaTeX parse error/i.test(JSON.stringify(nodes));
+      if (!bad) return nodes;
+      const plainText = raw.replace(/\$\$?/g, '');
+      return [{ type: 'text', text: plainText }];
+    };
     const plain = (t) => unescapeUnderscore(String(t || '')).replace(/\$[^$]*\$/g, '').replace(/\s+/g, ' ').trim();
 
     const rawQs = report.questions || [];
@@ -261,7 +272,12 @@ Page({
         classRateText: (rate != null && rate > 0) ? ('全班 ' + Math.round(rate * 100) + '% 做对') : '',
         textNodes: md(q.questionText),
         hasProcess: segs.length > 0,
-        noProcessText: '这题只填了答案，没写过程 —— 只能对着卷子看。',
+        // 2026-10-18 用户反馈「我自己的答案我也看不到了」：
+        //   报告页原先只认 segments（判定分段），但选择题/填空题没有分段，作答在 traceReport 里。
+        //   官方客观题作答在 studentAnswer。两者都要展示，否则学生看不到自己写了什么。
+        yourWork: plain(q.studentAnswer || '') || plain(q.traceReport || ''),
+        yourWorkNodes: md(q.studentAnswer || q.traceReport || ''),
+        noProcessText: '这题只填了答案，没写过程。',
         brokenCount: broken.length,
         // 只展示第一处断点，其余折叠（认知负荷：一次只展开一个）
         brokenSegs: broken.slice(0, 1).map((s) => ({

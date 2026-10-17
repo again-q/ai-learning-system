@@ -498,3 +498,10 @@
 .rp-honest-p:last-child { margin-bottom: 0; }
 
 .rp-bottom { height: 60rpx; }
+
+/* 2026-10-18：选填题也要显示学生写的答案 */
+.sec-label { font-size: 22rpx; color: #8a8f99; margin: 12rpx 0 6rpx; }
+.rp-yourwork {
+  font-size: 30rpx; color: #1a1a1a; line-height: 1.7;
+  background: #f7f9f8; border-radius: 16rpx; padding: 16rpx 20rpx; margin-bottom: 12rpx;
+}

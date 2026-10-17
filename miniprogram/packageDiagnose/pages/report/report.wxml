@@ -100,11 +100,17 @@
           <rich-text nodes="{{q.textNodes}}"></rich-text>
         </view>
 
-        <!-- 没过程（选填题） -->
-        <view class="rp-empty-line" wx:if="{{!q.hasProcess}}">
-          <text class="rp-empty-mark">○</text>
-          <text class="rp-empty-t">{{q.noProcessText}}</text>
-        </view>
+        <!-- 没过程分段（选填题）：先展示学生写的答案，再说没有过程 -->
+        <block wx:if="{{!q.hasProcess}}">
+          <view class="sec-label" wx:if="{{q.yourWork}}">你写的</view>
+          <view class="rp-yourwork" wx:if="{{q.yourWork}}">
+            <rich-text nodes="{{q.yourWorkNodes}}"></rich-text>
+          </view>
+          <view class="rp-empty-line">
+            <text class="rp-empty-mark">○</text>
+            <text class="rp-empty-t">{{q.noProcessText}}</text>
+          </view>
+        </block>
 
         <!-- 有过程 -->
         <block wx:if="{{q.hasProcess}}">
