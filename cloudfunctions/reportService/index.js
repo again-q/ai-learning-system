@@ -648,7 +648,11 @@ exports.main = async (event) => {
         try {
           const dg = await genV2.diagnosis(q);
           if (dg.comment || dg.inference || dg.hook) {
+            // ⚠️ 2026-10-18 修：原来只写数据库、不回写内存对象 q，
+            //   后面构建报告快照 `questions: qs.map(q => ({ diagnosis: q.diagnosis }))` 读的还是 null，
+            //   于是报告页永远没有分析（questions 表里却有）——用户实测「全对的题没有分析」。
             patch.diagnosis = dg;
+            q.diagnosis = dg;
             detailCount.diff++;
           } else {
             console.warn('[reportService] 诊断为空:', q.questionId);
