@@ -48,9 +48,14 @@ function deriveAll(raw, question, clamped) {
   const hasAnswerText = !!(q.studentAnswer && String(q.studentAnswer).trim());
   const isBlank = (proc.breakpoint && proc.breakpoint.nature === '起步即停') || (!hasAnswerText && segList.length === 0);
 
+  // 2026-10-17 用户拍板：去掉「P>=0.5 就丢弃错因」。
+  //   旧逻辑：过程分过半就把 errorAttribution 置 null —— 对旧目标（找薄弱知识点）成立
+  //   （及格了不必细说），但对决策 059 之后的「解答题过程审阅」是错的：
+  //   审过程恰恰要对**半对的题**也说清哪一步有问题。
+  //   ⚠️ 本改动会打破 D5 对拍基线（有意为之，非回归）。
   const errorAttribution = isBlank
     ? '整题空白未下笔'
-    : ((c.P >= 0.5 || !r.errorAttribution) ? null : String(r.errorAttribution).trim() || null);
+    : (r.errorAttribution ? (String(r.errorAttribution).trim() || null) : null);
 
   const rawET = String(r.errorType || '').trim();
   let errorType = (rawET === '结果错' || rawET === '过程风险') ? rawET

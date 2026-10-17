@@ -1,0 +1,240 @@
+{
+  "meta": {
+    "name": "过程审阅 golden 集",
+    "version": "v1",
+    "createdAt": "2026-10-17",
+    "source": "用户本人真实答卷（2026-09 智学网同步的数学作业）",
+    "purpose": "为「过程转录 + 过程审阅」提供带 ground truth 的验收样本。每一条都写明：学生实际写了什么、系统应该看到什么、系统应该说出什么。",
+    "whyThisExists": "2026-10-17 排查发现：系统把「学生写了 454」判成「整题空白未下笔」、把「(y-x)/xy + (x-y)/xy 算成 1/(xy)」这个错误说成「缺了中间环节」。这两个错误都不是靠看代码能发现的，必须有一份「标准答案」才能验收。",
+    "usage": "任何改动转录层 / 判定层 / 报告文案后，用本集逐条比对。可自动化（脚本比对 JSON 字段），也可人工核（对照 expected 逐句读）。",
+    "groundTruthSource": "用户本人确认（他记得自己考场上怎么错的）+ 答题卡原图肉眼核对 + 老师红笔批改痕迹",
+    "imageRefs": "裁图两处留存：① 云存储 photos/<openid>/zhixue/<examId>/qN.jpg（线上原件）；② 本地 output/golden/_src/zhixue-20260918/qN.jpg（副本，因版权被 .gitignore 排除，不入库）"
+  },
+  "cases": [
+    {
+      "id": "ZX-19-CLOSURE",
+      "priority": "P0",
+      "title": "算错一个加法，因结论恰好是想要的形式而自以为证出",
+      "examId": "6f6797b7-5083-4acc-b5d3-3ce4e93eb22f",
+      "questionNo": "19",
+      "questionType": "解答",
+      "cropPath": "photos/owO3n4hUug1Dx7ePWQvP8ep2nl0o/zhixue/6f6797b7-5083-4acc-b5d3-3ce4e93eb22f/q19.jpg",
+      "cropSize": {
+        "width": 1427,
+        "height": 1079
+      },
+      "official": {
+        "score": 12,
+        "standardScore": 17,
+        "status": "半对",
+        "classScoreRate": 0.512,
+        "teacherMark": "右侧栏最后两行被红笔划掉，旁边打红叉（老师明确指出这两行不成立）"
+      },
+      "questionText": "$($ 本小题 $17$ 分 $)$ 已知 $M$ 是满足下列条件的集合： $\\text{① }0\\text{∈}M$ ， $1\\text{∈}M$ ； $\\text{②}$ 若 $x$ ， $y\\text{∈}M$ ，则 $x-y\\text{∈}M$ ； $\\text{③}$ 若 $x\\text{∈}M$ 且 $x{\\neq }0$ ，则 $\\frac{1}{x}\\text{∈}M$ ． $(1)$ 判断 $-1\\text{∈}M$ 是否正确，并说明理由； $(2)$ 证明： $\\frac{1}{3}\\text{∈}M$ ； $(3)$ 证明：若 $x$ ， $y\\text{∈}M$ ，则 $x+y\\text{∈}M$ 且 $xy\\text{∈}M$ ．",
+      "studentActualWork": {
+        "note": "★ 这是 ground truth：学生本人确认的实际书写内容",
+        "part1": "正确。由②取 x=0,y=1 得 0-1=-1∈M",
+        "part2": "由(1)知 -1∈M；取 x=1,y=-1 得 2∈M；取 x=2,y=-1 得 3∈M；由③得 1/3∈M",
+        "part3_additive": "先证 x+y∈M：由②取 x=0,y=y 得 -y∈M；再取 x=x,y=-y 得 x+y∈M",
+        "part3_multiplicative": [
+          "由③，取 x=1/x, y=1/y",
+          "则有 (x-y)/xy ∈ M",
+          "由(I)，取 x=(y-x)/xy, y=(x-y)/xy",
+          "则有 1/(xy) ∈ M        ← ❌ 这里学生算错了",
+          "再由③，取 x=1/(1/xy)，则有",
+          "xy ∈ M  证毕"
+        ]
+      },
+      "theRealError": {
+        "step": "由(I)，取 x=(y-x)/xy, y=(x-y)/xy → 学生得出 1/(xy) ∈ M",
+        "correctMath": "(y-x)/xy + (x-y)/xy = 0",
+        "studentComputed": "1/(xy)",
+        "whyHeThoughtItWorked": "因为 1/(xy) 取倒数正好得到 xy —— 结论恰好是想要证的形式。所以他没有理由怀疑前面算错了，以为证完了。",
+        "errorNature": "计算错误导致后续推导失效；且因为错误结论『看起来闭合』，学生自己发现不了。",
+        "correctVerdict": "第(3)问乘法封闭性部分不成立。这一步是【结果错】，不是【过程不完整】。"
+      },
+      "expected": {
+        "transcription": {
+          "mustCapture": [
+            "由③，取 x=1/x, y=1/y",
+            "则有 (x-y)/xy ∈ M",
+            "由(I)，取 x=(y-x)/xy, y=(x-y)/xy  ← 两个参数，不是一个分式",
+            "则有 1/(xy) ∈ M",
+            "再由③，取 x=1/(1/xy)，则有",
+            "xy ∈ M 证毕"
+          ],
+          "mustNotContain": [
+            "1/(1/xy) 作为『取 x=』的值（那是最后一步的，不是第④行的）",
+            "2(y-x)/xy（把两个参数误读成一个）"
+          ],
+          "mustMarkUncertain": "该区域字迹潦草（尤其 (y-x)/xy 与 (x-y)/xy 两个分式），应标注不确定"
+        },
+        "judgment": {
+          "processScore": "应显著低于 0.85（现系统给 0.85，接近满分，明显偏高）",
+          "errorType": "结果错（非『过程风险』）",
+          "errorLevel": "skill（计算失误）或 rule（步骤失效），二者皆可接受",
+          "errorAttribution": "应指出：由(I)取 x=(y-x)/xy, y=(x-y)/xy，两项相加应为 0，学生算成了 1/(xy)，故这一步不成立",
+          "mustNotSay": [
+            "缺了中间环节 / 过程不完整 / 只差最后一步",
+            "任何把错误说成『省略步骤』的表述"
+          ]
+        },
+        "reportWording": {
+          "target": "学生读完能自己醒悟『哦，我把 (y-x)/xy + (x-y)/xy 算成 1/(xy) 了』",
+          "sample": "你写：由(I)，取 x=(y-x)/xy，y=(x-y)/xy → 你得出 1/(xy) ∈ M。\n这两项相加其实 = (y-x)/xy + (x-y)/xy = 0，不是 1/(xy)。\n0 推不出 xy，所以这一步断了。（可能是加法算错了 → 后面的倒数倒回 xy，看起来就闭合了）"
+        }
+      },
+      "whyItIsGolden": [
+        "错误真实且典型：算错一个加法，因结论形态正确而自以为证出 —— 这是高分段学生最致命的一类错（自己发现不了）",
+        "有官方分数交叉验证（12/17，扣 5 分）与老师红笔标记，可判断系统结论是否偏离",
+        "转录层与判定层【两层都有明确期望值】，可分别验收",
+        "现系统在两层都错了（转录把两个参数读成一个；判定给 0.85 分并说成『缺中间环节』），是一份『已知会失败』的回归用例"
+      ],
+      "currentSystemBehavior": {
+        "measuredAt": "2026-10-17",
+        "storedTranscription": "由③得 1/x, 1/y ∈ M，由②得 1/x − 1/y = (y−x)/xy ∈ M，再由③，取 x = 1/(1/xy)，则有 xy ∈ M 证毕",
+        "storedSegments": "4 段，第 4 段判『断』",
+        "storedProcessScore": 0.85,
+        "storedErrorLevel": "rule",
+        "storedErrorAttribution": null,
+        "storedDiagnosisComment": "第(1)(2)问推理完整，第(3)问先证加法封闭性这一步也对；但乘法封闭性写到\"由③取x=1/(1/xy)\"就停住了，没走完。",
+        "verdict": "❌ 转录与判定均不正确"
+      }
+    },
+    {
+      "id": "ZX-14-BLANK",
+      "priority": "P0",
+      "title": "学生写了答案，系统判『整题空白未下笔』",
+      "examId": "6f6797b7-5083-4acc-b5d3-3ce4e93eb22f",
+      "questionNo": "14",
+      "questionType": "填空",
+      "cropPath": "photos/owO3n4hUug1Dx7ePWQvP8ep2nl0o/zhixue/6f6797b7-5083-4acc-b5d3-3ce4e93eb22f/q14.jpg",
+      "cropSize": {
+        "width": 1427,
+        "height": 141
+      },
+      "official": {
+        "score": 0,
+        "standardScore": 5,
+        "status": "错",
+        "classScoreRate": 0,
+        "teacherMark": "题号右侧方框内红叉；横线上数字被黑笔划掉"
+      },
+      "questionText": "已知集合 $A=\\{ a_{1},a_{2},a_{3},a_{4},a_{5}\\}$ ，集合 $B=\\{ M,N\\}$ ， $M\\text{⊆}A$ ， $N\\text{⊆}A$ ，且满足 $M\\text{⊆}N$ ，或 $N\\text{⊆}M$ ，则符合条件的集合 $B$ 有__________个．",
+      "studentActualWork": {
+        "note": "★ ground truth：学生在横线上写了 454，且被划掉",
+        "written": "454",
+        "detail": "首位数字写法接近 4 或 9，后两位清晰为 54；整串数字被一条黑色横线划掉",
+        "confirmedByUser": "2026-10-17 用户回忆：『我记得好像是211因为我重复算了，当时计数没记清楚』"
+      },
+      "expected": {
+        "transcription": {
+          "mustCapture": [
+            "横线上写了数字（含被划掉的痕迹）",
+            "划掉这个动作本身"
+          ],
+          "mustNotContain": [
+            "整题空白未下笔"
+          ]
+        },
+        "judgment": {
+          "mustNotSay": [
+            "整题空白未下笔",
+            "没写",
+            "未作答"
+          ],
+          "shouldSay": "填空题，学生填了数字 454（有划掉痕迹），按答案判定",
+          "ifAnalyzed": "若做选项/答案分析，必须指出：454 是【有序对】的计数，题目 B={M,N} 是【集合】（无序且元素互异），应得 211；或至少不能把 454 当作正确答案认可",
+          "hardRule": "❌ 禁止只报一个错误数字当『正确答案』（实测 AI 曾报『答案是 9』，真值 211）"
+        }
+      },
+      "whyItIsGolden": [
+        "『写了却判没写』是最伤信任的一类错误，必须回归验证",
+        "证明了『字段为空』与『学生没作答』是两回事 —— 系统当年混淆了二者",
+        "同时含『答案被划掉』这种细节，可验证转录精度"
+      ],
+      "currentSystemBehavior": {
+        "measuredAt": "2026-10-17",
+        "storedStudentAnswer": null,
+        "storedTraceReport": null,
+        "storedSegments": [],
+        "storedErrorAttribution": "整题空白未下笔",
+        "storedDiagnosisComment": "这道题你没写过程，是直接给出答案的。",
+        "rootCause": "graphEngine/src/lib/normalize.js 的 isBlank 用 `!studentAnswer && segments.length===0` 判定；而智学网链路（zhixueSync/mapOfficial.js）从不写 traceReport/studentAnswer，只挂 cropFileID → 字段必为空 → 必然判空白。且 judgePoints.js 对 blank 走『代码短路、不调模型』。",
+        "verdict": "❌ 判定错误（把『没转录』当成『没作答』）"
+      },
+      "theRealError": {
+        "note": "2026-10-17 用程序穷举核实（非推断）",
+        "correctAnswer": "211",
+        "studentComputed": "454",
+        "enumeration": {
+          "A的元素数": 5,
+          "A的子集数": 32,
+          "有序对(M,N)且M⊆N或N⊆M且含M=N": 454,
+          "无序对含M=N": 243,
+          "无序对且M≠N": 211
+        },
+        "whyWrong": "学生用容斥法数了【有序对】：243+243-32=454。但题目 B={M,N} 是【集合】：集合无序（{M,N} 与 {N,M} 同一个），且元素互异（M≠N，否则应写 {M}）。故要去掉对称重复：(454-32)/2 = 211。",
+        "errorNature": "理解层错误：把『有序对计数』当成『集合计数』，计数对象没搞清（不是算错，是数错了对象）",
+        "errorType": "结果错",
+        "expectedErrorLevel": "concept"
+      }
+    },
+    {
+      "id": "ZX-17-SEGMENTATION",
+      "priority": "P1",
+      "title": "学生写了内容，4 个分段全判『断』",
+      "examId": "6f6797b7-5083-4acc-b5d3-3ce4e93eb22f",
+      "questionNo": "17",
+      "questionType": "解答",
+      "cropPath": "photos/owO3n4hUug1Dx7ePWQvP8ep2nl0o/zhixue/6f6797b7-5083-4acc-b5d3-3ce4e93eb22f/q17.jpg",
+      "cropSize": {
+        "width": 1427,
+        "height": 795
+      },
+      "official": {
+        "score": 6,
+        "standardScore": 15,
+        "status": "半对",
+        "classScoreRate": 0.579
+      },
+      "questionText": "$($ 本小题 $15$ 分 $)$ 已知集合 $A=\\{ x\\text{|}x+\\frac{4}{x}=5\\}$ ， $B=\\{ x\\text{|}(a-1)x^{2}+ax+a-1=0\\}$ ． $(1)$ 若 $B$ 中恰有一个元素，用列举法表示 $a$ 的值构成的集合 $\\text{;}$ $(2)$ 若 $B\\text{⊆}A$ ，求 $a$ 的取值范围．",
+      "studentActualWork": {
+        "note": "★ ground truth：学生第(1)问写了过程且有对有错；第(2)问左右两栏都写了",
+        "part1": "当 a-1=0 时，恰有一个元素，此时 a=1；当 a-1≠0 时，有 Δ=a²-4(a-1)²=0，解得 a=4 或 a=1/3。综上 a 的集合为 {1, 1/3, 4}",
+        "part2": "由题意 x+4/x=5 可变形为 x²-5x+4=0，故 A={1,4}；随后讨论 B=∅、a-1=0、Δ<0、Δ=0、Δ>0 各情形",
+        "physicalLayout": "左栏为原始作答（部分被划掉），右栏为修正后的作答"
+      },
+      "expected": {
+        "judgment": {
+          "mustNotSay": [
+            "4 段全断",
+            "整题都没写对"
+          ],
+          "shouldRecognize": "第(1)问有完整推导（含正确的分类讨论起点），不能整段判『断』",
+          "errorAttribution": "应聚焦单一主因（一次只说一件事），而非把 4 个问题堆在一句话里：现系统写『遗漏a=1时B={0}；误将a=1纳入；单元素验证不完整；双元素未处理』—— 学生看完不知道该改哪个"
+        }
+      },
+      "whyItIsGolden": [
+        "『全判断』会让报告说出与事实相反的话（学生明明写了）",
+        "错因堆 4 件事违反『一次只展开一个主模式』的认知负荷原则",
+        "含『左栏废弃 + 右栏修正』的双栏版式，可验证转录是否处理得了物理布局"
+      ],
+      "currentSystemBehavior": {
+        "measuredAt": "2026-10-17",
+        "storedSegments": "[断][断][断][断] 共 4 段全部判断",
+        "storedProcessScore": 0.3,
+        "storedErrorAttribution": "第(1)问遗漏a=1时B={0}恰有一个元素的情形；第(2)问空集讨论中误将a=1纳入，且单元素集验证不完整，双元素集情形未处理。",
+        "verdict": "⚠️ 分段判定失真（第1段实际有内容却被判断）；错因过于笼统"
+      }
+    }
+  ],
+  "acceptanceCriteria": {
+    "note": "本集用于验收，以下三条为通过标准",
+    "rules": [
+      "【转录层】ZX-19-CLOSURE 的 mustCapture 全部出现、mustNotContain 全部不出现；ZX-14-BLANK 必须捕获『写了数字』而非『空白』",
+      "【判定层】ZX-14-BLANK 不得输出『整题空白未下笔』；ZX-19-CLOSURE 的 errorType 必须是『结果错』且归因指出『(y-x)/xy+(x-y)/xy=0，不是1/(xy)』",
+      "【文案层】ZX-17-SEGMENTATION 的错误归因必须聚焦单一主因，不得一句话堆 4 个问题"
+    ]
+  }
+}
