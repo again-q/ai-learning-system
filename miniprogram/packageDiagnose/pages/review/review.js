@@ -48,7 +48,7 @@ Page({
     wx.cloud.callFunction({
       name: 'judgeOne',
       data: { action: 'listQuestions', batchId: this.data.batchId },
-    }).then((res) => {
+    }).then(async (res) => {
       const r = res.result;
       if (r.code !== 0) throw new Error(r.message);
       const rows = r.data || [];
@@ -56,8 +56,15 @@ Page({
       // 否则会拿没有题干/没有图的题去撞判定（实测会编出「整题空白未下笔」或直接失败）。
       const skipped = rows.filter((q) => q.diagnosisSkipped);
       if (skipped.length) log.append('review_skipped_no_material', { count: skipped.length });
-      const items = rows.filter((q) => !q.diagnosisSkipped).map((q) => ({
+      const keep = rows.filter((q) => !q.diagnosisSkipped);
+
+      // ⚠️ cloud:// 不能直接给 <image src> 用（2026-10-17 实测：复核页裁图一直空白，
+      //    因为 cropFileID 是 cloud:// 协议，小程序 image 组件不认）。必须先换临时 https 链接。
+      const urlMap = await this.resolveCloudUrls(keep.map((q) => q.cropFileID).filter(Boolean));
+
+      const items = keep.map((q) => ({
         ...q,
+        cropImgUrl: (q.cropFileID && urlMap[q.cropFileID]) || '',
         traceText: q.traceReport || '',
         traceOpen: false,
         article: this.renderMd(q.questionText),
@@ -72,6 +79,27 @@ Page({
       this.setData({ loading: false });
       wx.showToast({ title: '加载失败：' + (e.message || '网络错误'), icon: 'none' });
     });
+  },
+
+  /**
+   * cloud:// fileID → 临时 https URL（批量；失败不阻断——没有链接就只是不显示图）
+   * @returns {Promise<Object>} { [fileID]: tempFileURL }
+   */
+  async resolveCloudUrls(fileIds) {
+    const ids = Array.from(new Set((fileIds || []).filter((x) => typeof x === 'string' && x.indexOf('cloud://') === 0)));
+    if (!ids.length) return {};
+    const map = {};
+    for (let i = 0; i < ids.length; i += 50) {
+      try {
+        const res = await wx.cloud.getTempFileURL({ fileList: ids.slice(i, i + 50) });
+        (res.fileList || []).forEach((f) => {
+          if (f && f.fileID && f.tempFileURL) map[f.fileID] = f.tempFileURL;
+        });
+      } catch (e) {
+        console.warn('[review] getTempFileURL failed:', e && e.message);
+      }
+    }
+    return map;
   },
 
   /* ---------- 一次复核 ---------- */
