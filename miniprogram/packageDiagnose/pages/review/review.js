@@ -369,13 +369,6 @@ Page({
     }, 400);
   },
 
-  onToggleTrace(e) {
-    const idx = e.currentTarget.dataset.index;
-    const items = this.data.items.slice();
-    items[idx] = { ...items[idx], traceOpen: !items[idx].traceOpen };
-    this.setData({ items });
-  },
-
   /* ---------- 通用 ---------- */
   onBackTap() {
     if (this.data.analyzing) {

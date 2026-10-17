@@ -24,7 +24,8 @@
         <text class="q-tag {{item.transcriptionReviewed ? 'ok' : ''}}">{{item.transcriptionReviewed ? '已确认' : '待确认'}}</text>
       </view>
       <!-- 题目（2026-10-17：题目与作答分开显示）
-           题干来源：官方（错题才有）> 整页识图（对题靠这个）；都没有才提示看原图 -->
+           题干来源：官方（错题才有）> 整页识图（对题靠这个）
+           复核页只呈现文本——学生核的是"AI 读对了没有"，图片归报告页 -->
       <view class="sec-label" wx:if="{{item.article.length}}">题目</view>
       <rich-text class="q-plain" wx:if="{{item.article.length}}" nodes="{{item.article}}" />
 
@@ -33,23 +34,9 @@
       <text class="q-plain" wx:if="{{item.studentAnswer}}">{{item.studentAnswer}}</text>
       <rich-text class="q-plain" wx:if="{{item.traceArticle.length}}" nodes="{{item.traceArticle}}" />
 
-      <!-- 两者都没有 → 明确告诉学生只能看原图，不要留一片空白 -->
+      <!-- 两者都没有 → 不留空白卡片，明确告诉学生点「修改」补上 -->
       <view class="q-missing" wx:if="{{!item.article.length && !item.traceArticle.length && !item.studentAnswer}}">
-        <text>这题没读到文字，只能看下面的原图核对。</text>
-      </view>
-
-      <!-- 答题卡原图（对照用；src 是 getTempFileURL 换来的 https 链接） -->
-      <view class="sec-label" wx:if="{{item.cropImgUrl}}">原图</view>
-      <image wx:if="{{item.cropImgUrl}}" class="q-img" src="{{item.cropImgUrl}}" mode="widthFix" />
-      <view class="trace" wx:if="{{item.traceText}}">
-        <view class="trace-head">
-          <text class="trace-label">做题过程</text>
-          <text class="trace-toggle" data-index="{{index}}" bindtap="onToggleTrace">{{item.traceOpen ? '收起' : '展开'}}</text>
-        </view>
-        <view class="trace-body" wx:if="{{item.traceOpen}}">
-          <rich-text class="q-plain" wx:if="{{item.traceArticle.length}}" nodes="{{item.traceArticle}}" />
-          <text class="q-plain" wx:else>{{item.traceText}}</text>
-        </view>
+        <text>这题没读到文字。点下面的「修改」把题目和你写的内容补上。</text>
       </view>
       <view class="card-actions">
         <view class="btn ghost" data-index="{{index}}" bindtap="onEditQuestion">✏️ 修改</view>
