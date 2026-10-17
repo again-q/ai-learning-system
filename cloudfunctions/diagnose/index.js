@@ -243,6 +243,15 @@ async function cropAndUpload(bmp, bbox, uid, batchId, photoIdx, qIndex) {
 
 // ============ 主入口：转录 + AI 拆题 + 建 pending 题（判定由 judgeOne 逐题做） ============
 exports.main = async (event) => {
+  // ============ 补读图拆题（2026-10-17 新增，用户拍板方案 C）============
+  // 背景：智学网同步（zhixueSync）负责「拿数据」——建批次、建题、按官方坐标裁图，
+  //   但当初有意跳过了「读图拆题」这一步（见 packageSync/pages/zhixue/zhixue.js
+  //   「不再调 diagnose 拆题（官方逐题已建好题、裁好图）」），于是题目没有题干、没有学生作答文本，
+  //   复核页学生没东西可核。
+  // 本入口让 zhixueSync 把整页图交回来，由【本链路自己的读图能力】补齐——
+  //   读图拆题逻辑复用 VISION_PROMPT + parseStructuredQuestions，不另写一套。
+  // 红线：只写 questionText / traceReport，一个 official* 字段都不碰。
+  if (event && event.action === 'retranscribe') return retranscribe(event);
   try {
     const wxContext = cloud.getWXContext();
     // 身份：小程序调用 OPENID 必有；管理/测试场景（CLI invoke、云函数互调）OPENID 为空，用调用方显式传入的 userId
@@ -419,3 +428,103 @@ exports.main = async (event) => {
     return fail(500, '分析失败，请重试');
   }
 };
+
+// ============ retranscribe：给已有批次补「题干 + 学生作答文本」 ============
+//
+// 调用方：zhixueSync.importDetail（智学网导入结束后）
+// 输入：{ action:'retranscribe', batchId, imageUrls:[签名URL...], userId }
+// 输出：{ code:0, data:{ matched, updated, unmatched:[题号], failed:[{题号,原因}] } }
+//
+// 与主流程的区别：主流程会**新建**批次和题目；这里批次和题目都已存在（官方建的），
+//   所以按【官方题号】把读出来的题对上去，只回填文本。
+async function retranscribe(event) {
+  const wxContext = cloud.getWXContext();
+  const openid = wxContext.OPENID || event.userId || null;
+  if (!openid) return fail(401, '未登录');
+  const batchId = event.batchId;
+  const imageUrls = Array.isArray(event.imageUrls) ? event.imageUrls.filter(Boolean).slice(0, 8) : [];
+  if (!batchId) return fail(400, '缺少批次ID');
+  if (!imageUrls.length) return fail(400, '缺少整页图地址');
+
+  const batchRes = await db.collection('batches').doc(batchId).get().catch(() => null);
+  if (!batchRes || !batchRes.data) return fail(40003, '批次不存在');
+  if (batchRes.data.userId !== openid) return fail(403, '无权操作他人批次');
+
+  const qRes = await db.collection('questions').where({ batchId, userId: openid }).limit(200).get();
+  const questions = qRes.data || [];
+  if (!questions.length) return fail(40003, '该批次没有题目');
+
+  // 题号 → 题目记录（questionNo 是 string，读出来的是 number，统一按字符串比）
+  const byNo = {};
+  questions.forEach((q) => {
+    const no = String(q.questionNo == null ? '' : q.questionNo).trim();
+    if (no) byNo[no] = q;
+  });
+
+  const failed = [];
+  const matched = [];      // 本次读图成功对上的题号
+  const updatedNos = [];
+
+  for (const url of imageUrls) {
+    let items = [];
+    try {
+      const dataUrl = await urlToDataUrl(url);
+      const report = await qwenVisionDataUrl(dataUrl);
+      items = parseStructuredQuestions(report);
+    } catch (e) {
+      console.warn('[diagnose/retranscribe] 读图失败: ' + (e && e.message));
+      failed.push({ url: 'page', reason: (e && e.message) || 'unknown' });
+      continue;
+    }
+    if (!items.length) {
+      // 结构化解析失败时退一步：用拆题模型（aiSplitQuestions 只吃文本，喂原文即可）
+      try {
+        const dataUrl = await urlToDataUrl(url);
+        const raw = await qwenVisionDataUrl(dataUrl);
+        items = await aiSplitQuestions(raw);
+      } catch (e) {
+        failed.push({ url: 'page', reason: '拆题失败:' + ((e && e.message) || '') });
+        continue;
+      }
+    }
+
+    for (const it of items) {
+      const no = String(it.index == null ? '' : it.index).trim();
+      const q = byNo[no];
+      if (!q) { failed.push({ no: no || '?', reason: '官方无此题号，跳过' }); continue; }
+      matched.push(no);
+      const text = String(it.text || '').trim();
+      const trace = String(it.traceReport || '').trim();
+      const patch = {};
+      // 只补空字段：官方题干（错题有）不被识图覆盖；已确认过的转录不覆盖
+      if (text && !(q.questionText || '').trim()) patch.questionText = text.slice(0, 6000);
+      if (trace && !(q.traceReport || '').trim() && !q.transcriptionReviewed) {
+        patch.traceReport = looksLikeFullVisionReport(trace, '') ? '' : trace.slice(0, 4000);
+      }
+      if (!Object.keys(patch).length) continue;
+      try {
+        await db.collection('questions').doc(q._id).update({ data: patch });
+        updatedNos.push(no);
+      } catch (e) {
+        failed.push({ no, reason: '写库失败:' + ((e && e.message) || '') });
+      }
+    }
+  }
+
+  console.log('[diagnose/retranscribe] 批次 ' + batchId + '：对上 ' + matched.length + ' 题，更新 ' + updatedNos.length + ' 题，失败 ' + failed.length);
+  return success({
+    matched: matched.length,
+    updated: updatedNos.length,
+    updatedNos,
+    unmatched: questions.map((q) => String(q.questionNo)).filter((no) => !matched.includes(no)),
+    failed,
+  });
+}
+
+/** 远程图片 → dataURL（读图接口要 base64） */
+async function urlToDataUrl(url) {
+  const resp = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+  if (!resp.ok) throw new Error('下载图片 HTTP ' + resp.status);
+  const buf = Buffer.from(await resp.arrayBuffer());
+  return 'data:image/jpeg;base64,' + buf.toString('base64');
+}
