@@ -158,6 +158,109 @@
             </view>
           </block>
         </block>
+
+        <!-- ===== 「这一问怎么想的」＝ 按小问按需生成（2026-10-18）=====
+             默认全部折叠、不发起任何请求；点了才生成（PRD G1 / N3-改）。 -->
+        <block wx:for="{{q.subQuestions}}" wx:key="subNo" wx:for-item="sub">
+          <view class="subq">
+            <view class="subq-h">
+              <text class="subq-no">{{sub.subNo}}</text>
+              <text class="subq-tag {{sub.wrong ? 'bad' : 'ok'}}">{{sub.wrong ? '要注意' : '✓'}}</text>
+            </view>
+            <view class="rp-yourwork" wx:if="{{q.hasProcess && sub.studentWork}}">
+              <rich-text nodes="{{sub.workNodes || q.yourWorkNodes}}"></rich-text>
+            </view>
+
+            <!-- 入口：默认态 -->
+            <view class="mini-entry" wx:if="{{!sub.panelOpen}}" bindtap="openSubThinking"
+                  data-qid="{{q.questionId}}" data-subno="{{sub.subNo}}">
+              <text class="mini-l">这一问怎么想的</text>
+              <text class="mini-r">按需生成</text>
+              <text class="mini-a">›</text>
+            </view>
+
+            <!-- 面板 -->
+            <view class="think-panel" wx:if="{{sub.panelOpen}}">
+              <view class="think-head">
+                <text class="think-t">这一问是怎么想到的</text>
+                <text class="think-s">{{sub.loading ? 'AI 正在想…' : '一种走法'}}</text>
+              </view>
+
+              <view class="think-loading" wx:if="{{sub.loading}}">
+                <text>AI 正在把这一问从头做一遍，通常 30~60 秒…</text>
+              </view>
+
+              <block wx:elif="{{sub.failed}}">
+                <view class="think-fail">
+                  <text class="think-fail-t">这一问我没能稳稳做出来</text>
+                  <text class="think-fail-s" wx:if="{{sub.verifyNote}}">{{sub.verifyNote}}</text>
+                </view>
+                <view class="mini-entry" bindtap="openSubThinking" data-qid="{{q.questionId}}" data-subno="{{sub.subNo}}">
+                  <text class="mini-l">再试一次</text><text class="mini-a">›</text>
+                </view>
+              </block>
+
+              <block wx:else>
+                <view class="think-note" wx:if="{{sub.verified === 'partial'}}">
+                  <text>{{sub.verifyNote || '这一问证得不够严，补全后结论成立'}}</text>
+                </view>
+
+                <view class="think-goal" wx:if="{{sub.thinking.goal}}">{{sub.thinking.goal}}</view>
+
+                <view class="tstep" wx:for="{{sub.thinking.steps}}" wx:key="n" wx:for-item="st">
+                  <text class="tstep-n">{{st.n}}</text>
+                  <view class="tstep-b">
+                    <view class="trow"><text class="tk">手上</text><text class="tv tv-have">{{st.have}}</text></view>
+                    <view class="trow"><text class="tk">还缺</text><text class="tv tv-lack">{{st.lack}}</text></view>
+                    <view class="trow"><text class="tk">为什么</text><text class="tv tv-why">{{st.why}}</text></view>
+                    <view class="trow"><text class="tk">做法</text><text class="tv tv-do">{{st.do}}</text></view>
+                    <view class="tthink" wx:if="{{st.thinking.cards.length || st.thinking.say}}">
+                      <view class="tcards" wx:if="{{st.thinking.cards.length}}">
+                        <text class="tcard" wx:for="{{st.thinking.cards}}" wx:key="*this" wx:for-item="c">{{c}}</text>
+                      </view>
+                      <text class="tsay" wx:if="{{st.thinking.say}}">{{st.thinking.say}}</text>
+                    </view>
+                  </view>
+                </view>
+
+                <view class="think-end" wx:if="{{sub.thinking.ending}}">{{sub.thinking.ending}}</view>
+
+                <!-- 追问 -->
+                <view class="ask-box">
+                  <view class="ask-row">
+                    <input class="ask-input" value="{{sub.draft}}" placeholder="追问：哪里没看懂，或你觉得哪里不对…"
+                           bindinput="onSubFollowInput" data-qid="{{q.questionId}}" data-subno="{{sub.subNo}}" />
+                    <view class="ask-btn" bindtap="sendSubFollow" data-qid="{{q.questionId}}" data-subno="{{sub.subNo}}">
+                      {{sub.followUpLoading ? '…' : '追问'}}
+                    </view>
+                  </view>
+
+                  <view class="ask-dialog" wx:if="{{sub.followUps.length}}">
+                    <view class="msg {{m.role === 'student' ? 'me' : 'ai'}}" wx:for="{{sub.followUps}}" wx:key="index" wx:for-item="m">
+                      <text class="msg-who">{{m.role === 'student' ? '你' : 'AI'}}</text>
+                      <text class="msg-txt">{{m.text}}</text>
+                    </view>
+                  </view>
+
+                  <!-- 发现原诊断有误 → 更正卡片（只改诊断文案，判定字段只读） -->
+                  <view class="fix-card" wx:if="{{sub.correction}}">
+                    <text class="fix-h">发现原诊断有误，可以更正</text>
+                    <view class="fix-diff">
+                      <text class="fix-old">{{sub.correction.before}}</text>
+                      <text class="fix-new">{{sub.correction.after}}</text>
+                    </view>
+                    <text class="fix-ev">依据：{{sub.correction.evidence}}</text>
+                    <view class="fix-btns">
+                      <view class="fix-ok" bindtap="confirmSubCorrection" data-qid="{{q.questionId}}" data-subno="{{sub.subNo}}">按这次更正</view>
+                      <view class="fix-no" bindtap="dismissSubCorrection" data-qid="{{q.questionId}}" data-subno="{{sub.subNo}}">保持原样</view>
+                    </view>
+                  </view>
+                  <view class="fix-done" wx:if="{{sub.corrected}}">已按你的更正更新 ✓</view>
+                </view>
+              </block>
+            </view>
+          </view>
+        </block>
       </view>
     </view>
 

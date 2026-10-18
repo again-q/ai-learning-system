@@ -505,3 +505,260 @@
   font-size: 30rpx; color: #1a1a1a; line-height: 1.7;
   background: #f7f9f8; border-radius: 16rpx; padding: 16rpx 20rpx; margin-bottom: 12rpx;
 }
+
+/* ============================================================
+   「这一问怎么想的」按需生成（2026-10-18）
+   设计稿：doc/detailed/这一问怎么想的_详细设计.md §6
+   ============================================================ */
+
+/* 小问块 */
+.subq {
+  border-top: 1rpx dashed #eef0f2;
+  padding-top: 18rpx;
+  margin-top: 20rpx;
+}
+.subq:first-child { border-top: none; padding-top: 6rpx; margin-top: 10rpx; }
+.subq-h { display: flex; align-items: center; margin-bottom: 10rpx; }
+.subq-no { font-size: 26rpx; font-weight: 600; color: #1a1a1a; margin-right: 10rpx; }
+.subq-tag {
+  font-size: 20rpx; padding: 2rpx 12rpx; border-radius: 999rpx;
+}
+.subq-tag.ok { background: #eefaf7; color: #0f766e; }
+.subq-tag.bad { background: #fef3f2; color: #b42318; }
+
+/* 入口：默认态，就一行 */
+.mini-entry {
+  margin-top: 12rpx;
+  padding: 16rpx 22rpx;
+  border-radius: 14rpx;
+  border: 1rpx dashed #c7ece5;
+  background: #fafffd;
+  display: flex;
+  align-items: center;
+}
+.mini-entry:active { background: #f2fbf8; }
+.mini-l { font-size: 27rpx; color: #0f766e; font-weight: 600; }
+.mini-r { font-size: 22rpx; color: #98a2b3; margin-left: auto; padding-right: 10rpx; }
+.mini-a { font-size: 28rpx; color: #0f766e; }
+
+/* 面板 */
+.think-panel {
+  margin-top: 14rpx;
+  border: 1rpx solid #c7ece5;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: #fff;
+}
+.think-head {
+  background: #eefaf7;
+  padding: 16rpx 22rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.think-t { font-size: 26rpx; font-weight: 600; color: #0f766e; }
+.think-s { font-size: 21rpx; color: #5b6069; }
+
+.think-loading {
+  padding: 34rpx 22rpx;
+  font-size: 25rpx;
+  color: #8a8f99;
+  text-align: center;
+  line-height: 1.7;
+}
+
+.think-fail { padding: 26rpx 22rpx 10rpx; }
+.think-fail-t { display: block; font-size: 27rpx; color: #b45309; font-weight: 600; margin-bottom: 8rpx; }
+.think-fail-s { display: block; font-size: 24rpx; color: #8a8f99; line-height: 1.65; }
+
+.think-note {
+  margin: 18rpx 20rpx 0;
+  padding: 14rpx 18rpx;
+  background: #fffbf5;
+  border: 1rpx solid #fde3ae;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  color: #b45309;
+  line-height: 1.65;
+}
+
+.think-goal {
+  margin: 18rpx 20rpx 0;
+  padding: 16rpx 18rpx;
+  background: #f7f9f8;
+  border-radius: 12rpx;
+  font-size: 25rpx;
+  color: #475467;
+  line-height: 1.65;
+}
+
+/* 步骤 */
+.tstep {
+  display: flex;
+  padding: 20rpx 20rpx 0;
+}
+.tstep-n {
+  flex: none;
+  width: 36rpx;
+  height: 36rpx;
+  line-height: 36rpx;
+  text-align: center;
+  border-radius: 50%;
+  background: #0f766e;
+  color: #fff;
+  font-size: 20rpx;
+  font-weight: 600;
+  margin-right: 14rpx;
+  margin-top: 4rpx;
+}
+.tstep-b { flex: 1; min-width: 0; }
+.trow { display: flex; margin-bottom: 6rpx; }
+.tk {
+  flex: none;
+  width: 92rpx;
+  font-size: 21rpx;
+  color: #8a8f99;
+  line-height: 1.7;
+  padding-top: 2rpx;
+}
+.tv { flex: 1; font-size: 25rpx; line-height: 1.7; }
+.tv-have { color: #344054; }
+.tv-lack { color: #b45309; }
+.tv-why { color: #1a1a1a; }
+.tv-do {
+  color: #0f766e;
+  background: #f4f9f7;
+  border-radius: 10rpx;
+  padding: 8rpx 14rpx;
+}
+
+/* 数学思维（名字 chip + 一句解释） */
+.tthink {
+  margin-top: 10rpx;
+  padding: 12rpx 16rpx;
+  background: #f4f6ff;
+  border-left: 4rpx solid #6366f1;
+  border-radius: 0 10rpx 10rpx 0;
+}
+.tcards { margin-bottom: 6rpx; }
+.tcard {
+  display: inline-block;
+  background: #6366f1;
+  color: #fff;
+  font-size: 20rpx;
+  font-weight: 600;
+  border-radius: 8rpx;
+  padding: 3rpx 12rpx;
+  margin-right: 8rpx;
+  line-height: 1.6;
+}
+.tsay { font-size: 23rpx; color: #3730a3; line-height: 1.6; }
+
+.think-end {
+  margin: 20rpx 20rpx 0;
+  padding: 16rpx 18rpx;
+  background: #eefaf7;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  color: #475467;
+  line-height: 1.65;
+}
+
+/* 追问 */
+.ask-box {
+  border-top: 1rpx solid #eef0f2;
+  margin-top: 20rpx;
+  padding: 18rpx 20rpx 22rpx;
+}
+.ask-row { display: flex; align-items: center; }
+.ask-input {
+  flex: 1;
+  border: 1rpx solid #e6e8eb;
+  border-radius: 12rpx;
+  padding: 14rpx 18rpx;
+  font-size: 25rpx;
+  min-height: 40rpx;
+}
+.ask-btn {
+  flex: none;
+  margin-left: 12rpx;
+  background: #0f766e;
+  color: #fff;
+  border-radius: 12rpx;
+  padding: 14rpx 26rpx;
+  font-size: 25rpx;
+  font-weight: 600;
+}
+.ask-btn:active { opacity: .85; }
+
+.ask-dialog { margin-top: 18rpx; }
+.msg { margin-bottom: 16rpx; }
+.msg-who { display: block; font-size: 20rpx; color: #98a2b3; margin-bottom: 6rpx; }
+.msg-txt {
+  display: block;
+  font-size: 25rpx;
+  line-height: 1.72;
+  border-radius: 14rpx;
+  padding: 16rpx 18rpx;
+}
+.msg.me .msg-txt { background: #eef2ff; color: #1e293b; margin-left: 40rpx; }
+.msg.ai .msg-txt { background: #f7f9f8; color: #1a1a1a; margin-right: 20rpx; }
+
+/* 更正卡片 */
+.fix-card {
+  margin-top: 14rpx;
+  padding: 20rpx;
+  border: 1rpx solid #fde3ae;
+  background: #fffbf5;
+  border-radius: 14rpx;
+}
+.fix-h { display: block; font-size: 23rpx; font-weight: 600; color: #b45309; margin-bottom: 12rpx; }
+.fix-diff { margin-bottom: 12rpx; }
+.fix-old {
+  display: block;
+  font-size: 24rpx;
+  color: #b42318;
+  background: #fef3f2;
+  border-radius: 10rpx;
+  padding: 10rpx 14rpx;
+  margin-bottom: 8rpx;
+  line-height: 1.6;
+  text-decoration: line-through;
+}
+.fix-new {
+  display: block;
+  font-size: 24rpx;
+  color: #0f766e;
+  background: #eefaf7;
+  border-radius: 10rpx;
+  padding: 10rpx 14rpx;
+  line-height: 1.6;
+  font-weight: 600;
+}
+.fix-ev {
+  display: block;
+  font-size: 22rpx;
+  color: #5b6069;
+  background: #fff;
+  border-radius: 10rpx;
+  padding: 10rpx 14rpx;
+  line-height: 1.6;
+}
+.fix-btns { display: flex; margin-top: 16rpx; }
+.fix-ok, .fix-no {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  border-radius: 12rpx;
+  font-size: 25rpx;
+  font-weight: 600;
+}
+.fix-ok { background: #0f766e; color: #fff; margin-right: 12rpx; }
+.fix-no { background: #fff; color: #5b6069; border: 1rpx solid #e6e8eb; }
+.fix-ok:active, .fix-no:active { opacity: .85; }
+
+.fix-done {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: #0f766e;
+}

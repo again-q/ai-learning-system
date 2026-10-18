@@ -30,6 +30,9 @@ function midPattern(p) {
   return parts[Math.floor((parts.length - 1) / 2)] || parts[0] || '';
 }
 
+// 小问切分（前端精简副本，规则与后端 splitter.js 一致）
+const { splitForDisplay } = require('./subq');
+
 Page({
   data: {
     loading: true,
@@ -248,6 +251,29 @@ Page({
     const plain = (t) => unescapeUnderscore(String(t || '')).replace(/\$[^$]*\$/g, '').replace(/\s+/g, ' ').trim();
 
     const rawQs = report.questions || [];
+
+    // ---- 小问列表（用于「这一问怎么想的」入口）----
+    // 每个小问的初始状态：折叠、未请求、无内容。真正的内容由 openSubThinking 拉取。
+    const buildSubList = (q) => {
+      const base = splitForDisplay(Object.assign({}, q, { yourWork: q.studentAnswer || q.traceReport || '' }));
+      return base.map((s) => ({
+        subNo: s.subNo,
+        studentWork: s.studentWork,
+        wrong: !!s.wrong,
+        panelOpen: false,
+        loading: false,
+        failed: false,
+        verified: '',
+        verifyNote: '',
+        thinking: null,
+        followUps: [],
+        draft: '',
+        followUpLoading: false,
+        correction: null,
+        corrected: false,
+      }));
+    };
+
     // ---- 逐题：把「你写的 / 标准做法 / 你停下的那一步」整理成可直接渲染的结构 ----
     const questions = rawQs.map((q, i) => {
       const st = DOT[q.status] ? q.status : '待判';
@@ -298,6 +324,10 @@ Page({
         refSteps,
         moreOpen: false,
         refOpen: false,
+        // ---- 「这一问怎么想的」（2026-10-18）----
+        // 小问结构：默认全部折叠、不请求。点了才生成（PRD N3-改：所有小问都有入口）
+        rawQuestionText: q.questionText || '',
+        subQuestions: buildSubList(q),
       };
     });
 
@@ -524,6 +554,174 @@ Page({
         this.setData({ advLoading: false, advResult: null, advInsufficient: true, advCount: 0 });
       }
     }).catch(() => this.setData({ advLoading: false, advInsufficient: true, advCount: 0 }));
+  },
+
+  // ============ 「这一问怎么想的」（2026-10-18）============
+  // 默认零调用：只有点了入口才请求（PRD G1）。
+
+  /** 定位并局部更新某个小问 */
+  _patchSub(qid, subNo, patch) {
+    const key = 'report.questions';
+    const questions = (this.data.questions || []).map((q) => {
+      if (q.questionId !== qid) return q;
+      const subs = (q.subQuestions || []).map((s) => (s.subNo === subNo ? Object.assign({}, s, patch) : s));
+      return Object.assign({}, q, { subQuestions: subs });
+    });
+    this.setData({ questions });
+  },
+
+  _findSub(qid, subNo) {
+    const q = (this.data.questions || []).find((x) => x.questionId === qid);
+    return q ? (q.subQuestions || []).find((s) => s.subNo === subNo) : null;
+  },
+
+  /** 点开入口：先读缓存（零成本），没有才生成 */
+  async openSubThinking(e) {
+    const ds = (e.currentTarget && e.currentTarget.dataset) || {};
+    const qid = ds.qid;
+    const subNo = ds.subno;
+    if (!qid || !subNo) return;
+
+    const cur = this._findSub(qid, subNo);
+    if (!cur) return;
+    if (cur.panelOpen) { this._patchSub(qid, subNo, { panelOpen: false }); return; }
+
+    this._patchSub(qid, subNo, { panelOpen: true, loading: true, failed: false });
+
+    try {
+      // ① 读缓存
+      const r1 = await wx.cloud.callFunction({
+        name: 'reportService',
+        data: { action: 'subThinkingGet', questionId: qid, userId: getOpenid() },
+      });
+      const d1 = r1.result;
+      const hit = d1 && d1.code === 0 && d1.data && (d1.data.list || []).find((x) => x.subNo === subNo);
+      if (hit && hit.thinking) {
+        this._patchSub(qid, subNo, {
+          loading: false, failed: false, verified: hit.verified,
+          verifyNote: hit.verifyNote || '', thinking: hit.thinking,
+          followUps: hit.followUps || [],
+        });
+        return;
+      }
+      if (hit && hit.verified === 'fail') {
+        this._patchSub(qid, subNo, {
+          loading: false, failed: true, verifyNote: hit.verifyNote || '这一问我没能稳稳做出来',
+        });
+        return;
+      }
+
+      // ② 生成（可能要几十秒）
+      const r2 = await wx.cloud.callFunction({
+        name: 'reportService',
+        data: { action: 'subThinking', questionId: qid, subNo, userId: getOpenid() },
+        timeout: 90000,
+      });
+      const d2 = r2.result;
+      if (d2 && d2.code === 0 && d2.data && d2.data.thinking) {
+        this._patchSub(qid, subNo, {
+          loading: false, failed: false, verified: d2.data.verified,
+          verifyNote: d2.data.verifyNote || '', thinking: d2.data.thinking,
+        });
+      } else {
+        this._patchSub(qid, subNo, {
+          loading: false, failed: true,
+          verifyNote: (d2 && d2.data && d2.data.verifyNote) || (d2 && d2.message) || '这一问生成失败，请重试',
+        });
+      }
+    } catch (err) {
+      const msg = (err && err.message) || '网络异常';
+      this._patchSub(qid, subNo, {
+        loading: false, failed: true,
+        verifyNote: isTimeoutError(msg) ? '这一问要想久一点，请再试一次' : '生成失败：' + msg,
+      });
+    }
+  },
+
+  /** 追问输入 */
+  onSubFollowInput(e) {
+    const ds = (e.currentTarget && e.currentTarget.dataset) || {};
+    this._patchSub(ds.qid, ds.subno, { draft: e.detail.value });
+  },
+
+  /** 发送追问 */
+  async sendSubFollow(e) {
+    const ds = (e.currentTarget && e.currentTarget.dataset) || {};
+    const qid = ds.qid;
+    const subNo = ds.subno;
+    const cur = this._findSub(qid, subNo);
+    if (!cur || !cur.draft || !cur.draft.trim()) return;
+
+    const text = cur.draft.trim();
+    const followUps = (cur.followUps || []).concat([{ role: 'student', text }]);
+    this._patchSub(qid, subNo, { draft: '', followUps, followUpLoading: true });
+
+    try {
+      const r = await wx.cloud.callFunction({
+        name: 'reportService',
+        data: { action: 'subFollowUp', questionId: qid, subNo, text, userId: getOpenid() },
+        timeout: 60000,
+      });
+      const d = r.result;
+      const latest = this._findSub(qid, subNo) || cur;
+      if (d && d.code === 0 && d.data) {
+        this._patchSub(qid, subNo, {
+          followUpLoading: false,
+          followUps: (latest.followUps || []).concat([{ role: 'ai', text: d.data.reply }]),
+          correction: d.data.correction || null,
+        });
+      } else {
+        this._patchSub(qid, subNo, {
+          followUpLoading: false,
+          followUps: (latest.followUps || []).concat([{ role: 'ai', text: (d && d.message) || '这次没答上来，再问一次试试' }]),
+        });
+      }
+    } catch (err) {
+      const latest = this._findSub(qid, subNo) || cur;
+      this._patchSub(qid, subNo, {
+        followUpLoading: false,
+        followUps: (latest.followUps || []).concat([{ role: 'ai', text: '网络异常，请重试' }]),
+      });
+    }
+  },
+
+  /** 确认更正诊断文案 */
+  async confirmSubCorrection(e) {
+    const ds = (e.currentTarget && e.currentTarget.dataset) || {};
+    const qid = ds.qid;
+    const subNo = ds.subno;
+    const cur = this._findSub(qid, subNo);
+    if (!cur || !cur.correction) return;
+
+    const c = cur.correction;
+    wx.showLoading({ title: '正在更正…' });
+    try {
+      const r = await wx.cloud.callFunction({
+        name: 'reportService',
+        data: {
+          action: 'subCorrectDiag', questionId: qid,
+          field: c.field, newText: c.after, evidence: c.evidence,
+          userId: getOpenid(),
+        },
+      });
+      wx.hideLoading();
+      const d = r.result;
+      if (d && d.code === 0) {
+        this._patchSub(qid, subNo, { correction: null, corrected: true });
+        wx.showToast({ title: '已按你的更正更新', icon: 'success' });
+      } else {
+        wx.showToast({ title: (d && d.message) || '更正失败', icon: 'none' });
+      }
+    } catch (err) {
+      wx.hideLoading();
+      wx.showToast({ title: '网络异常，请重试', icon: 'none' });
+    }
+  },
+
+  /** 放弃更正 */
+  dismissSubCorrection(e) {
+    const ds = (e.currentTarget && e.currentTarget.dataset) || {};
+    this._patchSub(ds.qid, ds.subno, { correction: null });
   },
 
   noop() {},

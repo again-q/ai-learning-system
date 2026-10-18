@@ -302,6 +302,189 @@ function toAttempt(q) {
   return { date, result, attribution, lastStep };
 }
 
+// ============ 「这一问怎么想的」（2026-10-18）============
+// 设计：doc/detailed/这一问怎么想的_详细设计.md
+// 核心原则：
+//   ① 默认零调用（只有学生点了才生成）
+//   ② 判断权在代码（验证是否通过由 lib/subThinking/verifier.js 裁决）
+//   ③ 只改诊断文案，判定字段只读
+
+const subThinkingLib = require('./lib/subThinking');
+const { correctDiagnosis } = require('./lib/subThinking/corrector');
+
+/** 统一的模型调用适配器（供 subThinking 各模块使用） */
+function makeSubCall() {
+  return async ({ system, user, maxTokens }) => {
+    const body = {
+      model: DS_MODEL,
+      messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
+      // ⚠️ 重量档要开思考（决策 061）；实测 thinking=enabled 时 max_tokens 是思考+正文共享预算，
+      //    给少了会出现 content 为空。16000 是实测可用值。
+      thinking: { type: 'enabled' },
+      temperature: 0.2,
+      max_tokens: maxTokens || 16000,
+    };
+    const data = await postJSON(`${DS_BASE_URL}/chat/completions`, body, DS_API_KEY);
+    const msg = (data.choices && data.choices[0] && data.choices[0].message) || {};
+    return { text: msg.content || '' };
+  };
+}
+
+/** 读题目 + 归属校验；返回 { q } 或 { error } */
+async function loadQuestionForUser(questionId, openid) {
+  if (!questionId) return { error: fail(400, '缺少 questionId') };
+  const res = await db.collection('questions').doc(questionId).get().catch(() => null);
+  const q = res && (res.data || (Array.isArray(res) ? res[0] : null));
+  if (!q) return { error: fail(404, '题目不存在') };
+  if (q.userId && q.userId !== openid) return { error: fail(403, '无权访问') };
+  return { q };
+}
+
+/** 读缓存：只读不生成（报告页首次渲染用，保证零成本） */
+async function subThinkingGet(event, openid) {
+  const { q, error } = await loadQuestionForUser(event.questionId, openid);
+  if (error) return error;
+  const list = (Array.isArray(q.subThinking) ? q.subThinking : []).map((x) => ({
+    subNo: x.subNo,
+    verified: x.verified,
+    verifyNote: x.verifyNote || '',
+    thinking: x.thinking || null,
+    followUps: Array.isArray(x.followUps) ? x.followUps.slice(-20) : [],
+  }));
+  return success({ list });
+}
+
+/** 按需生成某一小问的思路 */
+async function subThinkingGenerate(event, openid) {
+  const { questionId, subNo } = event;
+  if (!subNo) return fail(400, '缺少 subNo');
+  const { q, error } = await loadQuestionForUser(questionId, openid);
+  if (error) return error;
+
+  try {
+    const record = await subThinkingLib.generateSubThinking({
+      db,
+      _,
+      call: makeSubCall(),
+      question: q,
+      subNo,
+      logger: console,
+      model: DS_MODEL,
+    });
+    return success({
+      subNo: record.subNo,
+      verified: record.verified,
+      verifyNote: record.verifyNote || '',
+      thinking: record.thinking || null,
+      cached: !!record.cached,
+    });
+  } catch (e) {
+    console.error('[reportService] subThinking 失败:', e && e.message);
+    return fail(500, '这一问生成失败，请重试');
+  }
+}
+
+/** 追问：多轮对话（不截断轮数，但只保留最近 20 轮入库） */
+const FOLLOWUP_SYS = `你在和学生讨论一道数学题里的一小问。
+
+规则：
+1. 只回答学生问的这一点，不要重复整段思路。
+2. 如果说错了就承认，不要嘴硬。
+3. 如果你发现**之前那段诊断文字**说错了（例如把「算错了」说成「省了一步」），
+   明确指出来，并给出更正建议。不要试图修改对错判定——那是系统决定的。
+4. 不要给通法、套路。
+5. 语言像旁边讲给你听的人，不要写成教科书。
+
+输出纯 JSON：
+{"reply":"回答学生",
+ "correction":null 或 {"field":"diagnosis.inference","before":"原话","after":"改成什么","evidence":"原诊断错在哪"}}`;
+
+async function subFollowUp(event, openid) {
+  const { questionId, subNo, text } = event;
+  const question = String(text || '').trim();
+  if (!question) return fail(400, '请输入追问内容');
+  if (!subNo) return fail(400, '缺少 subNo');
+
+  const { q, error } = await loadQuestionForUser(questionId, openid);
+  if (error) return error;
+
+  const list = Array.isArray(q.subThinking) ? q.subThinking : [];
+  const rec = list.find((x) => x.subNo === subNo);
+  if (!rec || !rec.thinking) return fail(400, '这一问还没有生成思路，请先生成');
+
+  // 组装对话史（不设轮数上限；用户 2026-10-18 拍板）
+  const history = Array.isArray(rec.followUps) ? rec.followUps : [];
+  const ctxParts = [
+    '【题目】\n' + String(q.questionText || ''),
+    '【这一小问】' + subNo + ' ' + String(rec.ask || ''),
+    '【已给的思路】\n' + JSON.stringify(rec.thinking, null, 2),
+    '【之前的对话】',
+    history.length ? history.map((h) => (h.role === 'student' ? '学生：' : 'AI：') + h.text).join('\n') : '（无）',
+    '【学生这次问】\n' + question,
+    '',
+    '输出 JSON。',
+  ];
+
+  let reply = '';
+  let correction = null;
+  try {
+    const data = await postJSON(`${DS_BASE_URL}/chat/completions`, {
+      model: DS_MODEL,
+      messages: [{ role: 'system', content: FOLLOWUP_SYS }, { role: 'user', content: ctxParts.join('\n') }],
+      thinking: { type: 'enabled' },
+      temperature: 0.2,
+      max_tokens: 12000,
+    }, DS_API_KEY);
+    const msg = (data.choices && data.choices[0] && data.choices[0].message) || {};
+    const raw = extractJson(msg.content || '') || {};
+    reply = String(raw.reply || '').trim() || '（这次没答上来，可以再问一次）';
+    const c = raw.correction;
+    // 只接受白名单内的字段（防止模型提出改判定）
+    if (c && c.field && ['diagnosis.comment', 'diagnosis.inference', 'diagnosis.hook'].includes(c.field)) {
+      correction = {
+        field: c.field,
+        before: String(c.before || '').slice(0, 800),
+        after: String(c.after || '').slice(0, 800),
+        evidence: String(c.evidence || '').slice(0, 800),
+      };
+    }
+  } catch (e) {
+    console.error('[reportService] subFollowUp 失败:', e && e.message);
+    return fail(500, '追问失败，请重试');
+  }
+
+  // 入库（只保留最近 20 轮）
+  const nextFollowUps = history.concat([
+    { role: 'student', text: question, at: Date.now() },
+    { role: 'ai', text: reply, at: Date.now() },
+  ]).slice(-20);
+  try {
+    await db.collection('questions').doc(questionId).update({
+      data: { subThinking: _.pull({ subNo }) },
+    });
+    await db.collection('questions').doc(questionId).update({
+      data: { subThinking: _.push([Object.assign({}, rec, { followUps: nextFollowUps })]) },
+    });
+  } catch (e) {
+    console.warn('[reportService] 追问入库失败（不影响展示）:', e && e.message);
+  }
+
+  return success({ reply, correction });
+}
+
+/** 诊断文案更正（只改 diagnosis.*，判定字段只读） */
+async function subCorrectDiag(event, openid) {
+  const { questionId, field, newText, evidence } = event;
+  try {
+    const r = await correctDiagnosis({ db, _, questionId, userId: openid, field, newText, evidence });
+    if (r.code !== 0) return fail(r.code, r.message);
+    return success(r.data);
+  } catch (e) {
+    console.error('[reportService] subCorrectDiag 失败:', e && e.message);
+    return fail(500, '更正失败，请重试');
+  }
+}
+
 // 单题历史演化（报告页每题入口）
 async function questionEvolution(event, openid) {
   const { batchId, questionText, questionType, processScore } = event;
@@ -587,6 +770,22 @@ exports.main = async (event) => {
     // 单题历史演化：同类题以往分析 + 本次判定 → 时间演化叙述
     if (event && event.action === 'questionEvolution') {
       return await questionEvolution(event, openid);
+    }
+
+    // ============ 「这一问怎么想的」（2026-10-18）============
+    // 按小问按需生成：默认零调用，点了才生成。
+    // 见 doc/detailed/这一问怎么想的_详细设计.md
+    if (event && event.action === 'subThinkingGet') {
+      return await subThinkingGet(event, openid);
+    }
+    if (event && event.action === 'subThinking') {
+      return await subThinkingGenerate(event, openid);
+    }
+    if (event && event.action === 'subFollowUp') {
+      return await subFollowUp(event, openid);
+    }
+    if (event && event.action === 'subCorrectDiag') {
+      return await subCorrectDiag(event, openid);
     }
 
     const { batchId } = event;
