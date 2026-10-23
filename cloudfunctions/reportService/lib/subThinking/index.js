@@ -40,15 +40,15 @@ function pickQuestion(q) {
  * @param {object} [args.logger]
  * @param {string} args.model
  */
-async function generateSubThinking({ db, _, call, question, subNo, logger, model }) {
+async function generateSubThinking({ db, _, call, question, subNo, logger, model, force }) {
   const t0 = Date.now();
   const qid = question._id || question.questionId;
   const log = (m) => logger && logger.info && logger.info('[subThinking] ' + m);
 
-  // ① 缓存
+  // ① 缓存（force=true 时跳过 —— 供前端「再试一次」用）
   const list = Array.isArray(question.subThinking) ? question.subThinking : [];
   const cached = list.find((x) => x.subNo === subNo);
-  if (cached && cached.verified === 'pass') {
+  if (!force && cached && cached.verified === 'pass') {
     log('命中缓存 ' + subNo);
     return Object.assign({}, cached, { cached: true });
   }

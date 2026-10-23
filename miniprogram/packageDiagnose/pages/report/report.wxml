@@ -160,15 +160,16 @@
         </block>
 
         <!-- ===== 「这一问怎么想的」＝ 按小问按需生成（2026-10-18）=====
-             默认全部折叠、不发起任何请求；点了才生成（PRD G1 / N3-改）。 -->
-        <block wx:for="{{q.subQuestions}}" wx:key="subNo" wx:for-item="sub">
+             默认全部折叠、不发起任何请求；点了才生成（PRD G1 / N3-改）。
+             ⚠️ 2026-10-23 线上修正：
+               ① 只对解答题给入口 —— 选填题没有过程，生成必然验证失败，
+                  让用户点了却看到「没能稳稳做出来」最伤信任。
+               ② 去掉每个小问重复渲染整段作答（原来 workNodes 不存在 → 回退整段，题卡被撑爆）。 -->
+        <block wx:if="{{q.subEntryEnabled}}" wx:for="{{q.subQuestions}}" wx:key="subNo" wx:for-item="sub">
           <view class="subq">
             <view class="subq-h">
               <text class="subq-no">{{sub.subNo}}</text>
               <text class="subq-tag {{sub.wrong ? 'bad' : 'ok'}}">{{sub.wrong ? '要注意' : '✓'}}</text>
-            </view>
-            <view class="rp-yourwork" wx:if="{{q.hasProcess && sub.studentWork}}">
-              <rich-text nodes="{{sub.workNodes || q.yourWorkNodes}}"></rich-text>
             </view>
 
             <!-- 入口：默认态 -->
@@ -195,7 +196,7 @@
                   <text class="think-fail-t">这一问我没能稳稳做出来</text>
                   <text class="think-fail-s" wx:if="{{sub.verifyNote}}">{{sub.verifyNote}}</text>
                 </view>
-                <view class="mini-entry" bindtap="openSubThinking" data-qid="{{q.questionId}}" data-subno="{{sub.subNo}}">
+                <view class="mini-entry" bindtap="openSubThinking" data-qid="{{q.questionId}}" data-subno="{{sub.subNo}}" data-retry="1">
                   <text class="mini-l">再试一次</text><text class="mini-a">›</text>
                 </view>
               </block>

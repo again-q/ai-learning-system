@@ -356,7 +356,7 @@ async function subThinkingGet(event, openid) {
 
 /** 按需生成某一小问的思路 */
 async function subThinkingGenerate(event, openid) {
-  const { questionId, subNo } = event;
+  const { questionId, subNo, force } = event;
   if (!subNo) return fail(400, '缺少 subNo');
   const { q, error } = await loadQuestionForUser(questionId, openid);
   if (error) return error;
@@ -368,6 +368,7 @@ async function subThinkingGenerate(event, openid) {
       call: makeSubCall(),
       question: q,
       subNo,
+      force: force === true,
       logger: console,
       model: DS_MODEL,
     });

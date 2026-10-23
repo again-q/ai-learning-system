@@ -254,8 +254,19 @@ Page({
 
     // ---- 小问列表（用于「这一问怎么想的」入口）----
     // 每个小问的初始状态：折叠、未请求、无内容。真正的内容由 openSubThinking 拉取。
+    //
+    // ⚠️ 2026-10-23 线上踩到（用户实测「差挺多 + 生成失败」）：
+    //   splitForDisplay 读的是 rawQuestionText，这里却直接把原始 q 传进去（只有 questionText），
+    //   → 永远切不出 (1)(2)(3)，所有题都退化成「全题」。
+    //   修：先按 splitForDisplay 的契约组装入参。
     const buildSubList = (q) => {
-      const base = splitForDisplay(Object.assign({}, q, { yourWork: q.studentAnswer || q.traceReport || '' }));
+      const work = q.studentAnswer || q.traceReport || '';
+      const base = splitForDisplay({
+        rawQuestionText: q.questionText || '',
+        yourWork: work,
+        brokenCount: (Array.isArray(q.segments) ? q.segments : [])
+          .filter((s) => s && (s.status === '断' || s.status === '空白')).length,
+      });
       return base.map((s) => ({
         subNo: s.subNo,
         studentWork: s.studentWork,
@@ -328,6 +339,9 @@ Page({
         // 小问结构：默认全部折叠、不请求。点了才生成（PRD N3-改：所有小问都有入口）
         rawQuestionText: q.questionText || '',
         subQuestions: buildSubList(q),
+        // 只对解答题给入口：选填题没有过程，生成必然验证失败，
+        // 让用户点了却看到「没能稳稳做出来」，是最伤信任的一种体验（2026-10-23 线上实测）。
+        subEntryEnabled: q.questionType === '解答',
       };
     });
 
@@ -580,42 +594,44 @@ Page({
     const ds = (e.currentTarget && e.currentTarget.dataset) || {};
     const qid = ds.qid;
     const subNo = ds.subno;
+    // 「再试一次」：强制跳过缓存重新生成。
+    // ⚠️ 2026-10-23 线上踩到：重试按钮原来复用 openSubThinking，而 panelOpen 已是 true
+    //    → 被当成「关闭面板」，点了没反应；且失败结果被缓存，再点永远读回失败。
+    const isRetry = ds.retry === '1';
     if (!qid || !subNo) return;
 
     const cur = this._findSub(qid, subNo);
     if (!cur) return;
-    if (cur.panelOpen) { this._patchSub(qid, subNo, { panelOpen: false }); return; }
+    if (cur.panelOpen && !isRetry) { this._patchSub(qid, subNo, { panelOpen: false }); return; }
 
-    this._patchSub(qid, subNo, { panelOpen: true, loading: true, failed: false });
+    this._patchSub(qid, subNo, {
+      panelOpen: true, loading: true, failed: false, verifyNote: '', thinking: isRetry ? null : cur.thinking,
+    });
 
     try {
-      // ① 读缓存
-      const r1 = await wx.cloud.callFunction({
-        name: 'reportService',
-        data: { action: 'subThinkingGet', questionId: qid, userId: getOpenid() },
-      });
-      const d1 = r1.result;
-      const hit = d1 && d1.code === 0 && d1.data && (d1.data.list || []).find((x) => x.subNo === subNo);
-      if (hit && hit.thinking) {
-        this._patchSub(qid, subNo, {
-          loading: false, failed: false, verified: hit.verified,
-          verifyNote: hit.verifyNote || '', thinking: hit.thinking,
-          followUps: hit.followUps || [],
+      // ① 读缓存（重试时跳过）
+      if (!isRetry) {
+        const r1 = await wx.cloud.callFunction({
+          name: 'reportService',
+          data: { action: 'subThinkingGet', questionId: qid, userId: getOpenid() },
         });
-        return;
-      }
-      if (hit && hit.verified === 'fail') {
-        this._patchSub(qid, subNo, {
-          loading: false, failed: true, verifyNote: hit.verifyNote || '这一问我没能稳稳做出来',
-        });
-        return;
+        const d1 = r1.result;
+        const hit = d1 && d1.code === 0 && d1.data && (d1.data.list || []).find((x) => x.subNo === subNo);
+        if (hit && hit.thinking) {
+          this._patchSub(qid, subNo, {
+            loading: false, failed: false, verified: hit.verified,
+            verifyNote: hit.verifyNote || '', thinking: hit.thinking,
+            followUps: hit.followUps || [],
+          });
+          return;
+        }
       }
 
-      // ② 生成（可能要几十秒）
+      // ② 生成（实测单问 30~70s，冷启动更久；给足 180s）
       const r2 = await wx.cloud.callFunction({
         name: 'reportService',
-        data: { action: 'subThinking', questionId: qid, subNo, userId: getOpenid() },
-        timeout: 90000,
+        data: { action: 'subThinking', questionId: qid, subNo, userId: getOpenid(), force: isRetry },
+        timeout: 180000,
       });
       const d2 = r2.result;
       if (d2 && d2.code === 0 && d2.data && d2.data.thinking) {
