@@ -492,6 +492,8 @@
 .rp-tally-row:last-child { border-bottom: none; }
 .rp-tally-n { flex: 1; font-size: 28rpx; color: #1a1a1a; }
 .rp-tally-v { flex: none; font-size: 26rpx; color: #5b6069; }
+/* 掌握度汇总行（2026-10-25）：一行说清涨/跌/持平/新记 */
+.rp-mastery-sum { display: block; font-size: 25rpx; color: #5b6069; line-height: 1.6; padding: 4rpx 0 12rpx; }
 
 /* 诚实区 */
 .rp-honest-p { display: block; font-size: 26rpx; color: #8a8f99; line-height: 1.7; margin-bottom: 10rpx; }
@@ -762,3 +764,54 @@
   font-size: 24rpx;
   color: #0f766e;
 }
+
+/* ===== 2026-10-25（DES-20261025-001）：题卡三块 ===== */
+/* 做对了：这题考什么（模板句） */
+.rp-correct-note { font-size: 27rpx; color: #1a6b4b; background: #f2fbf6; border-radius: 12rpx; padding: 18rpx 20rpx; line-height: 1.7; margin: 6rpx 0 4rpx; }
+
+/* 块标题（你的过程 / AI 的做法 / 这道题怎么看） */
+.rp-block-t { font-size: 27rpx; font-weight: 600; color: #1a1a1a; margin: 26rpx 0 12rpx; }
+.rp-block-s { font-size: 23rpx; font-weight: 400; color: #8a8f99; margin-left: 12rpx; }
+
+/* A 块：你的过程逐条 */
+.rp-steps { display: flex; flex-direction: column; }
+.rp-steps.folded .rp-step:nth-child(n+3) { display: none; }
+.rp-step { display: flex; flex-direction: row; padding: 14rpx 0; border-bottom: 1rpx solid #f0f1f3; }
+.rp-step:last-child { border-bottom: none; }
+.rp-step-n { flex: none; width: 44rpx; height: 44rpx; line-height: 44rpx; text-align: center; border-radius: 50%; font-size: 24rpx; color: #ffffff; background: #c7c7cc; margin-right: 14rpx; }
+.rp-step.ok .rp-step-n { background: #34c759; }
+.rp-step.bad .rp-step-n { background: #ff3b30; }
+.rp-step.gray .rp-step-n { background: #c7c7cc; }
+.rp-step-body { flex: 1; min-width: 0; font-size: 27rpx; color: #1a1a1a; line-height: 1.65; }
+.rp-step-judge { margin-top: 8rpx; }
+.rp-step-tag { display: inline-block; font-size: 22rpx; padding: 2rpx 12rpx; border-radius: 8rpx; margin-right: 10rpx; }
+.rp-step-tag.ok { color: #1a6b4b; background: #eafaf0; }
+.rp-step-tag.bad { color: #a1201b; background: #fdeeee; }
+.rp-step-tag.gray { color: #6b7079; background: #f2f3f5; }
+.rp-step-say { font-size: 24rpx; color: #5b6069; line-height: 1.6; }
+
+/* B 块：AI 的做法 */
+.rp-tip { background: #fff8e8; border-radius: 12rpx; padding: 16rpx 20rpx; margin: 6rpx 0 10rpx; }
+.rp-tip-t { display: block; font-size: 25rpx; font-weight: 600; color: #8a5a00; margin-bottom: 6rpx; }
+.rp-tip-s { display: block; font-size: 25rpx; color: #6b5a33; line-height: 1.65; }
+.rp-step-note { margin-top: 8rpx; font-size: 24rpx; color: #8a8f99; line-height: 1.6; }
+
+/* 选填题：选项分析 */
+.rp-ca-row { display: flex; flex-direction: row; align-items: baseline; padding: 10rpx 0; }
+.rp-ca-k { flex: none; width: 140rpx; font-size: 25rpx; color: #8a8f99; }
+.rp-ca-v { flex: 1; font-size: 28rpx; color: #1a1a1a; }
+.rp-ca-say { font-size: 26rpx; color: #5b6069; line-height: 1.7; padding: 10rpx 0; }
+.rp-ca-lab { display: block; font-size: 24rpx; color: #8a8f99; margin-bottom: 4rpx; }
+
+/* 「这一问」：AI 推测 */
+.guess-hint { font-size: 24rpx; color: #8a8f99; line-height: 1.6; margin: 8rpx 0 12rpx; }
+.guess-self { background: #f2fbf6; border-radius: 12rpx; padding: 16rpx 18rpx; margin: 10rpx 0; }
+.guess-self-k { display: block; font-size: 23rpx; color: #1a6b4b; margin-bottom: 6rpx; }
+.guess-self-v { font-size: 27rpx; color: #1a1a1a; line-height: 1.65; }
+.guess { background: #f7f8fa; border-radius: 12rpx; padding: 16rpx 18rpx; margin: 10rpx 0; }
+.guess-quote { font-size: 25rpx; color: #5b6069; line-height: 1.6; margin-bottom: 8rpx; }
+.guess-q { color: #1a1a1a; }
+.guess-why, .guess-if { font-size: 26rpx; color: #1a1a1a; line-height: 1.65; margin-top: 6rpx; }
+.guess-k { display: block; font-size: 23rpx; color: #8a8f99; margin-bottom: 2rpx; }
+.guess-empty { font-size: 25rpx; color: #8a8f99; padding: 12rpx 0; }
+.guess-self-input { margin-top: 14rpx; }

@@ -1,4 +1,5 @@
 'use strict';
+const { ANSWER_PATH_SYS } = require('./prompts');
 // ============ 过程编排 Agent（2026-10-17 用户拍板，脚本原型已验证）============
 //
 // 解决的问题（实测依据见 doc/standards/开发经验.md §6.29）：
@@ -126,6 +127,56 @@ function compare(unit, chk) {
   return { status: 'unknown', unit: unit.i };
 }
 
+/** 单字段截断（落库用：students 原话保留前 300 字，够展示也控体积） */
+function cut(s, n) {
+  const t = String(s == null ? '' : s);
+  return t.length > n ? t.slice(0, n) : t;
+}
+
+/**
+ * 把逐单元核查结果整理成给前端用的「你的过程」步骤表（2026-10-25，DES-20261025-001 §1.1）。
+ * 只做映射与收敛，不做任何新的判断（判断权仍在 compare）。
+ * @param {Array} results reviewProcess 的 results（含 settled）
+ * @returns {Array<{i,raw,status,claim,correct,reason,unstable}>}
+ */
+function buildSteps(results) {
+  return (Array.isArray(results) ? results : []).map((r, k) => {
+    const u = r.unit || {};
+    const first = r.cmp || {};
+    const st = (r.settled && r.settled.status) || first.status || 'unknown';
+    const broken = st === 'broken';
+    return {
+      i: Number(u.i) || (k + 1),
+      raw: cut(u.raw, 300),
+      status: st,
+      // 只有定案为 broken 的两处结果才展示 —— unknown 不下结论，不给学生一个会翻案的「你错在哪」
+      claim: broken ? cut(first.claim, 200) : null,
+      correct: broken ? cut(first.correct, 200) : null,
+      reason: broken ? cut(first.reason, 200) : (r.settled && r.settled.note ? cut(r.settled.note, 200) : null),
+      unstable: r.unstable === true,
+    };
+  // 空原文的单元不给前端（没有可展示的「你的原话」），也防 i 缺失时错位
+  }).filter((s) => s.raw && s.i > 0);
+}
+
+/**
+ * 两判收敛（2026-10-25）：只有两遍都判 broken 才定案。
+ *   · 首判 broken + 重核 broken → broken（定案）
+ *   · 首判 broken + 重核非 broken → unknown（两次打架，**不下结论**，宁可少说也不冤枉）
+ *   · 首判 broken + 未复核 → broken（成本保护下没复核，采信首判）
+ *   · 首判非 broken → 原样
+ * @param {{cmp?:object, recheck?:object}} r
+ * @returns {{status:string, note?:string}}
+ */
+function settleStep(r) {
+  const first = (r && r.cmp) || {};
+  if (first.status !== 'broken') return { status: first.status || 'unknown' };
+  const second = (r && r.recheck) || null;
+  if (!second) return { status: 'broken' };
+  if (second.status === 'broken') return { status: 'broken' };
+  return { status: 'unknown', note: '两次判断不一致' };
+}
+
 /**
  * 解答题：逐步核查学生过程。
  *
@@ -172,6 +223,10 @@ async function reviewProcess({ call, questionText, work, logger, maxUnits }) {
     if (cmp2.status !== r.cmp.status) r.unstable = true;
     r.recheck = cmp2;
   }
+  // 2026-10-25（DES-20261025-001 §1.1）：把重核结论**收敛成每单元一个最终状态**，供下游落库展示。
+  //   原实现只把 cmp2 用来算 unstable 就扔掉 →「第二次核出来这步没问题」这条信息没人看得到。
+  //   红线：不改 compare/checkUnit/复核触发条件（决策 061 红线 3），只是把已有结果带出来 + 收敛。
+  results.forEach((r) => { r.settled = settleStep(r); });
   const findings = results.filter((r) => r.cmp.status === 'broken').map((r) => r.cmp);
   const unstable = results.filter((r) => r.unstable).map((r) => r.unit.i);
   const needsTier3 = unstable.length > 0 || findings.length >= 2;
@@ -180,6 +235,7 @@ async function reviewProcess({ call, questionText, work, logger, maxUnits }) {
     kind: 'process',
     units,
     results,
+    steps: buildSteps(results),
     findings,
     unstable,
     needsTier3,
@@ -292,6 +348,74 @@ async function analyzeChoice({ call, questionText, studentAnswer, correctAnswer,
   }
 }
 
+// ---------- ④ AI 的做法 + 更优判定（2026-10-25，DES-20261025-001 §1.2） ----------
+// 目的：做对的题也要有「AI 自己做一遍」；AI 真更省时才提示。
+// 红线（ADR-5）：更优与否由**代码**守，不靠模型自律 —— 否则满分题会被说「其实可以更省」。
+const STEP_MIN = 2;
+const STEP_MAX = 10;
+
+/**
+ * 解析 + 守卫 AI 做法。模型输出不可信的部分一律降级。
+ * @param {string} text  模型原始输出
+ * @param {number} workStepCount 学生过程段数（0 = 无可比较步骤 → 一律不给更优）
+ * @returns {null|{steps:Array, moreEfficient:boolean, betterAt:number|null, whyBetter:string|null}}
+ */
+function parseAnswerPath(text, workStepCount) {
+  const j = extractJson(text);
+  if (!j) return null;
+  const steps = (Array.isArray(j.steps) ? j.steps : [])
+    .map((x) => ({
+      step: String((x && x.step) || '').slice(0, 80),
+      content: String((x && x.content) || '').slice(0, 800),
+      note: String((x && x.note) || '').slice(0, 300),
+    }))
+    .filter((x) => x.step && x.content);
+  if (steps.length < STEP_MIN || steps.length > STEP_MAX) return null;
+
+  let moreEfficient = j.moreEfficient === true;
+  let betterAt = Number.isInteger(j.betterAt) ? j.betterAt : null;
+  const whyBetter = String(j.whyBetter || '').trim().slice(0, 60) || null;
+
+  // 守卫①：理由必须落在「步数/步骤、分类、计算」之一，否则不认
+  if (!whyBetter || !/步骤|步数|分类|计算/.test(whyBetter)) moreEfficient = false;
+  // 守卫②：比较对象必须真实存在 —— 学生没有可比的步骤时，不许说更优
+  if (!betterAt || betterAt < 1 || !(workStepCount > 0) || betterAt > workStepCount) moreEfficient = false;
+  // 守卫③：不许靠引入新方法取胜
+  if (/新方法|新定理|换个思路|通法|套路/.test(whyBetter)) moreEfficient = false;
+
+  if (!moreEfficient) return { steps, moreEfficient: false, betterAt: null, whyBetter: null };
+  return { steps, moreEfficient: true, betterAt, whyBetter };
+}
+
+/**
+ * AI 自己做一遍这道题（对/错都跑）。失败返回 null，调用方不得阻塞判定。
+ * @returns {Promise<null|object>}
+ */
+async function answerPath({ call, questionText, work, correctAnswer, studentStatus, workStepCount, logger }) {
+  const t0 = Date.now();
+  const user = [
+    '【题干】',
+    String(questionText || ''),
+    '',
+    '【学生写的过程】' + (String(work || '').trim() ? '' : '（没有读到过程）'),
+    String(work || '').slice(0, 2500),
+    '',
+    '【已知正确答案】' + (String(correctAnswer || '').trim() || '（未知）'),
+    '【学生答案正确与否】' + (String(studentStatus || '').trim() || '未知'),
+    '',
+    '输出 JSON。',
+  ].join('\n');
+  try {
+    const out = await call({ system: ANSWER_PATH_SYS, user, maxTokens: 3000 });
+    const parsed = parseAnswerPath(out && out.text, Number(workStepCount) || 0);
+    if (!parsed) return null;
+    return { ...parsed, elapsedMs: Date.now() - t0, calls: 1 };
+  } catch (e) {
+    logger && logger.warn && logger.warn('[orchestrator] AI 做法生成失败: ' + (e && e.message));
+    return null;
+  }
+}
+
 /**
  * 统一入口：按题型分流（用户 2026-10-17 拍板「全部走档2」）。
  *   解答题 → 逐步核查
@@ -322,4 +446,4 @@ async function analyze({ call, question, logger }) {
   return null;
 }
 
-module.exports = { analyze, reviewProcess, analyzeChoice, decompose, checkUnit, compare, norm, extractJson };
+module.exports = { analyze, reviewProcess, analyzeChoice, answerPath, parseAnswerPath, decompose, checkUnit, compare, settleStep, buildSteps, norm, extractJson };

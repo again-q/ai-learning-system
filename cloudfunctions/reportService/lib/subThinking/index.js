@@ -13,8 +13,12 @@ const { splitSubQuestions } = require('./splitter');
 const { solve } = require('./solver');
 const { verify } = require('./verifier');
 const { think } = require('./thinker');
+const { guess } = require('./guesser');
 
 const MAX_RETRY = 2;   // 验证失败后最多重解 2 次（异常路径）
+// 2026-10-25：形态变了（从「AI 自己做一遍」改为「AI 推测你当时的想法」+ 另一种走法）
+//   → 缓存必须带版本，否则会返回旧的「重做版」内容，学生看到的还是旧东西。
+const PROMPT_VERSION = 'guess-v1';
 
 /** 取题目里属于切分输入的几个字段 */
 function pickQuestion(q) {
@@ -47,11 +51,15 @@ async function generateSubThinking({ db, _, call, question, subNo, logger, model
 
   // ① 缓存（force=true 时跳过 —— 供前端「再试一次」用）
   const list = Array.isArray(question.subThinking) ? question.subThinking : [];
-  const cached = list.find((x) => x.subNo === subNo);
-  if (!force && cached && cached.verified === 'pass') {
+  const found = list.find((x) => x.subNo === subNo);
+  // 只有「有可用内容 + 版本对得上」才算命中；旧版本记录仍留着（selfThought 要能继承）
+  const usable = found && (found.promptVersion === PROMPT_VERSION)
+    && (found.verified === 'pass' || (Array.isArray(found.guesses) && found.guesses.length));
+  if (!force && usable) {
     log('命中缓存 ' + subNo);
-    return Object.assign({}, cached, { cached: true });
+    return Object.assign({}, found, { cached: true });
   }
+  const cached = found || null;
 
   // ② 切分
   const { subQuestions, splitFallback, reason } = splitSubQuestions(pickQuestion(question));
@@ -66,6 +74,11 @@ async function generateSubThinking({ db, _, call, question, subNo, logger, model
     subNo: sub.subNo,
     ask: sub.ask,
   };
+
+  // ②' 先猜学生当时怎么想的（2026-10-25）。用切分出来的本小问学生原文。
+  //   失败/没有原文 → guesses=[]，面板照常显示「另一种走法」，不阻塞。
+  const guessed = await guess({ call, questionText: question.questionText || '', subNo: sub.subNo, ask: sub.ask, studentWork: sub.studentWork })
+    .catch(() => ({ guesses: [] }));
 
   // ③ 求解 + 验证（含重试）
   let solution = await solve({ call, ...ctx });
@@ -92,6 +105,9 @@ async function generateSubThinking({ db, _, call, question, subNo, logger, model
       verified: 'fail',
       verifyNote: ver.note || '这一问我没能稳稳做出来',
       thinking: null,
+      guesses: guessed.guesses || [],
+      selfThought: (cached && cached.selfThought) || '',
+      promptVersion: PROMPT_VERSION,
       model: model || '',
       elapsedMs: Date.now() - t0,
       generatedAt: Date.now(),
@@ -119,6 +135,10 @@ async function generateSubThinking({ db, _, call, question, subNo, logger, model
     verifyNote: ver.overall === 'partial' ? (ver.note || '这一问证得不够严，补全后结论成立') : '',
     solution,
     thinking,
+    // 2026-10-25：推测 + 学生自述；thinking 保留为「另一种走法」
+    guesses: guessed.guesses || [],
+    selfThought: (cached && cached.selfThought) || '',
+    promptVersion: PROMPT_VERSION,
     model: model || '',
     elapsedMs: Date.now() - t0,
     generatedAt: Date.now(),
@@ -146,4 +166,24 @@ async function persist({ db, _, qid, record, cached }) {
   }
 }
 
-module.exports = { generateSubThinking, pickQuestion, MAX_RETRY };
+/**
+ * 学生自述「我当时是这么想的」（2026-10-25）。
+ * 为什么必须有：AI 的推测可能全错，学生写下的一句话才是**可核验的事实**，展示时优先于推测。
+ * @returns {Promise<{ok:boolean, record?:object, message?:string}>}
+ */
+async function saveSelfThought({ db, _, qid, subNo, text }) {
+  const t = String(text || '').trim().slice(0, 200);
+  if (!qid || !subNo || !t) return { ok: false, message: '参数不完整' };
+  const res = await db.collection('questions').doc(qid).get().catch(() => null);
+  const q = res && res.data;
+  if (!q) return { ok: false, message: '题目不存在' };
+  const list = Array.isArray(q.subThinking) ? q.subThinking : [];
+  const found = list.find((x) => x.subNo === subNo);
+  if (!found) return { ok: false, message: '这一问还没生成过内容，先点开一次' };
+  // 先 pull 再 push（同 persist 的写法），避免同小问留两份记录
+  await db.collection('questions').doc(qid).update({ data: { subThinking: _.pull({ subNo }) } });
+  await db.collection('questions').doc(qid).update({ data: { subThinking: _.push([Object.assign({}, found, { selfThought: t })]) } });
+  return { ok: true, record: Object.assign({}, found, { selfThought: t }) };
+}
+
+module.exports = { generateSubThinking, saveSelfThought, pickQuestion, MAX_RETRY, PROMPT_VERSION };

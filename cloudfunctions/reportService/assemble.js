@@ -82,6 +82,15 @@ async function assemble(batchId, userId) {
     officialStandardScore: q.officialStandardScore != null ? q.officialStandardScore : null,
     officialClassScoreRate: q.officialClassScoreRate != null ? q.officialClassScoreRate : null,
     officialKnowledge: Array.isArray(q.officialKnowledge) ? q.officialKnowledge : [],
+    // 2026-10-25（DES-20261025-001 §2.1）：判定层已核出的逐单元结果与选项分析 —— 原来只在调试图表里
+    steps: Array.isArray(q.steps) ? q.steps : [],
+    choiceAnalysis: q.choiceAnalysis || null,
+    // AI 做法是否更优（三条门槛已在 graphEngine 由代码守住）
+    moreEfficient: q.moreEfficient === true,
+    betterAt: q.betterAt != null ? q.betterAt : null,
+    whyBetter: q.whyBetter || null,
+    // 上次生成过的 AI 做法（2026-10-25）：透传后 aiApproach() 才能命中缓存、不重复调模型
+    aiApproach: (q.aiApproach && Array.isArray(q.aiApproach.steps)) ? q.aiApproach : null,
   }));
   // 三态口径（决策 045）：半对/漏判都不算对。按 status 判定，兼容「只有官方三态、未跑 AI」的题。
   const wrongQuestions = allQuestions.filter((q) => q.status !== '对');

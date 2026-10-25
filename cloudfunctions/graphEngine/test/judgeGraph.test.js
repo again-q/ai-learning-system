@@ -80,7 +80,7 @@ function makeDeps({ raw = RAW, db, postJSON, failOn } = {}) {
 
 const INPUT = { questionId: 'q1', openid: 'u1' };
 
-test('N4 写库：19 个字段齐全且值正确；出口 newDiagnosis 字段齐全', async () => {
+test('N4 写库：24 个字段齐全且值正确；出口 newDiagnosis 字段齐全', async () => {
   const deps = makeDeps();
   const out = await runJudge(deps, INPUT);
   assert.strictEqual(out.ok, true);
@@ -88,8 +88,9 @@ test('N4 写库：19 个字段齐全且值正确；出口 newDiagnosis 字段齐
   const qWrites = out.state;
   const upd = deps.db.writes.find((w) => w.name === 'questions');
   const p = upd.data;
-  assert.strictEqual(Object.keys(p).length, 19);
-  assert.deepStrictEqual(Object.keys(p).sort(), ['breakpoint','correctAnswer','difficultyLevel','difficultyValue','errorAttribution','errorDimension','errorLevel','errorType','isOutOfSyllabus','knowledgeUsage','pathQuality','pattern','processAvailable','processScore','questionCategory','questionType','referenceProcess','reviewed','segments']);
+  // 2026-10-25（DES-20261025-001）：+steps/choiceAnalysis/moreEfficient/betterAt/whyBetter → 24
+  assert.strictEqual(Object.keys(p).length, 24);
+  assert.deepStrictEqual(Object.keys(p).sort(), ['betterAt','breakpoint','choiceAnalysis','correctAnswer','difficultyLevel','difficultyValue','errorAttribution','errorDimension','errorLevel','errorType','isOutOfSyllabus','knowledgeUsage','moreEfficient','pathQuality','pattern','processAvailable','processScore','questionCategory','questionType','referenceProcess','reviewed','segments','steps','whyBetter']);
   assert.strictEqual(p.questionType, '解答');
   assert.strictEqual(p.correctAnswer, 'a>1');
   assert.deepStrictEqual(p.referenceProcess, RAW.referenceProcess);

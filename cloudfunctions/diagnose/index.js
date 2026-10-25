@@ -444,7 +444,7 @@ async function retranscribe(event) {
   const batchId = event.batchId;
   const imageUrls = Array.isArray(event.imageUrls) ? event.imageUrls.filter(Boolean).slice(0, 8) : [];
   if (!batchId) return fail(400, '缺少批次ID');
-  if (!imageUrls.length) return fail(400, '缺少整页图地址');
+  if (!imageUrls.length && !event.compress) return fail(400, '缺少整页图地址');
 
   const batchRes = await db.collection('batches').doc(batchId).get().catch(() => null);
   if (!batchRes || !batchRes.data) return fail(40003, '批次不存在');
@@ -453,6 +453,26 @@ async function retranscribe(event) {
   const qRes = await db.collection('questions').where({ batchId, userId: openid }).limit(200).get();
   const questions = qRes.data || [];
   if (!questions.length) return fail(40003, '该批次没有题目');
+
+  // compress 模式（2026-10-18）：不读图，只把库里已有的作答文本过一遍 compactWork。
+  // 用途：模型早先把作答写成"题干末尾括号内手写填入答案 B"这类描述句，要批量改成答案本身；
+  //      以及将来描述风格变了可以一键重刷，不必重新读图（省 25~50 秒和一次视觉调用）。
+  if (event.compress) {
+    let n = 0;
+    const changed = [];
+    for (const q of questions) {
+      const before = String(q.traceReport || '').trim();
+      if (!before) continue;
+      const after = compactWork(before);
+      if (after === before) continue;
+      try {
+        await db.collection('questions').doc(q._id).update({ data: { traceReport: after } });
+        n++; changed.push({ no: String(q.questionNo), after });
+      } catch (e) { /* 单条失败不影响其余 */ }
+    }
+    console.log('[diagnose/retranscribe] compress 批次 ' + batchId + '：更新 ' + n + ' 题');
+    return success({ compress: true, updated: n, changed });
+  }
 
   // 题号 → 题目记录（questionNo 是 string，读出来的是 number，统一按字符串比）
   const byNo = {};
@@ -499,7 +519,7 @@ async function retranscribe(event) {
       // 只补空字段：官方题干（错题有）不被识图覆盖；已确认过的转录不覆盖
       if (text && !(q.questionText || '').trim()) patch.questionText = text.slice(0, 6000);
       if (trace && !(q.traceReport || '').trim() && !q.transcriptionReviewed) {
-        patch.traceReport = looksLikeFullVisionReport(trace, '') ? '' : trace.slice(0, 4000);
+        patch.traceReport = looksLikeFullVisionReport(trace, '') ? '' : compactWork(trace).slice(0, 4000);
       }
       if (!Object.keys(patch).length) continue;
       try {
@@ -527,4 +547,32 @@ async function urlToDataUrl(url) {
   if (!resp.ok) throw new Error('下载图片 HTTP ' + resp.status);
   const buf = Buffer.from(await resp.arrayBuffer());
   return 'data:image/jpeg;base64,' + buf.toString('base64');
+}
+
+/**
+ * 作答文本精简（2026-10-18 用户反馈）：模型常写成
+ *   「题干末尾括号内手写填入答案 "B"。」「填空横线上手写填入答案 "$[2,+\\infty)$"。右侧有一个空方框。」
+ * 复核页要的是**学生写了什么**，位置描述是噪音。规则：
+ *   · 能从中抽出「答案 "X"」→ 只留 X
+ *   · 抽不到（解答题的过程）→ 原样返回，一个字不改
+ */
+function compactWork(s) {
+  const t = String(s || '').trim();
+  if (!t) return '';
+  // 只在「整段就是一句位置描述」时才精简；过程类文本不动
+  const isDescr = /^(题干|填空|横线|括号|选项|题号).{0,20}(手写|书写|填入|答案)/.test(t) || /手写填入答案/.test(t);
+  if (!isDescr) return t;
+  const m = /(?:答案|填入)[^"]*"([^"]+)"/.exec(t) || /"([^"]+)"/.exec(t);
+  if (!m) return t;
+  const got = String(m[1]).trim();
+  if (!got) return t;
+  // 保留「涂改/被划掉」这类会影响判断的信息
+  // 备注合并成一个括号，避免「（有涂改）（A 项被标记）」这种叠括号
+  const marks = [];
+  if (/涂改|潦草|划掉|划去/.test(t)) marks.push('有涂改');
+  if (/打叉|画圈|被划/.test(t)) {
+    const opt = /选项\s*"?([A-D])"?/.exec(t);
+    marks.push(opt ? opt[1] + ' 项被标记' : '有标记');
+  }
+  return marks.length ? got + '（' + marks.join('，') + '）' : got;
 }

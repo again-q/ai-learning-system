@@ -98,13 +98,13 @@ test('deriveAll：pattern 三层拼装并限长', () => {
   assert.equal(empty.patternFull, '', '没给 pattern 时为空串（落库时转 null）');
 });
 
-test('buildQuestionPatch：19 个字段齐全（与线上 questions.update 对齐）', () => {
+test('buildQuestionPatch：24 个字段齐全（19 + 2026-10-25 新增 steps/choiceAnalysis/moreEfficient/betterAt/whyBetter）', () => {
   const raw = { questionType: '解答', correctAnswer: 'x=1', referenceProcess: [{ step: 'a', content: 'b', note: 'c' }], questionCategory: '集合', level: 'L4', D: 0.5, P: 1, eta: 0.9, knowledgeUsage: [{ name: '集合的表示', P: 1, D: 0.3 }], segments: [{ step: 'x', status: '通', evidence: 'y' }], breakpoint: null, processAvailable: true, pattern: { domain: '集合', pattern: '辨析', variant: 'v' } };
   const q = { questionType: '解答', studentAnswer: '答' };
   const c = clampParams(raw, '解答');
   const d = deriveAll(raw, q, c);
   const patch = buildQuestionPatch(raw, q, c, d);
-  const need = ['questionType','correctAnswer','referenceProcess','questionCategory','difficultyLevel','difficultyValue','processScore','pathQuality','errorType','errorLevel','errorAttribution','pattern','knowledgeUsage','segments','breakpoint','processAvailable','isOutOfSyllabus','errorDimension','reviewed'];
+  const need = ['questionType','correctAnswer','referenceProcess','questionCategory','difficultyLevel','difficultyValue','processScore','pathQuality','errorType','errorLevel','errorAttribution','pattern','knowledgeUsage','segments','breakpoint','processAvailable','isOutOfSyllabus','errorDimension','steps','choiceAnalysis','moreEfficient','betterAt','whyBetter','reviewed'];
   need.forEach((k) => assert.ok(Object.prototype.hasOwnProperty.call(patch, k), '缺字段 ' + k));
   assert.equal(patch.difficultyValue, 0.5);
   assert.equal(patch.processScore, 1);
@@ -156,4 +156,51 @@ test('questionCategory 只认宪法 §二 三种枚举，其余一律「未分�
   const p = buildQuestionPatch({ questionCategory: '函数与导数' }, {}, { D: 0.5, P: 1, eta: null }, {});
   assert.equal(p.questionCategory, '未分类', '落库前必经守卫');
   assert.equal(buildQuestionPatch({ questionCategory: '单元内应用' }, {}, { D: 0.5, P: 1, eta: null }, {}).questionCategory, '单元内应用');
+});
+
+// ============ 2026-10-25（DES-20261025-001）：步骤表与更优提示落库 ============
+
+test('buildQuestionPatch：编排 process 型结果落成 steps，unknown 不带结论', () => {
+  const orchestrator = {
+    kind: 'process',
+    steps: [
+      { i: 1, raw: '由非奇非偶得 m=...', status: 'ok', claim: null, correct: null, reason: null },
+      { i: 2, raw: 'g(x)=2x^3-x^2', status: 'unknown', claim: '2x^3-x^2', correct: 'x^3', reason: '两次判断不一致' },
+      { i: 3, raw: '', status: 'broken' },   // 空原文应被过滤
+    ],
+  };
+  const patch = buildQuestionPatch({ orchestrator, questionType: '解答' }, { questionType: '解答' }, { D: 0.5, P: 0.5, eta: null }, deriveAll({ questionType: '解答' }, {}, { P: 0.5 }));
+  assert.equal(patch.steps.length, 2, '空 raw 的单元要过滤');
+  assert.equal(patch.steps[1].status, 'unknown');
+  assert.equal(patch.steps[1].claim, null, 'unknown 不定案，不展示「你写 X 应为 Y」');
+  assert.equal(patch.steps[0].status, 'ok');
+});
+
+test('buildQuestionPatch：选填题 choiceAnalysis 落库；解答题它是 null', () => {
+  const orch = { kind: 'choice', choiceAnalysis: { correctAnswer: 'B', wrongOption: 'C', whyWrong: '符号反了', likelyGap: '没验特殊值', derivation: '推导', answerTrusted: true } };
+  const ca = buildQuestionPatch({ orchestrator: orch, questionType: '选择' }, { questionType: '选择' }, { D: 0.3, P: 0, eta: null }, deriveAll({ questionType: '选择' }, {}, { P: 0 })).choiceAnalysis;
+  assert.equal(ca.correctAnswer, 'B');
+  assert.equal(ca.studentsAnswer, 'C');
+  assert.equal(ca.whyWrong, '符号反了');
+  assert.equal(ca.answerTrusted, true);
+  assert.equal(buildQuestionPatch({ questionType: '解答' }, {}, { D: 0.5, P: 1, eta: null }, {}).choiceAnalysis, null);
+});
+
+test('buildQuestionPatch：moreEfficient 三字段联动 + referenceProcess 由 answerPath 补齐', () => {
+  const answerPath = { steps: [{ step: '第一步', content: 'x=1', note: '' }], moreEfficient: true, betterAt: 2, whyBetter: '步数少一步' };
+  const p1 = buildQuestionPatch({ answerPath, questionType: '解答' }, { questionType: '解答' }, { D: 0.5, P: 1, eta: null }, {});
+  assert.equal(p1.moreEfficient, true);
+  assert.equal(p1.betterAt, 2);
+  assert.equal(p1.whyBetter, '步数少一步');
+  assert.equal(p1.referenceProcess.length, 1, 'answerPath 补齐参考过程');
+
+  // 不更优时，三个字段一律归零（前端不该拿到半套提示）
+  const p2 = buildQuestionPatch({ answerPath: { ...answerPath, moreEfficient: false }, questionType: '解答' }, { questionType: '解答' }, { D: 0.5, P: 1, eta: null }, {});
+  assert.equal(p2.moreEfficient, false);
+  assert.equal(p2.betterAt, null);
+  assert.equal(p2.whyBetter, null);
+
+  // 判定层已给了 referenceProcess → 不被 answerPath 覆盖
+  const p3 = buildQuestionPatch({ answerPath, referenceProcess: [{ step: '原', content: 'y' }], questionType: '解答' }, { questionType: '解答' }, { D: 0.5, P: 1, eta: null }, {});
+  assert.equal(p3.referenceProcess[0].step, '原');
 });

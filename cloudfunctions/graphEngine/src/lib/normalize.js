@@ -129,7 +129,11 @@ function buildQuestionPatch(raw, question, clamped, derived) {
   return {
     questionType,
     correctAnswer: r.correctAnswer || '',
-    referenceProcess: Array.isArray(r.referenceProcess) ? r.referenceProcess : [],
+    // 2026-10-25：判错时 N2 会直接给 referenceProcess；对题这条常是空数组。
+    //   answerPath（AI 自己做一遍）在判定层已生成时用它补齐，避免报告层再花一次调用。
+    referenceProcess: (Array.isArray(r.referenceProcess) && r.referenceProcess.length)
+      ? r.referenceProcess
+      : ((r.answerPath && Array.isArray(r.answerPath.steps)) ? r.answerPath.steps : []),
     questionCategory: normalizeQuestionCategory(r.questionCategory),
     difficultyLevel: r.level || 'L4',
     difficultyValue: c.D,
@@ -147,7 +151,49 @@ function buildQuestionPatch(raw, question, clamped, derived) {
     // 2026-09-25 参数对齐（决策 050）：补齐三个「判定端有输出、此前落库丢掉」的字段
     isOutOfSyllabus: r.isOutOfSyllabus === true,
     errorDimension: r.errorDimension || null,
+    // 2026-10-25（DES-20261025-001 §1.3）：把编排层已核出的逐单元结果落库 —— 原来只在 orchestrator_logs 里，
+    //   报告页一个字段都没用上（用户：错题讲得太少）。
+    steps: stepsOf(r.orchestrator),
+    choiceAnalysis: choiceAnalysisOf(r.orchestrator),
+    // AI 做法是否更优（ADR-5：三条门槛已在 orchestrator.parseAnswerPath 里由代码守住）
+    moreEfficient: !!(r.answerPath && r.answerPath.moreEfficient === true),
+    betterAt: (r.answerPath && r.answerPath.moreEfficient === true) ? r.answerPath.betterAt : null,
+    whyBetter: (r.answerPath && r.answerPath.moreEfficient === true) ? (r.answerPath.whyBetter || null) : null,
     reviewed: true,
+  };
+}
+
+/** 编排结果 → 步骤表（只认 process 型；没有就空数组，前端退回旧展示） */
+function stepsOf(orch) {
+  if (!orch || orch.kind !== 'process' || !Array.isArray(orch.steps)) return [];
+  return orch.steps.map((s) => {
+    const status = String((s && s.status) || 'unknown');
+    // ⚠️ 只有定案 broken 才带 claim/correct：unknown 是「两次判断打架」，
+    //    带上 claim/correct 等于给学生一个会翻案的「你写 X 应为 Y」（DES §1.1 红线）。
+    const broken = status === 'broken';
+    return {
+      i: Number(s && s.i) || 0,
+      raw: String((s && s.raw) || '').slice(0, 300),
+      status,
+      claim: broken && s && s.claim != null ? String(s.claim).slice(0, 200) : null,
+      correct: broken && s && s.correct != null ? String(s.correct).slice(0, 200) : null,
+      reason: s && s.reason != null ? String(s.reason).slice(0, 200) : null,
+      unstable: !!(s && s.unstable),
+    };
+  }).filter((s) => s.raw && s.i > 0);
+}
+
+/** 编排结果 → 选填题选项分析（仅 choice 型） */
+function choiceAnalysisOf(orch) {
+  if (!orch || orch.kind !== 'choice' || !orch.choiceAnalysis) return null;
+  const c = orch.choiceAnalysis;
+  return {
+    correctAnswer: String(c.correctAnswer || '').slice(0, 100),
+    studentsAnswer: String(c.wrongOption || '').slice(0, 50),
+    whyWrong: String(c.whyWrong || '').slice(0, 600),
+    likelyGap: String(c.likelyGap || '').slice(0, 300),
+    derivation: String(c.derivation || '').slice(0, 800),
+    answerTrusted: c.answerTrusted === true,
   };
 }
 

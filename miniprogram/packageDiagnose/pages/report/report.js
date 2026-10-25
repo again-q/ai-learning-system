@@ -282,6 +282,12 @@ Page({
         followUpLoading: false,
         correction: null,
         corrected: false,
+        // 2026-10-25：AI 猜测 + 学生自述 + 「另一种走法」折叠状态
+        guesses: [],
+        selfThought: '',
+        selfDraft: '',
+        selfSaving: false,
+        otherWayOpen: false,
       }));
     };
 
@@ -299,6 +305,34 @@ Page({
       const full = Number(q.officialStandardScore || 0);
       const got = Number(q.officialScore || 0);
       const rate = q.officialClassScoreRate;
+
+      // ===== 你的过程（2026-10-25）：判定层逐单元核查结果 → 渲染行 =====
+      // 状态语义（判定层已收敛）：
+      //   ok 这步没问题 / broken 定案「对不上」/ unknown 两次判断打架·不下结论 / no-computation 靠算核对不了
+      const stepRows = (Array.isArray(q.steps) ? q.steps : []).map((st, k) => {
+        const status = st && st.status;
+        const tag = status === 'ok' ? '这步没问题'
+          : status === 'broken' ? '这里对不上'
+          : status === 'unknown' ? '没定下来'
+          : '不靠计算判断';
+        const cls = status === 'ok' ? 'ok' : status === 'broken' ? 'bad' : 'gray';
+        let judgeText = '';
+        if (status === 'broken') {
+          judgeText = '你写「' + plain(st.claim || '') + '」→ 应为「' + plain(st.correct || '') + '」';
+        } else if (status === 'unknown') {
+          judgeText = 'AI 两次判断不一致，这步先不下结论';
+        } else if (status === 'no-computation') {
+          judgeText = '这一步是引用条件或下结论，没法靠算来核对';
+        }
+        return {
+          i: (st && st.i) || (k + 1),
+          rawNodes: md((st && st.raw) || ''),
+          tagText: tag,
+          tagCls: cls,
+          cls: cls,
+          judgeText: judgeText,
+        };
+      });
       return {
         questionId: q.questionId,
         idx: i,
@@ -314,7 +348,16 @@ Page({
         //   官方客观题作答在 studentAnswer。两者都要展示，否则学生看不到自己写了什么。
         yourWork: plain(q.studentAnswer || '') || plain(q.traceReport || ''),
         yourWorkNodes: md(q.studentAnswer || q.traceReport || ''),
-        noProcessText: '这题只填了答案，没写过程。',
+        // 2026-10-25（DES-20261025-001 §3.4）：原来一句写死的「只填了答案，没写过程」
+        //   会把「题干没拿到 / 过程还没读」也归成同一个原因 —— 用户截图里两道 0/7 的错题
+        //   就这么被一句话吞掉了。按真实原因分开说。空过程文案统一由 noProcessText 承载。
+        noProcessText: (() => {
+          const hasStem = !!String(q.questionText || '').trim();
+          const hasWork = !!(plain(q.studentAnswer || '') || plain(q.traceReport || ''));
+          if (!hasStem) return '这题的题干没拿到，所以没法审这道题。';
+          if (!hasWork) return '这题的过程还没读到。';
+          return '这题只填了答案，没写过程。';
+        })(),
         brokenCount: broken.length,
         // 只展示第一处断点，其余折叠（认知负荷：一次只展开一个）
         brokenSegs: broken.slice(0, 1).map((s) => ({
@@ -338,6 +381,20 @@ Page({
         // ---- 「这一问怎么想的」（2026-10-18）----
         // 小问结构：默认全部折叠、不请求。点了才生成（PRD N3-改：所有小问都有入口）
         rawQuestionText: q.questionText || '',
+        // ===== 2026-10-25（DES-20261025-001 §3.2/§3.3）=====
+        // 做对的题：模板句（后端拼好，前端只渲染）；空则整块不出现
+        correctNote: q.correctNote || '',
+        correctNoteNodes: q.correctNote ? md(q.correctNote) : [],
+        // 你的过程：判定层逐单元结果 → 可直接渲染的行（只算一次）
+        stepRows: stepRows,
+        // 全是「没问题」时默认折叠（认知负荷：有问题的才展开）
+        stepsFolded: stepRows.length > 0 && stepRows.every((r) => r.cls === 'ok'),
+        // AI 做法是否更优（后端已过三道代码护栏，这里不再判断）
+        moreEfficient: q.moreEfficient === true,
+        betterAt: q.betterAt,
+        whyBetter: q.whyBetter || '',
+        // 选填题选项分析
+        choiceAnalysis: q.choiceAnalysis || null,
         subQuestions: buildSubList(q),
         // 只对解答题给入口：选填题没有过程，生成必然验证失败，
         // 让用户点了却看到「没能稳稳做出来」，是最伤信任的一种体验（2026-10-23 线上实测）。
@@ -405,7 +462,14 @@ Page({
       report: {
         summary: report.summary || '',
         questions,
-        masteryChange: (report.masteryChange || []).map((m) => ({ ...m, beforePct: Math.round((m.before || 0) * 100), afterPct: Math.round((m.after || 0) * 100) })),
+        // 2026-10-25（DES-20261025-001 §3.5）：原来 Math.round 取整 → 不足 0.5 个百分点被抹掉，
+        //   显示成「67% → 67%」（用户截图实测）。保留一位小数，既看得见变化又不假精确。
+        masteryChange: (report.masteryChange || []).map((m) => ({
+          ...m,
+          beforePct: (Number(m.before || 0) * 100).toFixed(1),
+          afterPct: (Number(m.after || 0) * 100).toFixed(1),
+        })),
+        masterySummary: report.masterySummary || null,
         pendingNodes: report.pendingNodes || [],
         repeatMisses: report.repeatMisses || [],
         unitChanges: (report.unitChanges || []).map((u) => Object.assign({}, u, {
@@ -443,6 +507,19 @@ Page({
     const qid = e.currentTarget.dataset.qid;
     const questions = this.data.questions.map((q) => (q.questionId === qid ? { ...q, refOpen: !q.refOpen } : q));
     this.setData({ questions });
+  },
+  // 「你的过程」展开/收起（2026-10-25）：全 ok 时默认折叠，点开看全部
+  toggleSteps(e) {
+    const qid = e.currentTarget.dataset.qid;
+    const questions = this.data.questions.map((q) => (q.questionId === qid ? { ...q, stepsFolded: !q.stepsFolded } : q));
+    this.setData({ questions });
+  },
+  // 「另一种走法（AI 自己做一遍）」展开/收起（2026-10-25）：降级为折叠，不再默认铺开
+  toggleOtherWay(e) {
+    const ds = (e.currentTarget && e.currentTarget.dataset) || {};
+    const cur = this._findSub(ds.qid, ds.subno);
+    if (!cur) return;
+    this._patchSub(ds.qid, ds.subno, { otherWayOpen: !cur.otherWayOpen });
   },
 
   // ============ 逐题内联展开 ============
@@ -617,10 +694,13 @@ Page({
         });
         const d1 = r1.result;
         const hit = d1 && d1.code === 0 && d1.data && (d1.data.list || []).find((x) => x.subNo === subNo);
-        if (hit && hit.thinking) {
+        // 2026-10-25：新形态下「有可用内容」不再只看 thinking（没做出来也可能有推测）
+        if (hit && (hit.thinking || (hit.guesses || []).length || hit.selfThought)) {
           this._patchSub(qid, subNo, {
             loading: false, failed: false, verified: hit.verified,
             verifyNote: hit.verifyNote || '', thinking: hit.thinking,
+            guesses: hit.guesses || [],
+            selfThought: hit.selfThought || '',
             followUps: hit.followUps || [],
           });
           return;
@@ -634,15 +714,23 @@ Page({
         timeout: 180000,
       });
       const d2 = r2.result;
-      if (d2 && d2.code === 0 && d2.data && d2.data.thinking) {
+      if (d2 && d2.code === 0 && d2.data && (d2.data.thinking || (d2.data.guesses || []).length)) {
         this._patchSub(qid, subNo, {
           loading: false, failed: false, verified: d2.data.verified,
           verifyNote: d2.data.verifyNote || '', thinking: d2.data.thinking,
+          guesses: d2.data.guesses || [],
+          selfThought: d2.data.selfThought || (cur.selfThought || ''),
         });
       } else {
+        // 2026-10-25：后端「AI 自己的解法没做出来」时会返回 guesses（并带 code 0），
+        //   走过去是有内容的；这里只处理真失败/真无内容 —— 但也保留已有的 guesses，别把猜测抹掉。
+        const note = (d2 && d2.data && d2.data.verifyNote) || (d2 && d2.message) || '这一问生成失败，请重试';
+        const gs = (d2 && d2.data && d2.data.guesses) || cur.guesses || [];
         this._patchSub(qid, subNo, {
-          loading: false, failed: true,
-          verifyNote: (d2 && d2.data && d2.data.verifyNote) || (d2 && d2.message) || '这一问生成失败，请重试',
+          loading: false,
+          failed: !gs.length,
+          guesses: gs,
+          verifyNote: note,
         });
       }
     } catch (err) {
@@ -651,6 +739,40 @@ Page({
         loading: false, failed: true,
         verifyNote: isTimeoutError(msg) ? '这一问要想久一点，请再试一次' : '生成失败：' + msg,
       });
+    }
+  },
+
+  /** 自述输入（2026-10-25） */
+  onSelfThoughtInput(e) {
+    const ds = (e.currentTarget && e.currentTarget.dataset) || {};
+    this._patchSub(ds.qid, ds.subno, { selfDraft: e.detail.value });
+  },
+
+  /** 保存「我当时是这么想的」：写下的内容是事实，展示时优先于 AI 推测 */
+  async saveSelfThought(e) {
+    const ds = (e.currentTarget && e.currentTarget.dataset) || {};
+    const qid = ds.qid;
+    const subNo = ds.subno;
+    const cur = this._findSub(qid, subNo);
+    const text = ((cur && cur.selfDraft) || '').trim();
+    if (!text) { wx.showToast({ title: '先写一句', icon: 'none' }); return; }
+    this._patchSub(qid, subNo, { selfSaving: true });
+    try {
+      const r = await wx.cloud.callFunction({
+        name: 'reportService',
+        data: { action: 'subSelfThought', questionId: qid, subNo, text, userId: getOpenid() },
+      });
+      const d = r.result;
+      if (d && d.code === 0) {
+        this._patchSub(qid, subNo, { selfSaving: false, selfThought: d.data.selfThought, selfDraft: '' });
+        wx.showToast({ title: '记下了', icon: 'success' });
+      } else {
+        this._patchSub(qid, subNo, { selfSaving: false });
+        wx.showToast({ title: (d && d.message) || '保存失败', icon: 'none' });
+      }
+    } catch (err) {
+      this._patchSub(qid, subNo, { selfSaving: false });
+      wx.showToast({ title: '网络异常', icon: 'none' });
     }
   },
 

@@ -27,8 +27,14 @@ function usageNamesOf(q) {
 }
 
 // 报告底部：知识点掌握度变化（只用图谱节点 旧->新）+ 待建节点（custom_nodes，不当作参考）
+// 2026-10-25（DES-20261025-001 §2.4）：原实现用 Math.round(before*100) !== Math.round(after*100)
+//   判「有没有变」→ 不足 0.5 个百分点的变化被四舍五入抹掉，报告显示「67% → 67%」
+//   （用户截图实测）。改为直接比浮点差，任何真实变化都进列表；同时产出汇总计数。
+const MASTERY_EPS = 1e-6;
 async function buildMasteryChange({ openid, questionIds }) {
-  if (!questionIds || !questionIds.length) return { masteryChange: [], pendingNodes: [] };
+  if (!questionIds || !questionIds.length) {
+    return { masteryChange: [], pendingNodes: [], masterySummary: null };
+  }
   const logsRes = await db.collection('mastery_logs')
     .where({ userId: openid, triggerQuestionId: _.in(questionIds) })
     .orderBy('createdAt', 'asc')
@@ -49,16 +55,69 @@ async function buildMasteryChange({ openid, questionIds }) {
   const customRes = await db.collection('custom_nodes').limit(1000).get();
   const customName = new Map((customRes.data || []).map((n) => [n._id, n.name]));
   const masteryChange = [], pendingSet = new Set();
+  // 汇总：涨 / 跌 / 持平 / 新记（此前没有 mastery 记录、本次首次产生）
+  const sum = { ups: 0, downs: 0, flats: 0, news: 0 };
   for (const [nid, e] of Object.entries(byNode)) {
-    if (graphIdSet.has(nid)) {
-      if (e.before != null && e.after != null && Math.round(e.before * 100) !== Math.round(e.after * 100)) {
-        masteryChange.push({ nodeId: nid, name: graphName.get(nid) || nid, before: e.before, after: e.after });
-      }
-    } else {
-      pendingSet.add(customName.get(nid) || nid);
-    }
+    if (!graphIdSet.has(nid)) { pendingSet.add(customName.get(nid) || nid); continue; }
+    if (e.after == null) continue;
+    if (e.before == null) { sum.news++; continue; }        // 首次记账：没有「变化」可言
+    const d = Number(e.after) - Number(e.before);
+    if (Math.abs(d) <= MASTERY_EPS) { sum.flats++; continue; }
+    if (d > 0) sum.ups++; else sum.downs++;
+    masteryChange.push({ nodeId: nid, name: graphName.get(nid) || nid, before: e.before, after: e.after });
   }
-  return { masteryChange, pendingNodes: Array.from(pendingSet) };
+  const masterySummary = {
+    ...sum,
+    totalNotes: sum.ups + sum.downs + sum.flats + sum.news,
+  };
+  return { masteryChange, pendingNodes: Array.from(pendingSet), masterySummary };
+}
+
+// 做对的题：这题考什么（模板句）。
+// 2026-10-25（DES-20261025-001 §2.2）：用户明确「甚至可以用那种模板化套话，都不用 AI 生成的，
+//   只要把知识点输进去就可以」→ 纯代码拼，不走模型，零成本零漂移。
+// 顺序：用对的（P>=1）优先，其余保持原顺序；最多 3 个，避免题卡被撑爆。
+function correctNote(usage) {
+  const list = Array.isArray(usage) ? usage : [];
+  const seen = new Set();
+  const picked = list
+    .map((u, idx) => ({
+      name: String((u && u.name) || '').trim(),
+      ok: Number(u && u.P) >= 1,
+      idx,
+    }))
+    .filter((u) => {
+      if (!u.name || seen.has(u.name)) return false;
+      seen.add(u.name);
+      return true;
+    })
+    .sort((a, b) => (b.ok ? 1 : 0) - (a.ok ? 1 : 0) || a.idx - b.idx)
+    .slice(0, 3)
+    .map((u) => u.name);
+  if (!picked.length) return '';
+  // 中文并列用顿号，不用「和」连串（三个以上时「A和B和C」很难读）
+  const names = picked.length <= 1
+    ? picked.map((n) => `「${n}」`).join('')
+    : picked.map((n) => `「${n}」`).join('、');
+  return `这道题考的是${names}。`
+    + picked.map((n) => `你能做对，说明「${n}」这块掌握得还可以。`).join('');
+}
+
+/**
+ * 做对题的模板句取名字来源（按可信度排序）：
+ *   ① knowledgeUsage（判定层给的知识点使用清单，最准）
+ *   ② officialKnowledge（官方知识点，智学网错题才有，对题通常为空）
+ *   ③ knowledgeNames（assemble 已根据 usage 算好）
+ * 返回 [{name, P}]，P 缺省按 1 处理（做对了就该算用对）。
+ */
+function correctNoteSources(q) {
+  const src = q || {};
+  if (Array.isArray(src.knowledgeUsage) && src.knowledgeUsage.length) return src.knowledgeUsage;
+  if (Array.isArray(src.officialKnowledge) && src.officialKnowledge.length) {
+    return src.officialKnowledge.map((n) => ({ name: String(n || ''), P: 1 }));
+  }
+  const names = Array.isArray(src.knowledgeNames) ? src.knowledgeNames : [];
+  return names.map((n) => ({ name: String(n || ''), P: 1 }));
 }
 
 // 报告：「同一处丢过几次」（跨题对齐，TARGET §3.3）
@@ -349,6 +408,10 @@ async function subThinkingGet(event, openid) {
     verified: x.verified,
     verifyNote: x.verifyNote || '',
     thinking: x.thinking || null,
+    // 2026-10-25：AI 对学生当时想法的推测 + 学生自述（自述优先展示）
+    guesses: Array.isArray(x.guesses) ? x.guesses : [],
+    selfThought: x.selfThought || '',
+    promptVersion: x.promptVersion || '',
     followUps: Array.isArray(x.followUps) ? x.followUps.slice(-20) : [],
   }));
   return success({ list });
@@ -377,6 +440,8 @@ async function subThinkingGenerate(event, openid) {
       verified: record.verified,
       verifyNote: record.verifyNote || '',
       thinking: record.thinking || null,
+      guesses: Array.isArray(record.guesses) ? record.guesses : [],
+      selfThought: record.selfThought || '',
       cached: !!record.cached,
     });
   } catch (e) {
@@ -785,6 +850,19 @@ exports.main = async (event) => {
     if (event && event.action === 'subFollowUp') {
       return await subFollowUp(event, openid);
     }
+    // 学生自述「我当时是这么想的」（2026-10-25）。AI 的推测可能全错，
+    //   学生写下的一句话才是可核验的事实 → 展示时优先于推测。
+    if (event && event.action === 'subSelfThought') {
+      const { questionId, subNo, text } = event;
+      const t = String(text || '').trim();
+      if (!t) return fail(400, '请先写一句');
+      const { q, error } = await loadQuestionForUser(questionId, openid);
+      if (error) return error;
+      const r = await subThinkingLib.saveSelfThought({ db, _, qid: q._id || questionId, subNo, text: t });
+      if (!r.ok) return fail(400, r.message || '保存失败');
+      return success({ subNo, selfThought: r.record.selfThought });
+    }
+
     if (event && event.action === 'subCorrectDiag') {
       return await subCorrectDiag(event, openid);
     }
@@ -834,7 +912,7 @@ exports.main = async (event) => {
 
     // ② 每题批量并行：诊断（过程点评/问题在哪儿/下一步），并发 5
     const qs = input.allQuestions;
-    const detailCount = { done: 0, total: qs.length, diff: 0 };
+    const detailCount = { done: 0, total: qs.length, diff: 0, better: 0 };
     const CONC = 5;
     let qi = 0;
     async function worker() {
@@ -859,6 +937,18 @@ exports.main = async (event) => {
           }
         } catch (e) {
           console.warn('[reportService] 诊断失败:', q.questionId, e.message);
+        }
+        // AI 的做法（2026-10-25）：判定层已给参考过程时 aiApproach 内部直接返回 null，不重复花钱。
+        //   失败不阻塞报告（用户宁可看不到 AI 做法，也不要整份报告生不出来）。
+        try {
+          const ap = await genV2.aiApproach(q, Array.isArray(q.segments) ? q.segments.length : 0);
+          if (ap) {
+            q.aiApproach = ap;
+            patch.aiApproach = ap;
+            if (ap.moreEfficient) detailCount.better++;
+          }
+        } catch (e) {
+          console.warn('[reportService] AI 做法失败:', q.questionId, e.message);
         }
         }
         if (Object.keys(patch).length && q.questionId) {
@@ -898,6 +988,8 @@ exports.main = async (event) => {
     const report = {
       summary,
       masteryChange: mc.masteryChange,
+      // 掌握度变化汇总（2026-10-25）：涨/跌/持平/新记，前端在「你的记录」块展示一行
+      masterySummary: mc.masterySummary,
       pendingNodes: mc.pendingNodes,
       // 同一处丢过几次（跨题对齐，TARGET §3.3）：只含本批涉及、且历史丢分 ≥3 次的知识点
       repeatMisses,
@@ -924,12 +1016,31 @@ exports.main = async (event) => {
         officialScore: q.officialScore != null ? q.officialScore : null,
         officialStandardScore: q.officialStandardScore != null ? q.officialStandardScore : null,
         officialClassScoreRate: q.officialClassScoreRate != null ? q.officialClassScoreRate : null,
+        // ===== 2026-10-25（DES-20261025-001 §2）：新增呈现数据 =====
+        // 做对的题：这题考什么（模板句，零 AI）
+        // ⚠️ 2026-10-25 核查：智学网链路**对题不带 knowledgeUsage**（官方只给错题知识点，
+        //    见 zhixueSync/mapOfficial.js:105），直接只用 knowledgeUsage 会让对题模板句大面积空白。
+        //    兜底①官方给的知识点；兜底②图谱名 —— 都为空时整块不渲染（宁可没有，也不要空壳）。
+        correctNote: q.status === '对' ? correctNote(correctNoteSources(q)) : '',
+        // 你的过程：判定层逐单元核出的结果（原样透传，前端逐条渲染）
+        steps: Array.isArray(q.steps) ? q.steps : [],
+        // 选填题：选项分析（解答题为 null）
+        choiceAnalysis: q.choiceAnalysis || null,
+        // AI 的做法：优先用判定层给的 referenceProcess（上面已有），否则用本批补生成的
+        aiApproach: (q.aiApproach && Array.isArray(q.aiApproach.steps) && q.aiApproach.steps.length)
+          ? q.aiApproach.steps
+          : [],
+        moreEfficient: (q.aiApproach && q.aiApproach.moreEfficient === true) || q.moreEfficient === true,
+        betterAt: (q.aiApproach && q.aiApproach.moreEfficient === true) ? q.aiApproach.betterAt : q.betterAt,
+        whyBetter: (q.aiApproach && q.aiApproach.moreEfficient === true) ? q.aiApproach.whyBetter : q.whyBetter,
       })),
     };
     const ins = await db.collection('reports').add({
       data: { userId: openid, batchId, report, createdAt: db.serverDate() },
     });
-    await logDebug('reportService.saved_v2', openid, batchId, { reportId: ins._id, questions: qs.length, diffCount: detailCount.diff });
+    // betterCount：本批「AI 做法更优」的题数 —— 用来验证护栏有没有把提示率压到合理范围
+    //   （全批都提示 = 护栏失效；一条都没有 = 可能过严）。见 开发经验 §6.32 同类观测思路。
+    await logDebug('reportService.saved_v2', openid, batchId, { reportId: ins._id, questions: qs.length, diffCount: detailCount.diff, betterCount: detailCount.better });
     await writeProgress(batchId, 4, '报告已生成', 100);
     const rc = genV2.getCost();
     if (rc.calls) console.log('[report-cost-total] calls=' + rc.calls + ' prompt=' + rc.prompt + ' completion=' + rc.completion);

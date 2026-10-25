@@ -95,6 +95,11 @@
           <text class="rp-chip" wx:if="{{q.classRateText}}">{{q.classRateText}}</text>
         </view>
 
+        <!-- 做对了：这题考什么（2026-10-25，模板句，零 AI；用户：「把知识点输进去就可以」） -->
+        <view class="rp-correct-note" wx:if="{{q.correctNote}}">
+          <rich-text nodes="{{q.correctNoteNodes}}"></rich-text>
+        </view>
+
         <!-- 题目 -->
         <view class="rp-q-text" wx:if="{{q.textNodes.length}}">
           <rich-text nodes="{{q.textNodes}}"></rich-text>
@@ -114,8 +119,33 @@
 
         <!-- 有过程 -->
         <block wx:if="{{q.hasProcess}}">
-          <view class="rp-sub" wx:if="{{q.brokenCount > 0}}">有 <text class="rp-num">{{q.brokenCount}}</text> 处没写完，先看这处：</view>
-          <view class="rp-sub" wx:else>过程走到最后了。</view>
+          <!-- ===== A 块：你的过程 · 一步一步看（2026-10-25）=====
+               数据来自判定层逐单元核查（steps），不是模型自说自话的分段：
+               每步都有学生原话 + 代码判定的状态。unknown 不下结论（两次判断打架）。 -->
+          <block wx:if="{{q.stepRows.length}}">
+            <view class="rp-block-t">你的过程</view>
+            <view class="rp-steps {{q.stepsFolded ? 'folded' : ''}}">
+              <view class="rp-step {{s.cls}}" wx:for="{{q.stepRows}}" wx:key="i" wx:for-item="s">
+                <text class="rp-step-n">{{s.i}}</text>
+                <view class="rp-step-body">
+                  <rich-text nodes="{{s.rawNodes}}"></rich-text>
+                  <view class="rp-step-judge" wx:if="{{s.tagText}}">
+                    <text class="rp-step-tag {{s.tagCls}}">{{s.tagText}}</text>
+                    <text class="rp-step-say" wx:if="{{s.judgeText}}">{{s.judgeText}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+            <view class="rp-more" wx:if="{{q.stepsFolded || q.stepRows.length > 2}}" bindtap="toggleSteps" data-qid="{{q.questionId}}">
+              <text>{{q.stepsFolded ? ('展开看你的 ' + q.stepRows.length + ' 步') : '收起'}}</text>
+            </view>
+          </block>
+
+          <!-- 回退（旧数据没有 steps）：保持原有分段展示 -->
+          <block wx:else>
+            <view class="rp-sub" wx:if="{{q.brokenCount > 0}}">有 <text class="rp-num">{{q.brokenCount}}</text> 处没写完，先看这处：</view>
+            <view class="rp-sub" wx:else>过程走到最后了。</view>
+          </block>
 
           <view class="rp-seg {{s.cls}}" wx:for="{{q.brokenSegs}}" wx:key="idx" wx:for-item="s">
             <text class="rp-seg-m">{{s.mark}}</text>
@@ -144,19 +174,54 @@
             </view>
           </block>
 
-          <!-- 完整参考过程 -->
-          <view class="rp-more" wx:if="{{q.refSteps.length}}" bindtap="toggleRef" data-qid="{{q.questionId}}">
-            <text>{{q.refOpen ? '收起参考过程' : '看完整参考过程（' + q.refSteps.length + ' 步）'}}</text>
-          </view>
+          <!-- ===== B 块：AI 的做法（2026-10-25）=====
+               用户：「做对的题，提供 AI 做法；如果 AI 检测到它的做法更优的话，就提示一下」。
+               做对/做错都给；更优提示由后端三道代码护栏决定，这里只负责渲染。 -->
+          <block wx:if="{{q.refSteps.length}}">
+            <view class="rp-block-t">AI 的做法<text class="rp-block-s">这是 AI 的写法，不是你的</text></view>
+            <view class="rp-tip" wx:if="{{q.moreEfficient}}">
+              <text class="rp-tip-t">可以更省</text>
+              <text class="rp-tip-s">你做对了。AI 的做法在第 {{q.betterAt}} 步更省：{{q.whyBetter}}。可以参考这个写法。</text>
+            </view>
+            <view class="rp-more" bindtap="toggleRef" data-qid="{{q.questionId}}">
+              <text>{{q.refOpen ? '收起' : ('看 AI 怎么做（' + q.refSteps.length + ' 步）')}}</text>
+            </view>
+          </block>
           <block wx:if="{{q.refOpen}}">
             <view class="rp-seg ok" wx:for="{{q.refSteps}}" wx:key="idx" wx:for-item="s">
               <text class="rp-seg-m">{{s.idx}}</text>
               <view class="rp-seg-t">
                 <text class="rp-step-title">{{s.title}}</text>
                 <rich-text nodes="{{s.nodes}}"></rich-text>
+                <view class="rp-step-note" wx:if="{{s.noteNodes.length}}">
+                  <rich-text nodes="{{s.noteNodes}}"></rich-text>
+                </view>
               </view>
             </view>
           </block>
+        </block>
+
+        <!-- ===== 选填题：选项分析（2026-10-25）=====
+             原来是写死的「这题只填了答案，没写过程」—— 官方 0/7 的错题也被这句话吞掉。
+             有 choiceAnalysis 就展示：你的答案 → 正确答案 → 为什么不对 → 一般缺在哪。 -->
+        <block wx:if="{{!q.hasProcess && q.choiceAnalysis}}">
+          <view class="rp-block-t">这道题怎么看</view>
+          <view class="rp-ca-row">
+            <text class="rp-ca-k">你写的</text>
+            <text class="rp-ca-v">{{q.choiceAnalysis.studentsAnswer || '（没读到）'}}</text>
+          </view>
+          <view class="rp-ca-row" wx:if="{{q.choiceAnalysis.correctAnswer}}">
+            <text class="rp-ca-k">正确答案</text>
+            <text class="rp-ca-v">{{q.choiceAnalysis.correctAnswer}}</text>
+          </view>
+          <view class="rp-ca-say" wx:if="{{q.choiceAnalysis.whyWrong}}">
+            <text class="rp-ca-lab">为什么不对</text>
+            <text>{{q.choiceAnalysis.whyWrong}}</text>
+          </view>
+          <view class="rp-ca-say" wx:if="{{q.choiceAnalysis.likelyGap}}">
+            <text class="rp-ca-lab">一般卡在哪</text>
+            <text>{{q.choiceAnalysis.likelyGap}}</text>
+          </view>
         </block>
 
         <!-- ===== 「这一问怎么想的」＝ 按小问按需生成（2026-10-18）=====
@@ -183,15 +248,22 @@
             <!-- 面板 -->
             <view class="think-panel" wx:if="{{sub.panelOpen}}">
               <view class="think-head">
-                <text class="think-t">这一问是怎么想到的</text>
-                <text class="think-s">{{sub.loading ? 'AI 正在想…' : '一种走法'}}</text>
+                <text class="think-t">你当时是怎么想的</text>
+                <!-- 2026-10-25：这里从「AI 自己做一遍」改为「AI 猜你当时的想法」。
+                     标注必须一直在 —— 用户：「就是说明是AI推测」。 -->
+                <text class="think-s">{{sub.loading ? 'AI 正在想…' : 'AI 猜测 · 不是结论'}}</text>
+              </view>
+              <view class="guess-hint" wx:if="{{!sub.loading && !sub.failed}}">
+                下面的内容由 AI 根据你写的过程推测，和你当时的真实想法不一定一样。
               </view>
 
               <view class="think-loading" wx:if="{{sub.loading}}">
-                <text>AI 正在把这一问从头做一遍，通常 30~60 秒…</text>
+                <text>AI 正在看你的过程，猜你当时怎么想的，通常 30~60 秒…</text>
               </view>
 
-              <block wx:elif="{{sub.failed}}">
+              <!-- 完全失败（连猜测都没有）才整块失败；有猜测就照常展示推测，
+                   只是把「AI 自己的解法没做出来」作为一条提示挂上去（2026-10-25 评审修）。 -->
+              <block wx:elif="{{sub.failed && !sub.guesses.length}}">
                 <view class="think-fail">
                   <text class="think-fail-t">这一问我没能稳稳做出来</text>
                   <text class="think-fail-s" wx:if="{{sub.verifyNote}}">{{sub.verifyNote}}</text>
@@ -202,10 +274,46 @@
               </block>
 
               <block wx:else>
+                <view class="think-fail" wx:if="{{sub.failed}}">
+                  <text class="think-fail-s">AI 自己没能把这一问稳稳做出来，下面的推测仍然有效。</text>
+                </view>
                 <view class="think-note" wx:if="{{sub.verified === 'partial'}}">
                   <text>{{sub.verifyNote || '这一问证得不够严，补全后结论成立'}}</text>
                 </view>
 
+                <!-- ===== AI 推测（2026-10-25）=====
+                     每条都逐字引用你的原文（后端已校验，编造的引用被丢弃）；
+                     你自己写的「我当时是这么想的」优先展示在最前面。 -->
+                <view class="guess-self" wx:if="{{sub.selfThought}}">
+                  <text class="guess-self-k">你自己的说法</text>
+                  <text class="guess-self-v">{{sub.selfThought}}</text>
+                </view>
+
+                <view class="guess" wx:for="{{sub.guesses}}" wx:key="quote" wx:for-item="g">
+                  <view class="guess-quote">「你写了：<text class="guess-q">{{g.quote}}</text>」</view>
+                  <view class="guess-why"><text class="guess-k">之所以这么猜</text><text>{{g.why}}</text></view>
+                  <view class="guess-if"><text class="guess-k">如果是这样</text><text>{{g.guess}}</text></view>
+                </view>
+                <view class="guess-empty" wx:if="{{!sub.loading && !sub.guesses.length}}">
+                  这一问没有读到你的过程，AI 不瞎猜。
+                </view>
+
+                <!-- 学生自述：AI 猜不准时，他说的是事实，优先于 AI 的推测 -->
+                <view class="ask-box guess-self-input" wx:if="{{!sub.loading}}">
+                  <view class="ask-row">
+                    <input class="ask-input" value="{{sub.selfDraft}}" placeholder="我当时是这么想的（AI 猜不准就自己写）"
+                           bindinput="onSelfThoughtInput" data-qid="{{q.questionId}}" data-subno="{{sub.subNo}}" />
+                    <view class="ask-btn" bindtap="saveSelfThought" data-qid="{{q.questionId}}" data-subno="{{sub.subNo}}">
+                      {{sub.selfSaving ? '…' : '记下'}}
+                    </view>
+                  </view>
+                </view>
+
+                <!-- AI 自己做一遍：保留但降级为折叠（用户：「AI重做一遍也要有」） -->
+                <view class="rp-more" bindtap="toggleOtherWay" data-qid="{{q.questionId}}" data-subno="{{sub.subNo}}">
+                  <text>{{sub.otherWayOpen ? '收起' : '另一种走法（AI 自己做一遍）'}}</text>
+                </view>
+                <block wx:if="{{sub.otherWayOpen}}">
                 <view class="think-goal" wx:if="{{sub.thinking.goal}}">{{sub.thinking.goal}}</view>
 
                 <view class="tstep" wx:for="{{sub.thinking.steps}}" wx:key="n" wx:for-item="st">
@@ -225,6 +333,7 @@
                 </view>
 
                 <view class="think-end" wx:if="{{sub.thinking.ending}}">{{sub.thinking.ending}}</view>
+                </block>
 
                 <!-- 追问 -->
                 <view class="ask-box">
@@ -293,11 +402,18 @@
         <view class="rp-empty-t" wx:if="{{tally.length === 0}}">还没有累积到可以看的记录。</view>
       </view>
 
-      <view class="rp-card" wx:if="{{report.masteryChange.length}}">
+      <view class="rp-card" wx:if="{{report.masteryChange.length || report.masterySummary}}">
         <view class="rp-sec-sub">掌握度变化</view>
+        <!-- 汇总行（2026-10-25）：让「变化少」变成「看全了」——涨/跌/持平/新记一次说清 -->
+        <view class="rp-mastery-sum" wx:if="{{report.masterySummary && report.masterySummary.totalNotes}}">
+          这次涉及 {{report.masterySummary.totalNotes}} 个知识点：涨 {{report.masterySummary.ups}} · 跌 {{report.masterySummary.downs}} · 持平 {{report.masterySummary.flats}} · 新记 {{report.masterySummary.news}}
+        </view>
         <view class="rp-tally-row" wx:for="{{report.masteryChange}}" wx:key="nodeId" wx:for-item="mc">
           <text class="rp-tally-n">{{mc.name}}</text>
           <text class="rp-tally-v">{{mc.beforePct}}% → {{mc.afterPct}}%</text>
+        </view>
+        <view class="rp-empty-t" wx:if="{{report.masterySummary && !report.masteryChange.length}}">
+          知识点有记录，但这次分数没有变化。
         </view>
       </view>
 

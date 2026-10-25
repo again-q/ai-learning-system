@@ -100,20 +100,22 @@ function createJudgeAINode({ cloud, postJSON, config, kg, logger } = {}) {
     // 红线：编排失败**不阻塞**判定（降级为原 N2 结论），只记 issues。
     const issues = out.issues;
     let orchestrator = null;
+    // 子对话客户端：编排层与「AI 的做法」共用。
+    // ⚠️ 2026-10-25：原定义在编排的 try 块里，AI 做法那段在块外用不到 —— 单测直接报 call is not defined。
+    const call = async ({ system, user, maxTokens }) => {
+      const d = await postJSON(cfg.dsBaseUrl + '/chat/completions', {
+        model: cfg.dsModel,
+        // 子对话问题封闭，不开思考（实测足够且便宜得多）
+        thinking: { type: 'disabled' },
+        temperature: 0.2,
+        max_tokens: maxTokens || 2000,
+        messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
+      }, cfg.dsApiKey);
+      const m = d.choices && d.choices[0] && d.choices[0].message;
+      return { text: (m && m.content) || '' };
+    };
     if (orchestratorLib && typeof orchestratorLib.analyze === 'function' && process.env.ORCHESTRATOR !== 'off') {
       try {
-        const call = async ({ system, user, maxTokens }) => {
-          const d = await postJSON(cfg.dsBaseUrl + '/chat/completions', {
-            model: cfg.dsModel,
-            // 子对话问题封闭，不开思考（实测足够且便宜得多）
-            thinking: { type: 'disabled' },
-            temperature: 0.2,
-            max_tokens: maxTokens || 2000,
-            messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
-          }, cfg.dsApiKey);
-          const m = d.choices && d.choices[0] && d.choices[0].message;
-          return { text: (m && m.content) || '' };
-        };
         // ⚠️ 关键（2026-10-17 线上实测踩到）：state.question 是**判定前**读到的旧数据，
         //    智学网链路的 traceReport 恒为空；过程文本其实就在【本次判定刚产出的 raw.segments[].evidence】里。
         //    不合并进去 → 编排拿到空过程 → 一律报 clean（实测 verdict='clean'、transcriptLength=0）。
@@ -137,6 +139,39 @@ function createJudgeAINode({ cloud, postJSON, config, kg, logger } = {}) {
       } catch (e) {
         log('[graphEngine/N2] 编排失败（不阻塞判定）: ' + e.message);
         issues.push('N2: 编排失败，已降级为原判定（' + (e && e.message) + '）');
+      }
+    }
+
+    // ============ AI 的做法（2026-10-25，DES-20261025-001 §1.2）============
+    // 用户：做对的题也要给「AI 自己做一遍」；AI 真的更省才提示一句。
+    // 红线：失败/超长/输出不合法一律降级为 null，**不阻塞判定**；ANSWER_PATH=off 可整体关掉。
+    if (process.env.ANSWER_PATH !== 'off') {
+      try {
+        const qType = String(raw.questionType || question.questionType || '');
+        if (qType === '解答') {
+          const workText = String(question.traceReport || '').trim()
+            || (Array.isArray(raw.segments) ? raw.segments : []).map((s) => (s && (s.evidence || s.step)) || '').filter(Boolean).join('\n');
+          const ap = await orchestratorLib.answerPath({
+            call,
+            questionText: question.questionText || '',
+            work: workText,
+            correctAnswer: raw.correctAnswer || question.correctAnswer || '',
+            // 对错来自模型自己的 P（官方三态在 question.officialStatus，这里只用它调措辞）
+            studentStatus: (Number(raw.P) >= 1 ? '对' : '未满分'),
+            // 没有可比的学生步骤时一律不给「更优」（parseAnswerPath 守卫②）。
+            // ⚠️ 2026-10-25 评审修：原来只取 raw.segments.length，但模型经常不给分段、
+            //    选填题 segments 恒为空 → 守卫②永远不通过 →「更优」提示永远不会出现。
+            //    改为：分段数 → 编排核过的单元数 → 过程文本行数，逐级兜底。
+            workStepCount: (Array.isArray(raw.segments) && raw.segments.length)
+              || (orchestrator && Array.isArray(orchestrator.steps) && orchestrator.steps.length)
+              || workText.split('\n').filter((x) => x.trim()).length,
+            logger,
+          });
+          if (ap) raw.answerPath = ap;
+        }
+      } catch (e) {
+        log('[graphEngine/N2] AI 做法失败（不阻塞判定）: ' + (e && e.message));
+        issues.push('N2: AI 做法失败（' + (e && e.message) + '）');
       }
     }
 

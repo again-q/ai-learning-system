@@ -82,6 +82,59 @@ function parseSections(text) {
   };
 }
 
+// AI 的做法（2026-10-25，DES-20261025-001 §2.3）：判定层没给参考过程时补一份。
+// 为什么要它：用户「做对的题，提供 AI 做法；如果 AI 检测到它的做法更优的话，就提示一下」。
+// 护栏：与 graphEngine/lib/orchestrator.parseAnswerPath 同一套三门槛（这里独立实现一份，
+//       因为两个云函数各自打包，跨函数 require 不通；改规则必须两处同步）。
+const AP_STEP_MIN = 2;
+const AP_STEP_MAX = 10;
+function parseApproach(text, workStepCount) {
+  let j = null;
+  try { j = JSON.parse(String(text || '').slice(String(text || '').indexOf('{'), String(text || '').lastIndexOf('}') + 1)); } catch (_) { j = null; }
+  if (!j) return null;
+  const steps = (Array.isArray(j.steps) ? j.steps : [])
+    .map((x) => ({
+      step: String((x && x.step) || '').slice(0, 80),
+      content: String((x && x.content) || '').slice(0, 800),
+      note: String((x && x.note) || '').slice(0, 300),
+    }))
+    .filter((x) => x.step && x.content);
+  if (steps.length < AP_STEP_MIN || steps.length > AP_STEP_MAX) return null;
+  let moreEfficient = j.moreEfficient === true;
+  let betterAt = Number.isInteger(j.betterAt) ? j.betterAt : null;
+  const whyBetter = String(j.whyBetter || '').trim().slice(0, 60) || null;
+  if (!whyBetter || !/步骤|步数|分类|计算/.test(whyBetter)) moreEfficient = false;
+  if (!betterAt || betterAt < 1 || !(workStepCount > 0) || betterAt > workStepCount) moreEfficient = false;
+  if (/新方法|新定理|换个思路|通法|套路/.test(whyBetter)) moreEfficient = false;
+  if (!moreEfficient) return { steps, moreEfficient: false, betterAt: null, whyBetter: null };
+  return { steps, moreEfficient: true, betterAt, whyBetter };
+}
+
+/**
+ * 只在「解答题 + 判定层没给参考过程」时补一份 AI 做法。
+ * @param {object} q 来自 assemble 的题目
+ * @param {function} [workerStepCount] 计算学生过程步数的函数（默认用 segments 长度）
+ * @returns {Promise<null|{steps,moreEfficient,betterAt,whyBetter}>}
+ */
+async function aiApproach(q, workStepCount) {
+  const src = q || {};
+  if (String(src.questionType || '') !== '解答') return null;
+  if (Array.isArray(src.referenceProcess) && src.referenceProcess.length) return null;
+  // 上次生成过就直接复用（2026-10-25 评审修）：原来只认 referenceProcess，
+  //   而报告层的 aiApproach 是写进 questions.aiApproach 的 → 同一批重开报告会重复调模型。
+  if (src.aiApproach && Array.isArray(src.aiApproach.steps) && src.aiApproach.steps.length) return src.aiApproach;
+  const work = String(src.traceReport || '')
+    || (Array.isArray(src.segments) ? src.segments.map((s) => (s && (s.evidence || s.step)) || '').filter(Boolean).join('\n') : '');
+  const user = JSON.stringify({
+    questionText: String(src.questionText || '').slice(0, 800),
+    studentWork: work.slice(0, 1500),
+    correctAnswer: String(src.correctAnswer || '').slice(0, 300),
+    studentStatus: src.status || '未知',
+  });
+  const out = await callLLM(readPrompt('ai-approach.txt'), user, 2000);
+  return parseApproach(out, Number(workStepCount) || 0);
+}
+
 // 诊断（v10）：过程点评/问题在哪儿/下一步 —— 每段由诊断引擎按场景生成
 async function diagnosis(q) {
   const user = [
@@ -147,4 +200,4 @@ async function disputePattern(originalPattern, studentProposal) {
   }
 }
 
-module.exports = { batchSummary, progressNarrative, diffAnalysis, diagnosis, parseDiag, advancedAnalysis, disputePattern, parseSections, getCost };
+module.exports = { batchSummary, progressNarrative, diffAnalysis, diagnosis, parseDiag, aiApproach, parseApproach, advancedAnalysis, disputePattern, parseSections, getCost };
